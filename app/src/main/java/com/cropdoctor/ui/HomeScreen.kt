@@ -299,7 +299,7 @@ fun HomeScreen(
             ) {
                 QuickActionTile(
                     title = settingsTitle,
-                    icon = Icons.Default.HelpOutline,
+                    icon = Icons.AutoMirrored.Filled.HelpOutline,
                     color = Color(0xFF00796B),
                     modifier = Modifier.weight(1f),
                     onClick = onMoreOptionsClick
@@ -358,3 +358,4 @@ fun QuickActionTile(
         }
     }
 }
+
