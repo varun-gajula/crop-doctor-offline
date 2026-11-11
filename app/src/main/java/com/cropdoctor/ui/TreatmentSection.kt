@@ -136,7 +136,7 @@ fun NaturalTreatmentView(kbEntry: KbEntry, language: String) {
                 }
             }
             if (index < steps.size - 1) {
-                Divider(modifier = Modifier.padding(vertical = 6.dp), color = Color(0xFFE0E0E0))
+                HorizontalDivider(modifier = Modifier.padding(vertical = 6.dp), color = Color(0xFFE0E0E0))
             }
         }
     }
@@ -233,3 +233,4 @@ fun ChemicalTreatmentView(kbEntry: KbEntry, language: String) {
         }
     }
 }
+

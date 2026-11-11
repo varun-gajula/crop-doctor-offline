@@ -47,3 +47,4 @@ Explain what is happening to the plant, provide the most urgent action, and stat
 """.trimIndent()
     }
 }
+

@@ -75,3 +75,4 @@
 1. **Lighting:** Record outdoors or in good natural lighting with a real leaf or high-resolution tablet display showing leaf symptoms.
 2. **Screen Recorder:** Use Android 15 built-in screen recorder with device audio + microphone enabled.
 3. **No Fluff:** Keep transitions snappy. Do not exceed 60 seconds.
+

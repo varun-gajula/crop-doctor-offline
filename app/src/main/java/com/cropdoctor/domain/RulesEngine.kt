@@ -21,3 +21,4 @@ object RulesEngine {
         return !classId.endsWith("_healthy")
     }
 }
+

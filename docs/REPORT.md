@@ -139,3 +139,4 @@ LLMs present safety hazards when deployed in agriculture due to potential halluc
 - Integration of on-device segmentation head to compute exact diseased leaf surface area percentage rather than heuristic proxy.
 - Real-world field evaluation in Andhra Pradesh and Telangana agricultural mandals.
 - Fine-tuning of Llama 3.2 1B via LoRA on ICAR/KVK advisory question-answer pairs.
+

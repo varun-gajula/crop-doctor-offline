@@ -67,3 +67,4 @@ data class KnowledgeBaseRoot(
     @SerialName("total_classes") val totalClasses: Int,
     val classes: List<KbEntry>
 )
+
