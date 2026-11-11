@@ -55,8 +55,8 @@ dependencies {
     implementation(libs.androidx.camera.view)
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.kotlinx.serialization.json)
-    // ExecuTorch – version must match Colab export
-    implementation("org.pytorch:executorch-android:0.4.0")
+    // ExecuTorch – official Maven Central artifact
+    implementation("org.pytorch:executorch-android:0.5.1")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
