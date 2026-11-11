@@ -8,6 +8,7 @@ import com.cropdoctor.domain.ClassifierResult
 import com.cropdoctor.domain.SeverityCalculator
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.pytorch.executorch.EValue
 import org.pytorch.executorch.Module
 import org.pytorch.executorch.Tensor
 import java.io.File
@@ -91,7 +92,7 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
             val resized = Bitmap.createScaledBitmap(bitmap, 224, 224, true)
             val inputTensor = preprocessBitmap(resized)
 
-            val outputs = module!!.forward(inputTensor)
+            val outputs = module!!.forward(EValue.from(inputTensor))
             val outputTensor = outputs[0].toTensor()
             val logits = outputTensor.dataAsFloatArray
 
@@ -171,3 +172,4 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
         module = null
     }
 }
+
