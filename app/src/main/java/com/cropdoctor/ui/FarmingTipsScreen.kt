@@ -124,3 +124,4 @@ fun FarmingTipsScreen(
         }
     }
 }
+

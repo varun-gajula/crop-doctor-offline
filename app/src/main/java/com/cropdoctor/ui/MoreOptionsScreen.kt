@@ -251,3 +251,4 @@ fun shareAppViaWhatsApp(context: Context) {
         context.startActivity(Intent.createChooser(genericIntent, "Share Crop Doctor"))
     }
 }
+
