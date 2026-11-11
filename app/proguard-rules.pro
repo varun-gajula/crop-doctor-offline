@@ -13,3 +13,4 @@
 -keep,allowobfuscation,allowshrinking class * {
     <init>(...);
 }
+

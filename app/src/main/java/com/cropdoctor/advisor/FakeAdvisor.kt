@@ -57,3 +57,4 @@ class FakeAdvisor : Advisor {
         // No-op
     }
 }
+

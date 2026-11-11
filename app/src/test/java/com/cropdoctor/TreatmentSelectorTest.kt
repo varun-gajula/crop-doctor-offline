@@ -28,3 +28,4 @@ class TreatmentSelectorTest {
         assertEquals(TreatmentSelector.TreatmentTab.NATURAL, tab)
     }
 }
+

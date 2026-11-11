@@ -44,3 +44,4 @@ class SeverityCalculatorTest {
         assertEquals(SeverityBand.SEVERE, SeverityCalculator.calculate(0.40f, tomatoVirus))
     }
 }
+

@@ -26,3 +26,4 @@ fun CropDoctorTheme(
         content = content
     )
 }
+

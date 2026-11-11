@@ -38,3 +38,4 @@ class GuardrailFilterTest {
         assertEquals(hiText, GuardrailFilter.sanitize(hiText))
     }
 }
+

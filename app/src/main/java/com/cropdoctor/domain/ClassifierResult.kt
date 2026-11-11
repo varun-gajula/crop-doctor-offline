@@ -20,3 +20,4 @@ data class ClassifierResult(
     val certaintyBand: CertaintyBand,
     val lesionFraction: Float
 )
+

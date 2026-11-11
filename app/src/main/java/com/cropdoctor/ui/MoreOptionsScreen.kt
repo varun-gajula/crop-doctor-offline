@@ -1,0 +1,253 @@
+package com.cropdoctor.ui
+
+import android.content.Context
+import android.content.Intent
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
+import androidx.compose.material.icons.automirrored.filled.HelpOutline
+import androidx.compose.material.icons.automirrored.filled.MenuBook
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.cropdoctor.ui.theme.FarmGreenDark
+import com.cropdoctor.ui.theme.FarmGreenPrimary
+
+@Composable
+fun MoreOptionsScreen(
+    language: String,
+    onBackClick: () -> Unit,
+    onFarmingTipsClick: () -> Unit,
+    onBrowseDiseasesClick: () -> Unit
+) {
+    val context = LocalContext.current
+    val scrollState = rememberScrollState()
+
+    val screenTitle = when (language) {
+        "te" -> "మరిన్ని ఎంపికలు"
+        "hi" -> "अन्य विकल्प"
+        else -> "More Options"
+    }
+
+    Scaffold(
+        topBar = {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(FarmGreenPrimary)
+                    .statusBarsPadding()
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(onClick = onBackClick) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Back",
+                        tint = Color.White
+                    )
+                }
+                Spacer(modifier = Modifier.width(6.dp))
+                Text(
+                    text = screenTitle,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
+                )
+            }
+        }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color(0xFFF7FAF7))
+                .padding(paddingValues)
+                .verticalScroll(scrollState)
+                .padding(16.dp),
+            verticalArrangement = Arrangement.SpaceBetween
+        ) {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                // Scan History
+                MoreOptionItem(
+                    icon = Icons.Default.History,
+                    iconBg = Color(0xFFE8F5E9),
+                    iconTint = FarmGreenPrimary,
+                    title = when (language) { "te" -> "స్కాన్ చరిత్ర"; "hi" -> "स्कैन इतिहास"; else -> "Scan History" },
+                    subtitle = when (language) { "te" -> "గత ఫలితాలు"; "hi" -> "पुराने रिकॉर्ड"; else -> "View past scans" },
+                    onClick = { /* History */ }
+                )
+
+                // Favorite Diseases
+                MoreOptionItem(
+                    icon = Icons.Default.Favorite,
+                    iconBg = Color(0xFFFFEBEE),
+                    iconTint = Color(0xFFE91E63),
+                    title = when (language) { "te" -> "ముఖ్యమైన తెగుళ్లు"; "hi" -> "पसंदीदा रोग"; else -> "Favorite Diseases" },
+                    subtitle = when (language) { "te" -> "త్వరిత పరిశీలన"; "hi" -> "त्वरित पहुंच"; else -> "Quick Access" },
+                    onClick = onBrowseDiseasesClick
+                )
+
+                // Farming Tips
+                MoreOptionItem(
+                    icon = Icons.AutoMirrored.Filled.MenuBook,
+                    iconBg = Color(0xFFE3F2FD),
+                    iconTint = Color(0xFF1976D2),
+                    title = when (language) { "te" -> "వ్యవసాయ చిట్కాలు"; "hi" -> "खेती के सुझाव"; else -> "Farming Tips" },
+                    subtitle = when (language) { "te" -> "మంచి దిగుబడి కోసం"; "hi" -> "बेहतर पैदावार"; else -> "Grow Better" },
+                    onClick = onFarmingTipsClick
+                )
+
+                // Help & Support
+                MoreOptionItem(
+                    icon = Icons.AutoMirrored.Filled.HelpOutline,
+                    iconBg = Color(0xFFEDE7F6),
+                    iconTint = Color(0xFF512DA8),
+                    title = when (language) { "te" -> "సహాయం & మద్దతు"; "hi" -> "सहायता और सपोर्ट"; else -> "Help & Support" },
+                    subtitle = when (language) { "te" -> "KVK శాస్త్రవేత్తల హెల్ప్‌లైన్"; "hi" -> "कृषि वैज्ञानिक मदद"; else -> "KVK Agricultural Helpline" },
+                    onClick = { /* Help */ }
+                )
+
+                // Share App via WhatsApp (Requested by user)
+                MoreOptionItem(
+                    icon = Icons.Default.Share,
+                    iconBg = Color(0xFFE8F8F5),
+                    iconTint = Color(0xFF00897B),
+                    title = when (language) { "te" -> "యాప్‌ను వాట్సాప్‌లో షేర్ చేయండి"; "hi" -> "व्हाट्सएप पर ऐप शेयर करें"; else -> "Share App (WhatsApp)" },
+                    subtitle = when (language) { "te" -> "రైతు మిత్రులతో పంచుకోండి"; "hi" -> "किसान भाइयों को भेजें"; else -> "Share with friends & farmers" },
+                    onClick = {
+                        shareAppViaWhatsApp(context)
+                    }
+                )
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Footer Badge (Matching sample photo)
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color(0xFFE8F5E9), RoundedCornerShape(16.dp))
+                    .padding(vertical = 16.dp, horizontal = 20.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = "🌱", fontSize = 24.sp)
+                    Spacer(modifier = Modifier.width(10.dp))
+                    Text(
+                        text = "Together for Healthy Agriculture\nArm Bharat AI-SoC Challenge",
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = FarmGreenDark
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+        }
+    }
+}
+
+@Composable
+fun MoreOptionItem(
+    icon: ImageVector,
+    iconBg: Color,
+    iconTint: Color,
+    title: String,
+    subtitle: String,
+    onClick: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() },
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.5.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(46.dp)
+                    .clip(CircleShape)
+                    .background(iconBg),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = title,
+                    tint = iconTint,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = title,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF263238)
+                )
+                Text(
+                    text = subtitle,
+                    fontSize = 13.sp,
+                    color = Color(0xFF757575)
+                )
+            }
+
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
+                contentDescription = null,
+                tint = Color(0xFFBDBDBD),
+                modifier = Modifier.size(16.dp)
+            )
+        }
+    }
+}
+
+fun shareAppViaWhatsApp(context: Context) {
+    try {
+        val sendIntent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(
+                Intent.EXTRA_TEXT,
+                "🌾 Crop Doctor (AgriCare AI) - 100% Offline Crop Disease & Pest Diagnosis for Indian Farmers! Built for Arm Bharat AI-SoC Challenge.\nDownload APK: https://github.com/varun-gajula/crop-doctor-offline/releases"
+            )
+            type = "text/plain"
+            setPackage("com.whatsapp")
+        }
+        context.startActivity(sendIntent)
+    } catch (e: Exception) {
+        // Fallback to generic share sheet if WhatsApp is not installed
+        val genericIntent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(
+                Intent.EXTRA_TEXT,
+                "🌾 Crop Doctor (AgriCare AI) - 100% Offline Crop Disease & Pest Diagnosis for Indian Farmers!\nDownload APK: https://github.com/varun-gajula/crop-doctor-offline/releases"
+            )
+            type = "text/plain"
+        }
+        context.startActivity(Intent.createChooser(genericIntent, "Share Crop Doctor"))
+    }
+}

@@ -7,3 +7,4 @@ interface Classifier {
     suspend fun classify(bitmap: Bitmap): ClassifierResult
     fun close()
 }
+
