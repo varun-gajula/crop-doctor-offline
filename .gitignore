@@ -1,0 +1,62 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environments & Virtual Envs
+.env
+.venv
+env/
+venv/
+ENV/
+
+# PyTorch & Weights Checkpoints
+*.pt
+*.pth
+*.ckpt
+*.bin
+*.onnx
+
+# LLM Models (CRITICAL: Never commit Llama weights or large binaries - Rule H2)
+*.pte
+!app/src/main/assets/models/vision.pte
+llama/
+*.gguf
+tokenizer.bin
+tokenizer.model
+
+# Datasets & Raw Images (Rule H2)
+data_raw/
+data_processed/
+*.zip
+*.tar
+*.tar.gz
+*.csv
+
+# Gradle & Android Build Outputs
+.gradle/
+build/
+app/build/
+*.apk
+*.aab
+*.ap_
+
+# Local Android Studio configuration & credentials
+local.properties
+.idea/
+*.iml
+.DS_Store
+captures/
+.externalNativeBuild
+.cxx/
+
+# Keystores & Signing Keys (Rule H2)
+*.jks
+*.keystore
+signing/
+
+# Temporary and log files
+*.log
+tool_out.txt
+tool_err.txt
+
