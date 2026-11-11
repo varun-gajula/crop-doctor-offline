@@ -109,3 +109,4 @@ This document records the provenance, licensing, image counts, capture context, 
   * Encoding: JPEG at quality $85\%$.
   * Mean file size after resize: $\approx 25\text{ KB} - 35\text{ KB}$.
   * Total resized dataset footprint: **$\approx 650\text{ MB} - 950\text{ MB}$ (Well under the 3 GB ceiling)**.
+

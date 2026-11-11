@@ -1,0 +1,1839 @@
+{
+  "version": "1.0.0",
+  "generated_for": "Arm Bharat AI-SoC Challenge 2026-27 - Problem Statement 1",
+  "project": "Crop Doctor Offline",
+  "total_classes": 25,
+  "classes": [
+    {
+      "class_id": "rice_bacterial_leaf_blight",
+      "index": 0,
+      "crop": "rice",
+      "type": "disease",
+      "pathogen": "Xanthomonas oryzae pv. oryzae",
+      "names": {
+        "en": "Rice Bacterial Leaf Blight",
+        "te": "వరి బ్యాక్టీరియల్ ఆకు ఎండు తెగులు",
+        "hi": "धान का जीवाणु पत्ती झुलसा"
+      },
+      "needs_expert_review": true,
+      "referral_threshold": "SEVERE",
+      "severity_advice": {
+        "MILD": {
+          "en": "Water-soaked lesions on leaf margins. Avoid excess nitrogen fertilizer; drain stagnant water.",
+          "te": "ఆకుల అంచుల వెంట నీటితో తడిసిన గీతలు కనిపిస్తాయి. అధిక నత్రజని వాడవద్దు; నిలిచిన నీటిని తీసివేయండి.",
+          "hi": "पत्तियों के किनारों पर हल्के पीले धब्बे। अतिरिक्त यूरिया/नाइट्रोजन न डालें; खेत से पानी निकालें।"
+        },
+        "MODERATE": {
+          "en": "Lesions turning yellow-white wavy stripes. Spray copper-based bactericide or bio-control agents.",
+          "te": "మచ్చలు పసుపు-తెలుపు అలల తరంగాల మాదిరిగా విస్తరిస్తాయి. కాపర్ ఆక్సీక్లోరైడ్ లేదా జీవ నియంత్రణ మందులు చల్లండి.",
+          "hi": "धब्बे बढ़कर पीली-सफेद लहरदार धारियां बन रहे हैं। कॉपर ऑक्सीक्लोराइड या जैव नियंत्रक का छिड़काव करें।"
+        },
+        "SEVERE": {
+          "en": "Severe blight and kresek phase (wilting). Immediately consult KVK or local agricultural officer.",
+          "te": "మొక్కలు ఎండిపోయి క్రెసెక్ దశకు చేరుకుంటాయి. వెంటనే కృషి విజ్ఞాన కేంద్రం లేదా వ్యవసాయాధికారిని సంప్రదించండి.",
+          "hi": "पूरी पत्तियां सूख रही हैं और क्रेसेक अवस्था। तुरंत कृषि विज्ञान केंद्र या कृषि अधिकारी से संपर्क करें।"
+        }
+      },
+      "immediate_step": {
+        "en": "Stop top-dressing with nitrogenous fertilizers immediately and drain excess standing field water.",
+        "te": "నత్రజని ఎరువుల వాడకాన్ని వెంటనే ఆపండి మరియు పొలంలో నిలిచిన అదనపు నీటిని బయటకు పంపండి.",
+        "hi": "खेत में यूरिया डालना तुरंत बंद करें और खेत का अतिरिक्त पानी बाहर निकालें।"
+      },
+      "explain_text": {
+        "en": "Bacterial leaf blight enters through hydathodes or wounds, causing systemic wilting and leaf drying, cutting grain yield up to 50%.",
+        "te": "ఈ బాక్టీరియా ఆకుల కొనలు లేదా గాయాల ద్వారా ప్రవేశించి ఆకులను ఎండబెడుతుంది, దీనివల్ల ధాన్యం దిగుబడి 50% వరకు పడిపోవచ్చు.",
+        "hi": "यह जीवाणु पत्तियों के छिद्रों या चोटों से अंदर जाकर पत्तियों को सुखा देता है, जिससे 50% तक उपज घट सकती है।"
+      },
+      "treatment": {
+        "natural": [
+          {
+            "step": 1,
+            "action": {
+              "en": "Drain standing field water and allow soil to aerate for 2-3 days.",
+              "te": "పొలంలో నిలిచిన నీటిని తీసివేసి 2-3 రోజుల పాటు నేలను ఆరనివ్వండి.",
+              "hi": "खेत से पानी निकालकर 2-3 दिन तक धूप लगने दें।"
+            },
+            "source": "ICAR-IIRR Hyderabad",
+            "source_url": "https://icar-iirr.org",
+            "source_quote": "Intermittent drying of field suppresses bacterial multiplication."
+          },
+          {
+            "step": 2,
+            "action": {
+              "en": "Apply fresh cow-dung filtrate (20 g/L) or neem seed kernel extract (NSKE 5%).",
+              "te": "తాజా ఆవు పేడ నీరు (20 గ్రా/లీటరు) లేదా వేప గింజల కషాయం (5%) పిచికారీ చేయండి.",
+              "hi": "ताजा गाय के गोबर का छाना हुआ घोल (20 ग्राम/लीटर) या 5% नीम गिरी का काढ़ा छिड़कें।"
+            },
+            "source": "ANGRAU Crop Production Guide",
+            "source_url": "https://angrau.ac.in",
+            "source_quote": "Cow dung slurry spray acts as an effective traditional bio-bactericide."
+          }
+        ],
+        "chemical": [
+          {
+            "step": 1,
+            "active_ingredient": "Copper Oxychloride 50% WP + Streptocycline (90:10)",
+            "product_example": "Blitox 50 WP + Streptocycline",
+            "dose_verified": false,
+            "dose": "follow the product label",
+            "phi_days": null,
+            "safety_line": {
+              "en": "Wear mask and gloves during spray. Keep cattle away from sprayed area.",
+              "te": "పిచికారీ సమయంలో మాస్క్, గ్లౌజులు ధరించండి. పశువులను మందు చల్లిన పొలానికి దూరంగా ఉంచండి.",
+              "hi": "छिड़काव करते समय मास्क और दस्ताने पहनें। पशुओं को दूर रखें।"
+            },
+            "source": "CIB&RC Major Uses",
+            "source_url": "https://cibrc.nic.in",
+            "source_quote": "Registered for bacterial leaf blight in rice."
+          }
+        ]
+      }
+    },
+    {
+      "class_id": "rice_brown_spot",
+      "index": 1,
+      "crop": "rice",
+      "type": "disease",
+      "pathogen": "Bipolaris oryzae",
+      "names": {
+        "en": "Rice Brown Spot",
+        "te": "వరి గోధుమ రంగు మచ్చ తెగులు",
+        "hi": "धान का भूरा धब्बा रोग"
+      },
+      "needs_expert_review": true,
+      "referral_threshold": "SEVERE",
+      "severity_advice": {
+        "MILD": {
+          "en": "Small circular brown spots on leaves. Apply balanced nutrients and zinc sulphate.",
+          "te": "ఆకులపై చిన్న గోధుమరంగు మచ్చలు. సమతుల్య ఎరువులు మరియు జింక్ సల్ఫేట్ అందించండి.",
+          "hi": "पत्तियों पर छोटे भूरे गोल धब्बे। संतुलित खाद और जिंक सल्फेट दें।"
+        },
+        "MODERATE": {
+          "en": "Oval spots with grey or whitish centers expanding. Spray bio-fungicide or registered triazole.",
+          "te": "మచ్చలు పెద్దవై మధ్యలో బూడిద రంగుకు మారుతాయి. జీవ శిలీంద్రనాశిని పిచికారీ చేయండి.",
+          "hi": "धब्बे बढ़कर बड़े हो रहे हैं जिनके बीच में धूसर रंग है। कवकनाशी का छिड़काव करें।"
+        },
+        "SEVERE": {
+          "en": "Spots coalescing, causing leaf blighting and grain discolouration. Alert agricultural extension office.",
+          "te": "మచ్చలు కలిసిపోయి ఆకులు ఎండిపోతాయి, గింజలు రంగు మారుతాయి. వ్యవసాయ విస్తరణాధికారిని సంప్రదించండి.",
+          "hi": "धब्बे मिलकर पत्तियों को सुखा रहे हैं, दाने बदरंग हो रहे हैं। कृषि अधिकारी से संपर्क करें।"
+        }
+      },
+      "immediate_step": {
+        "en": "Apply potash and micronutrients (Zinc sulphate) as brown spot is strongly linked to soil nutrient deficiency.",
+        "te": "పొటాష్ మరియు జింక్ సల్ఫేట్ వంటి సూక్ష్మపోషకాలను అందించండి, ఎందుకంటే పోషక లోపం వల్ల ఈ తెగులు వేగంగా వ్యాపిస్తుంది.",
+        "hi": "पोटाश और जिंक सल्फेट खाद दें, क्योंकि यह बीमारी मिट्टी में पोषक तत्वों की कमी से तेजी से फैलती है।"
+      },
+      "explain_text": {
+        "en": "A fungal disease prominent in poor, unfertilized soils, producing oval sesame-like brown spots that lower grain quality.",
+        "te": "పోషకాలు లోపించిన నేలల్లో ఈ శిలీంధ్ర తెగులు ఎక్కువగా వస్తుంది. నువ్వుల గింజల ఆకారంలో గోధుమ మచ్చలు ఏర్పడి గింజ నాణ్యత దెబ్బతింటుంది.",
+        "hi": "यह फफूंद जनित रोग कमजोर और कम उपजाऊ मिट्टी में अधिक फैलता है, जिससे पत्तियों पर तिल के आकार के धब्बे बनते हैं।"
+      },
+      "treatment": {
+        "natural": [
+          {
+            "step": 1,
+            "action": {
+              "en": "Foliar application of Pseudomonas fluorescens (5-10 g/L) at boot leaf stage.",
+              "te": "సూడోమోనాస్ ఫ్లోరోసెన్స్ (5-10 గ్రా/లీ) చిరుపొట్ట దశలో ఆకులపై పిచికారీ చేయండి.",
+              "hi": "स्यूडोमोनास फ्लोरोसेंस (5-10 ग्राम/लीटर) का घोल पत्तियों पर छिड़कें।"
+            },
+            "source": "TNAU Agritech Portal",
+            "source_url": "https://agritech.tnau.ac.in",
+            "source_quote": "Bio-priming and foliar spray of Pseudomonas suppresses Bipolaris."
+          }
+        ],
+        "chemical": [
+          {
+            "step": 1,
+            "active_ingredient": "Mancozeb 75% WP or Propiconazole 25% EC",
+            "product_example": "Dithane M-45 / Tilt",
+            "dose_verified": false,
+            "dose": "follow the product label",
+            "phi_days": null,
+            "safety_line": {
+              "en": "Avoid inhaling spray mist. Keep protective visor on during spraying.",
+              "te": "మందు పొగ లేదా తుంపర పీల్చవద్దు. ముఖానికి కవచం ధరించండి.",
+              "hi": "दवा का धुआं या फुहार सांस में न जाने दें। मुंह पर मास्क रखें।"
+            },
+            "source": "CIB&RC Major Uses",
+            "source_url": "https://cibrc.nic.in",
+            "source_quote": "Approved for brown spot in paddy."
+          }
+        ]
+      }
+    },
+    {
+      "class_id": "rice_leaf_blast",
+      "index": 2,
+      "crop": "rice",
+      "type": "disease",
+      "pathogen": "Magnaporthe oryzae",
+      "names": {
+        "en": "Rice Leaf Blast",
+        "te": "వరి అగ్గితెగులు",
+        "hi": "धान का झुलसा रोग (ब्लास्ट)"
+      },
+      "needs_expert_review": true,
+      "referral_threshold": "SEVERE",
+      "severity_advice": {
+        "MILD": {
+          "en": "Diamond or spindle-shaped lesions with pointed ends. Reduce nitrogen fertilizer.",
+          "te": "కదురు ఆకారంలో రెండు చివర్లు మొనదేలిన మచ్చలు. నత్రజని ఎరువులు తగ్గించండి.",
+          "hi": "धुरी या नाव के आकार के धब्बे। यूरिया का उपयोग तुरंत घटाएं।"
+        },
+        "MODERATE": {
+          "en": "Spindle lesions enlarging with gray centers and brown borders. Spray registered blast fungicide immediately.",
+          "te": "మచ్చలు పెద్దవై మధ్యలో బూడిద రంగు, అంచులు గోధుమరంగుగా మారుతాయి. వెంటనే శిలీంద్రనాశిని చల్లండి.",
+          "hi": "धब्बे बड़े होकर भूरे किनारे और धूसर केंद्र बना रहे हैं। तुरंत अनुशंसित कवकनाशी छिड़कें।"
+        },
+        "SEVERE": {
+          "en": "Entire leaves burning; risk of neck blast at heading. Consult KVK agronomist within 24 hours.",
+          "te": "ఆకులన్నీ కాలిపోయినట్లు మారుతాయి; మెడవిరుపు తెగులు ప్రమాదం ఉంది. 24 గంటల్లో వ్యవసాయాధికారిని సంప్రదించండి.",
+          "hi": "पूरी पत्तियां जल जाती हैं; गर्दन तोड़ (नेक ब्लास्ट) का खतरा। 24 घंटे में विशेषज्ञ से मिलें।"
+        }
+      },
+      "immediate_step": {
+        "en": "Do not apply urea when blast spots are visible; spray protective fungicide in early morning or late afternoon.",
+        "te": "అగ్గితెగులు మచ్చలు కనిపించినప్పుడు యూరియా వేయవద్దు; ఉదయం లేదా సాయంత్రం వేళల్లో మందు పిచికారీ చేయండి.",
+        "hi": "ब्लास्ट के धब्बे दिखने पर यूरिया बिल्कुल न डालें; सुबह या शाम के समय अनुशंसित दवा छिड़कें।"
+      },
+      "explain_text": {
+        "en": "A highly destructive airborne fungal epidemic favoured by high humidity, cool nights, and heavy nitrogen application.",
+        "te": "రాత్రిపూట చల్లదనం, గాలిలో అధిక తేమ, ఎక్కువ యూరియా వేయడం వల్ల ఈ తెగులు గాలి ద్వారా వేగంగా వ్యాపిస్తుంది.",
+        "hi": "अधिक नमी, ठंडी रातें और अधिक यूरिया से यह खतरनाक फफूंद हवा द्वारा बहुत तेजी से फैलती है।"
+      },
+      "treatment": {
+        "natural": [
+          {
+            "step": 1,
+            "action": {
+              "en": "Spray neem oil (3-5 ml/L) or NSKE 5% at first appearance of spots.",
+              "te": "మచ్చలు మొదలైన వెంటనే వేప నూనె (3-5 మి.లీ/లీ) లేదా వేప కషాయం పిచికారీ చేయండి.",
+              "hi": "शुरुआती लक्षण दिखते ही नीम का तेल (3-5 मिली/लीटर) छिड़कें।"
+            },
+            "source": "NIPHM Hyderabad",
+            "source_url": "https://niphm.gov.in",
+            "source_quote": "Botanicals and Trichoderma suppress early sporulation of Magnaporthe."
+          }
+        ],
+        "chemical": [
+          {
+            "step": 1,
+            "active_ingredient": "Tricyclazole 75% WP",
+            "product_example": "Beam 75 WP / Sivic",
+            "dose_verified": false,
+            "dose": "follow the product label",
+            "phi_days": 30,
+            "safety_line": {
+              "en": "Wear protective gear. Observe pre-harvest interval strictly.",
+              "te": "రక్షణ దుస్తులు ధరించండి. కోతకు ముందు నిర్దేశించిన రోజుల వ్యవధి పాటించండి.",
+              "hi": "सुरक्षात्मक पोशाक पहनें। कटाई से पहले प्रतीक्षा समय का पालन करें।"
+            },
+            "source": "CIB&RC Major Uses",
+            "source_url": "https://cibrc.nic.in",
+            "source_quote": "Tricyclazole registered specifically for paddy blast control in India."
+          }
+        ]
+      }
+    },
+    {
+      "class_id": "rice_sheath_blight",
+      "index": 3,
+      "crop": "rice",
+      "type": "disease",
+      "pathogen": "Rhizoctonia solani",
+      "names": {
+        "en": "Rice Sheath Blight",
+        "te": "వరి పొడ తెగులు",
+        "hi": "धान का शीथ ब्लाइट"
+      },
+      "needs_expert_review": true,
+      "referral_threshold": "SEVERE",
+      "severity_advice": {
+        "MILD": {
+          "en": "Greenish-grey oval spots on leaf sheaths near water line. Keep alleys in dense plantings.",
+          "te": "నీటి మట్టానికి దగ్గరగా కాండంపై ఆకుపచ్చ-బూడిద రంగు మచ్చలు. గాలి వెలుతురు సోకేలా పైరులో బాటలు తీయండి.",
+          "hi": "पानी की सतह के पास तने पर हरे-धूसर अंडाकार धब्बे। खेत में हवा और धूप के लिए गलियां बनाएं।"
+        },
+        "MODERATE": {
+          "en": "Spots extending upwards to leaf blades forming snake-skin patterns. Apply targeted fungicide to lower stem.",
+          "te": "మచ్చలు పాము చర్మం వలె పై ఆకుల వరకు విస్తరిస్తాయి. కాండం కింది భాగానికి మందు చేరేలా పిచికారీ చేయండి.",
+          "hi": "धब्बे सांप की केंचुली जैसे बनकर ऊपर की ओर बढ़ रहे हैं। तने के निचले हिस्से पर कवकनाशी छिड़कें।"
+        },
+        "SEVERE": {
+          "en": "Upper leaves blighted and lodging; panicles empty. Immediate agricultural officer intervention required.",
+          "te": "పై ఆకులు ఎండిపోయి పైరు నేలవాలుతుంది, గింజలు తప్పలుగా మారుతాయి. వెంటనే వ్యవసాయాధికారిని సంప్రదించండి.",
+          "hi": "पौधे सूखकर गिर रहे हैं और बालियों में दाने नहीं बन रहे। तुरंत कृषि विशेषज्ञ से सलाह लें।"
+        }
+      },
+      "immediate_step": {
+        "en": "Form alleys (aeration pathways) every 2 meters in the crop and direct the spray nozzle toward the lower plant sheaths.",
+        "te": "పైరులో ప్రతి 2 మీటర్లకు గాలి బాటలు తీయండి మరియు పిచికారీ నాజిల్ మొక్కల అడుగు భాగానికి తగిలేలా మందు చల్లండి.",
+        "hi": "घने खेत में हर 2 मीटर पर हवा के लिए जगह बनाएं और स्प्रे का रुख पौधों के निचले हिस्से की तरफ रखें।"
+      },
+      "explain_text": {
+        "en": "A soil-borne and water-borne fungus whose sclerotia float in field water and attack plant sheaths during tillering.",
+        "te": "ఈ శిలీంధ్రం నీటిపై తేలియాడే అవశేషాల ద్వారా వ్యాపించి పిలక దశలో కాండం అడుగు భాగాన్ని దెబ్బతీస్తుంది.",
+        "hi": "यह फफूंद मिट्टी और पानी में तैरते अवशेषों से तने के निचले हिस्से पर हमला करती है।"
+      },
+      "treatment": {
+        "natural": [
+          {
+            "step": 1,
+            "action": {
+              "en": "Apply Pseudomonas fluorescens or Trichoderma harzianum enriched farmyard manure to soil.",
+              "te": "సూడోమోనాస్ లేదా ట్రైకోడెర్మా కలిపిన పశువుల ఎరువును నేలలో వేయండి.",
+              "hi": "ट्राइकोडर्मा या स्यूडोमोनास से उपचारित गोबर की खाद खेत में डालें।"
+            },
+            "source": "ANGRAU Guidelines",
+            "source_url": "https://angrau.ac.in",
+            "source_quote": "Soil enrichment with bio-antagonists suppresses sclerotial germination."
+          }
+        ],
+        "chemical": [
+          {
+            "step": 1,
+            "active_ingredient": "Hexaconazole 5% SC or Validamycin 3% L",
+            "product_example": "Contaf 5 SC / Sheathmar",
+            "dose_verified": false,
+            "dose": "follow the product label",
+            "phi_days": 21,
+            "safety_line": {
+              "en": "Direct spray to lower stem sheaths. Wear boots and protective eye-wear.",
+              "te": "మొక్కల మొదళ్ల వద్దకు మందు చేరేలా చల్లండి. రబ్బరు బూట్లు, కళ్ళజోడు ధరించండి.",
+              "hi": "पौधों की जड़ों और तनों के निचले हिस्से पर छिड़कें। गमबूट और चश्मा पहनें।"
+            },
+            "source": "CIB&RC Major Uses",
+            "source_url": "https://cibrc.nic.in",
+            "source_quote": "Registered for sheath blight in rice crop."
+          }
+        ]
+      }
+    },
+    {
+      "class_id": "rice_healthy",
+      "index": 4,
+      "crop": "rice",
+      "type": "healthy",
+      "pathogen": "None",
+      "names": {
+        "en": "Healthy Rice",
+        "te": "ఆరోగ్యకరమైన వరి",
+        "hi": "स्वस्थ धान"
+      },
+      "needs_expert_review": true,
+      "referral_threshold": "NONE",
+      "severity_advice": {
+        "MILD": {
+          "en": "Crop is healthy with vibrant green foliage and clean stems. Maintain normal agronomic practices.",
+          "te": "పంట చక్కని పచ్చదనంతో ఆరోగ్యంగా ఉంది. సాధారణ యాజమాన్య పద్ధతులను కొనసాగించండి.",
+          "hi": "फसल पूरी तरह स्वस्थ है। सामान्य कृषि कार्य और उचित सिंचाई जारी रखें।"
+        },
+        "MODERATE": {
+          "en": "Crop is healthy. Continue balanced nutrition and monitor weekly.",
+          "te": "పంట ఆరోగ్యంగా ఉంది. సమతుల్య ఎరువులు అందిస్తూ వారానికోసారి గమనించండి.",
+          "hi": "फसल स्वस्थ है। संतुलित पोषण दें और हर हफ्ते निरीक्षण करें।"
+        },
+        "SEVERE": {
+          "en": "Crop is healthy.",
+          "te": "పంట ఆరోగ్యంగా ఉంది.",
+          "hi": "फसल स्वस्थ है।"
+        }
+      },
+      "immediate_step": {
+        "en": "No chemical treatment needed. Maintain optimal water depth (2-5 cm) and balanced NPK fertilization.",
+        "te": "ఎటువంటి రసాయన మందులు అవసరం లేదు. పొలంలో 2-5 సెం.మీ నీరు ఉంచి తగిన మోతాదులో ఎరువులు వేయండి.",
+        "hi": "किसी रासायनिक दवा की जरूरत नहीं है। उचित जल स्तर (2-5 सेमी) और संतुलित खाद बनाए रखें।"
+      },
+      "explain_text": {
+        "en": "Leaves exhibit normal chlorophyll distribution with no signs of fungal or bacterial lesions or insect damage.",
+        "te": "ఆకులు సహజమైన ఆకుపచ్చ రంగుతో ఎటువంటి మచ్చలు లేదా పురుగుల నష్టం లేకుండా ఆరోగ్యంగా ఉన్నాయి.",
+        "hi": "पत्तियों में कोई बीमारी या कीट के लक्षण नहीं हैं, फसल पूरी तरह हरी-भरी है।"
+      },
+      "treatment": {
+        "natural": [
+          {
+            "step": 1,
+            "action": {
+              "en": "Perform regular field scouting twice a week to detect any early pest or disease symptoms.",
+              "te": "ఏవైనా తెగుళ్ళు ఆశిస్తున్నాయేమో చూడటానికి వారానికి రెండుసార్లు పొలాన్ని పరిశీలించండి.",
+              "hi": "सप्ताह में दो बार खेत का निरीक्षण करें ताकि किसी बीमारी की शुरुआत पहचानी जा सके।"
+            },
+            "source": "ICAR-IIRR Package of Practices",
+            "source_url": "https://icar-iirr.org",
+            "source_quote": "Regular scouting prevents disease outbreaks."
+          }
+        ],
+        "chemical": []
+      }
+    },
+    {
+      "class_id": "cotton_bacterial_blight",
+      "index": 5,
+      "crop": "cotton",
+      "type": "disease",
+      "pathogen": "Xanthomonas citri pv. malvacearum",
+      "names": {
+        "en": "Cotton Bacterial Blight",
+        "te": "పత్తి బాక్టీరియల్ ఆకుమచ్చ తెగులు",
+        "hi": "कपास का जीवाणु झुलसा"
+      },
+      "needs_expert_review": true,
+      "referral_threshold": "SEVERE",
+      "severity_advice": {
+        "MILD": {
+          "en": "Angular water-soaked leaf spots bordered by veinlets. Avoid sprinkler irrigation.",
+          "te": "ఆకు ఈనెల మధ్య కోణీయ ఆకారంలో నీటి మచ్చలు. తుంపర సేద్యం వాడవద్దు.",
+          "hi": "पत्तियों की नसों के बीच कोणीय धब्बे। फव्वारा सिंचाई से बचें।"
+        },
+        "MODERATE": {
+          "en": "Vein blight and black arm lesions developing on stems. Spray registered copper bactericide.",
+          "te": "కాండంపై నల్లని మచ్చలు (బ్లాక్ ఆర్మ్) ఏర్పడతాయి. కాపర్ ఆక్సీక్లోరైడ్ పిచికారీ చేయండి.",
+          "hi": "तनों पर काले घाव (ब्लैक आर्म) बन रहे हैं। कॉपर आधारित जीवाणुनाशी छिड़कें।"
+        },
+        "SEVERE": {
+          "en": "Boll rot phase causing boll drop and lint discolouration. Consult agriculture officer.",
+          "te": "కాయలు కుళ్ళిపోయి రాలిపోతాయి, దూది నాణ్యత దెబ్బతింటుంది. వ్యవసాయాధికారిని సంప్రదించండి.",
+          "hi": "टिंडे सड़कर गिर रहे हैं और कपास खराब हो रही है। तुरंत कृषि विशेषज्ञ से संपर्क करें।"
+        }
+      },
+      "immediate_step": {
+        "en": "Avoid overhead sprinkler irrigation which spreads bacteria, and collect fallen infected leaves.",
+        "te": "బాక్టీరియా వ్యాప్తి చెందకుండా తుంపర సేద్యం ఆపండి, తెగులు సోకి రాలిన ఆకులను ఏరి కాల్చండి.",
+        "hi": "ऊपर से पानी का छिड़काव न करें जिससे जीवाणु फैलें, और गिरी हुई संक्रमित पत्तियों को नष्ट करें।"
+      },
+      "explain_text": {
+        "en": "Causes angular leaf spot, black arm on branches, and boll rot in cotton, transmitted by wind and rain splashes.",
+        "te": "ఈ బాక్టీరియా వల్ల ఆకుమచ్చలు, కొమ్మలపై నల్లటి మచ్చలు, కాయకుళ్లు ఏర్పడి పత్తి దిగుబడి గణనీయంగా తగ్గుతుంది.",
+        "hi": "यह जीवाणु बारिश और तेज हवा से फैलकर पत्तियों पर कोणीय धब्बे और टहनियों को काला कर देता है।"
+      },
+      "treatment": {
+        "natural": [
+          {
+            "step": 1,
+            "action": {
+              "en": "Foliar spray with Pseudomonas fluorescens (10 g/L) at vegetative stage.",
+              "te": "పైరు శాఖీయ దశలో సూడోమోనాస్ ఫ్లోరోసెన్స్ (10 గ్రా/లీ) పిచికారీ చేయండి.",
+              "hi": "स्यूडोमोनास फ्लोरोसेंस (10 ग्राम/लीटर) का पत्तियों पर छिड़काव करें।"
+            },
+            "source": "ICAR-CICR Nagpur",
+            "source_url": "https://cicr.icar.gov.in",
+            "source_quote": "Bio-formulation reduces leaf spot severity in cotton."
+          }
+        ],
+        "chemical": [
+          {
+            "step": 1,
+            "active_ingredient": "Copper Oxychloride 50% WP + Streptocycline",
+            "product_example": "Blitox + Streptocycline",
+            "dose_verified": false,
+            "dose": "follow the product label",
+            "phi_days": null,
+            "safety_line": {
+              "en": "Wear protective gear. Keep livestock away from sprayed fields.",
+              "te": "రక్షణ తొడుగులు ధరించండి. పిచికారీ చేసిన పొలంలో పశువులను మేపవద్దు.",
+              "hi": "सुरक्षात्मक किट पहनें। पशुओं को छिड़के गए खेत से दूर रखें।"
+            },
+            "source": "CIB&RC Major Uses",
+            "source_url": "https://cibrc.nic.in",
+            "source_quote": "Approved combination for bacterial blight in cotton."
+          }
+        ]
+      }
+    },
+    {
+      "class_id": "cotton_fusarium_wilt",
+      "index": 6,
+      "crop": "cotton",
+      "type": "disease",
+      "pathogen": "Fusarium oxysporum f. sp. vasinfectum",
+      "names": {
+        "en": "Cotton Fusarium Wilt",
+        "te": "పత్తి ఎండు తెగులు",
+        "hi": "कपास का उकठा (विल्ट) रोग"
+      },
+      "needs_expert_review": true,
+      "referral_threshold": "SEVERE",
+      "severity_advice": {
+        "MILD": {
+          "en": "Yellowing of leaf margins starting from lower leaves, slight midday wilting.",
+          "te": "కింది ఆకుల అంచులు పసుపు రంగులోకి మారుతాయి, మధ్యాహ్నం వేళ మొక్కలు వాలిపోతాయి.",
+          "hi": "निचली पत्तियों के किनारे पीले पड़ना और दोपहर में पौधों का मुरझाना।"
+        },
+        "MODERATE": {
+          "en": "Browning of internal vascular tissues visible when stem is split open; widespread wilting.",
+          "te": "కాండం నిలువుగా చీల్చి చూస్తే లోపలి నాళాలు గోధుమ రంగులోకి మారి ఉంటాయి; మొక్కలు వాడిపోతాయి.",
+          "hi": "तने को चीरकर देखने पर अंदर की नसें भूरी दिखती हैं; पौधे तेजी से सूखते हैं।"
+        },
+        "SEVERE": {
+          "en": "Complete plant death and desiccation in patches. Immediately alert agricultural officer.",
+          "te": "మొక్కలు పూర్తిగా ఎండిపోయి చనిపోతాయి. వెంటనే వ్యవసాయ విస్తరణాధికారిని సంప్రదించండి.",
+          "hi": "खेत में पैच में पौधे पूरी तरह सूख जाते हैं। तुरंत कृषि अधिकारी से संपर्क करें।"
+        }
+      },
+      "immediate_step": {
+        "en": "Uproot and burn wilted plants; drench the root zone of neighbouring healthy plants to prevent soil spread.",
+        "te": "ఎండిపోయిన మొక్కలను వేర్లతో సహా పీకి తగులబెట్టండి; పక్క మొక్కల వేర్ల వద్ద మందు ద్రావణాన్ని తడపండి.",
+        "hi": "मुरझाए पौधों को उखाड़कर नष्ट करें और आसपास के पौधों की जड़ों में अनुशंसित दवा का घोल डालें।"
+      },
+      "explain_text": {
+        "en": "Soil-borne vascular pathogen that blocks water and nutrient conduction in xylem vessels, leading to irreversible wilting.",
+        "te": "ఈ నేల ద్వారా వ్యాపించే శిలీంధ్రం వేర్ల గుండా ప్రవేశించి నీటి సరఫరాను అడ్డుకుంటుంది, దీనివల్ల మొక్క ఎండిపోతుంది.",
+        "hi": "यह मिट्टी जनित फफूंद जड़ों से घुसकर पानी की नलियों को जाम कर देती है, जिससे पौधा सूख जाता है।"
+      },
+      "treatment": {
+        "natural": [
+          {
+            "step": 1,
+            "action": {
+              "en": "Apply Trichoderma viride or T. harzianum (2.5 kg mixed with 250 kg well-decomposed FYM per acre).",
+              "te": "ఎకరాకు 2.5 కిలోల ట్రైకోడెర్మాను 250 కిలోల పశువుల ఎరువుతో కలిపి నేలలో వేయండి.",
+              "hi": "प्रति एकड़ 2.5 किग्रा ट्राइकोडर्मा को 250 किग्रा सड़ी गोबर खाद में मिलाकर डालें।"
+            },
+            "source": "ICAR-CICR Cotton Advisory",
+            "source_url": "https://cicr.icar.gov.in",
+            "source_quote": "Trichoderma bio-agent antagonizes Fusarium wilt pathogen in soil."
+          }
+        ],
+        "chemical": [
+          {
+            "step": 1,
+            "active_ingredient": "Carbendazim 50% WP (Root drenching)",
+            "product_example": "Bavistin 50 WP",
+            "dose_verified": false,
+            "dose": "follow the product label",
+            "phi_days": null,
+            "safety_line": {
+              "en": "Drench at the base of affected plants. Do not contaminate drinking water bodies.",
+              "te": "మొక్కల మొదళ్ల వద్ద మాత్రమే తడపండి. తాగునీటి వనరులలో మందు కలవకుండా జాగ్రత్తపడండి.",
+              "hi": "पौधों की जड़ों के पास ही घोल डालें। पानी के स्रोतों को दूषित न करें।"
+            },
+            "source": "CIB&RC Major Uses",
+            "source_url": "https://cibrc.nic.in",
+            "source_quote": "Registered for soil drenching against Fusarium in cotton."
+          }
+        ]
+      }
+    },
+    {
+      "class_id": "cotton_leaf_curl_virus",
+      "index": 7,
+      "crop": "cotton",
+      "type": "disease",
+      "pathogen": "Cotton leaf curl virus (CLCuV)",
+      "names": {
+        "en": "Cotton Leaf Curl Virus",
+        "te": "పత్తి ఆకుముడుత వైరస్ తెగులు",
+        "hi": "कपास का पत्ती मरोड़ विषाणु (लीफ़ कर्ल)"
+      },
+      "needs_expert_review": true,
+      "referral_threshold": "MODERATE",
+      "severity_advice": {
+        "MILD": {
+          "en": "Upward or downward curling of young leaves and thickening of veins. Manage whitefly vectors.",
+          "te": "లేత ఆకులు పైకి లేదా కిందికి ముడుచుకుపోవడం మరియు ఈనెలు మందంగా మారడం. తెల్లదోమను అరికట్టండి.",
+          "hi": "नई पत्तियों का ऊपर या नीचे मुड़ना और नसों का मोटा होना। सफेद मक्खी का नियंत्रण करें।"
+        },
+        "MODERATE": {
+          "en": "Enations (leaf-like outgrowths) under leaves, stunted growth. Rogue out infected plants; spray whitefly control.",
+          "te": "ఆకుల అడుగున చిన్న ఆకు వంటి పొడుపులు ఏర్పడటం, ఎదుగుదల ఆగడం. రోగగ్రస్థ మొక్కలను పీకివేయండి.",
+          "hi": "पत्तियों के नीचे छोटी पत्ती जैसी गांठें बनना, पौधों का बौना होना। ग्रसित पौधे उखाड़ें।"
+        },
+        "SEVERE": {
+          "en": "Severe stunting, no boll formation. Alert agriculture department immediately.",
+          "te": "మొక్కలు పూర్తిగా గిడసబారి పూత, కాత నిలిచిపోతుంది. వెంటనే వ్యవసాయ విభాగాన్ని సంప్రదించండి.",
+          "hi": "पौधे बिल्कुल नहीं बढ़ते, टिंडे नहीं बनते। तुरंत कृषि विभाग को सूचित करें।"
+        }
+      },
+      "immediate_step": {
+        "en": "There is NO chemical cure for the virus. Rogue out infected plants and control the whitefly vector (Bemisia tabaci).",
+        "te": "వైరస్ కు రసాయన నివారణ లేదు. తెగులు సోకిన మొక్కలను పీకి నాశనం చేయండి మరియు తెల్లదోమను నివారించండి.",
+        "hi": "इस वायरस का कोई रासायनिक इलाज नहीं है। रोगी पौधों को उखाड़ें और सफेद मक्खी का नियंत्रण करें।"
+      },
+      "explain_text": {
+        "en": "A begomovirus transmitted exclusively by whiteflies that causes severe leaf distortion, cup-shaped outgrowths, and yield loss.",
+        "te": "ఈ వైరస్ తెల్లదోమ ద్వారా మాత్రమే వ్యాపిస్తుంది. దీనివల్ల ఆకులు ముడుచుకుపోయి పత్తి దిగుబడి తీవ్రంగా పడిపోతుంది.",
+        "hi": "यह वायरस सफेद मक्खी द्वारा फैलता है, जिससे पत्तियां मुड़ जाती हैं और पौधे का विकास रुक जाता है।"
+      },
+      "treatment": {
+        "natural": [
+          {
+            "step": 1,
+            "action": {
+              "en": "Install yellow sticky traps (15-20 traps per acre) at canopy level to monitor and trap whiteflies.",
+              "te": "తెల్లదోమలను ఆకర్షించి చంపడానికి ఎకరాకు 15-20 పసుపు రంగు జిగురు బోర్డులను అమర్చండి.",
+              "hi": "सफेद मक्खी को फंसाने के लिए प्रति एकड़ 15-20 पीले चिपचिपे कार्ड लगाएं।"
+            },
+            "source": "NIPHM IPM Package for Cotton",
+            "source_url": "https://niphm.gov.in",
+            "source_quote": "Yellow sticky traps monitor and suppress whitefly vector population."
+          },
+          {
+            "step": 2,
+            "action": {
+              "en": "Spray Neem oil 1500 ppm or 5% NSKE on lower leaf surface where whiteflies congregate.",
+              "te": "తెల్లదోమలు ఉండే ఆకుల అడుగు భాగాన వేప నూనె (1500 పి.పి.ఎం) లేదా 5% వేప కషాయం పిచికారీ చేయండి.",
+              "hi": "पत्तियों की निचली सतह पर 1500 ppm नीम का तेल या 5% नीम काढ़ा छिड़कें।"
+            },
+            "source": "ICAR-CICR IPM",
+            "source_url": "https://cicr.icar.gov.in",
+            "source_quote": "Neem repels whiteflies and disrupts oviposition."
+          }
+        ],
+        "chemical": [
+          {
+            "step": 1,
+            "active_ingredient": "Diafenthiuron 50% WP or Spiromesifen 22.9% SC (VECTOR CONTROL ONLY)",
+            "product_example": "Pegasus / Oberon",
+            "dose_verified": false,
+            "dose": "follow the product label",
+            "phi_days": null,
+            "safety_line": {
+              "en": "This insecticide targets the whitefly vector only; it does NOT cure the viral infection. Wear mask.",
+              "te": "ఈ పురుగుమందు తెల్లదోమను మాత్రమే చంపుతుంది, వైరస్ ను నయం చేయదు. మాస్క్ ధరించండి.",
+              "hi": "यह दवा केवल सफेद मक्खी को मारती है, वायरस को ठीक नहीं करती। सुरक्षा उपकरण पहनें।"
+            },
+            "source": "CIB&RC Major Uses",
+            "source_url": "https://cibrc.nic.in",
+            "source_quote": "Registered for whitefly management in cotton."
+          }
+        ]
+      }
+    },
+    {
+      "class_id": "cotton_alternaria_leaf_spot",
+      "index": 8,
+      "crop": "cotton",
+      "type": "disease",
+      "pathogen": "Alternaria macrospora",
+      "names": {
+        "en": "Cotton Alternaria Leaf Spot",
+        "te": "పత్తి ఆల్టర్నేరియా ఆకుమచ్చ తెగులు",
+        "hi": "कपास का अल्टरनेरिया पत्ती धब्बा"
+      },
+      "needs_expert_review": true,
+      "referral_threshold": "SEVERE",
+      "severity_advice": {
+        "MILD": {
+          "en": "Small circular brown spots with concentric rings on older leaves. Maintain plant vigour.",
+          "te": "ముదిరిన ఆకులపై వలయాలు కలిగిన గోధుమరంగు మచ్చలు. మొక్కలకు సరైన బలాన్ని అందించండి.",
+          "hi": "पुरानी पत्तियों पर गोल भूरे धब्बे जिनमें छल्ले दिखते हैं। फसल को मजबूत बनाएं।"
+        },
+        "MODERATE": {
+          "en": "Spots expanding and coalescing, necrotic centers dropping out forming shot-holes. Apply foliar fungicide.",
+          "te": "మచ్చలు పెద్దవై మధ్యలో రంధ్రాలు పడతాయి. ఆకులపై శిలీంద్రనాశిని పిచికారీ చేయండి.",
+          "hi": "धब्बे बड़े होकर आपस में मिल रहे हैं और बीच में छेद हो रहे हैं। कवकनाशी छिड़कें।"
+        },
+        "SEVERE": {
+          "en": "Extensive defoliation; squares and bolls affected. Consult KVK scientist.",
+          "te": "ఆకులు రాలిపోయి పూత, పిందెలు దెబ్బతింటాయి. కృషి విజ్ఞాన కేంద్ర శాస్త్రవేత్తను సంప్రదించండి.",
+          "hi": "पत्तियां झड़ रही हैं और फूल-टिंडे गिर रहे हैं। कृषि विशेषज्ञ से तुरंत संपर्क करें।"
+        }
+      },
+      "immediate_step": {
+        "en": "Avoid water stress and spray potassium nitrate (1%) to boost leaf resistance against Alternaria.",
+        "te": "పైరుకు నీటి ఎద్దడి లేకుండా చూడండి మరియు పొటాషియం నైట్రేట్ (1%) పిచికారీ చేసి ఆకులకు రోగనిరోధక శక్తినివ్వండి.",
+        "hi": "फसल में नमी की कमी न होने दें और 1% पोटेशियम नाइट्रेट का छिड़काव करें।"
+      },
+      "explain_text": {
+        "en": "Fungal pathogen that produces target-board concentric spots on leaves, thriving when high humidity follows rains.",
+        "te": "వర్షాల తర్వాత అధిక తేమ ఉన్నప్పుడు ఈ శిలీంధ్రం వ్యాపించి ఆకులపై వలయాల వంటి మచ్చలను కలిగిస్తుంది.",
+        "hi": "यह फफूंद अधिक नमी में फैलती है और पत्तियों पर गोल छल्लेदार धब्बे बनाती है जिससे पत्तियां गिर जाती हैं।"
+      },
+      "treatment": {
+        "natural": [
+          {
+            "step": 1,
+            "action": {
+              "en": "Spray Cow urine (10%) mixed with asafoetida (hing 1 g/L) or NSKE 5%.",
+              "te": "గోమూత్రం (10%) లో ఇంగువ (1 గ్రా/లీ) లేదా 5% వేప కషాయం కలిపి పిచికారీ చేయండి.",
+              "hi": "10% गोमूत्र में 1 ग्राम हींग या 5% नीम काढ़ा मिलाकर छिड़कें।"
+            },
+            "source": "ANGRAU Traditional Knowledge",
+            "source_url": "https://angrau.ac.in",
+            "source_quote": "Cow urine formulation inhibits fungal mycelial growth."
+          }
+        ],
+        "chemical": [
+          {
+            "step": 1,
+            "active_ingredient": "Mancozeb 75% WP or Propiconazole 25% EC",
+            "product_example": "Indofil M-45 / Tilt",
+            "dose_verified": false,
+            "dose": "follow the product label",
+            "phi_days": null,
+            "safety_line": {
+              "en": "Spray during clear weather. Wear gloves and mask.",
+              "te": "వాతావరణం అనుకూలంగా ఉన్నప్పుడు పిచికారీ చేయండి. గ్లౌజులు, మాస్క్ ధరించండి.",
+              "hi": "साफ मौसम में छिड़काव करें। दस्ताने और मास्क पहनें।"
+            },
+            "source": "CIB&RC Major Uses",
+            "source_url": "https://cibrc.nic.in",
+            "source_quote": "Approved for Alternaria leaf spot in cotton."
+          }
+        ]
+      }
+    },
+    {
+      "class_id": "cotton_healthy",
+      "index": 9,
+      "crop": "cotton",
+      "type": "healthy",
+      "pathogen": "None",
+      "names": {
+        "en": "Healthy Cotton",
+        "te": "ఆరోగ్యకరమైన పత్తి",
+        "hi": "स्वस्थ कपास"
+      },
+      "needs_expert_review": true,
+      "referral_threshold": "NONE",
+      "severity_advice": {
+        "MILD": {
+          "en": "Foliage and squares show clean, normal green growth. Maintain balanced irrigation.",
+          "te": "ఆకులు, పూత ఆరోగ్యకరమైన ఆకుపచ్చ రంగుతో చక్కగా ఉన్నాయి. సక్రమమైన నీటి యాజమాన్యం పాటించండి.",
+          "hi": "पत्तियां और फूल-कलियां पूरी तरह स्वस्थ हैं। सामान्य देखभाल जारी रखें।"
+        },
+        "MODERATE": {
+          "en": "Crop is healthy. Keep monitoring for sucking pests.",
+          "te": "పంట ఆరోగ్యంగా ఉంది. రసం పీల్చే పురుగుల కోసం నిరంతరం గమనించండి.",
+          "hi": "फसल स्वस्थ है। रस चूसक कीटों की निगरानी करते रहें।"
+        },
+        "SEVERE": {
+          "en": "Crop is healthy.",
+          "te": "పంట ఆరోగ్యంగా ఉంది.",
+          "hi": "फसल स्वस्थ है।"
+        }
+      },
+      "immediate_step": {
+        "en": "No chemical treatment needed. Maintain optimal soil moisture and scout for early sucking pest attack.",
+        "te": "రసాయనాలు అవసరం లేదు. నేలలో తగినంత తేమ ఉంచి రసం పీల్చే పురుగుల రాకను గమనించండి.",
+        "hi": "किसी दवा की जरूरत नहीं है। नमी बनाए रखें और कीटों की निगरानी करते रहें।"
+      },
+      "explain_text": {
+        "en": "Vigorous crop with no leaf curling, angular spots, or wilt symptoms.",
+        "te": "ఎటువంటి ఆకుముడుత, మచ్చలు లేదా వాడిపోవడం లేకుండా మొక్కలు బలంగా పెరుగుతున్నాయి.",
+        "hi": "पौधों में कोई मुड़न, धब्बे या मुरझाने के लक्षण नहीं हैं।"
+      },
+      "treatment": {
+        "natural": [
+          {
+            "step": 1,
+            "action": {
+              "en": "Place bird perches (10-15 per acre) to invite insectivorous birds into the field.",
+              "te": "ఎకరాకు 10-15 పక్షి స్థావరాలు (టి-ఆకారపు కర్రలు) ఏర్పాటు చేయండి.",
+              "hi": "खेत में प्रति एकड़ 10-15 टी-आकार की पक्षी बैठकें लगाएं।"
+            },
+            "source": "NIPHM Cotton IPM",
+            "source_url": "https://niphm.gov.in",
+            "source_quote": "Bird perches enhance natural predation of cotton pests."
+          }
+        ],
+        "chemical": []
+      }
+    },
+    {
+      "class_id": "chilli_bacterial_spot",
+      "index": 10,
+      "crop": "chilli",
+      "type": "disease",
+      "pathogen": "Xanthomonas campestris pv. vesicatoria",
+      "names": {
+        "en": "Chilli Bacterial Spot",
+        "te": "మిరప బాక్టీరియా మచ్చ తెగులు",
+        "hi": "मिर्च का जीवाणु धब्बा रोग"
+      },
+      "needs_expert_review": true,
+      "referral_threshold": "SEVERE",
+      "severity_advice": {
+        "MILD": {
+          "en": "Small, dark, greasy, water-soaked spots on leaves. Avoid handling plants when wet.",
+          "te": "ఆకులపై చిన్న చిన్న ముదురు రంగు నీటి మచ్చలు. తడిగా ఉన్నప్పుడు మొక్కలను తాకవద్దు.",
+          "hi": "पत्तियों पर छोटे, गहरे, तैलीय पानी जैसे धब्बे। ओस या नमी में पौधों को न छुएं।"
+        },
+        "MODERATE": {
+          "en": "Spots enlarging with blistered or rough raised surfaces; leaf drop begins. Apply copper bactericide.",
+          "te": "మచ్చలు పెద్దవై పొక్కుల వలె మారడం, ఆకులు రాలడం మొదలవుతుంది. కాపర్ మందులు పిచికారీ చేయండి.",
+          "hi": "धब्बे खुरदरे और उभरे हुए हो रहे हैं, पत्तियां गिर रही हैं। कॉपर जीवाणुनाशी छिड़कें।"
+        },
+        "SEVERE": {
+          "en": "Severe fruit scab lesions reducing marketable value. Consult local horticulture officer.",
+          "te": "కాయలపై గజ్జి వంటి మచ్చలు ఏర్పడి నాణ్యత దెబ్బతింటుంది. ఉద్యానవన అధికారిని సంప్రదించండి.",
+          "hi": "मिर्च के फलों पर खुरदरे धब्बे जिससे फल बिकने लायक नहीं रहते। तुरंत उद्यान अधिकारी से मिलें।"
+        }
+      },
+      "immediate_step": {
+        "en": "Do not work in the chilli field while plants are wet with morning dew or rain to prevent spreading bacteria.",
+        "te": "ఉదయం మంచు లేదా వర్షపు నీటితో మొక్కలు తడిగా ఉన్నప్పుడు పొలంలో పనులు చేయవద్దు.",
+        "hi": "जब पौधे सुबह की ओस से भीगे हों, तब खेत में कोई काम न करें ताकि बीमारी न फैले।"
+      },
+      "explain_text": {
+        "en": "Bacterium causing circular to irregular scab-like spots on leaves and fruit, causing heavy leaf and fruit drop in humid weather.",
+        "te": "తేమతో కూడిన వాతావరణంలో ఈ బాక్టీరియా ఆకులు, కాయలపై గజ్జి మచ్చలను కలిగించి తీవ్ర నష్టాన్ని చేస్తుంది.",
+        "hi": "यह जीवाणु पत्तियों और मिर्च के फलों पर पपड़ीदार धब्बे बनाता है, जिससे पत्तियां और फल झड़ जाते हैं।"
+      },
+      "treatment": {
+        "natural": [
+          {
+            "step": 1,
+            "action": {
+              "en": "Spray Pseudomonas fluorescens (10 g/L) at nursery and transplanting stage.",
+              "te": "నారుమడి మరియు నాటిన దశలో సూడోమోనాస్ ఫ్లోరోసెన్స్ (10 గ్రా/లీ) పిచికారీ చేయండి.",
+              "hi": "नर्सरी और रोपाई के समय स्यूडोमोनास (10 ग्राम/लीटर) का छिड़काव करें।"
+            },
+            "source": "IIHR Bengaluru",
+            "source_url": "https://iihr.res.in",
+            "source_quote": "Pseudomonas induces systemic resistance against Xanthomonas in chilli."
+          }
+        ],
+        "chemical": [
+          {
+            "step": 1,
+            "active_ingredient": "Copper Oxychloride 50% WP + Streptocycline",
+            "product_example": "Blitox 50 WP + Streptocycline",
+            "dose_verified": false,
+            "dose": "follow the product label",
+            "phi_days": null,
+            "safety_line": {
+              "en": "Wear mask and goggles. Wash hands thoroughly with soap after spray.",
+              "te": "మాస్క్, కళ్ళద్దాలు ధరించండి. పిచికారీ తర్వాత చేతులను సబ్బుతో శుభ్రంగా కడుక్కోండి.",
+              "hi": "मास्क और चश्मा पहनें। दवा के बाद साबुन से अच्छी तरह हाथ धोएं।"
+            },
+            "source": "CIB&RC Major Uses",
+            "source_url": "https://cibrc.nic.in",
+            "source_quote": "Registered bactericide combination for chilli bacterial spot."
+          }
+        ]
+      }
+    },
+    {
+      "class_id": "chilli_leaf_curl_virus",
+      "index": 11,
+      "crop": "chilli",
+      "type": "disease",
+      "pathogen": "Chilli leaf curl virus (ChiLCV)",
+      "names": {
+        "en": "Chilli Leaf Curl Virus",
+        "te": "మిరప బొబ్బర / ఆకుముడుత తెగులు",
+        "hi": "मिर्च का लीफ कर्ल वायरस (मुरड़िया)"
+      },
+      "needs_expert_review": true,
+      "referral_threshold": "MODERATE",
+      "severity_advice": {
+        "MILD": {
+          "en": "Leaves curling upward (thrips/virus) or downward (mites). Identify and control vector.",
+          "te": "ఆకులు దోనెలాగా పైకి (తామర పురుగులు/వైరస్) లేదా కిందికి (నల్లి) ముడుచుకుంటాయి. పురుగులను గుర్తించండి.",
+          "hi": "पत्तियां नाव की तरह ऊपर या नीचे मुड़ना। थ्रिप्स या माइट्स की पहचान कर रोकथाम करें।"
+        },
+        "MODERATE": {
+          "en": "Puckering of leaves, shortened internodes, bushy appearance. Rogue out severely stunted plants.",
+          "te": "ఆకులు ముడుచుకుపోయి మొక్క గుబురుగా తయారవుతుంది. బాగా దెబ్బతిన్న మొక్కలను పీకివేయండి.",
+          "hi": "पत्तियां सिकुड़कर झाड़ी जैसी बन जाती हैं, बढ़वार रुकती है। अधिक ग्रसित पौधे उखाड़ें।"
+        },
+        "SEVERE": {
+          "en": "Complete cessation of flowering and fruiting. Consult horticulture specialist immediately.",
+          "te": "పూత, కాత పూర్తిగా ఆగిపోతాయి. వెంటనే ఉద్యానవన నిపుణుడిని సంప్రదించండి.",
+          "hi": "फूल और फल आना पूरी तरह बंद। तुरंत बागवानी विशेषज्ञ से संपर्क करें।"
+        }
+      },
+      "immediate_step": {
+        "en": "There is NO chemical cure for the virus. Rogue out infected plants and spray to manage vector thrips and whiteflies.",
+        "te": "ఈ వైరస్ కు ఎటువంటి మందు లేదు. తెగులు సోకిన మొక్కలను పీకివేయండి మరియు రసం పీల్చే పురుగులను అరికట్టండి.",
+        "hi": "वायरस का कोई सीधा इलाज नहीं है। ग्रसित पौधों को हटाएं और थ्रिप्स/सफेद मक्खी को नियंत्रित करें।"
+      },
+      "explain_text": {
+        "en": "Transmitted by whiteflies (Bemisia tabaci) and exacerbated by thrips, turning leaves puckered, curled, and brittle.",
+        "te": "తెల్లదోమ మరియు తామర పురుగుల ద్వారా వ్యాపించి ఆకులను ముడుచుకునేలా చేసి పంట ఎదుగుదలను దెబ్బతీస్తుంది.",
+        "hi": "सफेद मक्खी और थ्रिप्स द्वारा फैलकर यह पत्तियों को सिकोड़ देता है, जिससे मिर्च का उत्पादन ठप हो जाता है।"
+      },
+      "treatment": {
+        "natural": [
+          {
+            "step": 1,
+            "action": {
+              "en": "Erect barrier crops of maize or jowar around the chilli plot (4 rows) to block incoming whiteflies.",
+              "te": "మిరప తోట చుట్టూ 4 వరుసల్లో మొక్కజొన్న లేదా జొన్న పంటను రక్షణ కవచంగా వేయండి.",
+              "hi": "खेत के चारों ओर 4 कतारों में मक्का या ज्वार लगाएं ताकि उड़ने वाले कीट रुक सकें।"
+            },
+            "source": "IIHR IPM for Chilli",
+            "source_url": "https://iihr.res.in",
+            "source_quote": "Border crops significantly reduce viruliferous vector ingress."
+          },
+          {
+            "step": 2,
+            "action": {
+              "en": "Spray Neem oil 10,000 ppm (1 ml/L) or pongamia oil (5 ml/L).",
+              "te": "వేప నూనె 10,000 పి.పి.ఎం (1 మి.లీ/లీ) లేదా కానుగ నూనె పిచికారీ చేయండి.",
+              "hi": "नीम का तेल (1 मिली/लीटर) या करंज का तेल (5 मिली/लीटर) छिड़कें।"
+            },
+            "source": "NIPHM Advisory",
+            "source_url": "https://niphm.gov.in",
+            "source_quote": "Neem and pongamia oils suppress sucking pest populations."
+          }
+        ],
+        "chemical": [
+          {
+            "step": 1,
+            "active_ingredient": "Diafenthiuron 50% WP or Fipronil 5% SC (VECTOR CONTROL ONLY)",
+            "product_example": "Pegasus / Regent",
+            "dose_verified": false,
+            "dose": "follow the product label",
+            "phi_days": null,
+            "safety_line": {
+              "en": "Controls vectors (thrips/whiteflies) only; cannot cure viral damage. Wear protective gear.",
+              "te": "ఇది పురుగులను మాత్రమే అరికడుతుంది, వైరస్ ను నయం చేయదు. రక్షణ తొడుగులు ధరించండి.",
+              "hi": "यह केवल कीटों को मारता है, वायरस को ठीक नहीं कर सकता। सुरक्षात्मक किट पहनें।"
+            },
+            "source": "CIB&RC Major Uses",
+            "source_url": "https://cibrc.nic.in",
+            "source_quote": "Registered for sucking pest/vector control in chilli."
+          }
+        ]
+      }
+    },
+    {
+      "class_id": "chilli_cercospora_leaf_spot",
+      "index": 12,
+      "crop": "chilli",
+      "type": "disease",
+      "pathogen": "Cercospora capsici",
+      "names": {
+        "en": "Chilli Cercospora Leaf Spot (Frog-Eye)",
+        "te": "మిరప సర్కోస్పోరా ఆకుమచ్చ తెగులు",
+        "hi": "मिर्च का सर्कोस्पोरा पत्ती धब्बा (मेंढक आँख)"
+      },
+      "needs_expert_review": true,
+      "referral_threshold": "SEVERE",
+      "severity_advice": {
+        "MILD": {
+          "en": "Circular lesions with grayish-white centers and dark brown prominent borders (frog-eye appearance).",
+          "te": "కప్ప కన్ను వంటి మధ్యలో బూడిద రంగు, అంచులలో ముదురు గోధుమ రంగు మచ్చలు.",
+          "hi": "मेंढक की आँख जैसे धब्बे जिनका केंद्र सफेद और किनारे गहरे भूरे होते हैं।"
+        },
+        "MODERATE": {
+          "en": "Spots coalescing, causing widespread chlorosis and premature leaf drop.",
+          "te": "మచ్చలు కలిసిపోయి ఆకులు పసుపు రంగులోకి మారి రాలిపోతాయి.",
+          "hi": "धब्बे आपस में मिलकर पत्तियों को पीला कर गिरा देते हैं।"
+        },
+        "SEVERE": {
+          "en": "Extensive defoliation leaving bare stems and sunscalded fruit. Contact horticulture officer.",
+          "te": "ఆకులన్నీ రాలిపోయి కాయలు ఎండకు కమిలిపోతాయి. ఉద్యానవన అధికారిని సంప్రదించండి.",
+          "hi": "सारी पत्तियां गिर जाती हैं और फल धूप से झुलस जाते हैं। तुरंत विशेषज्ञ से सलाह लें।"
+        }
+      },
+      "immediate_step": {
+        "en": "Collect and destroy fallen diseased leaves and improve air circulation within the canopy.",
+        "te": "రాలిపడిన తెగులు ఆకులను ఏరి కాల్చండి మరియు మొక్కల మధ్య గాలి ఆడేలా చూడండి.",
+        "hi": "गिरी हुई बीमार पत्तियों को जलाएं और पौधों के बीच हवा का प्रवाह बढ़ाएं।"
+      },
+      "explain_text": {
+        "en": "Fungal disease thriving in warm, wet conditions, producing frog-eye spots that trigger severe defoliation.",
+        "te": "వెచ్చని, తేమతో కూడిన వాతావరణంలో ఈ శిలీంధ్రం వ్యాపించి ఆకులను రాల్చివేసి కాయలు కమిలిపోయేలా చేస్తుంది.",
+        "hi": "गर्म और नम मौसम में यह फफूंद मेंढक की आंख जैसे धब्बे बनाती है जिससे पत्तियां तेजी से गिरती हैं।"
+      },
+      "treatment": {
+        "natural": [
+          {
+            "step": 1,
+            "action": {
+              "en": "Spray Trichoderma harzianum or Bacillus subtilis (5-10 g/L) on foliage.",
+              "te": "ట్రైకోడెర్మా లేదా బాసిల్లస్ సబ్టిలిస్ (5-10 గ్రా/లీ) ఆకులపై పిచికారీ చేయండి.",
+              "hi": "ट्राइकोडर्मा या बैसिलस सबटिलिस (5-10 ग्राम/लीटर) का छिड़काव करें।"
+            },
+            "source": "IIHR Organic Chilli Guidelines",
+            "source_url": "https://iihr.res.in",
+            "source_quote": "Bio-agents effectively antagonize Cercospora conidia."
+          }
+        ],
+        "chemical": [
+          {
+            "step": 1,
+            "active_ingredient": "Mancozeb 75% WP or Azoxystrobin 23% SC",
+            "product_example": "Indofil M-45 / Amistar",
+            "dose_verified": false,
+            "dose": "follow the product label",
+            "phi_days": null,
+            "safety_line": {
+              "en": "Do not spray against the wind. Wash hands and face after application.",
+              "te": "గాలి వీచే దిశకు ఎదురుగా పిచికారీ చేయవద్దు. మందు చల్లిన తర్వాత ముఖం, చేతులు శుభ్రం చేసుకోండి.",
+              "hi": "हवा के विपरीत दिशा में छिड़काव न करें। बाद में हाथ-मुंह धोएं।"
+            },
+            "source": "CIB&RC Major Uses",
+            "source_url": "https://cibrc.nic.in",
+            "source_quote": "Approved for leaf spot in chilli."
+          }
+        ]
+      }
+    },
+    {
+      "class_id": "chilli_white_spot",
+      "index": 13,
+      "crop": "chilli",
+      "type": "disease",
+      "pathogen": "Cercospora capsici / Choanephora",
+      "names": {
+        "en": "Chilli White Spot Disease",
+        "te": "మిరప తెల్ల మచ్చ తెగులు",
+        "hi": "मिर्च का सफेद धब्बा रोग"
+      },
+      "needs_expert_review": true,
+      "referral_threshold": "SEVERE",
+      "severity_advice": {
+        "MILD": {
+          "en": "Bleached white or light-tan spots on leaf lamina. Ensure good soil drainage.",
+          "te": "ఆకులపై తెల్లటి లేదా లేత గోధుమరంగు మచ్చలు. నీరు నిలవకుండా చూడండి.",
+          "hi": "पत्तियों पर सफेद या हल्के रंग के धब्बे। खेत से जल निकासी अच्छी रखें।"
+        },
+        "MODERATE": {
+          "en": "Spots expanding and becoming papery thin with necrotic borders. Apply broad-spectrum fungicide.",
+          "te": "మచ్చలు పెద్దవై కాగితంలా పలుచగా మారతాయి. శిలీంద్రనాశిని పిచికారీ చేయండి.",
+          "hi": "धब्बे कागज की तरह पतले होकर फैल रहे हैं। कवकनाशी का छिड़काव करें।"
+        },
+        "SEVERE": {
+          "en": "Extensive leaf bleaching and twig dieback. Consult horticulture extension officer.",
+          "te": "ఆకులన్నీ తెల్లబడి కొమ్మలు ఎండిపోతాయి. ఉద్యానవన అధికారిని సంప్రదించండి.",
+          "hi": "पत्तियां पूरी तरह सफेद होकर टहनियां सूखने लगती हैं। विशेषज्ञ से तुरंत मिलें।"
+        }
+      },
+      "immediate_step": {
+        "en": "Drain any waterlogged field furrows and spray broad-spectrum protective bio-fungicide.",
+        "te": "కాలువలలో నిలిచిన నీటిని తొలగించండి మరియు రక్షక శిలీంద్రనాశినిని పిచికారీ చేయండి.",
+        "hi": "खेत में जमा पानी निकालें और फफूंदनाशक का छिड़काव करें।"
+      },
+      "explain_text": {
+        "en": "Fungal infection causing circular bleached-white spots on leaves that turn parchment-like and fragile.",
+        "te": "ఈ శిలీంధ్ర తెగులు వల్ల ఆకులపై తెల్లటి పొక్కు మచ్చలు ఏర్పడి ఆకులు కాగితంలా పలుచబడి రాలిపోతాయి.",
+        "hi": "फफूंद के कारण पत्तियों पर सफेद रंग के धब्बे बनते हैं जो सूखकर कागज जैसे पतले हो जाते हैं।"
+      },
+      "treatment": {
+        "natural": [
+          {
+            "step": 1,
+            "action": {
+              "en": "Spray NSKE 5% or Cow urine distillate (5%) on lower and upper leaf surfaces.",
+              "te": "5% వేప గింజల కషాయం లేదా గోమూత్రం ద్రావణాన్ని ఆకుల పైభాగం, అడుగుభాగం తడిసేలా పిచికారీ చేయండి.",
+              "hi": "5% नीम काढ़ा या गोमूत्र का पत्तियों के दोनों तरफ छिड़काव करें।"
+            },
+            "source": "ANGRAU Chilli Practices",
+            "source_url": "https://angrau.ac.in",
+            "source_quote": "Botanicals arrest foliar leaf spot progression."
+          }
+        ],
+        "chemical": [
+          {
+            "step": 1,
+            "active_ingredient": "Copper Hydroxide 53.8% DF or Mancozeb 75% WP",
+            "product_example": "Kocide / Indofil M-45",
+            "dose_verified": false,
+            "dose": "follow the product label",
+            "phi_days": null,
+            "safety_line": {
+              "en": "Wear gloves and protective apron during preparation. Keep away from water sources.",
+              "te": "మందు కలిపేటప్పుడు గ్లౌజులు ధరించండి. జల వనరులకు దూరంగా ఉంచండి.",
+              "hi": "दवा बनाते समय दस्ताने पहनें और पानी के स्रोतों से दूर रखें।"
+            },
+            "source": "CIB&RC Major Uses",
+            "source_url": "https://cibrc.nic.in",
+            "source_quote": "Approved contact fungicide for foliar spots in chilli."
+          }
+        ]
+      }
+    },
+    {
+      "class_id": "chilli_healthy",
+      "index": 14,
+      "crop": "chilli",
+      "type": "healthy",
+      "pathogen": "None",
+      "names": {
+        "en": "Healthy Chilli",
+        "te": "ఆరోగ్యకరమైన మిరప",
+        "hi": "स्वस्थ मिर्च"
+      },
+      "needs_expert_review": true,
+      "referral_threshold": "NONE",
+      "severity_advice": {
+        "MILD": {
+          "en": "Lush dark green leaves, no curling or leaf spots. Continue good management.",
+          "te": "ముదురు ఆకుపచ్చ రంగులో ఎటువంటి ముడుత లేదా మచ్చలు లేకుండా ఆరోగ్యంగా ఉంది.",
+          "hi": "पत्तियां पूरी तरह हरी और स्वस्थ हैं, कोई मुड़न या धब्बे नहीं हैं।"
+        },
+        "MODERATE": {
+          "en": "Crop is healthy. Monitor for thrips and mites regularly.",
+          "te": "పంట ఆరోగ్యంగా ఉంది. తామర పురుగులు, నల్లి కోసం క్రమం తప్పకుండా పరిశీలించండి.",
+          "hi": "फसल स्वस्थ है। थ्रिप्स और माइट्स की नियमित निगरानी करें।"
+        },
+        "SEVERE": {
+          "en": "Crop is healthy.",
+          "te": "పంట ఆరోగ్యంగా ఉంది.",
+          "hi": "फसल स्वस्थ है।"
+        }
+      },
+      "immediate_step": {
+        "en": "No chemical application required. Maintain balanced irrigation and weed-free bunds.",
+        "te": "ఎటువంటి రసాయనాలు అవసరం లేదు. సక్రమంగా నీటి తడులు ఇచ్చి గట్లపై కలుపు లేకుండా చూసుకోండి.",
+        "hi": "किसी दवा की जरूरत नहीं। उचित सिंचाई करें और मेड़ों पर खरपतवार न उगने दें।"
+      },
+      "explain_text": {
+        "en": "Vibrant foliage with healthy flowering buds and absence of sucking pest symptoms.",
+        "te": "ఆకులు, పూత ఆరోగ్యంగా ఉండి ఎటువంటి పురుగుల బెడద లేకుండా పైరు బలంగా ఉంది.",
+        "hi": "पौधे स्वस्थ हैं और अच्छी कलियां व फूल आ रहे हैं।"
+      },
+      "treatment": {
+        "natural": [
+          {
+            "step": 1,
+            "action": {
+              "en": "Install blue and yellow sticky traps (10 each per acre) for early pest detection.",
+              "te": "ముందస్తు పురుగుల గుర్తింపు కోసం ఎకరాకు 10 నీలం, 10 పసుపు జిగురు అట్టలను అమర్చండి.",
+              "hi": "कीटों की निगरानी के लिए प्रति एकड़ 10 नीले और 10 पीले चिपचिपे कार्ड लगाएं।"
+            },
+            "source": "IIHR Chilli IPM",
+            "source_url": "https://iihr.res.in",
+            "source_quote": "Sticky traps provide early warning of thrips and whiteflies."
+          }
+        ],
+        "chemical": []
+      }
+    },
+    {
+      "class_id": "tomato_early_blight",
+      "index": 15,
+      "crop": "tomato",
+      "type": "disease",
+      "pathogen": "Alternaria solani",
+      "names": {
+        "en": "Tomato Early Blight",
+        "te": "టమాటా అగేతి ఆకుమచ్చ తెగులు",
+        "hi": "टमाटर का अगेती झुलसा"
+      },
+      "needs_expert_review": true,
+      "referral_threshold": "SEVERE",
+      "severity_advice": {
+        "MILD": {
+          "en": "Brown to black spots with concentric rings (target-board) on lower older leaves. Mulch soil.",
+          "te": "కింది ముదిరిన ఆకులపై వలయాల వంటి నల్లని మచ్చలు. నేలపై ఆచ్ఛాదన (మల్చింగ్) చేయండి.",
+          "hi": "निचली पत्तियों पर गोल छल्लेदार भूरे-काले धब्बे। मिट्टी पर पुआल की मल्चिंग करें।"
+        },
+        "MODERATE": {
+          "en": "Spots spreading upwards, yellowing around lesions, lower leaves dying. Apply protective fungicide.",
+          "te": "మచ్చలు పై ఆకులకు వ్యాపించి చుట్టూ పసుపు రంగుగా మారి ఆకులు రాలుతాయి. శిలీంద్రనాశిని చల్లండి.",
+          "hi": "धब्बे ऊपर की पत्तियों में फैल रहे हैं, पत्तियां पीली पड़कर गिर रही हैं। कवकनाशी छिड़कें।"
+        },
+        "SEVERE": {
+          "en": "Extensive defoliation; dark sunken leathery spots on stem-end of fruit. Contact KVK specialist.",
+          "te": "ఆకులన్నీ రాలిపోయి కాయల తొడిమల వద్ద నల్లటి సొట్ట మచ్చలు పడతాయి. కృషి విజ్ఞాన కేంద్ర నిపుణుడిని సంప్రదించండి.",
+          "hi": "पौधे पत्तीविहीन हो रहे हैं और फलों के डंठल के पास काले धंसे हुए धब्बे। तुरंत विशेषज्ञ से सलाह लें।"
+        }
+      },
+      "immediate_step": {
+        "en": "Prune and dispose of lower infected leaves touching the soil and avoid overhead sprinkler watering.",
+        "te": "నేలకు తగిలే కింద ఆకులను తెంపి నాశనం చేయండి మరియు పైనుండి నీరు చిలకరించవద్దు.",
+        "hi": "जमीन से छू रही निचली ग्रसित पत्तियों को काटकर नष्ट करें और ऊपर से पानी न डालें।"
+      },
+      "explain_text": {
+        "en": "Fungal pathogen that attacks older leaves first with characteristic target-like rings, progressing to cause stem cankers and fruit rot.",
+        "te": "ఈ శిలీంధ్రం మొదట కింది ఆకులపై వలయాల మచ్చలను కలిగించి క్రమంగా కాండం, కాయలకు సోకి నష్టపరుస్తుంది.",
+        "hi": "यह फफूंद पहले निचली पत्तियों पर छल्लेदार धब्बे बनाती है, फिर तनों और फलों को सड़ा देती है।"
+      },
+      "treatment": {
+        "natural": [
+          {
+            "step": 1,
+            "action": {
+              "en": "Mulch soil around plants with straw to prevent rain splashes carrying spores from soil to foliage.",
+              "te": "వర్షపు చినుకుల ద్వారా నేలలోని శిలీంధ్రం ఆకులకు చేరకుండా మొక్కల మొదళ్ల వద్ద గడ్డితో మల్చింగ్ చేయండి.",
+              "hi": "पौधों के चारों ओर पुआल की मल्चिंग करें ताकि मिट्टी के फफूंद छींटों से पत्तियों तक न पहुंचें।"
+            },
+            "source": "IIHR Package for Solanaceous Crops",
+            "source_url": "https://iihr.res.in",
+            "source_quote": "Mulching creates a physical barrier against soil-splashed Alternaria conidia."
+          },
+          {
+            "step": 2,
+            "action": {
+              "en": "Foliar spray with Trichoderma viride (10 g/L) or NSKE 5%.",
+              "te": "ట్రైకోడెర్మా విరిడి (10 గ్రా/లీ) లేదా 5% వేప గింజల కషాయం పిచికారీ చేయండి.",
+              "hi": "ट्राइकोडर्मा विरिडी (10 ग्राम/लीटर) या 5% नीम काढ़ा पत्तियों पर छिड़कें।"
+            },
+            "source": "NIPHM Advisory",
+            "source_url": "https://niphm.gov.in",
+            "source_quote": "Bio-fungicides suppress foliar blights in vegetables."
+          }
+        ],
+        "chemical": [
+          {
+            "step": 1,
+            "active_ingredient": "Mancozeb 75% WP or Chlorothalonil 75% WP",
+            "product_example": "Dithane M-45 / Kavach",
+            "dose_verified": false,
+            "dose": "follow the product label",
+            "phi_days": null,
+            "safety_line": {
+              "en": "Wear gloves and face mask. Wash hands thoroughly before eating.",
+              "te": "గ్లౌజులు, మాస్క్ ధరించండి. భోజనానికి ముందు చేతులను శుభ్రంగా కడుక్కోండి.",
+              "hi": "दस्ताने और मास्क पहनें। भोजन से पहले हाथ साबुन से अच्छी तरह धोएं।"
+            },
+            "source": "CIB&RC Major Uses",
+            "source_url": "https://cibrc.nic.in",
+            "source_quote": "Registered for tomato early blight control."
+          }
+        ]
+      }
+    },
+    {
+      "class_id": "tomato_late_blight",
+      "index": 16,
+      "crop": "tomato",
+      "type": "disease",
+      "pathogen": "Phytophthora infestans",
+      "names": {
+        "en": "Tomato Late Blight",
+        "te": "టమాటా పచేతి ఆకుమచ్చ తెగులు",
+        "hi": "टमाटर का पछेती झुलसा"
+      },
+      "needs_expert_review": true,
+      "referral_threshold": "SEVERE",
+      "severity_advice": {
+        "MILD": {
+          "en": "Pale green water-soaked lesions turning brown on leaf tips; white mold on underside in morning.",
+          "te": "ఆకుల కొనలపై నీటి మచ్చలు గోధుమరంగుగా మారతాయి; ఉదయం వేళ ఆకు అడుగున తెల్లని బూజు కనిపిస్తుంది.",
+          "hi": "पत्तियों के सिरों पर पानी जैसे धब्बे जो भूरे होते हैं; सुबह पत्ती के नीचे सफेद फफूंद दिखती है।"
+        },
+        "MODERATE": {
+          "en": "Large dark brown oily lesions on leaves and stems; foul odor. Spray systemic oomycete fungicide.",
+          "te": "ఆకులు, కొమ్మలపై ముదురు గోధుమ నూనె మచ్చలు, దుర్వాసన వస్తుంది. వెంటనే శిలీంద్రనాశిని పిచికారీ చేయండి.",
+          "hi": "पत्तियों और तनों पर बड़े तैलीय गहरे धब्बे, खेत में बदबू। तुरंत कवकनाशी छिड़कें।"
+        },
+        "SEVERE": {
+          "en": "Complete collapse of foliage within 3-5 days; firm brown rot on fruit. Alert agriculture officer urgently.",
+          "te": "3-5 రోజుల్లో పైరంతా కాలిపోయినట్లు మాడిపోతుంది, కాయలు కుళ్ళిపోతాయి. అత్యవసరంగా వ్యవసాయాధికారిని సంప్రదించండి.",
+          "hi": "3-5 दिनों में पूरी फसल झुलस जाती है, फल सड़ जाते हैं। तुरंत आपातकालीन कृषि सलाह लें।"
+        }
+      },
+      "immediate_step": {
+        "en": "This is an emergency disease that can wipe out a crop in 72 hours under cool wet weather. Spray immediately.",
+        "te": "చల్లని, తేమ వాతావరణంలో ఈ తెగులు 72 గంటల్లో పంటను నాశనం చేస్తుంది. తక్షణమే మందు పిచికారీ చేయండి.",
+        "hi": "यह बीमारी ठंडे और नम मौसम में 3 दिन में पूरी फसल बर्बाद कर सकती है। तुरंत छिड़काव करें।"
+      },
+      "explain_text": {
+        "en": "Devastating oomycete pathogen that spreads by wind-blown sporangia during cool (15-20°C) and wet weather, rotting leaves and fruit.",
+        "te": "చల్లని మరియు వర్షపు వాతావరణంలో గాలి ద్వారా వేగంగా వ్యాపించి ఆకులు, కాండం మరియు కాయలను పూర్తిగా కుళ్ళింపజేస్తుంది.",
+        "hi": "ठंड और नमी में यह फफूंद हवा से बहुत तेजी से फैलती है और कुछ ही दिनों में पूरी फसल को सड़ा देती है।"
+      },
+      "treatment": {
+        "natural": [
+          {
+            "step": 1,
+            "action": {
+              "en": "Spray copper-based bio-mix or Bordeaux mixture 1% immediately upon disease forecast.",
+              "te": "తెగులు సూచనలు కనిపించిన వెంటనే 1% బోర్డో మిశ్రమాన్ని పిచికారీ చేయండి.",
+              "hi": "बीमारी की शुरुआत में 1% बोर्डो मिश्रण का तुरंत छिड़काव करें।"
+            },
+            "source": "IIHR Bengaluru",
+            "source_url": "https://iihr.res.in",
+            "source_quote": "Bordeaux mixture provides robust preventative surface protection."
+          }
+        ],
+        "chemical": [
+          {
+            "step": 1,
+            "active_ingredient": "Metalaxyl 8% + Mancozeb 64% WP or Cymoxanil 8% + Mancozeb 64% WP",
+            "product_example": "Ridomil Gold / Curzate",
+            "dose_verified": false,
+            "dose": "follow the product label",
+            "phi_days": null,
+            "safety_line": {
+              "en": "Wear respirator mask and goggles. Highly critical to spray before disease engulfs field.",
+              "te": "శ్వాసక్రియ మాస్క్, కళ్ళద్దాలు ధరించండి. తెగులు ముదరక ముందే పిచికారీ పూర్తి చేయండి.",
+              "hi": "मास्क और चश्मा पहनें। खेत बर्बाद होने से पहले समय पर छिड़काव करें।"
+            },
+            "source": "CIB&RC Major Uses",
+            "source_url": "https://cibrc.nic.in",
+            "source_quote": "Approved systemic fungicide for late blight in tomato."
+          }
+        ]
+      }
+    },
+    {
+      "class_id": "tomato_yellow_leaf_curl_virus",
+      "index": 17,
+      "crop": "tomato",
+      "type": "disease",
+      "pathogen": "Tomato yellow leaf curl virus (TYLCV)",
+      "names": {
+        "en": "Tomato Yellow Leaf Curl Virus",
+        "te": "టమాటా ఆకుముడుత వైరస్ తెగులు",
+        "hi": "टमाटर का पीला पत्ती मरोड़ विषाणु"
+      },
+      "needs_expert_review": true,
+      "referral_threshold": "MODERATE",
+      "severity_advice": {
+        "MILD": {
+          "en": "Slight upward cupping of leaves, yellowing of leaf margins. Install yellow sticky traps.",
+          "te": "ఆకులు పైకి దోనెలా ముడుచుకోవడం, అంచులు పసుపు రంగులోకి మారడం. పసుపు జిగురు అట్టలను అమర్చండి.",
+          "hi": "पत्तियों का ऊपर मुड़ना और किनारों का पीला पड़ना। पीले चिपचिपे कार्ड लगाएं।"
+        },
+        "MODERATE": {
+          "en": "Severe stunting, reduced leaf size (shoestring), flower drop. Rogue out infected plants immediately.",
+          "te": "మొక్క గిడసబారడం, ఆకులు చిన్నవిగా మారడం, పూత రాలిపోవడం. రోగగ్రస్థ మొక్కలను పీకి నాశనం చేయండి.",
+          "hi": "पौधों का बौना होना, पत्तियां छोटी होना और फूल गिरना। बीमार पौधों को तुरंत उखाड़ें।"
+        },
+        "SEVERE": {
+          "en": "Bushy stunted plants with no fruit set. Consult horticulture extension officer.",
+          "te": "మొక్కలు పొదలా మారి కాత పూర్తిగా నిలిచిపోతుంది. ఉద్యానవన అధికారిని సంప్రదించండి.",
+          "hi": "पौधे बिल्कुल झाड़ी जैसे हो जाते हैं और फल नहीं लगते। विशेषज्ञ से तुरंत मिलें।"
+        }
+      },
+      "immediate_step": {
+        "en": "There is NO chemical cure for the virus. Rogue out infected plants and spray to manage the whitefly vector.",
+        "te": "ఈ వైరస్ కు రసాయన మందు లేదు. తెగులు సోకిన మొక్కలను పీకివేయండి మరియు తెల్లదోమను అరికట్టండి.",
+        "hi": "इस वायरस की कोई दवा नहीं है। ग्रसित पौधों को उखाड़कर नष्ट करें और सफेद मक्खी का नियंत्रण करें।"
+      },
+      "explain_text": {
+        "en": "A devastating begomovirus transmitted by Bemisia tabaci whiteflies causing severe dwarfing, upward leaf curling, and sterility.",
+        "te": "తెల్లదోమ ద్వారా వ్యాపించే ఈ వైరస్ ఆకులను ముడుచుకుపోయేలా చేసి మొక్కను గిడసబార్చి కాత లేకుండా చేస్తుంది.",
+        "hi": "सफेद मक्खी द्वारा फैलने वाला यह विषाणु पौधों का विकास रोक देता है जिससे फल बिल्कुल नहीं लगते।"
+      },
+      "treatment": {
+        "natural": [
+          {
+            "step": 1,
+            "action": {
+              "en": "Raise seedlings under 40-mesh nylon insect net nursery tunnels to prevent viruliferous whitefly entry.",
+              "te": "నారుమడి దశలో తెల్లదోమలు రాకుండా 40 మెష్ నైలాన్ దోమతెర సొరంగాలను ఉపయోగించండి.",
+              "hi": "नर्सरी में सफेद मक्खी से बचाव के लिए 40-मेष की जाली (नेट) के नीचे पौधे तैयार करें।"
+            },
+            "source": "IIHR Tomato IPM",
+            "source_url": "https://iihr.res.in",
+            "source_quote": "Nylon net nurseries completely exclude whitefly vectors during critical seedling stage."
+          },
+          {
+            "step": 2,
+            "action": {
+              "en": "Install yellow sticky traps (15-20 per acre) and spray neem oil (5 ml/L).",
+              "te": "ఎకరాకు 15-20 పసుపు జిగురు అట్టలను ఏర్పాటు చేసి వేప నూనె (5 మి.లీ/లీ) పిచికారీ చేయండి.",
+              "hi": "प्रति एकड़ 15-20 पीले कार्ड लगाएं और 5 मिली/लीटर नीम तेल छिड़कें।"
+            },
+            "source": "NIPHM Advisory",
+            "source_url": "https://niphm.gov.in",
+            "source_quote": "Sticky traps and neem reduce whitefly numbers."
+          }
+        ],
+        "chemical": [
+          {
+            "step": 1,
+            "active_ingredient": "Cyantraniliprole 10.26% OD or Spiromesifen 22.9% SC (VECTOR CONTROL ONLY)",
+            "product_example": "Benevia / Oberon",
+            "dose_verified": false,
+            "dose": "follow the product label",
+            "phi_days": null,
+            "safety_line": {
+              "en": "Controls whiteflies only; will not reverse existing viral stunting. Wear protective gear.",
+              "te": "తెల్లదోమను మాత్రమే చంపుతుంది, వైరస్ ను నయం చేయదు. రక్షణ దుస్తులు ధరించండి.",
+              "hi": "यह केवल सफेद मक्खी को मारती है, वायरस को ठीक नहीं कर सकती। मास्क पहनें।"
+            },
+            "source": "CIB&RC Major Uses",
+            "source_url": "https://cibrc.nic.in",
+            "source_quote": "Registered for whitefly management in tomato."
+          }
+        ]
+      }
+    },
+    {
+      "class_id": "tomato_spider_mites",
+      "index": 18,
+      "crop": "tomato",
+      "type": "pest",
+      "pathogen": "Tetranychus urticae (Two-Spotted Spider Mite)",
+      "names": {
+        "en": "Tomato Spider Mites",
+        "te": "టమాటా ఎర్ర నల్లి పురుగు",
+        "hi": "टमाटर का मकड़ी कीट (माइट्स)"
+      },
+      "needs_expert_review": true,
+      "referral_threshold": "SEVERE",
+      "severity_advice": {
+        "MILD": {
+          "en": "Tiny yellow/white specks or stippling on upper leaf surface. Check underside for mites.",
+          "te": "ఆకుల పైభాగంలో చిన్న పసుపు, తెల్లని మచ్చలు. ఆకు అడుగున నల్లి పురుగులను గమనించండి.",
+          "hi": "पत्तियों की ऊपरी सतह पर छोटे पीले-सफेद बिंदु। पत्ती के नीचे बारीक कीड़े देखें।"
+        },
+        "MODERATE": {
+          "en": "Fine silky webbing under leaves, leaves bronzing and turning dry. Spray acaricide or wettable sulphur.",
+          "te": "ఆకుల అడుగున సన్నని బూజు గూడు, ఆకులు ఎండిపోయి రాగి రంగులోకి మారడం. గంధకం లేదా నల్లి మందు చల్లండి.",
+          "hi": "पत्तियों के नीचे बारीक जाला, पत्तियां तांबई रंग की होकर सूखना। गंधक या माइटनाशक छिड़कें।"
+        },
+        "SEVERE": {
+          "en": "Extensive webbing covering plant canopy; leaves desiccated and falling. Consult extension entomologist.",
+          "te": "మొక్కంతా బూజు గూడుతో కప్పబడి ఆకులు పూర్తిగా రాలిపోతాయి. కీటక శాస్త్రవేత్తను సంప్రదించండి.",
+          "hi": "पौधों पर पूरा जाला फैल जाना और पत्तियां सूखकर गिरना। कीट विशेषज्ञ से तुरंत मिलें।"
+        }
+      },
+      "immediate_step": {
+        "en": "Spray forceful jets of clean water to wash off webs and mites from the lower leaf surface, followed by an acaricide.",
+        "te": "ఆకుల అడుగుభాగాన బూజు, నల్లి పోయేలా నీటిని బలంగా పిచికారీ చేయండి, ఆపై నల్లి నివారణ మందు చల్లండి.",
+        "hi": "पत्तियों के नीचे तेज पानी की फुहार मारकर जाले हटाएं, फिर अनुशंसित दवा का छिड़काव करें।"
+      },
+      "explain_text": {
+        "en": "Microscopic sap-sucking arachnids that multiply explosively in hot, dry weather, spinning webs and chlorotizing leaves.",
+        "te": "వేడి, పొడి వాతావరణంలో వేగంగా వృద్ధి చెంది ఆకుల రసాన్ని పీల్చి బూజు గూడు కట్టి ఆకులను ఎండబెడతాయి.",
+        "hi": "गर्म और शुष्क मौसम में यह बारीक कीट बहुत तेजी से जाला बनाकर पत्तियों का रस चूस लेते हैं।"
+      },
+      "treatment": {
+        "natural": [
+          {
+            "step": 1,
+            "action": {
+              "en": "Release predatory mites (Neoseiulus or Phytoseiulus) or spray Neem oil (5 ml/L).",
+              "te": "మిత్ర పురుగులైన వేటాడే నల్లులను విడుదల చేయండి లేదా వేప నూనె (5 మి.లీ/లీ) పిచికారీ చేయండి.",
+              "hi": "मित्र कीट (परभक्षी माइट्स) छोड़ें या 5 मिली/लीटर नीम तेल का छिड़काव करें।"
+            },
+            "source": "NBAIR Bengaluru",
+            "source_url": "https://nbair.res.in",
+            "source_quote": "Predatory phytoseiid mites keep Tetranychus spider mites below economic threshold."
+          }
+        ],
+        "chemical": [
+          {
+            "step": 1,
+            "active_ingredient": "Spiromesifen 22.9% SC or Wettable Sulphur 80% WP",
+            "product_example": "Oberon / Sulfex",
+            "dose_verified": false,
+            "dose": "follow the product label",
+            "phi_days": null,
+            "safety_line": {
+              "en": "Do not spray sulphur when temperature exceeds 32°C to prevent phytotoxicity. Wear goggles.",
+              "te": "ఎండ తీవ్రత 32°C దాటినప్పుడు గంధకం చల్లవద్దు. కళ్ళద్దాలు, మాస్క్ ధరించండి.",
+              "hi": "32°C से अधिक तापमान में गंधक का छिड़काव न करें ताकि पत्ते न जलें। चश्मा पहनें।"
+            },
+            "source": "CIB&RC Major Uses",
+            "source_url": "https://cibrc.nic.in",
+            "source_quote": "Approved miticide for spider mites in tomato."
+          }
+        ]
+      }
+    },
+    {
+      "class_id": "tomato_healthy",
+      "index": 19,
+      "crop": "tomato",
+      "type": "healthy",
+      "pathogen": "None",
+      "names": {
+        "en": "Healthy Tomato",
+        "te": "ఆరోగ్యకరమైన టమాటా",
+        "hi": "स्वस्थ टमाटर"
+      },
+      "needs_expert_review": true,
+      "referral_threshold": "NONE",
+      "severity_advice": {
+        "MILD": {
+          "en": "Robust dark green foliage with clean leaves and active flowering clusters.",
+          "te": "మొక్కలు ముదురు ఆకుపచ్చ రంగులో పుష్కలంగా పూతతో ఆరోగ్యంగా ఉన్నాయి.",
+          "hi": "पौधे गहरे हरे और स्वस्थ हैं, अच्छी फ्लावरिंग हो रही है।"
+        },
+        "MODERATE": {
+          "en": "Crop is healthy. Ensure regular staking and pruning.",
+          "te": "పంట ఆరోగ్యంగా ఉంది. మొక్కలకు కర్రల ఊతం ఇచ్చి అనవసర కొమ్మలను తొలగించండి.",
+          "hi": "फसल स्वस्थ है। पौधों को सहारा दें और उचित कटाई-छंटाई करें।"
+        },
+        "SEVERE": {
+          "en": "Crop is healthy.",
+          "te": "పంట ఆరోగ్యంగా ఉంది.",
+          "hi": "फसल स्वस्थ है।"
+        }
+      },
+      "immediate_step": {
+        "en": "No chemical application needed. Stake plants to keep foliage off the ground and maintain drip irrigation.",
+        "te": "ఎటువంటి రసాయనాలు అవసరం లేదు. ఆకులు నేలకు తగలకుండా కర్రలు కట్టి బిందు సేద్యం ద్వారా నీరందించండి.",
+        "hi": "किसी दवा की जरूरत नहीं। पौधों को डंडों से सहारा दें ताकि पत्तियां जमीन से ऊपर रहें।"
+      },
+      "explain_text": {
+        "en": "Vigorous plants free from fungal lesions, viral mottling, and mite webbing.",
+        "te": "ఎటువంటి శిలీంధ్ర మచ్చలు, వైరస్ ముడుత లేదా నల్లి పురుగులు లేకుండా మొక్కలు బలంగా ఉన్నాయి.",
+        "hi": "पौधों में कोई बीमारी, वायरस या कीट के लक्षण नहीं हैं।"
+      },
+      "treatment": {
+        "natural": [
+          {
+            "step": 1,
+            "action": {
+              "en": "Stake plants with bamboo poles to improve air movement and prevent soil contact.",
+              "te": "గాలి వెలుతురు బాగా సోకేందుకు మరియు నేల తగలకుండా వెదురు కర్రలతో మొక్కలను నిలబెట్టండి.",
+              "hi": "हवा के संचार के लिए और जमीन से बचाने के लिए बांस के डंडों से पौधों को बांधें।"
+            },
+            "source": "IIHR Tomato Guide",
+            "source_url": "https://iihr.res.in",
+            "source_quote": "Staking prevents contact-borne diseases in tomato."
+          }
+        ],
+        "chemical": []
+      }
+    },
+    {
+      "class_id": "maize_gray_leaf_spot",
+      "index": 20,
+      "crop": "maize",
+      "type": "disease",
+      "pathogen": "Cercospora zeae-maydis",
+      "names": {
+        "en": "Maize Gray Leaf Spot",
+        "te": "మొక్కజొన్న బూడిద రంగు ఆకుమచ్చ తెగులు",
+        "hi": "मक्का का ग्रे लीफ स्पॉट"
+      },
+      "needs_expert_review": true,
+      "referral_threshold": "SEVERE",
+      "severity_advice": {
+        "MILD": {
+          "en": "Small, tan spots with yellow halos, restricted by veins into rectangular shapes.",
+          "te": "ఆకు ఈనెల మధ్య దీర్ఘచతురస్రాకారంలో పసుపు రంగు అంచులు కలిగిన చిన్న మచ్చలు.",
+          "hi": "पत्तियों की नसों के बीच आयताकार हल्के भूरे धब्बे।"
+        },
+        "MODERATE": {
+          "en": "Rectangular spots turning gray, expanding parallel to veins and coalescing. Apply foliar fungicide.",
+          "te": "మచ్చలు బూడిద రంగులోకి మారి ఈనెల వెంబడి పొడవుగా విస్తరిస్తాయి. శిలీంద్రనాశిని పిచికారీ చేయండి.",
+          "hi": "आयताकार धब्बे धूसर रंग के होकर आपस में मिल रहे हैं। कवकनाशी छिड़कें।"
+        },
+        "SEVERE": {
+          "en": "Entire leaves blighted and dying before grain filling. Consult KVK agronomist.",
+          "te": "గింజ పాలుపోసుకునే ముందే ఆకులన్నీ ఎండిపోతాయి. కృషి విజ్ఞాన కేంద్ర అధికారిని సంప్రదించండి.",
+          "hi": "दाने भरने से पहले पूरी पत्तियां सूख जाती हैं। तुरंत कृषि विशेषज्ञ से सलाह लें।"
+        }
+      },
+      "immediate_step": {
+        "en": "Do not practice continuous maize cultivation on the same field; ensure proper spacing for aeration.",
+        "te": "ఒకే పొలంలో పదే పదే మొక్కజొన్న వేయవద్దు; గాలి ఆడేలా తగిన దూరంలో మొక్కలను ఉంచండి.",
+        "hi": "उसी खेत में लगातार मक्का न लगाएं और पौधों के बीच उचित दूरी रखें।"
+      },
+      "explain_text": {
+        "en": "Airborne fungus causing rectangular lesions bounded strictly by leaf veins, cutting photosynthesis drastically during grain filling.",
+        "te": "ఈ శిలీంధ్రం ఆకు ఈనెల మధ్య దీర్ఘచతురస్రాకార మచ్చలను ఏర్పరిచి కిరణజన్య సంయోగక్రియను అడ్డుకుంటుంది.",
+        "hi": "यह फफूंद नसों के बीच आयताकार धब्बे बनाती है जिससे पत्तियां सूखती हैं और पैदावार घटती है।"
+      },
+      "treatment": {
+        "natural": [
+          {
+            "step": 1,
+            "action": {
+              "en": "Deep plow infected crop residue after harvest to bury fungal conidia.",
+              "te": "పంట కోత తర్వాత పొలాన్ని లోతుగా దున్ని తెగులు సోకిన అవశేషాలను నేలలో కలపండి.",
+              "hi": "कटाई के बाद खेत की गहरी जुताई करें ताकि बीमारी के अवशेष मिट्टी में दब जाएं।"
+            },
+            "source": "ICAR-IIMR Ludhiana",
+            "source_url": "https://iimr.icar.gov.in",
+            "source_quote": "Burying maize stubble reduces Cercospora primary inoculum."
+          }
+        ],
+        "chemical": [
+          {
+            "step": 1,
+            "active_ingredient": "Azoxystrobin 18.2% + Difenoconazole 11.4% SC",
+            "product_example": "Amistar Top",
+            "dose_verified": false,
+            "dose": "follow the product label",
+            "phi_days": null,
+            "safety_line": {
+              "en": "Wear protective clothing and mask. Do not spray during noon heat.",
+              "te": "రక్షణ దుస్తులు, మాస్క్ ధరించండి. మధ్యాహ్నం ఎండలో పిచికారీ చేయవద్దు.",
+              "hi": "सुरक्षात्मक कपड़े और मास्क पहनें। दोपहर की तेज धूप में छिड़काव न करें।"
+            },
+            "source": "CIB&RC Major Uses",
+            "source_url": "https://cibrc.nic.in",
+            "source_quote": "Registered for foliar diseases in maize."
+          }
+        ]
+      }
+    },
+    {
+      "class_id": "maize_common_rust",
+      "index": 21,
+      "crop": "maize",
+      "type": "disease",
+      "pathogen": "Puccinia sorghi",
+      "names": {
+        "en": "Maize Common Rust",
+        "te": "మొక్కజొన్న కుంకుమ తెగులు",
+        "hi": "मक्का का रतुआ रोग (रस्ट)"
+      },
+      "needs_expert_review": true,
+      "referral_threshold": "SEVERE",
+      "severity_advice": {
+        "MILD": {
+          "en": "Small, powdery, cinnamon-brown pustules scattered on both leaf surfaces.",
+          "te": "ఆకుల రెండు వైపులా చిన్న చిన్న ఎరుపు-గోధుమ రంగు పొడి బొబ్బలు (కుంకుమ మచ్చలు).",
+          "hi": "पत्तियों के दोनों तरफ छोटे, दालचीनी जैसे भूरे रंग के उभरे हुए दाने (रतुआ)।"
+        },
+        "MODERATE": {
+          "en": "Pustules multiplying, rupturing leaf epidermis and releasing rust spores. Spray triazole fungicide.",
+          "te": "మచ్చలు ఎక్కువై పగిలి తుప్పు వంటి పొడి వెలువడుతుంది. శిలీంద్రనాశిని పిచికారీ చేయండి.",
+          "hi": "दाने बढ़कर फूट रहे हैं और भूरा पाउडर निकल रहा है। कवकनाशी छिड़कें।"
+        },
+        "SEVERE": {
+          "en": "Pustules coalesce, turning black (teliospore stage); severe leaf chlorosis and ear stunting.",
+          "te": "మచ్చలు నల్లగా మారి ఆకులన్నీ పసుపు రంగులోకి మారి కంకులు గిడసబారతాయి.",
+          "hi": "दाने काले पड़ जाते हैं, पत्तियां सूख जाती हैं और भुट्टे छोटे रह जाते हैं।"
+        }
+      },
+      "immediate_step": {
+        "en": "Monitor cool, moist weather conditions and apply registered triazole fungicide at first appearance of pustules.",
+        "te": "చల్లని, తేమ వాతావరణాన్ని గమనిస్తూ బొబ్బలు కనిపించగానే నిర్దేశిత శిలీంద్రనాశినిని పిచికారీ చేయండి.",
+        "hi": "ठंडे और नम मौसम में निगरानी रखें और पहले दाने दिखते ही फफूंदनाशक का छिड़काव करें।"
+      },
+      "explain_text": {
+        "en": "Airborne fungal rust that erupts as powdery rust pustules on both leaf surfaces during cool humid nights, weakening plants.",
+        "te": "గాలి ద్వారా వ్యాపించే ఈ శిలీంధ్రం ఆకులపై ఎర్రటి కుంకుమ బొబ్బలను ఏర్పరిచి మొక్కలను బలహీనపరుస్తుంది.",
+        "hi": "हवा से फैलने वाली यह फफूंद पत्तियों पर भूरे-लाल दाने बनाती है, जिससे पौधे कमजोर हो जाते हैं।"
+      },
+      "treatment": {
+        "natural": [
+          {
+            "step": 1,
+            "action": {
+              "en": "Plant rust-resistant certified hybrid seeds recommended for your agro-climatic zone.",
+              "te": "మీ ప్రాంతానికి అనువైన కుంకుమ తెగులును తట్టుకునే రకాలను ఎంపిక చేసుకోండి.",
+              "hi": "रतुआ रोधी प्रमाणित संकर किस्मों के बीज ही बोएं।"
+            },
+            "source": "ICAR-IIMR Hybrid Directory",
+            "source_url": "https://iimr.icar.gov.in",
+            "source_quote": "Genetic resistance is the primary defence against common rust in maize."
+          }
+        ],
+        "chemical": [
+          {
+            "step": 1,
+            "active_ingredient": "Mancozeb 75% WP or Propiconazole 25% EC",
+            "product_example": "Indofil M-45 / Tilt",
+            "dose_verified": false,
+            "dose": "follow the product label",
+            "phi_days": null,
+            "safety_line": {
+              "en": "Wear protective gear. Observe safety interval before green ear harvest.",
+              "te": "రక్షణ దుస్తులు ధరించండి. పచ్చి కంకెల కోతకు ముందు తగిన సమయం పాటించండి.",
+              "hi": "सुरक्षात्मक किट पहनें। भुट्टा तोड़ने से पहले प्रतीक्षा समय का ध्यान रखें।"
+            },
+            "source": "CIB&RC Major Uses",
+            "source_url": "https://cibrc.nic.in",
+            "source_quote": "Approved for rust management in maize."
+          }
+        ]
+      }
+    },
+    {
+      "class_id": "maize_northern_leaf_blight",
+      "index": 22,
+      "crop": "maize",
+      "type": "disease",
+      "pathogen": "Exserohilum turcicum",
+      "names": {
+        "en": "Maize Northern Leaf Blight",
+        "te": "మొక్కజొన్న తుప్పు తెగులు / ఆకు ఎండడం",
+        "hi": "मक्का का उत्तरी पत्ती झुलसा"
+      },
+      "needs_expert_review": true,
+      "referral_threshold": "SEVERE",
+      "severity_advice": {
+        "MILD": {
+          "en": "Long, elliptical grayish-green water-soaked lesions on lower leaves.",
+          "te": "కింది ఆకులపై పొడవైన, చుట్ట ఆకారంలో బూడిద-ఆకుపచ్చ నీటి మచ్చలు.",
+          "hi": "निचली पत्तियों पर लंबे, सिगार के आकार के धूसर-हरे धब्बे।"
+        },
+        "MODERATE": {
+          "en": "Lesions turning tan, expanding to 5-15 cm long with dark spore margins. Spray fungicide.",
+          "te": "మచ్చలు 5-15 సెం.మీ వరకు పొడవుగా పెరిగి చుట్టలాగా ఆకులను ఎండబెడతాయి. శిలీంద్రనాశిని చల్లండి.",
+          "hi": "धब्बे 5-15 सेमी लंबे होकर सिगार जैसे बन जाते हैं। कवकनाशी का छिड़काव करें।"
+        },
+        "SEVERE": {
+          "en": "Entire canopy burned appearance; heavy yield reduction. Consult KVK agronomist immediately.",
+          "te": "పైరంతా కాలిపోయినట్లు మాడిపోయి దిగుబడి ఘోరంగా పడిపోతుంది. వెంటనే కృషి విజ్ఞాన కేంద్రంను సంప్రదించండి.",
+          "hi": "पूरी फसल जली हुई दिखती है और भुट्टों में दाने नहीं बनते। तुरंत विशेषज्ञ से सलाह लें।"
+        }
+      },
+      "immediate_step": {
+        "en": "Avoid sprinkler irrigation that keeps leaves wet for hours, and spray systemic fungicide before silking stage.",
+        "te": "ఆకులు ఎక్కువసేపు తడిగా ఉండేలా తుంపర సేద్యం వాడవద్దు, కంకి దశకు ముందే శిలీంద్రనాశిని పిచికారీ చేయండి.",
+        "hi": "फव्वारा सिंचाई न करें जिससे पत्तियां गीली रहें, और भुट्टा निकलने से पहले दवा का छिड़काव करें।"
+      },
+      "explain_text": {
+        "en": "Fungal pathogen that produces characteristic large cigar-shaped lesions on leaves, devastating crops when infection strikes before silking.",
+        "te": "చుట్ట ఆకారంలో పొడవైన మచ్చలను ఏర్పరిచి పూత దశకు ముందే పంటను తీవ్రంగా దెబ్బతీసే ప్రమాదకరమైన శిలీంధ్రం.",
+        "hi": "यह फफूंद पत्तियों पर बड़े सिगार के आकार के धब्बे बनाती है जिससे भुट्टे बनने से पहले ही पत्तियां सूख जाती हैं।"
+      },
+      "treatment": {
+        "natural": [
+          {
+            "step": 1,
+            "action": {
+              "en": "Spray Pseudomonas fluorescens (10 g/L) at 30 and 45 days after sowing.",
+              "te": "విత్తిన 30 మరియు 45 రోజులకు సూడోమోనాస్ ఫ్లోరోసెన్స్ (10 గ్రా/లీ) పిచికారీ చేయండి.",
+              "hi": "बुवाई के 30 और 45 दिन बाद स्यूडोमोनास फ्लोरोसेंस (10 ग्राम/लीटर) छिड़कें।"
+            },
+            "source": "ANGRAU Maize Package",
+            "source_url": "https://angrau.ac.in",
+            "source_quote": "Bio-agent foliar application retards Exserohilum lesion expansion."
+          }
+        ],
+        "chemical": [
+          {
+            "step": 1,
+            "active_ingredient": "Mancozeb 75% WP or Azoxystrobin 18.2% + Difenoconazole 11.4% SC",
+            "product_example": "Indofil M-45 / Amistar Top",
+            "dose_verified": false,
+            "dose": "follow the product label",
+            "phi_days": null,
+            "safety_line": {
+              "en": "Wear face mask and gloves. Avoid skin contact with spray liquid.",
+              "te": "మాస్క్, గ్లౌజులు ధరించండి. మందు ద్రావణం చర్మానికి తగలకుండా జాగ్రత్తపడండి.",
+              "hi": "मास्क और दस्ताने पहनें। दवा को त्वचा पर न लगने दें।"
+            },
+            "source": "CIB&RC Major Uses",
+            "source_url": "https://cibrc.nic.in",
+            "source_quote": "Approved for Northern leaf blight in maize."
+          }
+        ]
+      }
+    },
+    {
+      "class_id": "maize_fall_armyworm",
+      "index": 23,
+      "crop": "maize",
+      "type": "pest",
+      "pathogen": "Spodoptera frugiperda",
+      "names": {
+        "en": "Maize Fall Armyworm",
+        "te": "మొక్కజొన్న కత్తెర పురుగు",
+        "hi": "मक्का का फाल आर्मीवर्म कीट"
+      },
+      "needs_expert_review": true,
+      "referral_threshold": "SEVERE",
+      "severity_advice": {
+        "MILD": {
+          "en": "Pin-hole and window-pane feeding on young whorl leaves; fine sawdust-like frass.",
+          "te": "సుడులలోని లేత ఆకులపై చిన్న రంధ్రాలు, ఆకు పొరలు తిన్నట్లు కనిపించడం; రంపపు పొట్టు వంటి పురుగు విసర్జన.",
+          "hi": "पत्तियों पर छोटे छेद और जालीदार खरोंच; बुरादे जैसा कीड़े का मल दिखना।"
+        },
+        "MODERATE": {
+          "en": "Ragged shot-holes, heavy frass accumulating in leaf whorls; larvae feeding inside whorl. Apply whorl treatment.",
+          "te": "ఆకులు పెద్ద రంధ్రాలతో చినిగిపోతాయి, సుడులలో పురుగు మలం నిండి ఉంటుంది. సుడులలో మందు వేయండి.",
+          "hi": "पत्तियों में बड़े छेद, पोंगे में बहुत सारा मल; सूंडी अंदर बैठकर खाती है। पोंगे में दवा डालें।"
+        },
+        "SEVERE": {
+          "en": "Whorls destroyed, growing point dead (dead-heart); tassels and cobs chewed. Alert KVK immediately.",
+          "te": "సుడి చనిపోయి మొవ్వు ఎండిపోతుంది; కంకెలపై పురుగులు దాడి చేస్తాయి. వెంటనే కృషి విజ్ఞాన కేంద్రంను సంప్రదించండి.",
+          "hi": "पोंगा नष्ट, गोभ सूखना (डेड हार्ट); भुट्टों को सूंडियां खा जाती हैं। तुरंत कृषि विशेषज्ञ से संपर्क करें।"
+        }
+      },
+      "immediate_step": {
+        "en": "Apply dry sand mixed with neem cake/lime into plant whorls to mechanically abrade and kill young larvae.",
+        "te": "మొక్క సుడులలో ఇసుక మరియు వేప పిండి లేదా సున్నం మిశ్రమాన్ని వేసి లేత పురుగులను నలిపి చంపండి.",
+        "hi": "पौधों के पोंगे (गोभ) में सूखी रेत और नीम की खली का मिश्रण डालें ताकि सूंडी नष्ट हो सके।"
+      },
+      "explain_text": {
+        "en": "Invasive voracious pest whose larvae feed hidden inside the central whorl, identifiable by four dots in a square on the 8th segment and an inverted Y mark on head.",
+        "te": "మొక్క సుడిలో దాగి ఆకులను తినే ప్రమాదకరమైన విదేశీ పురుగు. తలపై తిరగబడిన Y గుర్తు, తోక భాగంలో 4 చుక్కలు ఉంటాయి.",
+        "hi": "यह घातक कीट पौधों के पोंगे में छिपकर खाता है। इसके सिर पर उल्टा Y और पूंछ पर 4 बिंदी का निशान होता है।"
+      },
+      "treatment": {
+        "natural": [
+          {
+            "step": 1,
+            "action": {
+              "en": "Apply sand + wood ash or neem cake into the central whorls of plants at 15-20 days after emergence.",
+              "te": "మొలకెత్తిన 15-20 రోజులకు సుడులలో ఇసుక + బూడిద లేదా వేప పిండి మిశ్రమాన్ని వేయండి.",
+              "hi": "बुवाई के 15-20 दिन बाद पौधों की गोभ में रेत और राख का मिश्रण डालें।"
+            },
+            "source": "ICAR-NBAIR FAW Advisory",
+            "source_url": "https://nbair.res.in",
+            "source_quote": "Whorl application of abrasive sand and botanicals suffocates first and second instar FAW larvae."
+          },
+          {
+            "step": 2,
+            "action": {
+              "en": "Install pheromone traps (5 per acre) for monitoring and spray Metarhizium rileyi or Bacillus thuringiensis (2 g/L).",
+              "te": "ఎకరాకు 5 లింగాకర్షక బుట్టలను అమర్చండి మరియు మెటారైజియం లేదా బి.టి (2 గ్రా/లీ) పిచికారీ చేయండి.",
+              "hi": "प्रति एकड़ 5 फेरोमोन ट्रैप लगाएं और बीटी (Bt) या मेटाराइजियम (2 ग्राम/लीटर) छिड़कें।"
+            },
+            "source": "NIPHM FAW Management",
+            "source_url": "https://niphm.gov.in",
+            "source_quote": "Bio-pesticides are effective against early instar FAW larvae."
+          }
+        ],
+        "chemical": [
+          {
+            "step": 1,
+            "active_ingredient": "Emamectin Benzoate 5% SG or Spinetoram 11.7% SC",
+            "product_example": "Proclaim / Delegate",
+            "dose_verified": false,
+            "dose": "follow the product label",
+            "phi_days": null,
+            "safety_line": {
+              "en": "Direct nozzle directly into plant whorls. Wear gloves and mask. Keep away from domestic animals.",
+              "te": "మందు నాజిల్ ను నేరుగా మొక్క సుడిలోకి పెట్టి పిచికారీ చేయండి. గ్లౌజులు, మాస్క్ ధరించండి.",
+              "hi": "स्प्रे की धार सीधे पौधे के पोंगे (गोभ) में डालें। दस्ताने और मास्क पहनें।"
+            },
+            "source": "CIB&RC Major Uses",
+            "source_url": "https://cibrc.nic.in",
+            "source_quote": "Approved specifically for Fall Armyworm management in maize."
+          }
+        ]
+      }
+    },
+    {
+      "class_id": "maize_healthy",
+      "index": 24,
+      "crop": "maize",
+      "type": "healthy",
+      "pathogen": "None",
+      "names": {
+        "en": "Healthy Maize",
+        "te": "ఆరోగ్యకరమైన మొక్కజొన్న",
+        "hi": "स्वस्थ मक्का"
+      },
+      "needs_expert_review": true,
+      "referral_threshold": "NONE",
+      "severity_advice": {
+        "MILD": {
+          "en": "Vigorous crop with intact central whorls, broad green leaves, and no insect feeding punctures.",
+          "te": "ఆరోగ్యకరమైన వెడల్పాటి ఆకుపచ్చని ఆకులు, ఎటువంటి పురుగు రంధ్రాలు లేని స్వచ్ఛమైన సుడులు.",
+          "hi": "चौड़ी हरी पत्तियां और स्वस्थ पोंगा, कोई कीड़े के छेद या बीमारी नहीं।"
+        },
+        "MODERATE": {
+          "en": "Crop is healthy. Ensure adequate moisture at tasseling and silking.",
+          "te": "పంట ఆరోగ్యంగా ఉంది. పూత మరియు కంకి దశలలో తేమ లోపించకుండా చూడండి.",
+          "hi": "फसल स्वस्थ है। नर व मादा फूल (सिल्किंग) निकलते समय नमी की कमी न होने दें।"
+        },
+        "SEVERE": {
+          "en": "Crop is healthy.",
+          "te": "పంట ఆరోగ్యంగా ఉంది.",
+          "hi": "फसल स्वस्थ है।"
+        }
+      },
+      "immediate_step": {
+        "en": "No chemical application needed. Ensure timely irrigation, especially during critical flowering and grain-filling stages.",
+        "te": "రసాయనాలు అవసరం లేదు. పూత మరియు గింజ పాలుపోసుకునే క్లిష్ట దశలలో సక్రమంగా నీటి తడులు ఇవ్వండి.",
+        "hi": "किसी दवा की जरूरत नहीं। भुट्टा और दाने बनते समय सही समय पर पानी दें।"
+      },
+      "explain_text": {
+        "en": "Foliage shows uniform green coloration without blight lesions, rust pustules, or fall armyworm frass.",
+        "te": "ఎటువంటి మచ్చలు, తుప్పు బొబ్బలు లేదా కత్తెర పురుగు ఆనవాళ్ళు లేకుండా పంట బలంగా ఉంది.",
+        "hi": "पत्तियों में कोई बीमारी, धब्बे या कीट के लक्षण नहीं हैं, फसल पूरी तरह स्वस्थ है।"
+      },
+      "treatment": {
+        "natural": [
+          {
+            "step": 1,
+            "action": {
+              "en": "Scout 20 consecutive plants in 5 locations across the field weekly to maintain pest-free status.",
+              "te": "తెగుళ్ళ బెడద లేకుండా చూసుకోవడానికి పొలంలో వారానికోసారి 5 చోట్ల 20 మొక్కలను పరిశీలించండి.",
+              "hi": "खेत में हर हफ्ते 5 अलग-अलग जगहों पर 20-20 पौधों की जांच करें ताकि फसल स्वस्थ रहे।"
+            },
+            "source": "ICAR-IIMR Surveillance Guide",
+            "source_url": "https://iimr.icar.gov.in",
+            "source_quote": "Systematic scouting prevents sudden pest outbreaks in maize."
+          }
+        ],
+        "chemical": []
+      }
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+Crop Doctor - Android Permission Audit
+=======================================
+Audit Date: 2026-11-11
+Target Build: com.cropdoctor (v0.1.0)
+Source Manifest: app/src/main/AndroidManifest.xml
+
+Declared Permissions:
+- android.permission.CAMERA (Required for live leaf image capture)
+
+Prohibited Permissions Audit:
+- android.permission.INTERNET: NOT FOUND (PASS)
+- android.permission.ACCESS_NETWORK_STATE: NOT FOUND (PASS)
+- android.permission.ACCESS_WIFI_STATE: NOT FOUND (PASS)
+- android.permission.READ_PHONE_STATE: NOT FOUND (PASS)
+
+Conclusion:
+App complies 100% with the offline requirement. Zero network permissions requested.
+Inference and advisory lanes run completely local on device.
