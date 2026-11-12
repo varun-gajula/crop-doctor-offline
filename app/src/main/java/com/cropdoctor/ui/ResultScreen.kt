@@ -35,9 +35,15 @@ import com.cropdoctor.domain.ScanHistoryRepository
 import com.cropdoctor.domain.SeverityBand
 import com.cropdoctor.domain.TreatmentSelector
 import com.cropdoctor.domain.TreatmentSelector.TreatmentTab
+import com.cropdoctor.knowledge.ChemicalStep
 import com.cropdoctor.knowledge.KbEntry
+import com.cropdoctor.knowledge.LocalizedText
+import com.cropdoctor.knowledge.NaturalStep
+import com.cropdoctor.knowledge.TreatmentPlan
+import com.cropdoctor.ui.theme.CropDoctorTheme
 import com.cropdoctor.ui.theme.FarmGreenDark
 import com.cropdoctor.ui.theme.FarmGreenPrimary
+import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
 fun ResultScreen(
@@ -661,3 +667,90 @@ fun ResultScreen(
         }
     }
 }
+
+@Preview(showBackground = true)
+@Composable
+fun ResultScreenPreview() {
+    val sampleKb = KbEntry(
+        classId = "rice_bacterial_leaf_blight",
+        index = 0,
+        crop = "rice",
+        type = "bacterial",
+        pathogen = "Xanthomonas oryzae",
+        names = LocalizedText(
+            en = "Bacterial Leaf Blight",
+            te = "బాక్టీరియల్ ఆకు ఎండు తెగులు",
+            hi = "जीवाणु पत्ती झुलसा"
+        ),
+        referralThreshold = "SEVERE",
+        immediateStep = LocalizedText(
+            en = "Drain standing water immediately.",
+            te = "పొలంలో నిలిచిన నీటిని వెంటనే తీసివేయండి.",
+            hi = "खेत से तुरंत पानी निकालें।"
+        ),
+        explainText = LocalizedText(
+            en = "Bacterial blight causes yellow to white lesions along leaf margins. It spreads rapidly under humid, rainy conditions.",
+            te = "బాక్టీరియల్ ఆకు ఎండు తెగులు ఆకుల అంచుల వెంట పసుపు నుండి తెలుపు రంగు మచ్చలను కలిగిస్తుంది.",
+            hi = "जीवाणु पत्ती झुलसा पत्तियों के किनारों पर पीले से सफेद घाव बनाता है।"
+        ),
+        treatment = TreatmentPlan(
+            natural = listOf(
+                NaturalStep(
+                    step = 1,
+                    action = LocalizedText(
+                        en = "Drain excess standing water from the field.",
+                        te = "పొలంలో అదనపు నీటిని తీసివేయండి.",
+                        hi = "खेत से अतिरिक्त पानी निकालें।"
+                    ),
+                    source = "ICAR-IIRR",
+                    sourceUrl = "https://icar-iirr.org",
+                    sourceQuote = "Drain field to reduce bacterial blight spread."
+                )
+            ),
+            chemical = listOf(
+                ChemicalStep(
+                    step = 1,
+                    activeIngredient = "Copper Hydroxide 53.8% DF",
+                    productExample = "Kocide",
+                    dose = "follow the product label",
+                    safetyLine = LocalizedText(
+                        en = "Wear mask and gloves while spraying.",
+                        te = "పిచికారీ చేసేటప్పుడు మాస్క్ మరియు చేతి తొడుగులు ధరించండి.",
+                        hi = "छिड़काव के समय मास्क और दस्ताने पहनें।"
+                    ),
+                    source = "CIB&RC",
+                    sourceUrl = "https://cibrc.gov.in",
+                    sourceQuote = "Major Uses of Pesticides - Rice Bacterial Blight"
+                )
+            )
+        )
+    )
+
+    val sampleResult = ClassifierResult(
+        classId = "rice_bacterial_leaf_blight",
+        displayName = "Rice Bacterial Leaf Blight",
+        confidence = 0.88f,
+        severityBand = SeverityBand.MODERATE,
+        certaintyBand = CertaintyBand.SURE,
+        lesionFraction = 0.22f,
+        inferenceTimeMs = 42L,
+        memoryUsedMb = 64L,
+        isDemoMode = false
+    )
+
+    CropDoctorTheme {
+        ResultScreen(
+            result = sampleResult,
+            kbEntry = sampleKb,
+            language = "en",
+            advisoryText = "Bacterial leaf blight detected with moderate severity. Drain excess water and follow recommended organic bio-control practices.",
+            isGeneratingAdvice = false,
+            capturedBitmap = null,
+            onBackClick = {},
+            onChangeLanguageClick = {},
+            onViewMoreDetails = {},
+            onChatbotClick = {}
+        )
+    }
+}
+
