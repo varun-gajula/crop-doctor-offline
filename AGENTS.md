@@ -18,12 +18,10 @@ Demo device: Motorola Edge 60 (Android 15, 12 GB RAM, Arm Cortex-A78/A55 CPU). P
 ## Added by the user (not from the video)
 - U1 For every problem the app also shows HOW TO TREAT it in two tiers: "Natural and traditional" (field practices, bio-agents, neem-based and other traditional methods that appear in an official source) and "Chemical (advanced)" (registered fungicides, insecticides, miticides), with safety information, and the code decides which tier is opened first according to severity.
 - U2 The UI is clean, easy to understand for a farmer with limited reading ability, and lag-free (see the UX and performance budget below).
-- U3 ZERO BUDGET. Only free resources; no paid plans, trials or cards.
-- U4 Languages: Telugu, Hindi and English are all mandatory.
 
 ## Hard rules
 - H1 The app manifest has NO `INTERNET` permission in any build variant. Verify with `aapt2 dump permissions` and keep the output in `benchmarks/`.
-- H2 Never commit datasets, the Llama model files (about 1.1 GB), keystores, tokens or API keys. `.gitignore` exists from the first commit. Our own small vision model (about 25 MB or less) IS committed so that a clean clone can build the APK.
+- H2 Never commit datasets, the Llama model files (about 1.1 GB), keystores, tokens or API keys. `.gitignore` exists from the first commit. Our own vision model IS committed so that a clean clone can build the APK, but each git file must stay under 90 MB (GitHub blocks 100 MB): use fp16 or a smaller backbone, or Git LFS.
 - H3 Never invent numbers (accuracy, latency, tokens/s, RAM, sizes). Every figure in README/report comes from a logged measurement saved in `benchmarks/`. If it was not measured, write "not yet measured".
 - H4 Never invent agronomy. Every knowledge-base entry cites at least one official source you actually read (ICAR, NIPHM, a state agricultural university such as PJTSAU, ANGRAU, UAS, TNAU, KAU, a Krishi Vigyan Kendra, or a CIB&RC-registered label). A treatment appears only if an official source recommends it for that crop and problem; if you find none, leave it out. Chemical products: name only active ingredients registered by CIB&RC for that crop (check the CIB&RC "Major Uses of Pesticides" list). Doses and spray rates may appear ONLY in structured `dose` fields copied from an official source, each with `source_url`, `source_quote` and `dose_verified`; the app shows a dose only when `dose_verified` is true (a human has checked it), otherwise it says "follow the product label". Never compute, guess or paraphrase a dose, and never let Llama write one. Always include the safety line (protective clothing, label, waiting days before harvest). Every entry carries `needs_expert_review: true` until a human signs it off.
 - H5 Safety decisions (severity bands, certainty level, referral to an extension worker) live in plain, unit-tested app code. Llama only EXPLAINS; it never decides severity, referral or medicines. Its input is only the structured finding plus approved knowledge-base text, and its output is shown labelled "AI explanation".
@@ -31,6 +29,10 @@ Demo device: Motorola Edge 60 (Android 15, 12 GB RAM, Arm Cortex-A78/A55 CPU). P
 - H7 Stay inside the project folder. No `sudo`, no `rm -rf` outside build directories, no silent installs of system software: tell the user what is missing and the command to install it.
 - H8 The user does not always have the phone. Mark phone-only steps "REQUIRES PHONE" and build everything else against the emulator using interfaces `Classifier` and `Advisor`, each with a Fake implementation.
 - H9 ZERO BUDGET. Everything must be free: no paid APIs, cloud credits, subscriptions, store fees, paid fonts or assets, and nothing that asks for a credit card. Use only open-source or free-tier tools; if something would cost money, stop and tell the user. Never suggest upgrading a plan.
+- H11 NO FAKE INTELLIGENCE. A disease or pest label comes ONLY from the trained model (`vision.pte`). No hand-written colour, shape or aspect-ratio rule may choose a label. Plain heuristics are allowed only for (a) a SOFT "is this a crop photo?" warning with a "use this photo anyway" button, and (b) the lesion-fraction severity estimate. If the model is missing, fails to load, or is not sure, show "Not sure - ask an extension officer"; never fall back to a guess.
+- H12 NO HARD-CODED MEASUREMENTS. Any speed, RAM, accuracy or offline figure shown in the app, README or report is computed at run time or copied from a log in `benchmarks/`. A literal like "~114 ms" in the UI is forbidden. Any benchmark panel is hidden from farmers (long-press on the title) and shows live values.
+- H13 SCOPE LOCK. Build only what R1-R9 and U1-U4 ask for. Any extra screen or feature (chatbot, tips, history, branding extras) needs the user's written approval first; until then list it as "optional" in `docs/PROGRESS.md`. Required items must be finished and proven before any optional one.
+- H14 ONE FOLDER. Work only in the workspace folder that holds this AGENTS.md (never in Antigravity's scratch area). It must be a git repo with a GitHub remote; commit after every small step, run `./gradlew assembleDebug` after every change that touches Kotlin, and push at every CHECKPOINT.
 - H10 QUOTA ECONOMY. The user's Antigravity plan is the free tier, with a quota that refreshes weekly. Be economical: do not re-read large files without need, do not print huge outputs, batch related edits into one step, prefer a script over repeated manual agent steps, and ask before any large rewrite. Tell the user when a phase is expensive so they can plan.
 
 ## Working agreement
@@ -45,11 +47,32 @@ The user is a B.Tech ECE student, new to Android and ML, on a Windows 11 laptop 
 
 ## Tech decisions (change only with the user's approval)
 - Android: Kotlin, Jetpack Compose, CameraX, minSdk 26, Gradle Kotlin DSL, one app module with clean packages.
-- Vision: MobileNetV3-Large (compare ConvNeXt-Tiny) trained in PyTorch on Colab; deployed with ExecuTorch (XNNPACK). Try int8; if it fails or accuracy drops, ship fp32 (about 21 MB, acceptable). Fallback runtime for vision only: LiteRT/TFLite.
+- Vision: the user says phone RAM and storage are NOT a limit (Edge 60: 12 GB). So choose the backbone by accuracy on REAL field photos, subject to: result within 1.5 s of the shutter on the phone and file under 90 MB. Compare MobileNetV3-Large, EfficientNet-B0 and ConvNeXt-Tiny (fp16 if over 90 MB), trained in PyTorch on Colab; deployed with ExecuTorch (XNNPACK); int8 is optional, fp32/fp16 is fine. Fallback runtime for vision only: LiteRT/TFLite. Speed and data quality, not memory, are the real limits.
+- Advisory size: start with Llama-3.2-1B. Try 3B only after 1B works end to end on the phone, and only if a ready ExecuTorch `.pte` exists and tokens/s and quality are measured and better; otherwise stay on 1B.
 - Advisory: Llama-3.2-1B-Instruct, pre-exported 4-bit SpinQuant `.pte` from the `executorch-community` Hugging Face organisation (verify the exact repo and file names). Copied to the phone separately (adb push or in-app import); never bundled in the APK or git.
 - Pin the ExecuTorch Python package and the Android library to compatible versions and write the versions down; a mismatch is the most common failure.
 - Knowledge base: one JSON file in APK assets, validated by a JSON schema and a script.
 - Languages: Telugu (te), Hindi (hi) and English (en) are all mandatory. Bundle the free Noto Sans Telugu and Noto Sans Devanagari fonts (SIL Open Font License). Llama 3.2 officially supports Hindi, so Llama may generate the Hindi explanation, but test its quality on 20 cases; if it is poor or fails the guardrail, treat Hindi like Telugu (fixed templates + knowledge-base text).
-- Telugu glossary: crop = పంట, disease = తెగులు, pest/insect = పురుగు, leaf = ఆకు, spray = పిచికారీ, fungicide = శిలీంధ్రనాశిని, insecticide = పురుగుమందు, farmer = రైతు, agriculture extension officer = వ్యవసాయ విస్తరణ అధికారి, severity = తీవ్రత; rice = వరి, cotton = పత్తి, chilli = మిరప, tomato = టమాటా, maize = మొక్కజొన్న.
+- Telugu glossary for consistent wording: crop = పంట, disease = తెగులు, pest/insect = పురుగు, leaf = ఆకు, spray = పిచికారీ, fungicide = శిలీంధ్రనాశిని, insecticide = పురుగుమందు, farmer = రైతు, agriculture extension officer = వ్యవసాయ విస్తరణ అధికారి, severity = తీవ్రత; rice = వరి, cotton = పత్తి, chilli = మిరప, tomato = టమాటా, maize = మొక్కజొన్న.
 - Hindi glossary: crop = फसल, disease = रोग, pest/insect = कीट, leaf = पत्ती, spray = छिड़काव, fungicide = फफूंदनाशक, insecticide = कीटनाशक, farmer = किसान, agriculture extension officer = कृषि विस्तार अधिकारी, severity = गंभीरता; rice = धान, cotton = कपास, chilli = मिर्च, tomato = टमाटर, maize = मक्का.
 
+- More Telugu terms: whitefly = తెల్ల దోమ, mite = నల్లి, thrips = తామర పురుగు, fall armyworm = కత్తెర పురుగు. Class names (English, Telugu, Hindi, pathogen, data source) come from `seed/class_names_checked.tsv`: use them as written, never rename a class silently, and ask the user about every row marked UNVERIFIED. All Telugu and Hindi text stays `needs_review` until a native speaker or agriculture officer signs it off.
+
+- Free-only stack: Antigravity (free tier), Android Studio and emulator, Google Colab or Kaggle Notebooks (free GPU), Google Drive (15 GB free, shared with Gmail - keep data small), GitHub (free public repo and Releases), Hugging Face (free), ExecuTorch and Llama 3.2 (free to use under the Llama 3.2 Community License), CC BY datasets (credit them). Sign the APK with the debug key; no Play Store.
+
+## Repo layout
+```
+crop-doctor-offline/
+  AGENTS.md  README.md  LICENSE  .gitignore
+  app/                     Android app (Kotlin/Compose)
+  ml/                      training + export code (importable by notebooks)
+  notebooks/               01_data_check, 02_train_vision, 03_export_vision (Colab)
+  data/DATASETS.md  data/class_map.yaml  data/kb/knowledge_base.json  data/kb/kb.schema.json
+  scripts/                 download_data.py, validate_kb.py, audit_requirements.md
+  docs/                    REQUIREMENTS.md, PROGRESS.md, REPORT.md, KB_REVIEW_CHECKLIST.md, DEMO_SCRIPT.md
+  benchmarks/              raw measurement logs (phone + Colab)
+  seed/                    earlier drafts from the user (read-only inspiration)
+```
+
+## Definition of done
+Every requirement R1-R9 has a row in `docs/REQUIREMENTS.md` pointing to the code, the test or the measurement that proves it; the APK runs with airplane mode on; a clean clone of the GitHub repo builds the APK by following the README.
