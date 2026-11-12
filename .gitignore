@@ -59,4 +59,5 @@ signing/
 *.log
 tool_out.txt
 tool_err.txt
+/t2_screens_collage.png
 
