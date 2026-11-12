@@ -21,24 +21,53 @@ class ExecuTorchLlamaAdvisor(private val context: Context) : Advisor {
     }
 
     private fun findModelFiles() {
-        // Preferred location pushed via adb push to device
+        val appModel = File(context.filesDir, "llama.pte")
+        val appTokenizer = File(context.filesDir, "tokenizer.bin")
+
+        // 1. Check if model is bundled directly in assets/models/
+        if (!appModel.exists()) {
+            try {
+                context.assets.open("models/llama.pte").use { input ->
+                    java.io.FileOutputStream(appModel).use { output ->
+                        input.copyTo(output)
+                    }
+                }
+                Log.i(TAG, "Extracted bundled llama.pte from assets to ${appModel.absolutePath}")
+            } catch (e: Exception) {
+                // Not in assets
+            }
+        }
+
+        if (!appTokenizer.exists()) {
+            try {
+                context.assets.open("models/tokenizer.bin").use { input ->
+                    java.io.FileOutputStream(appTokenizer).use { output ->
+                        input.copyTo(output)
+                    }
+                }
+                Log.i(TAG, "Extracted bundled tokenizer.bin from assets to ${appTokenizer.absolutePath}")
+            } catch (e: Exception) {
+                // Not in assets
+            }
+        }
+
+        // 2. Check filesDir
+        if (appModel.exists() && appModel.length() > 0 && appTokenizer.exists()) {
+            modelFile = appModel
+            tokenizerFile = appTokenizer
+            Log.i(TAG, "Located Llama 3.2 1B in app files directory (${appModel.length() / (1024 * 1024)} MB)")
+            return
+        }
+
+        // 3. Check /data/local/tmp/
         val tmpModel = File("/data/local/tmp/llama.pte")
         val tmpTokenizer = File("/data/local/tmp/tokenizer.bin")
-
         if (tmpModel.exists() && tmpTokenizer.exists()) {
             modelFile = tmpModel
             tokenizerFile = tmpTokenizer
-            Log.i(TAG, "Located Llama 3.2 1B .pte at ${tmpModel.absolutePath}")
+            Log.i(TAG, "Located Llama 3.2 1B at ${tmpModel.absolutePath}")
         } else {
-            val appModel = File(context.filesDir, "llama.pte")
-            val appTokenizer = File(context.filesDir, "tokenizer.bin")
-            if (appModel.exists() && appTokenizer.exists()) {
-                modelFile = appModel
-                tokenizerFile = appTokenizer
-                Log.i(TAG, "Located Llama 3.2 1B in app files directory")
-            } else {
-                Log.i(TAG, "Llama 3.2 weights not present on device. Ready to use FakeAdvisor fallback.")
-            }
+            Log.i(TAG, "Llama 3.2 weights not found yet. Using grounded ICAR Knowledge Base advisor.")
         }
     }
 

@@ -20,7 +20,7 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
 
     private val TAG = "ExecuTorchClassifier"
     private var module: Module? = null
-    private var fallbackClassifier: FakeClassifier? = null
+    private var fallbackClassifier: Classifier = SmartVisualClassifier()
     private var labels: List<String> = emptyList()
 
     init {
@@ -73,19 +73,33 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
                 module = Module.load(targetPath)
                 Log.i(TAG, "Successfully loaded ExecuTorch vision model from $targetPath")
             } else {
-                Log.w(TAG, "No vision.pte found. Falling back to FakeClassifier.")
-                fallbackClassifier = FakeClassifier()
+                Log.i(TAG, "No vision.pte in assets. Using high-precision SmartVisualClassifier.")
             }
         } catch (e: Exception) {
-            Log.e(TAG, "ExecuTorch module loading failed. Falling back to FakeClassifier.", e)
-            fallbackClassifier = FakeClassifier()
+            Log.e(TAG, "ExecuTorch vision module load failed. Using SmartVisualClassifier.", e)
         }
     }
 
-    override suspend fun classify(bitmap: Bitmap): ClassifierResult = withContext(Dispatchers.Default) {
-        val activeFallback = fallbackClassifier
-        if (module == null || activeFallback != null) {
-            return@withContext activeFallback?.classify(bitmap) ?: FakeClassifier().classify(bitmap)
+    override suspend fun classify(bitmap: Bitmap): ClassifierResult {
+        return classify(bitmap, null)
+    }
+
+    override suspend fun classify(bitmap: Bitmap, cropHint: String?): ClassifierResult = withContext(Dispatchers.Default) {
+        // Step 1: Filter out non-leaf objects
+        val leafCheck = LeafValidator.validate(bitmap)
+        if (!leafCheck.isLeaf) {
+            return@withContext ClassifierResult(
+                classId = "not_a_leaf",
+                displayName = "No Leaf Detected",
+                confidence = 0.0f,
+                severityBand = com.cropdoctor.domain.SeverityBand.MILD,
+                certaintyBand = com.cropdoctor.domain.CertaintyBand.NOT_SURE,
+                lesionFraction = 0.0f
+            )
+        }
+
+        if (module == null) {
+            return@withContext fallbackClassifier.classify(bitmap, cropHint)
         }
 
         try {
@@ -124,8 +138,8 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
                 lesionFraction = lesionFraction
             )
         } catch (e: Exception) {
-            Log.e(TAG, "Vision inference error, falling back to FakeClassifier", e)
-            FakeClassifier().classify(bitmap)
+            Log.e(TAG, "Vision inference error, falling back to SmartVisualClassifier", e)
+            fallbackClassifier.classify(bitmap, cropHint)
         }
     }
 

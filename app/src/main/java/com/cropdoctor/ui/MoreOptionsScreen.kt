@@ -12,7 +12,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
-import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -34,7 +33,9 @@ fun MoreOptionsScreen(
     language: String,
     onBackClick: () -> Unit,
     onFarmingTipsClick: () -> Unit,
-    onBrowseDiseasesClick: () -> Unit
+    onBrowseDiseasesClick: () -> Unit,
+    onChatbotClick: () -> Unit = {},
+    onScanHistoryClick: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val scrollState = rememberScrollState()
@@ -87,9 +88,9 @@ fun MoreOptionsScreen(
                     icon = Icons.Default.History,
                     iconBg = Color(0xFFE8F5E9),
                     iconTint = FarmGreenPrimary,
-                    title = when (language) { "te" -> "స్కాన్ చరిత్ర"; "hi" -> "स्कैन इतिहास"; else -> "Scan History" },
-                    subtitle = when (language) { "te" -> "గత ఫలితాలు"; "hi" -> "पुराने रिकॉर्ड"; else -> "View past scans" },
-                    onClick = { /* History */ }
+                    title = when (language) { "te" -> "స్కాన్ చరిత్ర & ట్రాకర్"; "hi" -> "स्कैन इतिहास और ट्रैकर"; else -> "Scan History & Tracker" },
+                    subtitle = when (language) { "te" -> "గత ఫలితాలు & వ్యాధి రికార్డులు"; "hi" -> "पुराने रिकॉर्ड और रुझान"; else -> "View past scans & timeline" },
+                    onClick = onScanHistoryClick
                 )
 
                 // Favorite Diseases
@@ -112,9 +113,19 @@ fun MoreOptionsScreen(
                     onClick = onFarmingTipsClick
                 )
 
+                // Chat with Agri AI Doctor
+                MoreOptionItem(
+                    icon = Icons.Default.Chat,
+                    iconBg = Color(0xFFE8F5E9),
+                    iconTint = FarmGreenPrimary,
+                    title = when (language) { "te" -> "అగ్రి AI డాక్టర్‌తో చాట్ చేయండి"; "hi" -> "एग्रीकेयर AI डॉक्टर से चैट"; else -> "Chat with Agri AI Doctor" },
+                    subtitle = when (language) { "te" -> "24/7 ఆఫ్లైన్ పంట వైద్య సలహా"; "hi" -> "24/7 ऑफलाइन फसल सलाह"; else -> "24/7 Offline Crop Advisory" },
+                    onClick = onChatbotClick
+                )
+
                 // Help & Support
                 MoreOptionItem(
-                    icon = Icons.AutoMirrored.Filled.HelpOutline,
+                    icon = Icons.Default.HelpOutline,
                     iconBg = Color(0xFFEDE7F6),
                     iconTint = Color(0xFF512DA8),
                     title = when (language) { "te" -> "సహాయం & మద్దతు"; "hi" -> "सहायता और सपोर्ट"; else -> "Help & Support" },

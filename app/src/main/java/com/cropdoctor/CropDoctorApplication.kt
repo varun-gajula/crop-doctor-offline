@@ -38,15 +38,9 @@ class CropDoctorApplication : Application() {
             KnowledgeBase.initialize(this@CropDoctorApplication)
             classifier = ExecuTorchClassifier(this@CropDoctorApplication)
 
-            // On 4GB RAM devices, use zero-RAM deterministic Knowledge Base advisor to prevent OOM.
-            // On 6GB/8GB+ devices (like Motorola Edge 60 12GB), enable full on-device ExecuTorch Llama.
-            advisor = if (totalRamGb < 6) {
-                Log.i("CropDoctorApp", "Device RAM is ${totalRamGb}GB (<6GB). Using zero-RAM deterministic advisor.")
-                FakeAdvisor()
-            } else {
-                Log.i("CropDoctorApp", "Device RAM is ${totalRamGb}GB (>=6GB). Enabling on-device ExecuTorch Llama 3.2.")
-                ExecuTorchLlamaAdvisor(this@CropDoctorApplication)
-            }
+            // On-device ExecuTorch Llama 3.2 Advisor
+            Log.i("CropDoctorApp", "Initializing on-device ExecuTorch Llama 3.2 engine.")
+            advisor = ExecuTorchLlamaAdvisor(this@CropDoctorApplication)
         }
     }
 

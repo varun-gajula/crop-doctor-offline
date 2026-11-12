@@ -32,7 +32,8 @@ fun HomeScreen(
     onBrowseDiseasesClick: () -> Unit,
     onFarmingTipsClick: () -> Unit,
     onChangeLanguageClick: () -> Unit,
-    onMoreOptionsClick: () -> Unit
+    onMoreOptionsClick: () -> Unit,
+    onChatbotClick: () -> Unit = {}
 ) {
     val scrollState = rememberScrollState()
 
@@ -79,9 +80,9 @@ fun HomeScreen(
     }
 
     val settingsTitle = when (language) {
-        "te" -> "సహాయం & మద్దతు"
-        "hi" -> "सहायता"
-        else -> "Help & Support"
+        "te" -> "సెట్టింగ్స్"
+        "hi" -> "सेटिंग्स"
+        else -> "Settings"
     }
 
     val langButtonTitle = when (language) {
@@ -109,12 +110,20 @@ fun HomeScreen(
                     )
                 }
 
-                Text(
-                    text = headerTitle,
-                    fontSize = 22.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White
-                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    androidx.compose.foundation.Image(
+                        painter = androidx.compose.ui.res.painterResource(id = com.cropdoctor.R.drawable.ic_agricare_logo),
+                        contentDescription = "Logo",
+                        modifier = Modifier.size(34.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = headerTitle,
+                        fontSize = 22.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+                }
 
                 // Language switcher in top right corner
                 IconButton(onClick = onChangeLanguageClick) {
@@ -299,7 +308,7 @@ fun HomeScreen(
             ) {
                 QuickActionTile(
                     title = settingsTitle,
-                    icon = Icons.AutoMirrored.Filled.HelpOutline,
+                    icon = Icons.Default.Settings,
                     color = Color(0xFF00796B),
                     modifier = Modifier.weight(1f),
                     onClick = onMoreOptionsClick
@@ -312,6 +321,50 @@ fun HomeScreen(
                     modifier = Modifier.weight(1f),
                     onClick = onChangeLanguageClick
                 )
+            }
+
+            Spacer(modifier = Modifier.height(14.dp))
+
+            // AI Doctor Chatbot Card
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { onChatbotClick() },
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(containerColor = Color(0xFFE8F5E9)),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(text = "👨‍🌾", fontSize = 34.sp)
+                    Spacer(modifier = Modifier.width(14.dp))
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = when (language) {
+                                "te" -> "అగ్రి AI డాక్టర్‌తో మాట్లాడండి"
+                                "hi" -> "एग्रीकेयर AI डॉक्टर से सलाह लें"
+                                else -> "Chat with Agri AI Doctor"
+                            },
+                            fontSize = 17.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = FarmGreenDark
+                        )
+                        Text(
+                            text = when (language) {
+                                "te" -> "పంటల రక్షణ, ఎరువులు & ఔషధాల వివరాలు"
+                                "hi" -> "फसल सुरक्षा, खाद और दवाइयों की जानकारी"
+                                else -> "Instant offline advice on treatments & sprays"
+                            },
+                            fontSize = 13.sp,
+                            color = Color(0xFF37474F)
+                        )
+                    }
+                    Text(text = "💬", fontSize = 24.sp)
+                }
             }
 
             Spacer(modifier = Modifier.height(20.dp))

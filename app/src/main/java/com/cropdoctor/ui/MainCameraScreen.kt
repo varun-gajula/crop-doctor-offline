@@ -18,6 +18,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -34,22 +36,33 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.cropdoctor.ui.theme.FarmGreenPrimary
 import java.io.InputStream
 import java.util.concurrent.Executors
+import kotlin.math.max
 
 @Composable
 fun MainCameraScreen(
     language: String,
     isProcessing: Boolean,
-    onImageCaptured: (Bitmap) -> Unit,
+    onImageCaptured: (Bitmap, String?) -> Unit,
     onBackClick: () -> Unit
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
 
+    var selectedCropFilter by remember { mutableStateOf("all") }
     var imageCapture: ImageCapture? by remember { mutableStateOf(null) }
     var cameraControl: CameraControl? by remember { mutableStateOf(null) }
     var isFlashOn by remember { mutableStateOf(false) }
 
     val cameraExecutor = remember { Executors.newSingleThreadExecutor() }
+
+    val cropOptions = listOf(
+        Pair("all", when (language) { "te" -> "🔍 ఆటో"; "hi" -> "🔍 ऑटो"; else -> "🔍 Auto" }),
+        Pair("chilli", "🌶️ Chilli"),
+        Pair("tomato", "🍅 Tomato"),
+        Pair("cotton", "☁️ Cotton"),
+        Pair("rice", "🌾 Rice"),
+        Pair("maize", "🌽 Maize")
+    )
 
     // Gallery Photo Picker (allows picking from gallery or WhatsApp images!)
     val galleryLauncher = rememberLauncherForActivityResult(
@@ -58,9 +71,15 @@ fun MainCameraScreen(
         if (uri != null) {
             try {
                 context.contentResolver.openInputStream(uri)?.use { stream: InputStream ->
-                    val bitmap = BitmapFactory.decodeStream(stream)
+                    val bytes = stream.readBytes()
+                    val options = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+                    BitmapFactory.decodeByteArray(bytes, 0, bytes.size, options)
+                    val maxDim = max(options.outWidth, options.outHeight)
+                    options.inSampleSize = if (maxDim > 1024) maxDim / 1024 else 1
+                    options.inJustDecodeBounds = false
+                    val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size, options)
                     if (bitmap != null) {
-                        onImageCaptured(bitmap)
+                        onImageCaptured(bitmap, selectedCropFilter)
                     }
                 }
             } catch (e: Exception) {
@@ -159,6 +178,33 @@ fun MainCameraScreen(
                     .border(3.dp, Color.White, RoundedCornerShape(24.dp))
             )
 
+            // Crop Quick Selector Chips
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.TopCenter)
+                    .horizontalScroll(rememberScrollState())
+                    .padding(horizontal = 14.dp, vertical = 12.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                cropOptions.forEach { (key, label) ->
+                    val isSelected = selectedCropFilter == key
+                    Surface(
+                        shape = RoundedCornerShape(18.dp),
+                        color = if (isSelected) FarmGreenPrimary else Color(0xB3000000),
+                        modifier = Modifier.clickable { selectedCropFilter = key }
+                    ) {
+                        Text(
+                            text = label,
+                            fontSize = 13.sp,
+                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                            color = Color.White,
+                            modifier = Modifier.padding(horizontal = 14.dp, vertical = 7.dp)
+                        )
+                    }
+                }
+            }
+
             // Bottom Controls Area
             Column(
                 modifier = Modifier
@@ -244,14 +290,29 @@ fun MainCameraScreen(
                                             cameraExecutor,
                                             object : ImageCapture.OnImageCapturedCallback() {
                                                 override fun onCaptureSuccess(image: ImageProxy) {
+                                                    val rotationDegrees = image.imageInfo.rotationDegrees
                                                     val buffer = image.planes[0].buffer
                                                     val bytes = ByteArray(buffer.remaining())
                                                     buffer.get(bytes)
-                                                    val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+
+                                                    val options = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+                                                    BitmapFactory.decodeByteArray(bytes, 0, bytes.size, options)
+                                                    val maxDim = max(options.outWidth, options.outHeight)
+                                                    options.inSampleSize = if (maxDim > 1024) maxDim / 1024 else 1
+                                                    options.inJustDecodeBounds = false
+
+                                                    val rawBitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size, options)
                                                     image.close()
-                                                    if (bitmap != null) {
+
+                                                    if (rawBitmap != null) {
+                                                        val finalBitmap = if (rotationDegrees != 0) {
+                                                            val matrix = android.graphics.Matrix().apply { postRotate(rotationDegrees.toFloat()) }
+                                                            Bitmap.createBitmap(rawBitmap, 0, 0, rawBitmap.width, rawBitmap.height, matrix, true)
+                                                        } else {
+                                                            rawBitmap
+                                                        }
                                                         ContextCompat.getMainExecutor(context).execute {
-                                                            onImageCaptured(bitmap)
+                                                            onImageCaptured(finalBitmap, selectedCropFilter)
                                                         }
                                                     }
                                                 }
@@ -260,7 +321,7 @@ fun MainCameraScreen(
                                                     Log.e("MainCameraScreen", "Capture fallback", exception)
                                                     val sample = Bitmap.createBitmap(224, 224, Bitmap.Config.ARGB_8888)
                                                     ContextCompat.getMainExecutor(context).execute {
-                                                        onImageCaptured(sample)
+                                                        onImageCaptured(sample, selectedCropFilter)
                                                     }
                                                 }
                                             }
@@ -268,7 +329,7 @@ fun MainCameraScreen(
                                     } else {
                                         // Instant sample fallback for emulator
                                         val sample = Bitmap.createBitmap(224, 224, Bitmap.Config.ARGB_8888)
-                                        onImageCaptured(sample)
+                                        onImageCaptured(sample, selectedCropFilter)
                                     }
                                 },
                             contentAlignment = Alignment.Center
