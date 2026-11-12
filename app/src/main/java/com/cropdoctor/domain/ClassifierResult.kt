@@ -18,6 +18,8 @@ data class ClassifierResult(
     val confidence: Float,
     val severityBand: SeverityBand,
     val certaintyBand: CertaintyBand,
-    val lesionFraction: Float
+    val lesionFraction: Float,
+    val inferenceTimeMs: Long = 0L,
+    val memoryUsedMb: Long = 0L,
+    val isDemoMode: Boolean = false
 )
-
