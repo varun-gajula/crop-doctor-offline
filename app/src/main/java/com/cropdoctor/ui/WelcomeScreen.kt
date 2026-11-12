@@ -83,21 +83,12 @@ fun WelcomeScreen(
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Leaf with Circuit Emblem
-                Box(
-                    modifier = Modifier
-                        .size(110.dp)
-                        .clip(CircleShape)
-                        .background(FarmGreenPrimary),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Spa,
-                        contentDescription = "AgriCare AI Logo",
-                        tint = Color.White,
-                        modifier = Modifier.size(64.dp)
-                    )
-                }
+                // App Logo with Leaf & AI Circuit Emblem
+                androidx.compose.foundation.Image(
+                    painter = androidx.compose.ui.res.painterResource(id = com.cropdoctor.R.drawable.ic_agricare_logo),
+                    contentDescription = "AgriCare AI Logo",
+                    modifier = Modifier.size(110.dp)
+                )
 
                 Spacer(modifier = Modifier.height(24.dp))
 

@@ -42,3 +42,4 @@ Target: Arm Bharat AI-SoC Challenge 2026-27 (Problem Statement PS1: Offline Crop
 
 5. **A8 & A11: Hard-Coded UI Strings, Missing Trilingual XML Resources, and Missing Core Workflow Requirements**  
    `strings.xml` contains only the app name; no `values-te/strings.xml` or `values-hi/strings.xml` exist. All user-visible strings are hard-coded in Kotlin without language coverage unit tests. Key workflow requirements are missing: first-launch language selection buttons, region choice, "Sure / Probably / Not sure" UI certainty labels (raw percentage displayed instead), uncertain case referral, and the "Save case report to send later" screen.
+
