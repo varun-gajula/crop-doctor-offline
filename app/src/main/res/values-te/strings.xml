@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- App Metadata -->
+    <string name="app_name">క్రాప్ డాక్టర్</string>
+    <string name="tagline">గుర్తించండి • నేర్చుకోండి • రక్షించండి</string>
+    <string name="subtitle">ఆరోగ్యకరమైన పంటలు, సంపన్నమైన రైతులు</string>
+    <string name="offline_badge">100% ఆఫ్‌లైన్</string>
+    <string name="close">మూసివేయండి</string>
+    <string name="btn_back">వెనుకకు</string>
+    <string name="btn_continue">కొనసాగించండి</string>
+
+    <!-- First Launch / Language & Region Selection -->
+    <string name="choose_language">మీ భాషను ఎంచుకోండి</string>
+    <string name="choose_language_sub">ప్రారంభించడానికి భాషను ఎంచుకోండి</string>
+    <string name="lang_telugu">తెలుగు</string>
+    <string name="lang_hindi">హిందీ</string>
+    <string name="lang_english">ఇంగ్లీష్</string>
+    <string name="choose_region">మీ ప్రాంతాన్ని ఎంచుకోండి</string>
+    <string name="choose_region_sub">ప్రాంతానికి తగిన సలహాలు పొందడానికి సహాయపడుతుంది</string>
+    <string name="region_telangana">తెలంగాణ</string>
+    <string name="region_andhra">ఆంధ్రప్రదేశ్</string>
+    <string name="region_karnataka">కర్ణాటక</string>
+    <string name="region_tamil_nadu">తమిళనాడు</string>
+    <string name="region_other">ఇతర</string>
+    <string name="btn_get_started">ప్రారంభించండి</string>
+    <string name="btn_about">యాప్ గురించి</string>
+    <string name="language_picker_title">భాషను ఎంచుకోండి</string>
+    <string name="language_picker_sub">మీకు నచ్చిన భాషను ఎంచుకోండి</string>
+    <string name="region_picker_title">ప్రాంతాన్ని ఎంచుకోండి</string>
+    <string name="region_picker_sub">మీ రాష్ట్రం లేదా ప్రాంతాన్ని ఎంచుకోండి</string>
+
+    <!-- Navigation & Home -->
+    <string name="nav_home">హోమ్</string>
+    <string name="nav_diseases">తెగుళ్లు</string>
+    <string name="nav_tips">చిట్కాలు</string>
+    <string name="nav_more">మరిన్ని</string>
+    <string name="home_banner_title">మీ చేతుల్లో ఆధునిక పంట రక్షణ</string>
+    <string name="home_banner_sub">తెగులును గుర్తించి తక్షణ నివారణ పొందండి.</string>
+    <string name="scan_leaf">ఆకును స్కాన్ చేయండి</string>
+    <string name="scan_leaf_sub">కెమెరాతో ఫోటో తీయండి లేదా అప్‌లోడ్ చేయండి</string>
+    <string name="browse_diseases">తెగుళ్ల సమాచారం</string>
+    <string name="farming_tips">వ్యవసాయ చిట్కాలు</string>
+    <string name="settings">సెట్టింగ్స్</string>
+    <string name="current_language_label">భాష</string>
+    <string name="current_region_label">ప్రాంతం</string>
+    <string name="chat_ai_doctor">అగ్రి AI డాక్టర్‌తో మాట్లాడండి</string>
+    <string name="scan_history">స్కాన్ చరిత్ర</string>
+
+    <!-- Camera Screen -->
+    <string name="camera_title">ఆకును స్కాన్ చేయండి</string>
+    <string name="camera_tip">చిట్కా: ప్రభావిత ఆకును స్పష్టంగా ఫోటో తీయండి.</string>
+    <string name="btn_gallery">గ్యాలరీ</string>
+    <string name="btn_capture">ఫోటో తీయండి</string>
+    <string name="btn_flash">ఫ్లాష్</string>
+    <string name="crop_auto">ఆటో</string>
+    <string name="crop_rice">వరి</string>
+    <string name="crop_cotton">పత్తి</string>
+    <string name="crop_chilli">మిరప</string>
+    <string name="crop_tomato">టమాటా</string>
+    <string name="crop_maize">మొక్కజొన్న</string>
+
+    <!-- Soft Warning Dialog -->
+    <string name="warn_not_crop_title">ఇది పంట ఫోటో కాకపోవచ్చు</string>
+    <string name="warn_not_crop_msg">తీసిన ఫోటో పంట ఆకు, పండు లేదా పురుగులా స్పష్టంగా కనిపించడం లేదు. మీరు మళ్ళీ ఫోటో తీయవచ్చు లేదా ఈ ఫోటోతోనే కొనసాగించవచ్చు.</string>
+    <string name="btn_take_again">మళ్ళీ తీయండి</string>
+    <string name="btn_use_anyway">ఇలాగే ఉపయోగించండి</string>
+
+    <!-- Result Screen -->
+    <string name="result_title">ఫలితం</string>
+    <string name="demo_banner">డెమో మోడ్ - ఇది నిజమైన రోగ నిర్ధారణ కాదు</string>
+    <string name="alert_disease_detected">తెగులు గుర్తించబడింది!</string>
+    <string name="alert_healthy">ఆరోగ్యకరమైన పంట!</string>
+    <string name="alert_uncertain">ఖచ్చితంగా తెలియదు - వ్యవసాయ విస్తరణ అధికారిని సంప్రదించండి</string>
+
+    <!-- Certainty -->
+    <string name="certainty_title">నిశ్చయత</string>
+    <string name="certainty_sure">ఖచ్చితంగా</string>
+    <string name="certainty_probably">బహుశా</string>
+    <string name="certainty_not_sure">ఖచ్చితంగా లేదు</string>
+    <string name="details_title">కొలత వివరాలు</string>
+    <string name="confidence_score_label">నిశ్చయత శాతం</string>
+    <string name="btn_view_details">వివరాలు చూడండి</string>
+    <string name="btn_hide_details">వివరాలు దాచండి</string>
+
+    <!-- Severity Bands & Action Sentences -->
+    <string name="severity_title">తీవ్రత</string>
+    <string name="severity_mild">తక్కువ</string>
+    <string name="severity_moderate">మధ్యస్థం</string>
+    <string name="severity_severe">తీవ్రం</string>
+    <string name="severity_early_warning">ముందస్తు హెచ్చరిక: జాగ్రత్తగా గమనించి నివారణ చర్యలు చేపట్టండి.</string>
+    <string name="severity_act_now">తక్షణ చర్య అవసరం: పంట నష్టాన్ని నివారించడానికి ఇప్పుడే చర్య తీసుకోండి.</string>
+
+    <!-- About & Treatments -->
+    <string name="about_condition">పరిస్థితి వివరాలు</string>
+    <string name="treatment_title">చికిత్స సూచనలు</string>
+    <string name="tier_natural">సహజ మరియు సాంప్రదాయ నివారణ</string>
+    <string name="tier_chemical">రసాయన నివారణ (అధునాతన)</string>
+    <string name="no_chemical_required">రసాయన మందులు అవసరం లేదు.</string>
+    <string name="btn_more_details">మరిన్ని వివరాలు చూడండి</string>
+    <string name="ai_explanation_label">AI వివరణ</string>
+    <string name="btn_listen">వినండి</string>
+    <string name="btn_stop">ఆపండి</string>
+
+    <!-- Emergency Referral -->
+    <string name="btn_kisan_call_centre">వ్యవసాయ విస్తరణ అధికారితో మాట్లాడండి</string>
+    <string name="kisan_call_centre_label">కిసాన్ కాల్ సెంటర్ (1800-180-1551)</string>
+</resources>

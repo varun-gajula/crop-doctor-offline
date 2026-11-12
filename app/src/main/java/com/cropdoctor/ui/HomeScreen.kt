@@ -1,7 +1,6 @@
 package com.cropdoctor.ui
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -19,9 +18,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.cropdoctor.R
+import com.cropdoctor.ui.components.LanguageChip
 import com.cropdoctor.ui.theme.FarmGreenDark
 import com.cropdoctor.ui.theme.FarmGreenPrimary
 
@@ -31,65 +33,11 @@ fun HomeScreen(
     onScanClick: () -> Unit,
     onBrowseDiseasesClick: () -> Unit,
     onFarmingTipsClick: () -> Unit,
-    onChangeLanguageClick: () -> Unit,
+    onChangeLanguageClick: (String) -> Unit,
     onMoreOptionsClick: () -> Unit,
     onChatbotClick: () -> Unit = {}
 ) {
     val scrollState = rememberScrollState()
-
-    val headerTitle = when (language) {
-        "te" -> "అగ్రి కేర్ AI"
-        "hi" -> "एग्रीकेयर AI"
-        else -> "AgriCare AI"
-    }
-
-    val bannerHeading = when (language) {
-        "te" -> "మీ చేతుల్లో ఆధునిక పంట రక్షణ"
-        "hi" -> "आपके हाथ में स्मार्ट फसल सुरक्षा"
-        else -> "Smart Crop Care in Your Hand"
-    }
-
-    val bannerSub = when (language) {
-        "te" -> "తెగులును గుర్తించి తక్షణ నివారణ పొందండి"
-        "hi" -> "पत्ती स्कैन करें और तुरंत समाधान पाएं"
-        else -> "Scan a leaf to detect diseases and get solutions."
-    }
-
-    val scanTitle = when (language) {
-        "te" -> "ఆకును స్కాన్ చేయండి"
-        "hi" -> "पत्ती स्कैन करें"
-        else -> "Scan Leaf"
-    }
-
-    val scanSub = when (language) {
-        "te" -> "కెమెరా ద్వారా ఫోటో తీయండి లేదా అప్‌లోడ్ చేయండి"
-        "hi" -> "फोटो खींचें या गैलरी से चुनें"
-        else -> "Tap to capture or upload an image"
-    }
-
-    val browseTitle = when (language) {
-        "te" -> "తెగుళ్ల సమాచారం"
-        "hi" -> "रोग जानकारी"
-        else -> "Browse Diseases"
-    }
-
-    val tipsTitle = when (language) {
-        "te" -> "వ్యవసాయ చిట్కాలు"
-        "hi" -> "कृषि सुझाव"
-        else -> "Farming Tips"
-    }
-
-    val settingsTitle = when (language) {
-        "te" -> "సెట్టింగ్స్"
-        "hi" -> "सेटिंग्स"
-        else -> "Settings"
-    }
-
-    val langButtonTitle = when (language) {
-        "te" -> "భాష (తెలుగు)"
-        "hi" -> "भाषा (हिन्दी)"
-        else -> "Language (English)"
-    }
 
     Scaffold(
         topBar = {
@@ -112,27 +60,26 @@ fun HomeScreen(
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     androidx.compose.foundation.Image(
-                        painter = androidx.compose.ui.res.painterResource(id = com.cropdoctor.R.drawable.ic_agricare_logo),
+                        painter = androidx.compose.ui.res.painterResource(id = R.drawable.ic_agricare_logo),
                         contentDescription = "Logo",
                         modifier = Modifier.size(34.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = headerTitle,
+                        text = stringResource(R.string.app_name),
                         fontSize = 22.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.White
                     )
                 }
 
-                // Language switcher in top right corner
-                IconButton(onClick = onChangeLanguageClick) {
-                    Icon(
-                        imageVector = Icons.Default.Language,
-                        contentDescription = "Change Language",
-                        tint = Color.White
-                    )
-                }
+                // Persistent language chip on top bar (T2)
+                LanguageChip(
+                    currentLanguage = language,
+                    onLanguageSelected = { newLang ->
+                        onChangeLanguageClick(newLang)
+                    }
+                )
             }
         },
         bottomBar = {
@@ -144,7 +91,7 @@ fun HomeScreen(
                     selected = true,
                     onClick = { /* Already Home */ },
                     icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
-                    label = { Text("Home", fontSize = 12.sp) },
+                    label = { Text(stringResource(R.string.nav_home), fontSize = 12.sp) },
                     colors = NavigationBarItemDefaults.colors(
                         selectedIconColor = FarmGreenPrimary,
                         selectedTextColor = FarmGreenPrimary,
@@ -156,21 +103,21 @@ fun HomeScreen(
                     selected = false,
                     onClick = onBrowseDiseasesClick,
                     icon = { Icon(Icons.Default.Search, contentDescription = "Knowledge Base") },
-                    label = { Text("Diseases", fontSize = 12.sp) }
+                    label = { Text(stringResource(R.string.nav_diseases), fontSize = 12.sp) }
                 )
 
                 NavigationBarItem(
                     selected = false,
                     onClick = onFarmingTipsClick,
                     icon = { Icon(Icons.AutoMirrored.Filled.MenuBook, contentDescription = "Tips") },
-                    label = { Text("Tips", fontSize = 12.sp) }
+                    label = { Text(stringResource(R.string.nav_tips), fontSize = 12.sp) }
                 )
 
                 NavigationBarItem(
                     selected = false,
                     onClick = onMoreOptionsClick,
                     icon = { Icon(Icons.Default.MoreHoriz, contentDescription = "More") },
-                    label = { Text("More", fontSize = 12.sp) }
+                    label = { Text(stringResource(R.string.nav_more), fontSize = 12.sp) }
                 )
             }
         }
@@ -183,7 +130,7 @@ fun HomeScreen(
                 .verticalScroll(scrollState)
                 .padding(16.dp)
         ) {
-            // Hero Banner with Illustration Badge
+            // Hero Banner
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(18.dp),
@@ -203,7 +150,7 @@ fun HomeScreen(
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            text = bannerHeading,
+                            text = stringResource(R.string.home_banner_title),
                             fontSize = 19.sp,
                             fontWeight = FontWeight.Bold,
                             color = FarmGreenDark,
@@ -211,7 +158,7 @@ fun HomeScreen(
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            text = bannerSub,
+                            text = stringResource(R.string.home_banner_sub),
                             fontSize = 14.sp,
                             color = Color(0xFF37474F)
                         )
@@ -226,7 +173,7 @@ fun HomeScreen(
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            // Primary Scan Leaf Action Card (Exact match to sample photo)
+            // Primary Scan Leaf Action Card
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -260,7 +207,7 @@ fun HomeScreen(
                     Spacer(modifier = Modifier.height(14.dp))
 
                     Text(
-                        text = scanTitle,
+                        text = stringResource(R.string.scan_leaf),
                         fontSize = 22.sp,
                         fontWeight = FontWeight.Bold,
                         color = FarmGreenDark
@@ -269,7 +216,7 @@ fun HomeScreen(
                     Spacer(modifier = Modifier.height(4.dp))
 
                     Text(
-                        text = scanSub,
+                        text = stringResource(R.string.scan_leaf_sub),
                         fontSize = 14.sp,
                         color = Color(0xFF616161)
                     )
@@ -284,7 +231,7 @@ fun HomeScreen(
                 horizontalArrangement = Arrangement.spacedBy(14.dp)
             ) {
                 QuickActionTile(
-                    title = browseTitle,
+                    title = stringResource(R.string.browse_diseases),
                     icon = Icons.Default.Search,
                     color = Color(0xFF2E7D32),
                     modifier = Modifier.weight(1f),
@@ -292,7 +239,7 @@ fun HomeScreen(
                 )
 
                 QuickActionTile(
-                    title = tipsTitle,
+                    title = stringResource(R.string.farming_tips),
                     icon = Icons.AutoMirrored.Filled.MenuBook,
                     color = Color(0xFF1565C0),
                     modifier = Modifier.weight(1f),
@@ -307,19 +254,24 @@ fun HomeScreen(
                 horizontalArrangement = Arrangement.spacedBy(14.dp)
             ) {
                 QuickActionTile(
-                    title = settingsTitle,
+                    title = stringResource(R.string.settings),
                     icon = Icons.Default.Settings,
                     color = Color(0xFF00796B),
                     modifier = Modifier.weight(1f),
                     onClick = onMoreOptionsClick
                 )
 
+                val currentLangLabel = when (language) {
+                    "te" -> "భాష (తెలుగు)"
+                    "hi" -> "भाषा (हिन्दी)"
+                    else -> "Language (English)"
+                }
                 QuickActionTile(
-                    title = langButtonTitle,
+                    title = currentLangLabel,
                     icon = Icons.Default.Language,
                     color = Color(0xFFE65100),
                     modifier = Modifier.weight(1f),
-                    onClick = onChangeLanguageClick
+                    onClick = { onChangeLanguageClick(if (language == "en") "te" else if (language == "te") "hi" else "en") }
                 )
             }
 
@@ -344,30 +296,26 @@ fun HomeScreen(
                     Spacer(modifier = Modifier.width(14.dp))
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            text = when (language) {
-                                "te" -> "అగ్రి AI డాక్టర్‌తో మాట్లాడండి"
-                                "hi" -> "एग्रीकेयर AI डॉक्टर से सलाह लें"
-                                else -> "Chat with Agri AI Doctor"
-                            },
+                            text = stringResource(R.string.chat_ai_doctor),
                             fontSize = 17.sp,
                             fontWeight = FontWeight.Bold,
                             color = FarmGreenDark
                         )
                         Text(
-                            text = when (language) {
-                                "te" -> "పంటల రక్షణ, ఎరువులు & ఔషధాల వివరాలు"
-                                "hi" -> "फसल सुरक्षा, खाद और दवाइयों की जानकारी"
-                                else -> "Instant offline advice on treatments & sprays"
-                            },
+                            text = stringResource(R.string.offline_badge),
                             fontSize = 13.sp,
-                            color = Color(0xFF37474F)
+                            color = Color(0xFF555555)
                         )
                     }
-                    Text(text = "💬", fontSize = 24.sp)
+                    Icon(
+                        imageVector = Icons.Default.ChevronRight,
+                        contentDescription = null,
+                        tint = FarmGreenPrimary
+                    )
                 }
             }
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(24.dp))
         }
     }
 }
@@ -392,23 +340,31 @@ fun QuickActionTile(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(14.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+            verticalArrangement = Arrangement.SpaceBetween,
+            horizontalAlignment = Alignment.Start
         ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = title,
-                tint = color,
-                modifier = Modifier.size(32.dp)
-            )
-            Spacer(modifier = Modifier.height(8.dp))
+            Box(
+                modifier = Modifier
+                    .size(42.dp)
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(color.copy(alpha = 0.12f)),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    tint = color,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+
             Text(
                 text = title,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = Color(0xFF263238)
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFF263238),
+                lineHeight = 18.sp
             )
         }
     }
 }
-

@@ -27,12 +27,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import com.cropdoctor.R
+import com.cropdoctor.ui.components.LanguageChip
 import com.cropdoctor.ui.theme.FarmGreenPrimary
 import java.io.InputStream
 import java.util.concurrent.Executors
@@ -43,7 +46,8 @@ fun MainCameraScreen(
     language: String,
     isProcessing: Boolean,
     onImageCaptured: (Bitmap, String?) -> Unit,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    onChangeLanguageClick: (String) -> Unit = {}
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -56,15 +60,15 @@ fun MainCameraScreen(
     val cameraExecutor = remember { Executors.newSingleThreadExecutor() }
 
     val cropOptions = listOf(
-        Pair("all", when (language) { "te" -> "🔍 ఆటో"; "hi" -> "🔍 ऑटो"; else -> "🔍 Auto" }),
-        Pair("chilli", "🌶️ Chilli"),
-        Pair("tomato", "🍅 Tomato"),
-        Pair("cotton", "☁️ Cotton"),
-        Pair("rice", "🌾 Rice"),
-        Pair("maize", "🌽 Maize")
+        Pair("all", "🔍 " + stringResource(R.string.crop_auto)),
+        Pair("chilli", "🌶️ " + stringResource(R.string.crop_chilli)),
+        Pair("tomato", "🍅 " + stringResource(R.string.crop_tomato)),
+        Pair("cotton", "☁️ " + stringResource(R.string.crop_cotton)),
+        Pair("rice", "🌾 " + stringResource(R.string.crop_rice)),
+        Pair("maize", "🌽 " + stringResource(R.string.crop_maize))
     )
 
-    // Gallery Photo Picker (allows picking from gallery or WhatsApp images!)
+    // Gallery Photo Picker
     val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
@@ -88,18 +92,6 @@ fun MainCameraScreen(
         }
     }
 
-    val screenTitle = when (language) {
-        "te" -> "ఆకును స్కాన్ చేయండి"
-        "hi" -> "पत्ती स्कैन करें"
-        else -> "Scan Leaf"
-    }
-
-    val tipText = when (language) {
-        "te" -> "సలహా: స్పష్టమైన వెలుతురులో ఆకు ఫోటో తీయండి."
-        "hi" -> "सुझाव: रोगग्रस्त पत्ती की साफ फोटो लें।"
-        else -> "Tip: Take a clear photo of the affected leaf."
-    }
-
     Scaffold(
         topBar = {
             Row(
@@ -108,21 +100,32 @@ fun MainCameraScreen(
                     .background(Color.Black)
                     .statusBarsPadding()
                     .padding(horizontal = 16.dp, vertical = 12.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                IconButton(onClick = onBackClick) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back",
-                        tint = Color.White
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    IconButton(onClick = onBackClick) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(R.string.btn_back),
+                            tint = Color.White
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = stringResource(R.string.camera_title),
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
                     )
                 }
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = screenTitle,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White
+
+                // Persistent language chip on camera screen (T2)
+                LanguageChip(
+                    currentLanguage = language,
+                    onLanguageSelected = { newLang ->
+                        onChangeLanguageClick(newLang)
+                    }
                 )
             }
         }
@@ -139,12 +142,11 @@ fun MainCameraScreen(
                 factory = { ctx ->
                     val previewView = PreviewView(ctx)
                     val cameraProviderFuture = ProcessCameraProvider.getInstance(ctx)
-
                     cameraProviderFuture.addListener({
                         try {
                             val cameraProvider = cameraProviderFuture.get()
                             val preview = Preview.Builder().build().also {
-                                it.setSurfaceProvider(previewView.surfaceProvider)
+                                it.surfaceProvider = previewView.surfaceProvider
                             }
 
                             val capture = ImageCapture.Builder()
@@ -162,122 +164,111 @@ fun MainCameraScreen(
                             )
                             cameraControl = camera.cameraControl
                         } catch (e: Exception) {
-                            Log.e("MainCameraScreen", "Camera binding fallback for emulator", e)
+                            Log.e("MainCameraScreen", "Camera bind failed", e)
                         }
                     }, ContextCompat.getMainExecutor(ctx))
-
                     previewView
                 }
             )
 
-            // Scanning Target Bracket Overlay (exact match to reference photo)
-            Box(
-                modifier = Modifier
-                    .size(290.dp)
-                    .align(Alignment.Center)
-                    .border(3.dp, Color.White, RoundedCornerShape(24.dp))
-            )
-
-            // Crop Quick Selector Chips
+            // Top Crop Filter Pills
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.TopCenter)
+                    .padding(top = 10.dp)
                     .horizontalScroll(rememberScrollState())
-                    .padding(horizontal = 14.dp, vertical = 12.dp),
+                    .padding(horizontal = 12.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 cropOptions.forEach { (key, label) ->
                     val isSelected = selectedCropFilter == key
-                    Surface(
-                        shape = RoundedCornerShape(18.dp),
-                        color = if (isSelected) FarmGreenPrimary else Color(0xB3000000),
-                        modifier = Modifier.clickable { selectedCropFilter = key }
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(20.dp))
+                            .background(
+                                if (isSelected) FarmGreenPrimary else Color(0x99000000)
+                            )
+                            .clickable { selectedCropFilter = key }
+                            .padding(horizontal = 14.dp, vertical = 8.dp)
                     ) {
                         Text(
                             text = label,
-                            fontSize = 13.sp,
-                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
                             color = Color.White,
-                            modifier = Modifier.padding(horizontal = 14.dp, vertical = 7.dp)
+                            fontSize = 14.sp,
+                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
                         )
                     }
                 }
             }
 
-            // Bottom Controls Area
+            // Scanning Viewfinder Overlay
+            Box(
+                modifier = Modifier
+                    .size(290.dp)
+                    .align(Alignment.Center)
+                    .border(3.dp, Color.White.copy(alpha = 0.85f), RoundedCornerShape(28.dp))
+            )
+
+            // Bottom Control Panel
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.BottomCenter)
-                    .background(Color(0xD9000000))
-                    .padding(top = 16.dp, bottom = 28.dp, start = 20.dp, end = 20.dp),
+                    .background(Color(0x99000000))
+                    .padding(vertical = 18.dp, horizontal = 24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Tip Card (Yellow bulb callout from sample photo)
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(Color(0xFFFFF9C4), RoundedCornerShape(12.dp))
-                        .padding(horizontal = 14.dp, vertical = 10.dp)
+                // Tip Box
+                Card(
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 18.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFFFFF9C4))
                 ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(text = "💡", fontSize = 18.sp)
-                        Spacer(modifier = Modifier.width(10.dp))
+                    Row(
+                        modifier = Modifier.padding(10.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(text = "💡", fontSize = 16.sp)
+                        Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = tipText,
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = Color(0xFF5D4037)
+                            text = stringResource(R.string.camera_tip),
+                            fontSize = 13.sp,
+                            color = Color(0xFF333333)
                         )
                     }
                 }
 
-                Spacer(modifier = Modifier.height(20.dp))
-
                 if (isProcessing) {
-                    CircularProgressIndicator(
-                        color = FarmGreenPrimary,
-                        modifier = Modifier.size(48.dp),
-                        strokeWidth = 4.dp
-                    )
-                    Spacer(modifier = Modifier.height(10.dp))
-                    Text(
-                        text = when (language) {
-                            "te" -> "పరీక్షిస్తోంది (Arm CPU)..."
-                            "hi" -> "जांच जारी है..."
-                            else -> "Diagnosing on Arm CPU..."
-                        },
-                        color = Color.White,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold
-                    )
+                    CircularProgressIndicator(color = Color.White)
                 } else {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceEvenly,
+                        horizontalArrangement = Arrangement.SpaceAround,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        // Gallery Button (Pick from mobile gallery / WhatsApp)
+                        // Gallery Button
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
-                            modifier = Modifier.clickable { galleryLauncher.launch("image/*") }
+                            modifier = Modifier.clickable {
+                                galleryLauncher.launch("image/*")
+                            }
                         ) {
                             Icon(
                                 imageVector = Icons.Default.PhotoLibrary,
-                                contentDescription = "Gallery",
+                                contentDescription = stringResource(R.string.btn_gallery),
                                 tint = Color.White,
                                 modifier = Modifier.size(32.dp)
                             )
                             Spacer(modifier = Modifier.height(4.dp))
                             Text(
-                                text = when (language) { "te" -> "గ్యాలరీ"; "hi" -> "गैलरी"; else -> "Gallery" },
+                                text = stringResource(R.string.btn_gallery),
                                 color = Color.White,
                                 fontSize = 13.sp
                             )
                         }
 
-                        // Capture Shutter Button (Large green circular button)
+                        // Shutter Button
                         Box(
                             modifier = Modifier
                                 .size(76.dp)
@@ -327,7 +318,6 @@ fun MainCameraScreen(
                                             }
                                         )
                                     } else {
-                                        // Instant sample fallback for emulator
                                         val sample = Bitmap.createBitmap(224, 224, Bitmap.Config.ARGB_8888)
                                         onImageCaptured(sample, selectedCropFilter)
                                     }
@@ -336,7 +326,7 @@ fun MainCameraScreen(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.CameraAlt,
-                                contentDescription = "Capture",
+                                contentDescription = stringResource(R.string.btn_capture),
                                 tint = Color.White,
                                 modifier = Modifier.size(38.dp)
                             )
@@ -352,13 +342,13 @@ fun MainCameraScreen(
                         ) {
                             Icon(
                                 imageVector = if (isFlashOn) Icons.Default.FlashOn else Icons.Default.FlashOff,
-                                contentDescription = "Flash",
+                                contentDescription = stringResource(R.string.btn_flash),
                                 tint = if (isFlashOn) Color.Yellow else Color.White,
                                 modifier = Modifier.size(32.dp)
                             )
                             Spacer(modifier = Modifier.height(4.dp))
                             Text(
-                                text = when (language) { "te" -> "ఫ్లాష్"; "hi" -> "फ्लैश"; else -> "Flash" },
+                                text = stringResource(R.string.btn_flash),
                                 color = Color.White,
                                 fontSize = 13.sp
                             )
