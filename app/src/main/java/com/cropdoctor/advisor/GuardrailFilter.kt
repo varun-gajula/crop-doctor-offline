@@ -4,9 +4,9 @@ import java.util.regex.Pattern
 
 object GuardrailFilter {
 
-    // Regex detecting unverified dosage numbers and rates (e.g. 50 ml/L, 2 kg per acre, 2.5 g/l)
+    // Regex detecting unverified dosage numbers and rates (e.g. 50 ml/L, 2 kg per acre, 2.5 g/l, 2.5 ml/L of water)
     private val DOSE_PATTERN = Pattern.compile(
-        "\\b\\d+(\\.\\d+)?\\s*(ml|g|gm|mg|l|litre|liter|kg)\\s*(per|/|in)\\s*(\\d*\\s*)?(l|litre|liter|acre|ha|hectare|water)\\b",
+        "\\b\\d+(\\.\\d+)?\\s*(ml|g|gm|mg|l|litre|liter|kg)\\s*(per|/|in)\\s*(\\d*\\s*)?(l|litre|liter|acre|ha|hectare|water)(\\s+of\\s+water)?\\b",
         Pattern.CASE_INSENSITIVE
     )
 

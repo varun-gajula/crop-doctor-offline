@@ -2,9 +2,12 @@ package com.cropdoctor.vision
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.os.SystemClock
 import android.util.Log
+import com.cropdoctor.domain.CertaintyBand
 import com.cropdoctor.domain.CertaintyCalculator
 import com.cropdoctor.domain.ClassifierResult
+import com.cropdoctor.domain.SeverityBand
 import com.cropdoctor.domain.SeverityCalculator
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -13,14 +16,12 @@ import org.pytorch.executorch.Module
 import org.pytorch.executorch.Tensor
 import java.io.File
 import java.io.FileOutputStream
-import java.io.InputStream
 import kotlin.math.exp
 
 class ExecuTorchClassifier(private val context: Context) : Classifier {
 
     private val TAG = "ExecuTorchClassifier"
     private var module: Module? = null
-    private var fallbackClassifier: Classifier = SmartVisualClassifier()
     private var labels: List<String> = emptyList()
 
     init {
@@ -32,7 +33,6 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
         try {
             context.assets.open("labels.json").use { stream ->
                 val text = stream.bufferedReader().use { it.readText() }
-                // Simple regex/json parsing for 25 class strings
                 labels = text.replace("[", "")
                     .replace("]", "")
                     .replace("\"", "")
@@ -41,13 +41,12 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
                     .filter { it.isNotEmpty() }
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to load labels.json, using fallback labels", e)
+            Log.e(TAG, "Failed to load labels.json", e)
         }
     }
 
     private fun initializeModule() {
         try {
-            // Check if model exists in assets
             val assetName = "models/vision.pte"
             val modelFile = File(context.filesDir, "vision.pte")
             if (!modelFile.exists()) {
@@ -58,7 +57,7 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
                         }
                     }
                 } catch (e: Exception) {
-                    Log.w(TAG, "vision.pte not found in assets, checking /data/local/tmp/vision.pte")
+                    Log.w(TAG, "vision.pte not found in assets")
                 }
             }
 
@@ -73,10 +72,11 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
                 module = Module.load(targetPath)
                 Log.i(TAG, "Successfully loaded ExecuTorch vision model from $targetPath")
             } else {
-                Log.i(TAG, "No vision.pte in assets. Using high-precision SmartVisualClassifier.")
+                Log.w(TAG, "No vision.pte available. Strict fallback to uncertain diagnosis (Rule H11).")
             }
         } catch (e: Exception) {
-            Log.e(TAG, "ExecuTorch vision module load failed. Using SmartVisualClassifier.", e)
+            Log.e(TAG, "ExecuTorch vision module load failed.", e)
+            module = null
         }
     }
 
@@ -85,21 +85,22 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
     }
 
     override suspend fun classify(bitmap: Bitmap, cropHint: String?): ClassifierResult = withContext(Dispatchers.Default) {
-        // Step 1: Filter out non-leaf objects
-        val leafCheck = LeafValidator.validate(bitmap)
-        if (!leafCheck.isLeaf) {
-            return@withContext ClassifierResult(
-                classId = "not_a_leaf",
-                displayName = "No Leaf Detected",
-                confidence = 0.0f,
-                severityBand = com.cropdoctor.domain.SeverityBand.MILD,
-                certaintyBand = com.cropdoctor.domain.CertaintyBand.NOT_SURE,
-                lesionFraction = 0.0f
-            )
-        }
+        val startTime = SystemClock.elapsedRealtime()
 
+        // Rule H11 & T1: If model is missing or fails to load, NEVER guess a disease.
         if (module == null) {
-            return@withContext fallbackClassifier.classify(bitmap, cropHint)
+            val elapsed = SystemClock.elapsedRealtime() - startTime
+            return@withContext ClassifierResult(
+                classId = "unknown",
+                displayName = "Not sure - ask an extension officer",
+                confidence = 0.0f,
+                severityBand = SeverityBand.MILD,
+                certaintyBand = CertaintyBand.NOT_SURE,
+                lesionFraction = 0.0f,
+                inferenceTimeMs = elapsed,
+                memoryUsedMb = getProcessMemoryMb(),
+                isDemoMode = false
+            )
         }
 
         try {
@@ -121,10 +122,30 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
                 }
             }
 
-            val classId = if (topIdx < labels.size) labels[topIdx] else "rice_bacterial_leaf_blight"
-            // Heuristic lesion area estimator until dedicated segmentation head is trained:
-            // High confidence on disease classes corresponds to typical field symptom spread (15-35%)
-            val lesionFraction = if (classId.endsWith("_healthy")) 0.0f else (0.15f + (1.0f - maxProb) * 0.20f).coerceIn(0.05f, 0.85f)
+            val classId = if (topIdx < labels.size) labels[topIdx] else "unknown"
+            val elapsed = SystemClock.elapsedRealtime() - startTime
+            val memoryMb = getProcessMemoryMb()
+
+            if (classId == "unknown") {
+                return@withContext ClassifierResult(
+                    classId = "unknown",
+                    displayName = "Not sure - ask an extension officer",
+                    confidence = maxProb,
+                    severityBand = SeverityBand.MILD,
+                    certaintyBand = CertaintyBand.NOT_SURE,
+                    lesionFraction = 0.0f,
+                    inferenceTimeMs = elapsed,
+                    memoryUsedMb = memoryMb,
+                    isDemoMode = false
+                )
+            }
+
+            // Lesion fraction: estimated via color heuristics (Rule H11), zero for healthy classes
+            val lesionFraction = if (classId.endsWith("_healthy")) {
+                0.0f
+            } else {
+                LesionAreaEstimator.estimateLesionFraction(bitmap)
+            }
 
             val severityBand = SeverityCalculator.calculate(lesionFraction, classId)
             val certaintyBand = CertaintyCalculator.calculate(maxProb)
@@ -135,12 +156,31 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
                 confidence = maxProb,
                 severityBand = severityBand,
                 certaintyBand = certaintyBand,
-                lesionFraction = lesionFraction
+                lesionFraction = lesionFraction,
+                inferenceTimeMs = elapsed,
+                memoryUsedMb = memoryMb,
+                isDemoMode = false
             )
         } catch (e: Exception) {
-            Log.e(TAG, "Vision inference error, falling back to SmartVisualClassifier", e)
-            fallbackClassifier.classify(bitmap, cropHint)
+            Log.e(TAG, "Vision inference error", e)
+            val elapsed = SystemClock.elapsedRealtime() - startTime
+            ClassifierResult(
+                classId = "unknown",
+                displayName = "Not sure - ask an extension officer",
+                confidence = 0.0f,
+                severityBand = SeverityBand.MILD,
+                certaintyBand = CertaintyBand.NOT_SURE,
+                lesionFraction = 0.0f,
+                inferenceTimeMs = elapsed,
+                memoryUsedMb = getProcessMemoryMb(),
+                isDemoMode = false
+            )
         }
+    }
+
+    private fun getProcessMemoryMb(): Long {
+        val runtime = Runtime.getRuntime()
+        return (runtime.totalMemory() - runtime.freeMemory()) / (1024 * 1024)
     }
 
     private fun preprocessBitmap(bitmap: Bitmap): Tensor {
@@ -186,4 +226,3 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
         module = null
     }
 }
-

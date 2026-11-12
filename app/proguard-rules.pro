@@ -5,7 +5,7 @@
 
 # Keep kotlinx serialization
 -keepclassmembers class * {
-    companion object *;
+    public static final ** Companion;
 }
 -keepclasseswithmembers class * {
     kotlinx.serialization.KSerializer serializer(...);
