@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- App Metadata -->
+    <string name="app_name">क्रॉप डॉक्टर</string>
+    <string name="tagline">पहचानें • सीखें • सुरक्षित करें</string>
+    <string name="subtitle">स्वस्थ फसलें, समृद्ध किसान</string>
+    <string name="offline_badge">100% ऑफ़लाइन</string>
+    <string name="close">बंद करें</string>
+    <string name="btn_back">वापस</string>
+    <string name="btn_continue">आगे बढ़ें</string>
+
+    <!-- First Launch / Language & Region Selection -->
+    <string name="choose_language">अपनी भाषा चुनें</string>
+    <string name="choose_language_sub">शुरू करने के लिए भाषा चुनें</string>
+    <string name="lang_telugu">तेलुगु</string>
+    <string name="lang_hindi">हिन्दी</string>
+    <string name="lang_english">अंग्रेजी</string>
+    <string name="choose_region">अपना क्षेत्र चुनें</string>
+    <string name="choose_region_sub">क्षेत्र के अनुसार सही सलाह देने में मदद करता है</string>
+    <string name="region_telangana">तेलंगाना</string>
+    <string name="region_andhra">आंध्र प्रदेश</string>
+    <string name="region_karnataka">कर्नाटक</string>
+    <string name="region_tamil_nadu">तमिलनाडु</string>
+    <string name="region_other">अन्य</string>
+    <string name="btn_get_started">शुरू करें</string>
+    <string name="btn_about">ऐप के बारे में</string>
+    <string name="language_picker_title">भाषा चुनें</string>
+    <string name="language_picker_sub">अपनी पसंदीदा भाषा चुनें</string>
+    <string name="region_picker_title">क्षेत्र चुनें</string>
+    <string name="region_picker_sub">अपना राज्य या क्षेत्र चुनें</string>
+
+    <!-- Navigation & Home -->
+    <string name="nav_home">होम</string>
+    <string name="nav_diseases">रोग</string>
+    <string name="nav_tips">सुझाव</string>
+    <string name="nav_more">अधिक</string>
+    <string name="home_banner_title">आपके हाथ में स्मार्ट फसल सुरक्षा</string>
+    <string name="home_banner_sub">रोग पहचानें और तुरंत समाधान पाएं।</string>
+    <string name="scan_leaf">पत्ती स्कैन करें</string>
+    <string name="scan_leaf_sub">कैमरे से फोटो लें या अपलोड करें</string>
+    <string name="browse_diseases">रोग जानकारी</string>
+    <string name="farming_tips">कृषि सुझाव</string>
+    <string name="settings">सेटिंग्स</string>
+    <string name="current_language_label">भाषा</string>
+    <string name="current_region_label">क्षेत्र</string>
+    <string name="chat_ai_doctor">कृषि AI डॉक्टर से बात करें</string>
+    <string name="scan_history">स्कैन इतिहास</string>
+
+    <!-- Camera Screen -->
+    <string name="camera_title">पत्ती स्कैन करें</string>
+    <string name="camera_tip">सुझाव: प्रभावित पत्ती की स्पष्ट तस्वीर लें।</string>
+    <string name="btn_gallery">गैलरी</string>
+    <string name="btn_capture">फोटो लें</string>
+    <string name="btn_flash">फ्लैश</string>
+    <string name="crop_auto">ऑटो</string>
+    <string name="crop_rice">धान</string>
+    <string name="crop_cotton">कपास</string>
+    <string name="crop_chilli">मिर्च</string>
+    <string name="crop_tomato">टमाटर</string>
+    <string name="crop_maize">मक्का</string>
+
+    <!-- Soft Warning Dialog -->
+    <string name="warn_not_crop_title">यह फसल की तस्वीर नहीं लग रही है</string>
+    <string name="warn_not_crop_msg">खींची गई तस्वीर स्पष्ट रूप से फसल की पत्ती, फल या कीट जैसी नहीं लग रही है। आप दोबारा तस्वीर ले सकते हैं या इसी तस्वीर के साथ आगे बढ़ सकते हैं।</string>
+    <string name="btn_take_again">दोबारा लें</string>
+    <string name="btn_use_anyway">फिर भी इस्तेमाल करें</string>
+
+    <!-- Result Screen -->
+    <string name="result_title">परिणाम</string>
+    <string name="demo_banner">डेमो मोड - यह वास्तविक निदान नहीं है</string>
+    <string name="alert_disease_detected">रोग पाया गया!</string>
+    <string name="alert_healthy">स्वस्थ फसल!</string>
+    <string name="alert_uncertain">अनिश्चित - कृषि विस्तार अधिकारी से संपर्क करें</string>
+
+    <!-- Certainty -->
+    <string name="certainty_title">निश्चितता</string>
+    <string name="certainty_sure">निश्चित</string>
+    <string name="certainty_probably">संभवतः</string>
+    <string name="certainty_not_sure">अनिश्चित</string>
+    <string name="details_title">माप विवरण</string>
+    <string name="confidence_score_label">निश्चितता प्रतिशत</string>
+    <string name="btn_view_details">विवरण देखें</string>
+    <string name="btn_hide_details">विवरण छिपाएं</string>
+
+    <!-- Severity Bands & Action Sentences -->
+    <string name="severity_title">गंभीरता</string>
+    <string name="severity_mild">हल्की</string>
+    <string name="severity_moderate">मध्यम</string>
+    <string name="severity_severe">गंभीर</string>
+    <string name="severity_early_warning">शुरुआती चेतावनी: फसल पर नजर रखें और निवारक उपाय करें।</string>
+    <string name="severity_act_now">त्वरित कार्रवाई आवश्यक: फसल के नुकसान को रोकने के लिए अभी कदम उठाएं।</string>
+
+    <!-- About & Treatments -->
+    <string name="about_condition">स्थिति का विवरण</string>
+    <string name="treatment_title">उपचार सुझाव</string>
+    <string name="tier_natural">प्राकृतिक और पारंपरिक उपचार</string>
+    <string name="tier_chemical">रासायनिक उपचार (उन्नत)</string>
+    <string name="no_chemical_required">रासायनिक दवा की आवश्यकता नहीं है।</string>
+    <string name="btn_more_details">अधिक विवरण देखें</string>
+    <string name="ai_explanation_label">AI स्पष्टीकरण</string>
+    <string name="btn_listen">सुनें</string>
+    <string name="btn_stop">रोकें</string>
+
+    <!-- Emergency Referral -->
+    <string name="btn_kisan_call_centre">कृषि विस्तार अधिकारी से बात करें</string>
+    <string name="kisan_call_centre_label">किसान कॉल सेंटर (1800-180-1551)</string>
+</resources>

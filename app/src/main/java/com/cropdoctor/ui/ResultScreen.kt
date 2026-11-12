@@ -3,6 +3,7 @@ package com.cropdoctor.ui
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -24,26 +25,21 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.cropdoctor.R
 import com.cropdoctor.advisor.OfflineTtsHelper
 import com.cropdoctor.domain.CertaintyBand
 import com.cropdoctor.domain.ClassifierResult
 import com.cropdoctor.domain.RulesEngine
 import com.cropdoctor.domain.ScanHistoryRepository
 import com.cropdoctor.domain.SeverityBand
-import com.cropdoctor.domain.TreatmentSelector
-import com.cropdoctor.domain.TreatmentSelector.TreatmentTab
-import com.cropdoctor.knowledge.ChemicalStep
 import com.cropdoctor.knowledge.KbEntry
-import com.cropdoctor.knowledge.LocalizedText
-import com.cropdoctor.knowledge.NaturalStep
-import com.cropdoctor.knowledge.TreatmentPlan
-import com.cropdoctor.ui.theme.CropDoctorTheme
+import com.cropdoctor.ui.components.LanguageChip
 import com.cropdoctor.ui.theme.FarmGreenDark
 import com.cropdoctor.ui.theme.FarmGreenPrimary
-import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
 fun ResultScreen(
@@ -54,19 +50,26 @@ fun ResultScreen(
     isGeneratingAdvice: Boolean,
     capturedBitmap: Bitmap? = null,
     onBackClick: () -> Unit,
-    onChangeLanguageClick: () -> Unit,
+    onChangeLanguageClick: (String) -> Unit = {},
     onViewMoreDetails: () -> Unit,
     onChatbotClick: () -> Unit
 ) {
     val context = LocalContext.current
     val scrollState = rememberScrollState()
-    val initialTab = TreatmentSelector.getInitialTab(result.severityBand, result.classId)
-    var selectedTreatmentTab by remember(initialTab) { mutableStateOf(initialTab) }
+
+    // openTier decision based on RulesEngine (T2)
+    val openTier = RulesEngine.determineOpenTier(result.severityBand)
+    var selectedTreatmentTab by remember(openTier) {
+        mutableStateOf(
+            if (openTier == RulesEngine.OpenTier.CHEMICAL_FIRST) "chemical" else "natural"
+        )
+    }
 
     val isUncertain = result.classId == "unknown" || result.certaintyBand == CertaintyBand.NOT_SURE
-    val shouldRefer = RulesEngine.shouldReferToKVK(result.severityBand, kbEntry.referralThreshold) || isUncertain
+    val shouldRefer = RulesEngine.shouldShowExtensionWorker(result.certaintyBand, result.severityBand)
     val isHealthy = result.classId.endsWith("_healthy")
     var showJudgeDialog by remember { mutableStateOf(false) }
+    var showMeasurementDetails by remember { mutableStateOf(false) }
 
     // Offline Text-To-Speech
     var isSpeaking by remember { mutableStateOf(false) }
@@ -87,43 +90,6 @@ fun ResultScreen(
             confidence = result.confidence,
             severity = result.severityBand.name
         )
-    }
-
-    val screenTitle = when (language) {
-        "te" -> "ఫలితాలు"
-        "hi" -> "परिणाम"
-        else -> "Result"
-    }
-
-    val alertBannerText = when {
-        isUncertain -> when (language) {
-            "te" -> "⚠️ ఖచ్చితంగా తెలియదు - వ్యవసాయ అధికారిని సంప్రదించండి"
-            "hi" -> "⚠️ अनिश्चित - कृषि विस्तार अधिकारी से संपर्क करें"
-            else -> "⚠️ Not sure - ask an extension officer"
-        }
-        isHealthy -> when (language) {
-            "te" -> "✓ ఆరోగ్యకరమైన పంట!"
-            "hi" -> "✓ स्वस्थ फसल!"
-            else -> "✓ Healthy Crop!"
-        }
-        else -> when (language) {
-            "te" -> "🚨 తెగులు గుర్తించబడింది!"
-            "hi" -> "🚨 रोग पाया गया!"
-            else -> "🚨 Disease Detected!"
-        }
-    }
-
-    val confidencePercent = (result.confidence * 100).toInt().coerceIn(0, 100)
-    val certaintyLabel = when (result.certaintyBand) {
-        CertaintyBand.SURE -> when (language) { "te" -> "ఖచ్చితంగా (Sure)"; "hi" -> "निश्चित (Sure)"; else -> "Sure" }
-        CertaintyBand.PROBABLY -> when (language) { "te" -> "బహుశా (Probably)"; "hi" -> "संभवतः (Probably)"; else -> "Probably" }
-        CertaintyBand.NOT_SURE -> when (language) { "te" -> "ఖచ్చితంగా లేదు (Not sure)"; "hi" -> "अनिश्चित (Not sure)"; else -> "Not sure" }
-    }
-
-    val listenButtonText = when (language) {
-        "te" -> if (isSpeaking) "ఆపండి ⏹️" else "వినండి 🔊"
-        "hi" -> if (isSpeaking) "रोकें ⏹️" else "सुनें 🔊"
-        else -> if (isSpeaking) "Stop ⏹️" else "Listen 🔊"
     }
 
     // Hidden Judge Benchmark Panel (long-press on screen title)
@@ -148,7 +114,7 @@ fun ResultScreen(
                     Text("• Inference Latency: ${result.inferenceTimeMs} ms")
                     Text("• Process Memory (RAM): ${result.memoryUsedMb} MB")
                     Text("• Network Usage: 0 KB (No INTERNET permission)")
-                    Text("• Certainty Band: ${result.certaintyBand.name} ($confidencePercent%)")
+                    Text("• Certainty Band: ${result.certaintyBand.name} (${(result.confidence * 100).toInt()}%)")
                     Text("• Severity Band: ${result.severityBand.name} (${(result.lesionFraction * 100).toInt()}% lesion)")
                     Text("• Mode: ${if (result.isDemoMode) "DEMO MODE (Fake Classifier)" else "Live Inference"}")
                 }
@@ -158,7 +124,7 @@ fun ResultScreen(
                     onClick = { showJudgeDialog = false },
                     colors = ButtonDefaults.buttonColors(containerColor = FarmGreenPrimary)
                 ) {
-                    Text("Close")
+                    Text(stringResource(R.string.close))
                 }
             }
         )
@@ -179,13 +145,13 @@ fun ResultScreen(
                     IconButton(onClick = onBackClick) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back",
+                            contentDescription = stringResource(R.string.btn_back),
                             tint = Color.White
                         )
                     }
                     Spacer(modifier = Modifier.width(6.dp))
                     Text(
-                        text = screenTitle,
+                        text = stringResource(R.string.result_title),
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.White,
@@ -197,29 +163,13 @@ fun ResultScreen(
                     )
                 }
 
-                // Small language toggle button on top right corner
-                Row(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(20.dp))
-                        .background(Color(0x33FFFFFF))
-                        .clickable { onChangeLanguageClick() }
-                        .padding(horizontal = 12.dp, vertical = 6.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Language,
-                        contentDescription = "Language",
-                        tint = Color.White,
-                        modifier = Modifier.size(18.dp)
-                    )
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text(
-                        text = language.uppercase(),
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 14.sp,
-                        color = Color.White
-                    )
-                }
+                // Persistent language chip on every screen (T2)
+                LanguageChip(
+                    currentLanguage = language,
+                    onLanguageSelected = { newLang ->
+                        onChangeLanguageClick(newLang)
+                    }
+                )
             }
         }
     ) { paddingValues ->
@@ -231,7 +181,7 @@ fun ResultScreen(
                 .verticalScroll(scrollState)
                 .padding(16.dp)
         ) {
-            // Demo Mode Banner (shown only when running fake/demo mode)
+            // Demo Mode Banner
             if (result.isDemoMode) {
                 Card(
                     modifier = Modifier
@@ -245,7 +195,7 @@ fun ResultScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "⚠️ DEMO MODE - NOT A REAL DIAGNOSIS",
+                            text = "⚠️ " + stringResource(R.string.demo_banner),
                             color = Color(0xFF856404),
                             fontWeight = FontWeight.Bold,
                             fontSize = 14.sp
@@ -254,7 +204,7 @@ fun ResultScreen(
                 }
             }
 
-            // Leaf Display Card (Shows real captured photo or green badge)
+            // Scanned Leaf Photo Card
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(18.dp),
@@ -283,7 +233,12 @@ fun ResultScreen(
 
             Spacer(modifier = Modifier.height(14.dp))
 
-            // Alert Banner (Red for disease/uncertain, Green for healthy)
+            // Alert Banner (Disease / Healthy / Uncertain)
+            val alertBannerText = when {
+                isUncertain -> "⚠️ " + stringResource(R.string.alert_uncertain)
+                isHealthy -> "✓ " + stringResource(R.string.alert_healthy)
+                else -> "🚨 " + stringResource(R.string.alert_disease_detected)
+            }
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -311,11 +266,7 @@ fun ResultScreen(
             ) {
                 Column(modifier = Modifier.weight(1f)) {
                     val displayDiseaseTitle = if (isUncertain) {
-                        when (language) {
-                            "te" -> "ఖచ్చితంగా తెలియదు"
-                            "hi" -> "अनिश्चित स्थिति"
-                            else -> "Not sure - ask an extension officer"
-                        }
+                        stringResource(R.string.alert_uncertain)
                     } else {
                         kbEntry.names.forLanguage(language)
                     }
@@ -359,7 +310,7 @@ fun ResultScreen(
                     contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
                 ) {
                     Text(
-                        text = listenButtonText,
+                        text = if (isSpeaking) stringResource(R.string.btn_stop) + " ⏹️" else stringResource(R.string.btn_listen) + " 🔊",
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Bold,
                         color = if (isSpeaking) Color(0xFFC62828) else FarmGreenDark
@@ -369,47 +320,154 @@ fun ResultScreen(
 
             Spacer(modifier = Modifier.height(14.dp))
 
-            // Certainty Progress Bar (Rule H12: Live measurement, Sure/Probably/Not sure words)
+            // CERTAINTY PRESENTATION (T2: Icon + Colour + Word, Percentage ONLY in Details)
+            val (certaintyWordRes, certaintyColor, certaintyIcon) = when (result.certaintyBand) {
+                CertaintyBand.SURE -> Triple(R.string.certainty_sure, Color(0xFF2E7D32), Icons.Default.CheckCircle)
+                CertaintyBand.PROBABLY -> Triple(R.string.certainty_probably, Color(0xFFD97706), Icons.Default.Info)
+                CertaintyBand.NOT_SURE -> Triple(R.string.certainty_not_sure, Color(0xFFD32F2F), Icons.Default.Warning)
+            }
+
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp),
+                shape = RoundedCornerShape(14.dp),
                 colors = CardDefaults.cardColors(containerColor = Color.White),
-                elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
             ) {
                 Column(modifier = Modifier.padding(14.dp)) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = when (language) { "te" -> "నిశ్చయత (Certainty):"; "hi" -> "निश्चितता (Certainty):"; else -> "Certainty:" },
-                            fontSize = 15.sp,
+                            text = stringResource(R.string.certainty_title),
+                            fontSize = 16.sp,
                             fontWeight = FontWeight.SemiBold,
                             color = Color(0xFF333333)
                         )
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = certaintyIcon,
+                                contentDescription = null,
+                                tint = certaintyColor,
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = stringResource(certaintyWordRes),
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = certaintyColor
+                            )
+                        }
+                    }
+
+                    // Expandable Measurement Details Panel (Rule: percentage ONLY in details)
+                    Spacer(modifier = Modifier.height(6.dp))
+                    TextButton(
+                        onClick = { showMeasurementDetails = !showMeasurementDetails },
+                        contentPadding = PaddingValues(0.dp)
+                    ) {
                         Text(
-                            text = "$certaintyLabel ($confidencePercent%)",
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = if (isUncertain) Color(0xFFD32F2F) else FarmGreenPrimary
+                            text = if (showMeasurementDetails) "▾ " + stringResource(R.string.btn_hide_details) else "▸ " + stringResource(R.string.btn_view_details),
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = FarmGreenPrimary
                         )
                     }
+
+                    if (showMeasurementDetails) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(Color(0xFFF9F9F9), RoundedCornerShape(8.dp))
+                                .padding(10.dp)
+                        ) {
+                            Text(
+                                text = "${stringResource(R.string.confidence_score_label)}: ${(result.confidence * 100).toInt()}%",
+                                fontSize = 14.sp,
+                                color = Color(0xFF444444)
+                            )
+                            Text(
+                                text = "Latency: ${result.inferenceTimeMs} ms  |  RAM: ${result.memoryUsedMb} MB",
+                                fontSize = 13.sp,
+                                color = Color(0xFF666666)
+                            )
+                        }
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(14.dp))
+
+            // SEVERITY PRESENTATION (T2: Icon + Colour + Word, early warning or act now sentence)
+            val (severityWordRes, severityColor, severityIcon) = when (result.severityBand) {
+                SeverityBand.MILD -> Triple(R.string.severity_mild, Color(0xFF2E7D32), Icons.Default.Eco)
+                SeverityBand.MODERATE -> Triple(R.string.severity_moderate, Color(0xFFD97706), Icons.Default.WarningAmber)
+                SeverityBand.SEVERE -> Triple(R.string.severity_severe, Color(0xFFD32F2F), Icons.Default.ReportProblem)
+            }
+            val severityActionRes = RulesEngine.getSeverityActionSentence(result.severityBand)
+
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(14.dp),
+                colors = CardDefaults.cardColors(containerColor = Color.White),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+            ) {
+                Column(modifier = Modifier.padding(14.dp)) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = stringResource(R.string.severity_title),
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color(0xFF333333)
+                        )
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = severityIcon,
+                                contentDescription = null,
+                                tint = severityColor,
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = stringResource(severityWordRes),
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = severityColor
+                            )
+                        }
+                    }
+
                     Spacer(modifier = Modifier.height(8.dp))
-                    LinearProgressIndicator(
-                        progress = { confidencePercent / 100f },
+
+                    // One-line action banner: early warning or act now (T2)
+                    Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(10.dp)
-                            .clip(RoundedCornerShape(5.dp)),
-                        color = if (isUncertain) Color(0xFFD32F2F) else FarmGreenPrimary,
-                        trackColor = Color(0xFFE0E0E0),
-                    )
+                            .background(
+                                if (result.severityBand == SeverityBand.MILD) Color(0xFFE8F5E9) else Color(0xFFFFF3CD),
+                                RoundedCornerShape(8.dp)
+                            )
+                            .padding(horizontal = 10.dp, vertical = 8.dp)
+                    ) {
+                        Text(
+                            text = stringResource(severityActionRes),
+                            fontSize = 14.sp,
+                            color = if (result.severityBand == SeverityBand.MILD) Color(0xFF1B5E20) else Color(0xFF856404),
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
                 }
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // About the Disease Section
+            // About the Condition Section
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp),
@@ -426,7 +484,7 @@ fun ResultScreen(
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = when (language) { "te" -> "వ్యాధి వివరాలు"; "hi" -> "रोग के बारे में"; else -> "About the Condition" },
+                            text = stringResource(R.string.about_condition),
                             fontSize = 17.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color(0xFF212121)
@@ -444,7 +502,7 @@ fun ResultScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Treatment Suggestions Section (with Natural / Chemical toggle)
+            // Treatment Suggestions Section (Tiers: Natural and Chemical)
             if (!isUncertain && !isHealthy) {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
@@ -462,7 +520,7 @@ fun ResultScreen(
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
-                                text = when (language) { "te" -> "చికిత్స సూచనలు"; "hi" -> "उपचार सुझाव"; else -> "Treatment Suggestions" },
+                                text = stringResource(R.string.treatment_title),
                                 fontSize = 17.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = Color(0xFF212121)
@@ -471,7 +529,7 @@ fun ResultScreen(
 
                         Spacer(modifier = Modifier.height(14.dp))
 
-                        // Tab toggle row
+                        // Tab toggle row (Tier 1 Natural vs Tier 2 Chemical)
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -479,42 +537,44 @@ fun ResultScreen(
                                 .padding(4.dp)
                         ) {
                             Button(
-                                onClick = { selectedTreatmentTab = TreatmentTab.NATURAL },
+                                onClick = { selectedTreatmentTab = "natural" },
                                 modifier = Modifier.weight(1f).height(44.dp),
                                 shape = RoundedCornerShape(8.dp),
                                 colors = ButtonDefaults.buttonColors(
-                                    containerColor = if (selectedTreatmentTab == TreatmentTab.NATURAL) FarmGreenPrimary else Color.Transparent,
-                                    contentColor = if (selectedTreatmentTab == TreatmentTab.NATURAL) Color.White else Color(0xFF333333)
+                                    containerColor = if (selectedTreatmentTab == "natural") FarmGreenPrimary else Color.Transparent,
+                                    contentColor = if (selectedTreatmentTab == "natural") Color.White else Color(0xFF333333)
                                 ),
                                 elevation = null
                             ) {
                                 Text(
-                                    text = when (language) { "te" -> "🌿 సహజ నివారణ"; "hi" -> "🌿 जैविक"; else -> "Natural" },
-                                    fontWeight = FontWeight.Bold
+                                    text = "🌿 " + stringResource(R.string.tier_natural),
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 13.sp
                                 )
                             }
 
                             Button(
-                                onClick = { selectedTreatmentTab = TreatmentTab.CHEMICAL },
+                                onClick = { selectedTreatmentTab = "chemical" },
                                 modifier = Modifier.weight(1f).height(44.dp),
                                 shape = RoundedCornerShape(8.dp),
                                 colors = ButtonDefaults.buttonColors(
-                                    containerColor = if (selectedTreatmentTab == TreatmentTab.CHEMICAL) Color(0xFF1565C0) else Color.Transparent,
-                                    contentColor = if (selectedTreatmentTab == TreatmentTab.CHEMICAL) Color.White else Color(0xFF333333)
+                                    containerColor = if (selectedTreatmentTab == "chemical") Color(0xFF1565C0) else Color.Transparent,
+                                    contentColor = if (selectedTreatmentTab == "chemical") Color.White else Color(0xFF333333)
                                 ),
                                 elevation = null
                             ) {
                                 Text(
-                                    text = when (language) { "te" -> "🧪 రసాయన మందులు"; "hi" -> "🧪 रासायनिक"; else -> "Chemical" },
-                                    fontWeight = FontWeight.Bold
+                                    text = "🧪 " + stringResource(R.string.tier_chemical),
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 13.sp
                                 )
                             }
                         }
 
                         Spacer(modifier = Modifier.height(14.dp))
 
-                        // Treatment Steps with Checkmarks
-                        if (selectedTreatmentTab == TreatmentTab.NATURAL) {
+                        // Treatment Steps
+                        if (selectedTreatmentTab == "natural") {
                             kbEntry.treatment.natural.forEach { step ->
                                 Row(
                                     modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
@@ -538,11 +598,7 @@ fun ResultScreen(
                         } else {
                             if (kbEntry.treatment.chemical.isEmpty()) {
                                 Text(
-                                    text = when (language) {
-                                        "te" -> "రసాయన మందులు అవసరం లేదు."
-                                        "hi" -> "रासायनिक दवा की आवश्यकता नहीं है।"
-                                        else -> "No chemical application required."
-                                    },
+                                    text = stringResource(R.string.no_chemical_required),
                                     fontSize = 15.sp,
                                     color = Color(0xFF2E7D32)
                                 )
@@ -588,7 +644,7 @@ fun ResultScreen(
                             colors = ButtonDefaults.outlinedButtonColors(contentColor = FarmGreenPrimary)
                         ) {
                             Text(
-                                text = when (language) { "te" -> "మరిన్ని వివరాలు చూడండి ↓"; "hi" -> "अधिक विवरण देखें ↓"; else -> "View More Details ↓" },
+                                text = stringResource(R.string.btn_more_details) + " ↓",
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 15.sp
                             )
@@ -612,11 +668,7 @@ fun ResultScreen(
                 Text(text = "👨‍🌾", fontSize = 20.sp)
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = when (language) {
-                        "te" -> "💬 అగ్రి AI డాక్టర్‌తో మాట్లాడండి"
-                        "hi" -> "💬 एग्रीकेयर AI डॉक्टर से बात करें"
-                        else -> "💬 Chat with Agri AI Doctor"
-                    },
+                    text = "💬 " + stringResource(R.string.chat_ai_doctor),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.White
@@ -625,20 +677,20 @@ fun ResultScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // On-Device Llama Advisory
+            // On-Device Llama Advisory Card
             AdvisoryCard(
                 advisoryText = advisoryText,
                 isGenerating = isGeneratingAdvice,
                 language = language
             )
 
-            // Active Kisan Call Centre Emergency Dialer if Severe or Uncertain
+            // ACTIVE KISAN CALL CENTRE EMERGENCY DIALER (T2: Not sure or severe -> red button)
             if (shouldRefer) {
                 Spacer(modifier = Modifier.height(14.dp))
                 Button(
                     onClick = {
                         try {
-                            val dialIntent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:18001801551"))
+                            val dialIntent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:${RulesEngine.EXTENSION_OFFICER_NUMBER}"))
                             context.startActivity(dialIntent)
                         } catch (e: Exception) {
                             e.printStackTrace()
@@ -651,11 +703,7 @@ fun ResultScreen(
                     Icon(imageVector = Icons.Default.PhoneInTalk, contentDescription = null, tint = Color.White)
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = when (language) {
-                            "te" -> "📞 కిసాన్ కాల్ సెంటర్ (1800-180-1551)"
-                            "hi" -> "📞 किसान कॉल सेंटर (1800-180-1551)"
-                            else -> "📞 Kisan Call Centre (1800-180-1551)"
-                        },
+                        text = "📞 " + stringResource(R.string.kisan_call_centre_label),
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.White
@@ -667,90 +715,3 @@ fun ResultScreen(
         }
     }
 }
-
-@Preview(showBackground = true)
-@Composable
-fun ResultScreenPreview() {
-    val sampleKb = KbEntry(
-        classId = "rice_bacterial_leaf_blight",
-        index = 0,
-        crop = "rice",
-        type = "bacterial",
-        pathogen = "Xanthomonas oryzae",
-        names = LocalizedText(
-            en = "Bacterial Leaf Blight",
-            te = "బాక్టీరియల్ ఆకు ఎండు తెగులు",
-            hi = "जीवाणु पत्ती झुलसा"
-        ),
-        referralThreshold = "SEVERE",
-        immediateStep = LocalizedText(
-            en = "Drain standing water immediately.",
-            te = "పొలంలో నిలిచిన నీటిని వెంటనే తీసివేయండి.",
-            hi = "खेत से तुरंत पानी निकालें।"
-        ),
-        explainText = LocalizedText(
-            en = "Bacterial blight causes yellow to white lesions along leaf margins. It spreads rapidly under humid, rainy conditions.",
-            te = "బాక్టీరియల్ ఆకు ఎండు తెగులు ఆకుల అంచుల వెంట పసుపు నుండి తెలుపు రంగు మచ్చలను కలిగిస్తుంది.",
-            hi = "जीवाणु पत्ती झुलसा पत्तियों के किनारों पर पीले से सफेद घाव बनाता है।"
-        ),
-        treatment = TreatmentPlan(
-            natural = listOf(
-                NaturalStep(
-                    step = 1,
-                    action = LocalizedText(
-                        en = "Drain excess standing water from the field.",
-                        te = "పొలంలో అదనపు నీటిని తీసివేయండి.",
-                        hi = "खेत से अतिरिक्त पानी निकालें।"
-                    ),
-                    source = "ICAR-IIRR",
-                    sourceUrl = "https://icar-iirr.org",
-                    sourceQuote = "Drain field to reduce bacterial blight spread."
-                )
-            ),
-            chemical = listOf(
-                ChemicalStep(
-                    step = 1,
-                    activeIngredient = "Copper Hydroxide 53.8% DF",
-                    productExample = "Kocide",
-                    dose = "follow the product label",
-                    safetyLine = LocalizedText(
-                        en = "Wear mask and gloves while spraying.",
-                        te = "పిచికారీ చేసేటప్పుడు మాస్క్ మరియు చేతి తొడుగులు ధరించండి.",
-                        hi = "छिड़काव के समय मास्क और दस्ताने पहनें।"
-                    ),
-                    source = "CIB&RC",
-                    sourceUrl = "https://cibrc.gov.in",
-                    sourceQuote = "Major Uses of Pesticides - Rice Bacterial Blight"
-                )
-            )
-        )
-    )
-
-    val sampleResult = ClassifierResult(
-        classId = "rice_bacterial_leaf_blight",
-        displayName = "Rice Bacterial Leaf Blight",
-        confidence = 0.88f,
-        severityBand = SeverityBand.MODERATE,
-        certaintyBand = CertaintyBand.SURE,
-        lesionFraction = 0.22f,
-        inferenceTimeMs = 42L,
-        memoryUsedMb = 64L,
-        isDemoMode = false
-    )
-
-    CropDoctorTheme {
-        ResultScreen(
-            result = sampleResult,
-            kbEntry = sampleKb,
-            language = "en",
-            advisoryText = "Bacterial leaf blight detected with moderate severity. Drain excess water and follow recommended organic bio-control practices.",
-            isGeneratingAdvice = false,
-            capturedBitmap = null,
-            onBackClick = {},
-            onChangeLanguageClick = {},
-            onViewMoreDetails = {},
-            onChatbotClick = {}
-        )
-    }
-}
-
