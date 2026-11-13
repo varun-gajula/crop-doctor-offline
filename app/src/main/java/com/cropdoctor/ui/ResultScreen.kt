@@ -72,6 +72,7 @@ fun ResultScreen(
     val isHealthy = result.classId.endsWith("_healthy")
     var showJudgeDialog by remember { mutableStateOf(false) }
     var showMeasurementDetails by remember { mutableStateOf(false) }
+    var showHelplineDialog by remember { mutableStateOf(false) }
 
     // Offline Text-To-Speech
     var isSpeaking by remember { mutableStateOf(false) }
@@ -124,6 +125,81 @@ fun ResultScreen(
             confirmButton = {
                 Button(
                     onClick = { showJudgeDialog = false },
+                    colors = ButtonDefaults.buttonColors(containerColor = FarmGreenPrimary)
+                ) {
+                    Text(stringResource(R.string.close))
+                }
+            }
+        )
+    }
+
+    // Regional Helplines & Extension Referral Dialog
+    if (showHelplineDialog) {
+        val helplines = listOf(
+            Triple("National Kisan Call Centre", "1800-180-1551", "All India • Toll Free • 22 Languages"),
+            Triple("Telangana (PJTSAU)", "1800-425-3536", "Professor Jayashankar Telangana State Agricultural Univ."),
+            Triple("Andhra Pradesh (ANGRAU)", "1800-425-0433", "Acharya N.G. Ranga Agricultural University"),
+            Triple("Karnataka (UAS)", "1800-425-1150", "University of Agricultural Sciences"),
+            Triple("Tamil Nadu (TNAU)", "0422-6611300", "Tamil Nadu Agricultural University Agri-Portal")
+        )
+        AlertDialog(
+            onDismissRequest = { showHelplineDialog = false },
+            title = {
+                Text(
+                    text = "📞 " + stringResource(R.string.regional_helplines_title),
+                    fontWeight = FontWeight.Bold,
+                    color = FarmGreenDark,
+                    fontSize = 18.sp
+                )
+            },
+            text = {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(10.dp),
+                    modifier = Modifier.verticalScroll(rememberScrollState())
+                ) {
+                    helplines.forEach { (name, number, note) ->
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    showHelplineDialog = false
+                                    try {
+                                        val cleanNum = number.replace("-", "")
+                                        val dialIntent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:$cleanNum"))
+                                        context.startActivity(dialIntent)
+                                    } catch (e: Exception) {
+                                        e.printStackTrace()
+                                    }
+                                },
+                            shape = RoundedCornerShape(10.dp),
+                            colors = CardDefaults.cardColors(containerColor = Color(0xFFF1F8E9))
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(12.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(text = name, fontWeight = FontWeight.Bold, fontSize = 14.sp, color = FarmGreenDark)
+                                    Text(text = number, fontWeight = FontWeight.SemiBold, fontSize = 13.sp, color = Color(0xFF2E7D32))
+                                    Text(text = note, fontSize = 11.sp, color = Color.Gray)
+                                }
+                                Icon(
+                                    imageVector = Icons.Default.PhoneInTalk,
+                                    contentDescription = null,
+                                    tint = FarmGreenPrimary,
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            }
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = { showHelplineDialog = false },
                     colors = ButtonDefaults.buttonColors(containerColor = FarmGreenPrimary)
                 ) {
                     Text(stringResource(R.string.close))
@@ -704,18 +780,71 @@ fun ResultScreen(
                 isFake = isFakeAdvisor
             )
 
-            // ACTIVE KISAN CALL CENTRE EMERGENCY DIALER (T2: Not sure or severe -> red button)
+            // 1-TAP SHARE FIELD REPORT (Agri-Extension & Decision Support)
+            Spacer(modifier = Modifier.height(14.dp))
+            OutlinedButton(
+                onClick = {
+                    val reportBuilder = StringBuilder()
+                    reportBuilder.append("🌾 Crop Doctor - Field Diagnosis Report\n")
+                    reportBuilder.append("====================================\n")
+                    reportBuilder.append("Crop: ${kbEntry.crop.replaceFirstChar { it.uppercase() }}\n")
+                    reportBuilder.append("Diagnosis: ${kbEntry.names.forLanguage(language)}\n")
+                    reportBuilder.append("Severity: ${result.severityBand.name}\n")
+                    reportBuilder.append("Certainty: ${result.certaintyBand.name} (${(result.confidence * 100).toInt()}%)\n\n")
+
+                    val immediate = kbEntry.immediateSteps.forLanguage(language)
+                    if (immediate.isNotBlank() && !isUncertain) {
+                        reportBuilder.append("Immediate Action:\n$immediate\n\n")
+                    }
+
+                    if (kbEntry.treatments.natural.isNotEmpty()) {
+                        reportBuilder.append("Natural / Traditional Methods:\n")
+                        kbEntry.treatments.natural.take(2).forEach {
+                            reportBuilder.append("• ${it.title.forLanguage(language)}: ${it.description.forLanguage(language)}\n")
+                        }
+                        reportBuilder.append("\n")
+                    }
+
+                    if (kbEntry.treatments.chemical.isNotEmpty() && result.severityBand != SeverityBand.MILD) {
+                        reportBuilder.append("CIB&RC Registered Chemical Actives:\n")
+                        kbEntry.treatments.chemical.take(2).forEach {
+                            reportBuilder.append("• ${it.activeIngredient} (${it.formulation}) - Dose: ${it.dose ?: "Follow label"}\n")
+                        }
+                        reportBuilder.append("\n")
+                    }
+
+                    reportBuilder.append("Generated 100% offline via Crop Doctor on Arm SoC.\n")
+                    reportBuilder.append("For expert consultation call Kisan Call Centre: 1800-180-1551")
+
+                    try {
+                        val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                            type = "text/plain"
+                            putExtra(Intent.EXTRA_SUBJECT, "Crop Doctor Report: ${kbEntry.names.forLanguage(language)}")
+                            putExtra(Intent.EXTRA_TEXT, reportBuilder.toString())
+                        }
+                        context.startActivity(Intent.createChooser(shareIntent, context.getString(R.string.btn_share_report)))
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                },
+                modifier = Modifier.fillMaxWidth().height(52.dp),
+                shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.outlinedButtonColors(contentColor = FarmGreenDark)
+            ) {
+                Icon(imageVector = Icons.Default.Share, contentDescription = null, tint = FarmGreenDark)
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = stringResource(R.string.btn_share_report),
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
+
+            // ACTIVE KISAN CALL CENTRE & REGIONAL HELPLINE DIALER (T2: Not sure or severe -> red button)
             if (shouldRefer) {
                 Spacer(modifier = Modifier.height(14.dp))
                 Button(
-                    onClick = {
-                        try {
-                            val dialIntent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:${RulesEngine.EXTENSION_OFFICER_NUMBER}"))
-                            context.startActivity(dialIntent)
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                        }
-                    },
+                    onClick = { showHelplineDialog = true },
                     modifier = Modifier.fillMaxWidth().height(58.dp),
                     shape = RoundedCornerShape(14.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD32F2F))

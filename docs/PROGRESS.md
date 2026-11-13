@@ -1,6 +1,6 @@
 # Project Progress - Crop Doctor Offline
 
-## Current Status: T3 In Progress - Vision Model Training & Case Report Flow (R8)
+## Current Status: T3 In Progress - Vision Model 320x320 & Case Report Flow (R8)
 
 ### Done in T3: Case Report, Unified History, and 60-Second Demo Flow (R8)
 1. **Save Case Report Screen (`SaveCaseReportScreen.kt`):**
@@ -24,7 +24,7 @@
    - **40/40 unit tests passing** across 9 test suites.
    - `./gradlew assembleDebug` and `./gradlew assembleRelease` compile cleanly with 0 errors.
 
-### Done in T3: Vision Model Architecture, Training Pipeline & Dataset Packaging
+### Done in T3: Vision Model Architecture, Training Pipeline, Multi-Organ & OOD Rejection
 1. **Multithreaded Dataset Resizer (Square 320x320):**
    - Resized all 46,152 unique curated photos from `C:\crop-data\by_class\` to exact `(320, 320)` square JPEG quality 85.
    - Reduced dataset footprint from 2.09 GB to **956.75 MB** (55.4% storage reduction), safely within the Google Drive 15 GB free tier.

@@ -31,27 +31,42 @@ from ml.dataset import CropDataset, get_transforms, scan_dataset
 from ml.model import create_model, TemperatureScaler
 from ml.evaluate import evaluate_model
 
-def train_epoch(model, loader, criterion, optimizer, scaler, device):
+def train_epoch(model, loader, criterion_class, criterion_sev, optimizer, scaler, device, is_multi_task=False):
     model.train()
     total_loss = 0.0
     correct = 0
     total = 0
 
-    for imgs, labels, _ in loader:
-        imgs = imgs.to(device)
-        labels = labels.to(device)
+    for batch in loader:
+        imgs = batch[0].to(device)
+        labels = batch[1].to(device)
+        severities = batch[2].to(device)
 
         optimizer.zero_grad()
         if device.type == 'cuda':
             with torch.amp.autocast(device_type='cuda'):
-                logits = model(imgs)
-                loss = criterion(logits, labels)
+                if is_multi_task:
+                    logits_class, logits_sev = model(imgs)
+                    loss_class = criterion_class(logits_class, labels)
+                    loss_sev = criterion_sev(logits_sev, severities)
+                    loss = loss_class + 0.5 * loss_sev
+                    logits = logits_class
+                else:
+                    logits = model(imgs)
+                    loss = criterion_class(logits, labels)
             scaler.scale(loss).backward()
             scaler.step(optimizer)
             scaler.update()
         else:
-            logits = model(imgs)
-            loss = criterion(logits, labels)
+            if is_multi_task:
+                logits_class, logits_sev = model(imgs)
+                loss_class = criterion_class(logits_class, labels)
+                loss_sev = criterion_sev(logits_sev, severities)
+                loss = loss_class + 0.5 * loss_sev
+                logits = logits_class
+            else:
+                logits = model(imgs)
+                loss = criterion_class(logits, labels)
             loss.backward()
             optimizer.step()
 
@@ -62,19 +77,27 @@ def train_epoch(model, loader, criterion, optimizer, scaler, device):
 
     return total_loss / total, (correct / total) * 100.0
 
-def validate_epoch(model, loader, criterion, device):
+def validate_epoch(model, loader, criterion_class, criterion_sev, device, is_multi_task=False):
     model.eval()
     total_loss = 0.0
     correct = 0
     total = 0
 
     with torch.no_grad():
-        for imgs, labels, _ in loader:
-            imgs = imgs.to(device)
-            labels = labels.to(device)
+        for batch in loader:
+            imgs = batch[0].to(device)
+            labels = batch[1].to(device)
+            severities = batch[2].to(device)
 
-            logits = model(imgs)
-            loss = criterion(logits, labels)
+            if is_multi_task:
+                logits_class, logits_sev = model(imgs)
+                loss_class = criterion_class(logits_class, labels)
+                loss_sev = criterion_sev(logits_sev, severities)
+                loss = loss_class + 0.5 * loss_sev
+                logits = logits_class
+            else:
+                logits = model(imgs)
+                loss = criterion_class(logits, labels)
 
             total_loss += loss.item() * labels.size(0)
             preds = logits.argmax(dim=1)
@@ -123,12 +146,13 @@ def main():
     parser.add_argument("--data_dir", type=str, default="C:/crop-data/small", help="Path to resized dataset directory")
     parser.add_argument("--class_map", type=str, default="data/class_map.yaml", help="Path to class_map.yaml")
     parser.add_argument("--output_dir", type=str, default="runs/vision_mobilenet", help="Output directory for runs and checkpoints")
-    parser.add_argument("--model_name", type=str, default="mobilenet_v3_large", choices=["mobilenet_v3_large", "convnext_tiny"])
+    parser.add_argument("--model_name", type=str, default="mobilenet_v3_large", choices=["mobilenet_v3_large", "efficientnet_b0", "convnext_tiny"])
     parser.add_argument("--batch_size", type=int, default=64)
     parser.add_argument("--epochs", type=int, default=15)
     parser.add_argument("--lr", type=float, default=3e-4)
-    parser.add_argument("--img_size", type=int, default=224)
+    parser.add_argument("--img_size", type=int, default=320)
     parser.add_argument("--device", type=str, default="auto", choices=["auto", "cuda", "cpu"])
+    parser.add_argument("--multi_task", action="store_true", help="Enable multi-task dual heads for disease and severity")
     parser.add_argument("--export", action="store_true", help="Attempt export to ExecuTorch .pte")
     args = parser.parse_args()
 
@@ -142,7 +166,8 @@ def main():
     print("Crop Doctor - Vision Model Training Pipeline")
     print(f"Device:      {device}")
     print(f"Data Dir:    {args.data_dir}")
-    print(f"Model:       {args.model_name}")
+    print(f"Model:       {args.model_name} (Image Size: {args.img_size}x{args.img_size})")
+    print(f"Multi-Task:  {args.multi_task} (Dual Heads: Disease + Severity)")
     print(f"Batch Size:  {args.batch_size} | Epochs: {args.epochs} | LR: {args.lr}")
     print("=" * 60)
 
@@ -158,7 +183,7 @@ def main():
         sys.exit(1)
 
     # Stratified Split (80% train, 20% val)
-    labels = [l for _, l, _ in samples]
+    labels = [s[1] for s in samples]
     train_samples, val_samples = train_test_split(
         samples, test_size=0.20, stratify=labels, random_state=42
     )
@@ -186,10 +211,29 @@ def main():
 
     # Initialize Model
     num_classes = len(class_meta)
-    print(f"\nInitializing {args.model_name} with {num_classes} classes...")
-    model = create_model(args.model_name, num_classes=num_classes, pretrained=True).to(device)
+    print(f"\nInitializing {args.model_name} with {num_classes} classes (multi_task={args.multi_task})...")
+    model = create_model(
+        args.model_name,
+        num_classes=num_classes,
+        num_severity=3,
+        multi_task=args.multi_task,
+        pretrained=True
+    ).to(device)
 
-    criterion = nn.CrossEntropyLoss(label_smoothing=0.1)
+    # Class-frequency loss weighting to ensure minority classes are not ignored
+    class_sample_counts = torch.zeros(num_classes)
+    for s in train_samples:
+        class_sample_counts[s[1]] += 1
+
+    weights = torch.ones(num_classes)
+    active_mask = class_sample_counts > 0
+    weights[active_mask] = 1.0 / torch.sqrt(class_sample_counts[active_mask])
+    weights[active_mask] = weights[active_mask] / weights[active_mask].mean()
+    weights = weights.to(device)
+    print(f"Applied class-frequency loss weights (min={weights[active_mask].min():.2f}, max={weights[active_mask].max():.2f})")
+
+    criterion = nn.CrossEntropyLoss(weight=weights, label_smoothing=0.1)
+    criterion_sev = nn.CrossEntropyLoss()
     optimizer = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=1e-4)
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=args.epochs, eta_min=1e-6)
     scaler = torch.amp.GradScaler('cuda', enabled=(device.type == 'cuda'))
@@ -203,8 +247,12 @@ def main():
 
     for epoch in range(1, args.epochs + 1):
         ep_start = time.time()
-        train_loss, train_acc = train_epoch(model, train_loader, criterion, optimizer, scaler, device)
-        val_loss, val_acc = validate_epoch(model, val_loader, criterion, device)
+        train_loss, train_acc = train_epoch(
+            model, train_loader, criterion, criterion_sev, optimizer, scaler, device, is_multi_task=args.multi_task
+        )
+        val_loss, val_acc = validate_epoch(
+            model, val_loader, criterion, criterion_sev, device, is_multi_task=args.multi_task
+        )
         scheduler.step()
         ep_duration = time.time() - ep_start
 
@@ -280,3 +328,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

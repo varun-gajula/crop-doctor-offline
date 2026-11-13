@@ -28,24 +28,15 @@ def format_size(bytes_val):
         bytes_val /= 1024.0
     return f"{bytes_val:.2f} TB"
 
-def resize_image(src_path, dst_path, max_dim=320, quality=85):
+def resize_image(src_path, dst_path, target_size=(320, 320), quality=85):
     try:
         with Image.open(src_path) as img:
-            # Handle EXIF rotation and RGBA/CMYK color modes
-            if img.mode in ('RGBA', 'P', 'LA'):
-                img = img.convert('RGB')
-            elif img.mode != 'RGB':
+            # Handle EXIF rotation and color modes
+            if img.mode != 'RGB':
                 img = img.convert('RGB')
 
-            w, h = img.size
-            if max(w, h) > max_dim:
-                if w > h:
-                    new_w = max_dim
-                    new_h = int(h * (max_dim / w))
-                else:
-                    new_h = max_dim
-                    new_w = int(w * (max_dim / h))
-                img = img.resize((new_w, new_h), Image.Resampling.LANCZOS)
+            # Exact square resize to 320x320 pixels for high-resolution input
+            img = img.resize(target_size, Image.Resampling.LANCZOS)
 
             dst_path.parent.mkdir(parents=True, exist_ok=True)
             img.save(dst_path, 'JPEG', quality=quality, optimize=True)
@@ -58,7 +49,7 @@ def main():
     parser = argparse.ArgumentParser(description="Resize crop disease datasets for Google Drive free tier.")
     parser.add_argument("--src", type=str, required=True, help="Path to raw source images directory")
     parser.add_argument("--dst", type=str, required=True, help="Path to destination resized directory")
-    parser.add_argument("--max_dim", type=int, default=320, help="Max length of longest dimension (default: 320px)")
+    parser.add_argument("--size", type=int, default=320, help="Target square dimension in pixels (default: 320px)")
     parser.add_argument("--quality", type=int, default=85, help="JPEG quality 1-100 (default: 85)")
     parser.add_argument("--workers", type=int, default=os.cpu_count() or 8, help="Number of parallel worker threads")
     args = parser.parse_args()
@@ -70,11 +61,12 @@ def main():
         print(f"Error: Source directory {src_dir} does not exist.", file=sys.stderr)
         sys.exit(1)
 
+    target_size = (args.size, args.size)
     print(f"\n=======================================================")
-    print(f"Crop Doctor - Dataset Image Resizer")
+    print(f"Crop Doctor - Dataset Image Resizer (Square {args.size}x{args.size})")
     print(f"Source: {src_dir}")
     print(f"Destination: {dst_dir}")
-    print(f"Target Max Dimension: {args.max_dim}px | JPEG Quality: {args.quality} | Workers: {args.workers}")
+    print(f"Target Square Size: {args.size}x{args.size}px | JPEG Quality: {args.quality} | Workers: {args.workers}")
     print(f"=======================================================\n")
 
     valid_exts = {'.jpg', '.jpeg', '.png', '.webp', '.bmp', '.JPG', '.JPEG', '.PNG'}
@@ -95,7 +87,7 @@ def main():
 
     processed = 0
     with ThreadPoolExecutor(max_workers=args.workers) as executor:
-        futures = {executor.submit(resize_image, src, dst, args.max_dim, args.quality): i for i, (src, dst) in enumerate(tasks)}
+        futures = {executor.submit(resize_image, src, dst, target_size, args.quality): i for i, (src, dst) in enumerate(tasks)}
         for idx, fut in enumerate(as_completed(futures), 1):
             if fut.result():
                 processed += 1
