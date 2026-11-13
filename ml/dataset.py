@@ -26,12 +26,11 @@ def get_transforms(img_size=320, is_train=True):
 
     if is_train:
         return transforms.Compose([
-            transforms.RandomResizedCrop(img_size, scale=(0.4, 1.0)),
+            transforms.RandomResizedCrop(img_size, scale=(0.5, 1.0)),
             transforms.RandomHorizontalFlip(p=0.5),
             transforms.RandomVerticalFlip(p=0.5),
-            transforms.RandomRotation(degrees=45),
-            transforms.ColorJitter(brightness=0.3, contrast=0.3, saturation=0.3, hue=0.08),
-            transforms.GaussianBlur(kernel_size=(5, 5), sigma=(0.1, 2.0)),
+            transforms.RandomRotation(degrees=30),
+            transforms.ColorJitter(brightness=0.25, contrast=0.25, saturation=0.25, hue=0.05),
             transforms.ToTensor(),
             normalize
         ])
