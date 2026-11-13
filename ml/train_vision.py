@@ -152,7 +152,7 @@ def main():
     parser.add_argument("--lr", type=float, default=3e-4)
     parser.add_argument("--img_size", type=int, default=320)
     parser.add_argument("--device", type=str, default="auto", choices=["auto", "cuda", "cpu"])
-    parser.add_argument("--multi_task", action="store_true", help="Enable multi-task dual heads for disease and severity")
+    parser.add_argument("--multi_task", default=True, action=argparse.BooleanOptionalAction, help="Enable multi-task dual heads for disease and severity")
     parser.add_argument("--export", action="store_true", help="Attempt export to ExecuTorch .pte")
     args = parser.parse_args()
 
