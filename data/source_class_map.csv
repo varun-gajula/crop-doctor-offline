@@ -1,0 +1,48 @@
+source,source_folder,class_index,notes
+ymt8k9bjkn,Bacterial Spot,10,Chilli Bacterial Spot (Xanthomonas euvesicatoria)
+ymt8k9bjkn,Cercospora Leaf Spot,12,Chilli Cercospora Leaf Spot (frogeye)
+ymt8k9bjkn,Curl Virus,11,Chilli Leaf Curl Virus (ChiLCV)
+ymt8k9bjkn,Healthy Leaf,14,Chilli Healthy Chilli
+ymt8k9bjkn,Nutrition Deficiency,,UNMAPPED: Abiotic nutritional stress; outside pathology scope
+ymt8k9bjkn,White spot,,UNMAPPED: Row 13 marked UNVERIFIED in class_names_checked.tsv; do not map per prompt instructions
+74jsdxtmx2,bacterial blight,5,Cotton Bacterial Blight (Xanthomonas citri pv. malvacearum)
+74jsdxtmx2,curl virus,7,Cotton Leaf Curl Virus (CLCuV)
+74jsdxtmx2,fussarium wilt,6,Cotton Fusarium Wilt (Fusarium oxysporum f. sp. vasinfectum)
+74jsdxtmx2,healthy,9,Cotton Healthy Cotton
+t9hgvk2h9p,Alternaria Leaf Spot,8,Cotton Alternaria Leaf Spot (Alternaria macrospora)
+t9hgvk2h9p,Bacterial Blight,5,Cotton Bacterial Blight (Xanthomonas citri pv. malvacearum)
+t9hgvk2h9p,Fusarium Wilt,6,Cotton Fusarium Wilt (Fusarium oxysporum f. sp. vasinfectum)
+t9hgvk2h9p,Healthy Leaf,9,Cotton Healthy Cotton
+t9hgvk2h9p,Verticillium Wilt,,UNMAPPED: Verticillium wilt is distinct from Fusarium wilt and not in 25 target classes
+3myfctrgk3,Fall_Armyworm,23,Maize Fall Armyworm (Spodoptera frugiperda pest)
+3myfctrgk3,Gray_Spot,20,Maize Gray Leaf Spot (Cercospora zeae-maydis)
+3myfctrgk3,Healthy,24,Maize Healthy Maize
+3myfctrgk3,Leaf_Blight,22,Maize Northern Leaf Blight (Exserohilum turcicum)
+Project-AgML/rice,label_0_Bacterial_Leaf_Blight,0,Rice Bacterial Leaf Blight (Xanthomonas oryzae pv. oryzae)
+Project-AgML/rice,label_1_Brown_Spot,1,Rice Brown Spot (Bipolaris oryzae)
+Project-AgML/rice,label_2_Healthy_Rice_Leaf,4,Rice Healthy Rice
+Project-AgML/rice,label_3_Leaf_Blast,2,Rice Leaf Blast (Magnaporthe oryzae)
+Project-AgML/rice,label_4_Leaf_Scald,,UNMAPPED: Rice Leaf Scald is not in Crop Doctor's 25 target classes
+Project-AgML/rice,label_5_Sheath_Blight,3,Rice Sheath Blight (Rhizoctonia solani)
+PlantVillage,Tomato___Early_blight,15,Tomato Early Blight (Alternaria solani)
+PlantVillage,Tomato___Late_blight,16,Tomato Late Blight (Phytophthora infestans)
+PlantVillage,Tomato___Tomato_Yellow_Leaf_Curl_Virus,17,Tomato Yellow Leaf Curl Virus (TYLCV)
+PlantVillage,Tomato___Spider_mites Two-spotted_spider_mite,18,Tomato Spider Mites (Tetranychus urticae pest)
+PlantVillage,Tomato___healthy,19,Tomato Healthy Tomato
+PlantVillage,Corn_(maize)___Cercospora_leaf_spot Gray_leaf_spot,20,Maize Gray Leaf Spot (Cercospora zeae-maydis)
+PlantVillage,Corn_(maize)___Common_rust_,21,Maize Common Rust (Puccinia sorghi)
+PlantVillage,Corn_(maize)___Northern_Leaf_Blight,22,Maize Northern Leaf Blight (Exserohilum turcicum)
+PlantVillage,Corn_(maize)___healthy,24,Maize Healthy Maize
+PlantVillage,Tomato___Bacterial_spot,,UNMAPPED: Bacterial spot is excluded from tomato scope
+PlantVillage,Tomato___Leaf_Mold,,UNMAPPED: Leaf mold is excluded from tomato scope
+PlantVillage,Tomato___Septoria_leaf_spot,,UNMAPPED: Septoria leaf spot is excluded from tomato scope
+PlantVillage,Tomato___Target_Spot,,UNMAPPED: Target spot is excluded from tomato scope
+PlantVillage,Tomato___Tomato_mosaic_virus,,UNMAPPED: Tomato mosaic virus is excluded from tomato scope
+PlantDoc,Tomato Early blight leaf,15,Pending user approval: Field photos of tomato early blight
+PlantDoc,Tomato leaf late blight,16,Pending user approval: Field photos of tomato late blight
+PlantDoc,Tomato leaf yellow virus,17,Pending user approval: Field photos of tomato yellow leaf curl virus
+PlantDoc,Tomato two spotted spider mites leaf,18,Pending user approval: Field photos of tomato spider mites
+PlantDoc,Tomato leaf,19,Pending user approval: Field photos of healthy tomato leaf
+PlantDoc,Corn Gray leaf spot,20,Pending user approval: Field photos of maize gray leaf spot
+PlantDoc,Corn rust leaf,21,Pending user approval: Field photos of maize common rust
+PlantDoc,Corn leaf blight,22,Pending user approval: Field photos of maize leaf blight
