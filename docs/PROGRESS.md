@@ -1,6 +1,6 @@
 # Project Progress - Crop Doctor Offline
 
-## Current Status: T3 Completed - Case Report & 60-Second Demo Flow (R8)
+## Current Status: T3 In Progress - Vision Model Training & Case Report Flow (R8)
 
 ### Done in T3: Case Report, Unified History, and 60-Second Demo Flow (R8)
 1. **Save Case Report Screen (`SaveCaseReportScreen.kt`):**
@@ -24,7 +24,23 @@
    - **40/40 unit tests passing** across 9 test suites.
    - `./gradlew assembleDebug` and `./gradlew assembleRelease` compile cleanly with 0 errors.
 
----
+### Done in T3: Vision Model Architecture, Training Pipeline & Dataset Packaging
+1. **Multithreaded Dataset Resizer (Square 320x320):**
+   - Resized all 46,152 unique curated photos from `C:\crop-data\by_class\` to exact `(320, 320)` square JPEG quality 85.
+   - Reduced dataset footprint from 2.09 GB to **956.75 MB** (55.4% storage reduction), safely within the Google Drive 15 GB free tier.
+   - Created `C:\crop-data\crop_doctor_dataset.tar` for instant 1-click extraction on Google Colab SSD.
+2. **Three Vision Pipeline Additions (Arm Bharat AI-SoC PS1 Alignment):**
+   - **Multi-Organ Vision Input:** Updated `ml/dataset.py` with multi-scale random crops (scale 0.4–1.0), rotations, and color perturbations to generalize across leaves, stems, fruits (tomatoes, chillies), cotton bolls, and insect pests.
+   - **Severity Classification Head:** Implemented `MultiTaskCropVisionModel` in `ml/model.py` and `ml/train_vision.py` featuring a dual output head (25 disease classes + 3 severity tiers: Mild, Moderate, Severe) trained with joint multi-task loss $\mathcal{L} = \mathcal{L}_{cls} + 0.5 \mathcal{L}_{sev}$.
+   - **Out-of-Distribution (OOD) Rejection (Rule H11):** Implemented `EnergyOODDetector` calculating free energy $E(x) = -T \cdot \ln \sum \exp(z_i / T)$ to reliably reject non-crop inputs (hands, shoes, floors, backgrounds) to `"Not sure - ask an extension officer"`.
+3. **Android App Execution Alignment:**
+   - Updated `ExecuTorchClassifier.kt` with `INPUT_SIZE = 320` and dynamic unpack of multi-task severity logits (`outputs[1]`).
+   - Added on-device Free Energy calculation and low-confidence thresholding ($< 0.40$) for strict Rule H11 compliance.
+   - Added 1-tap **"Share Field Report"** on `ResultScreen.kt` using standard Android Share Sheet (`Intent.ACTION_SEND`) for agricultural extension officers.
+   - Added **Regional Agricultural University Helplines** modal on `ResultScreen.kt` featuring National Kisan Call Centre (`1800-180-1551`), Telangana PJTSAU (`1800-425-3536`), Andhra Pradesh ANGRAU (`1800-425-0433`), Karnataka UAS (`1800-425-1150`), and Tamil Nadu TNAU (`0422-6611300`).
+   - Maintained 100% string localization key parity across English, Telugu, and Hindi in `strings.xml`.
+4. **Colab 1-Click Training Notebook (`notebooks/02_train_and_export_vision.ipynb`):**
+   - Configured for 320x320 resolution, MobileNetV3-Large, PyTorch AMP, Cosine Annealing, and automated ExecuTorch `.pte` export with XNNPACK.
 
 ### Done in T2c: AI Advisory Uncertainty Sanitization & Rule H15 (R3, R4, R8, U1, U2)
 1. **AI Advisory Card Uncertainty Sanitization:**

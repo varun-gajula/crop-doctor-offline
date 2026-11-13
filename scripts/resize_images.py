@@ -12,6 +12,7 @@ import sys
 import argparse
 from pathlib import Path
 from PIL import Image
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 def get_dir_size(path):
     total = 0
@@ -59,6 +60,7 @@ def main():
     parser.add_argument("--dst", type=str, required=True, help="Path to destination resized directory")
     parser.add_argument("--max_dim", type=int, default=320, help="Max length of longest dimension (default: 320px)")
     parser.add_argument("--quality", type=int, default=85, help="JPEG quality 1-100 (default: 85)")
+    parser.add_argument("--workers", type=int, default=os.cpu_count() or 8, help="Number of parallel worker threads")
     args = parser.parse_args()
 
     src_dir = Path(args.src)
@@ -72,7 +74,7 @@ def main():
     print(f"Crop Doctor - Dataset Image Resizer")
     print(f"Source: {src_dir}")
     print(f"Destination: {dst_dir}")
-    print(f"Target Max Dimension: {args.max_dim}px | JPEG Quality: {args.quality}")
+    print(f"Target Max Dimension: {args.max_dim}px | JPEG Quality: {args.quality} | Workers: {args.workers}")
     print(f"=======================================================\n")
 
     valid_exts = {'.jpg', '.jpeg', '.png', '.webp', '.bmp', '.JPG', '.JPEG', '.PNG'}
@@ -83,18 +85,23 @@ def main():
         print("No valid images found in source directory.")
         return
 
-    print(f"Found {total_images} images. Processing...")
+    print(f"Found {total_images} images. Processing with {args.workers} threads...")
 
-    processed = 0
-    for idx, p in enumerate(image_paths, 1):
+    tasks = []
+    for p in image_paths:
         rel_path = p.relative_to(src_dir)
         dst_path = dst_dir / rel_path.with_suffix('.jpg')
-        if resize_image(p, dst_path, args.max_dim, args.quality):
-            processed += 1
+        tasks.append((p, dst_path))
 
-        if idx % 500 == 0 or idx == total_images:
-            percent = (idx / total_images) * 100
-            print(f"Progress: [{idx}/{total_images}] ({percent:.1f}%) processed")
+    processed = 0
+    with ThreadPoolExecutor(max_workers=args.workers) as executor:
+        futures = {executor.submit(resize_image, src, dst, args.max_dim, args.quality): i for i, (src, dst) in enumerate(tasks)}
+        for idx, fut in enumerate(as_completed(futures), 1):
+            if fut.result():
+                processed += 1
+            if idx % 1000 == 0 or idx == total_images:
+                percent = (idx / total_images) * 100
+                print(f"Progress: [{idx}/{total_images}] ({percent:.1f}%) processed")
 
     src_size = get_dir_size(src_dir)
     dst_size = get_dir_size(dst_dir)
