@@ -32,6 +32,8 @@ data_processed/
 *.tar
 *.tar.gz
 *.csv
+!data/source_class_map.csv
+!data/class_counts.csv
 
 # Gradle & Android Build Outputs
 .gradle/
@@ -49,15 +51,8 @@ local.properties
 captures/
 .externalNativeBuild
 .cxx/
+local.properties
 
-# Keystores & Signing Keys (Rule H2)
-*.jks
-*.keystore
-signing/
-
-# Temporary and log files
-*.log
-tool_out.txt
-tool_err.txt
-/t2_screens_collage.png
-
+# Benchmarks raw logs (keep scripts and summaries, ignore huge dumps)
+*.hprof
+*.prof
