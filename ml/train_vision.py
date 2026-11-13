@@ -31,13 +31,14 @@ from ml.dataset import CropDataset, get_transforms, scan_dataset
 from ml.model import create_model, TemperatureScaler
 from ml.evaluate import evaluate_model
 
-def train_epoch(model, loader, criterion_class, criterion_sev, optimizer, scaler, device, is_multi_task=False):
+def train_epoch(model, loader, criterion_class, criterion_sev, optimizer, scaler, device, epoch=1, total_epochs=15, is_multi_task=False):
     model.train()
     total_loss = 0.0
     correct = 0
     total = 0
+    num_batches = len(loader)
 
-    for batch in loader:
+    for batch_idx, batch in enumerate(loader, 1):
         imgs = batch[0].to(device)
         labels = batch[1].to(device)
         severities = batch[2].to(device)
@@ -75,16 +76,23 @@ def train_epoch(model, loader, criterion_class, criterion_sev, optimizer, scaler
         correct += (preds == labels).sum().item()
         total += labels.size(0)
 
+        if batch_idx % 25 == 0 or batch_idx == num_batches:
+            cur_acc = (correct / total) * 100.0
+            cur_loss = total_loss / total
+            print(f"\r  [Epoch {epoch:02d}/{total_epochs:02d}] Train: [{batch_idx:3d}/{num_batches:3d}] ({batch_idx/num_batches*100:4.1f}%) | Loss: {cur_loss:.4f} | Acc: {cur_acc:5.2f}%", end='', flush=True)
+
+    print()
     return total_loss / total, (correct / total) * 100.0
 
-def validate_epoch(model, loader, criterion_class, criterion_sev, device, is_multi_task=False):
+def validate_epoch(model, loader, criterion_class, criterion_sev, device, epoch=1, total_epochs=15, is_multi_task=False):
     model.eval()
     total_loss = 0.0
     correct = 0
     total = 0
+    num_batches = len(loader)
 
     with torch.no_grad():
-        for batch in loader:
+        for batch_idx, batch in enumerate(loader, 1):
             imgs = batch[0].to(device)
             labels = batch[1].to(device)
             severities = batch[2].to(device)
@@ -104,6 +112,11 @@ def validate_epoch(model, loader, criterion_class, criterion_sev, device, is_mul
             correct += (preds == labels).sum().item()
             total += labels.size(0)
 
+            if batch_idx % 25 == 0 or batch_idx == num_batches:
+                cur_acc = (correct / total) * 100.0
+                print(f"\r  [Epoch {epoch:02d}/{total_epochs:02d}] Val:   [{batch_idx:3d}/{num_batches:3d}] ({batch_idx/num_batches*100:4.1f}%) | Acc: {cur_acc:5.2f}%", end='', flush=True)
+
+    print()
     return total_loss / total, (correct / total) * 100.0
 
 def export_to_executorch(model, output_path, img_size=224):
@@ -199,14 +212,18 @@ def main():
         batch_size=args.batch_size,
         shuffle=True,
         num_workers=num_workers,
-        pin_memory=(device.type == 'cuda')
+        pin_memory=(device.type == 'cuda'),
+        persistent_workers=(num_workers > 0),
+        prefetch_factor=2 if num_workers > 0 else None
     )
     val_loader = DataLoader(
         CropDataset(val_samples, val_tf),
         batch_size=args.batch_size,
         shuffle=False,
         num_workers=num_workers,
-        pin_memory=(device.type == 'cuda')
+        pin_memory=(device.type == 'cuda'),
+        persistent_workers=(num_workers > 0),
+        prefetch_factor=2 if num_workers > 0 else None
     )
 
     # Initialize Model
@@ -248,10 +265,12 @@ def main():
     for epoch in range(1, args.epochs + 1):
         ep_start = time.time()
         train_loss, train_acc = train_epoch(
-            model, train_loader, criterion, criterion_sev, optimizer, scaler, device, is_multi_task=args.multi_task
+            model, train_loader, criterion, criterion_sev, optimizer, scaler, device,
+            epoch=epoch, total_epochs=args.epochs, is_multi_task=args.multi_task
         )
         val_loss, val_acc = validate_epoch(
-            model, val_loader, criterion, criterion_sev, device, is_multi_task=args.multi_task
+            model, val_loader, criterion, criterion_sev, device,
+            epoch=epoch, total_epochs=args.epochs, is_multi_task=args.multi_task
         )
         scheduler.step()
         ep_duration = time.time() - ep_start
@@ -268,8 +287,8 @@ def main():
             }, best_model_path)
 
         star = " *" if is_best else ""
-        print(f"Epoch {epoch:02d}/{args.epochs:02d} | Train Acc: {train_acc:6.2f}% (Loss: {train_loss:.4f}) | "
-              f"Val Acc: {val_acc:6.2f}% (Loss: {val_loss:.4f}) | Time: {ep_duration:4.1f}s{star}")
+        print(f"  --> Epoch {epoch:02d}/{args.epochs:02d} Summary: Train Acc: {train_acc:6.2f}% | "
+              f"Val Acc: {val_acc:6.2f}% | Time: {ep_duration:4.1f}s{star}\n", flush=True)
 
         history.append({
             'epoch': epoch,
