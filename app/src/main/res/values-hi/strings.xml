@@ -110,4 +110,26 @@
     <string name="demo_text_not_ai">डेमो टेक्स्ट – AI नहीं</string>
     <string name="advisory_card_title">AI कृषि सलाहकार</string>
     <string name="advisory_generating">सलाह तैयार हो रही है...</string>
+
+    <!-- T3: Save Case Report & History -->
+    <string name="btn_save_case_report">केस रिपोर्ट सहेजें</string>
+    <string name="save_case_report_title">केस रिपोर्ट सहेजें</string>
+    <string name="saved_cases_title">सहेजी गई केस रिपोर्ट</string>
+    <string name="btn_save_locally">लोकल सहेजें</string>
+    <string name="btn_saved_locally">सहेजा गया</string>
+    <string name="btn_share_report">रिपोर्ट साझा करें</string>
+    <string name="report_crop">फसल</string>
+    <string name="report_problem">पहचान</string>
+    <string name="report_certainty">निश्चितता</string>
+    <string name="report_severity">गंभीरता</string>
+    <string name="report_date">तारीख</string>
+    <string name="report_region">क्षेत्र</string>
+    <string name="report_note">किसान नोट</string>
+    <string name="report_note_hint">नोट जोड़ें (जैसे खेत का स्थान, लक्षण)...</string>
+    <string name="no_saved_cases">अभी तक कोई सहेजी गई केस रिपोर्ट नहीं है।\nफसलों की जांच करें और रिपोर्ट सहेजें।</string>
+    <string name="clear_saved_cases">रिपोर्ट हटाएं</string>
+    <string name="case_report_saved_success">केस रिपोर्ट सफलतापूर्वक सहेजी गई!</string>
+    <string name="confirm_clear_cases">क्या आप वाकई सभी सहेजी गई रिपोर्ट हटाना चाहते हैं?</string>
+    <string name="btn_delete">हटाएं</string>
+    <string name="btn_cancel">रद्द करें</string>
 </resources>

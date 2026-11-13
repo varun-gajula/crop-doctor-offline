@@ -53,7 +53,8 @@ fun ResultScreen(
     onBackClick: () -> Unit,
     onChangeLanguageClick: (String) -> Unit = {},
     onViewMoreDetails: () -> Unit,
-    onChatbotClick: () -> Unit = {}
+    onChatbotClick: () -> Unit = {},
+    onSaveCaseReport: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val scrollState = rememberScrollState()
@@ -728,6 +729,24 @@ fun ResultScreen(
                         color = Color.White
                     )
                 }
+            }
+
+            // T3: Save Case Report Button (R8: under 1-minute demo flow)
+            Spacer(modifier = Modifier.height(14.dp))
+            Button(
+                onClick = onSaveCaseReport,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(54.dp),
+                shape = RoundedCornerShape(14.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = FarmGreenPrimary)
+            ) {
+                Text(
+                    text = "📝 " + stringResource(R.string.btn_save_case_report),
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
+                )
             }
 
             Spacer(modifier = Modifier.height(28.dp))

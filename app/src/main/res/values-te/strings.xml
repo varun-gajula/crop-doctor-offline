@@ -110,4 +110,26 @@
     <string name="demo_text_not_ai">డెమో వచనం – AI కాదు</string>
     <string name="advisory_card_title">AI సలహాదారు</string>
     <string name="advisory_generating">AI సలహా సిద్ధమవుతోంది...</string>
+
+    <!-- T3: Save Case Report & History -->
+    <string name="btn_save_case_report">నివేదికను భద్రపరచండి</string>
+    <string name="save_case_report_title">కేస్ నివేదికను భద్రపరచండి</string>
+    <string name="saved_cases_title">భద్రపరిచిన కేస్ నివేదికలు</string>
+    <string name="btn_save_locally">ఫోన్‌లో భద్రపరచండి</string>
+    <string name="btn_saved_locally">భద్రపరచబడింది</string>
+    <string name="btn_share_report">నివేదికను పంచుకోండి</string>
+    <string name="report_crop">పంట</string>
+    <string name="report_problem">గుర్తించిన సమస్య</string>
+    <string name="report_certainty">ఖచ్చితత్వం</string>
+    <string name="report_severity">తీవ్రత</string>
+    <string name="report_date">తేదీ</string>
+    <string name="report_region">ప్రాంతం</string>
+    <string name="report_note">రైతు గమనిక</string>
+    <string name="report_note_hint">గమనికను జోడించండి (ఉదా. పొలం స్థానం, లక్షణాలు)...</string>
+    <string name="no_saved_cases">ఇంకా భద్రపరిచిన నివేదికలు లేవు.\nపంటలను పరిశీలించి నివేదికలను భద్రపరచండి.</string>
+    <string name="clear_saved_cases">నివేదికలను తొలగించండి</string>
+    <string name="case_report_saved_success">కేస్ నివేదిక విజయవంతంగా భద్రపరచబడింది!</string>
+    <string name="confirm_clear_cases">మీరు అన్ని భద్రపరిచిన నివేదికలను తొలగించాలనుకుంటున్నారా?</string>
+    <string name="btn_delete">తొలగించు</string>
+    <string name="btn_cancel">రద్దు చేయి</string>
 </resources>
