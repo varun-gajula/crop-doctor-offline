@@ -22,8 +22,35 @@ object PromptBuilder {
             else -> "English"
         }
 
+        val isNotSure = certainty.equals("NOT_SURE", ignoreCase = true) ||
+                certainty.equals("Not sure", ignoreCase = true) ||
+                diseaseName.equals("unknown", ignoreCase = true)
+
         val naturalSteps = kbEntry.treatment.natural.joinToString("; ") { it.action.en }
         val chemicalActives = kbEntry.treatment.chemical.joinToString(", ") { it.activeIngredient }
+
+        val userContext = if (isNotSure) {
+            """
+Crop: $crop
+Diagnosis: Unidentified condition
+Confidence: Not sure
+Official Finding: ${kbEntry.explainText.en}
+
+Explain that the condition is uncertain and guide the farmer to contact the local agriculture extension officer.
+            """.trimIndent()
+        } else {
+            """
+Crop: $crop
+Diagnosis: $diseaseName
+Severity: $severity
+Confidence: $certainty
+Official Finding: ${kbEntry.explainText.en}
+Recommended Natural Practice: $naturalSteps
+Approved Chemical Actives: $chemicalActives
+
+Explain what is happening to the plant, provide the most urgent action, and state when to consult the local agriculture officer.
+            """.trimIndent()
+        }
 
         return """<|begin_of_text|><|start_header_id|>system<|end_header_id|>
 You are an expert Indian agricultural extension specialist. 
@@ -34,15 +61,7 @@ RULES:
 3. NEVER state specific chemical dosages or units (e.g. ml/L, kg/ha). Always say "follow the product label".
 4. Keep explanation concise (under 80 words) and practical.<|eot_id|>
 <|start_header_id|>user<|end_header_id|>
-Crop: $crop
-Diagnosis: $diseaseName
-Severity: $severity
-Confidence: $certainty
-Official Finding: ${kbEntry.explainText.en}
-Recommended Natural Practice: $naturalSteps
-Approved Chemical Actives: $chemicalActives
-
-Explain what is happening to the plant, provide the most urgent action, and state when to consult the local agriculture officer.<|eot_id|>
+$userContext<|eot_id|>
 <|start_header_id|>assistant<|end_header_id|>
 """.trimIndent()
     }

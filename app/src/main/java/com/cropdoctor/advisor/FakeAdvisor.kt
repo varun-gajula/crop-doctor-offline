@@ -1,5 +1,7 @@
 package com.cropdoctor.advisor
 
+import com.cropdoctor.domain.CertaintyBand
+import com.cropdoctor.domain.RulesEngine
 import com.cropdoctor.domain.SeverityBand
 import com.cropdoctor.knowledge.KbEntry
 import kotlinx.coroutines.delay
@@ -20,28 +22,20 @@ class FakeAdvisor : Advisor {
         kbEntry: KbEntry,
         onToken: (String) -> Unit
     ) {
-        // Build grounded advice based on language
-        val adviceText = when (language.lowercase()) {
-            "te" -> {
-                // Telugu is always deterministic and strictly grounded from verified ICAR KB
-                val explain = kbEntry.explainText.te
-                val immediate = kbEntry.immediateStep.te
-                val advice = kbEntry.severityAdvice[severityBand.name]?.te ?: ""
-                "$explain\n\nతక్షణ చర్య: $immediate\n\nనివారణ సలహా: $advice"
-            }
-            "hi" -> {
-                val explain = kbEntry.explainText.hi
-                val immediate = kbEntry.immediateStep.hi
-                val advice = kbEntry.severityAdvice[severityBand.name]?.hi ?: ""
-                "$explain\n\nतत्काल कदम: $immediate\n\nसलाह: $advice"
-            }
-            else -> {
-                val explain = kbEntry.explainText.en
-                val immediate = kbEntry.immediateStep.en
-                val advice = kbEntry.severityAdvice[severityBand.name]?.en ?: ""
-                "$explain\n\nImmediate Step: $immediate\n\nSeverity Guidance ($severityBand): $advice"
-            }
+        val certaintyBand = when (certainty.uppercase()) {
+            "SURE" -> CertaintyBand.SURE
+            "PROBABLY" -> CertaintyBand.PROBABLY
+            else -> CertaintyBand.NOT_SURE
         }
+
+        // T2c: Grounded advice based strictly on RulesEngine rules
+        val adviceText = RulesEngine.buildAdvisoryText(
+            classId = classId,
+            certaintyBand = certaintyBand,
+            severityBand = severityBand,
+            language = language,
+            kbEntry = kbEntry
+        )
 
         // Clean through GuardrailFilter
         val safeText = GuardrailFilter.sanitize(adviceText)
