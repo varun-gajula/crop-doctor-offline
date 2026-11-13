@@ -682,9 +682,22 @@ fun ResultScreen(
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
-            // On-Device Advisory Card (T2b Fix: if fake advisor used, says "Demo text - not AI")
+            // On-Device Advisory Card (T2b/T2c Fix: When certainty is Not sure, no severity line or immediate step)
+            val filteredAdvisoryText = if (isUncertain) {
+                advisoryText.lines().filterNot { line ->
+                    line.contains("Severity Guidance", ignoreCase = true) ||
+                    line.contains("Immediate Step", ignoreCase = true) ||
+                    line.contains("నివారణ సలహా", ignoreCase = true) ||
+                    line.contains("తక్షణ చర్య", ignoreCase = true) ||
+                    line.contains("सलाह", ignoreCase = true) ||
+                    line.contains("तत्काल कदम", ignoreCase = true)
+                }.joinToString("\n").trim()
+            } else {
+                advisoryText
+            }
+
             AdvisoryCard(
-                advisoryText = advisoryText,
+                advisoryText = filteredAdvisoryText,
                 isGenerating = isGeneratingAdvice,
                 language = language,
                 isFake = isFakeAdvisor

@@ -1,6 +1,26 @@
 # Project Progress - Crop Doctor Offline
 
-## Current Status: T2 & T2b Completed - Ready for T3
+## Current Status: T2, T2b & T2c Completed - Ready for T3
+
+### Done in T2c: AI Advisory Uncertainty Sanitization & Rule H15 (R3, R4, R8, U1, U2)
+1. **AI Advisory Card Uncertainty Sanitization:**
+   - When certainty is `Not sure` (or disease is unknown):
+     - Completely removed any severity line, including `"Severity Guidance (MILD)"`.
+     - Completely removed any `"Immediate Step"` text that depends on severity.
+     - Displays strictly the verified, grounded explanation text from the Knowledge Base.
+     - Enforced across `RulesEngine.buildAdvisoryText()`, `FakeAdvisor`, `ExecuTorchLlamaAdvisor`, `PromptBuilder`, and defensive rendering in `ResultScreen`.
+2. **Added Unit Test in `RulesEngineTest.kt`:**
+   - `testBuildAdvisoryTextNotSureRemovesSeverityAndImmediateStep`:
+     - Verifies `CertaintyBand.NOT_SURE` produces zero occurrences of "Severity Guidance", "Severity Guidance (MILD)", or "Immediate Step" in English.
+     - Verifies zero occurrences of "నివారణ సలహా" or "తక్షణ చర్య" in Telugu.
+     - Verifies zero occurrences of "सलाह" or "तत्काल कदम" in Hindi.
+     - Verifies `CertaintyBand.SURE` retains legitimate disease-specific immediate step and severity advice.
+3. **Adopted Hard Rule H15 in `AGENTS.md`:**
+   - Added `H15 6 GB PHONE RULE`: App and runtime must comfortably execute within the memory headroom of a 6 GB RAM phone without triggering LMK. Peak memory measured and budgeted at <= 2.5 GB PSS with Llama loaded, and <= 500 MB without it.
+4. **Build & Test Verification:**
+   - 37/37 unit tests passing.
+   - `./gradlew assembleDebug` and `./gradlew assembleRelease` passing with 0 errors.
+   - Result screen captured in English on running emulator showing the clean advisory card.
 
 ### Done in T2b: Verification & Logic Hardening
 1. **Uncertainty Guidance & Severity Suppression (Fix 1):**

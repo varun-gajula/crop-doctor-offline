@@ -1,6 +1,7 @@
 package com.cropdoctor.domain
 
 import com.cropdoctor.R
+import com.cropdoctor.knowledge.KbEntry
 
 object RulesEngine {
 
@@ -120,5 +121,56 @@ object RulesEngine {
      */
     fun isChemicalTreatmentApplicable(classId: String): Boolean {
         return !classId.endsWith("_healthy")
+    }
+
+    /**
+     * T2c: Formats the AI Advisory card text according to certainty and severity rules.
+     * When certainty is NOT_SURE (or classId is "unknown"):
+     * - Must NOT contain any severity line (including "Severity Guidance (MILD)").
+     * - Must NOT contain any "Immediate Step" text that depends on severity.
+     * - Returns strictly the verified explanation text from the Knowledge Base.
+     */
+    fun buildAdvisoryText(
+        classId: String,
+        certaintyBand: CertaintyBand,
+        severityBand: SeverityBand,
+        language: String,
+        kbEntry: KbEntry
+    ): String {
+        val isNotSure = certaintyBand == CertaintyBand.NOT_SURE || classId.equals("unknown", ignoreCase = true)
+        if (isNotSure) {
+            return when (language.lowercase()) {
+                "te" -> kbEntry.explainText.te
+                "hi" -> kbEntry.explainText.hi
+                else -> kbEntry.explainText.en
+            }
+        }
+
+        return when (language.lowercase()) {
+            "te" -> {
+                val explain = kbEntry.explainText.te
+                val immediate = kbEntry.immediateStep.te
+                val advice = kbEntry.severityAdvice[severityBand.name]?.te ?: ""
+                val immediatePart = if (immediate.isNotBlank()) "\n\nతక్షణ చర్య: $immediate" else ""
+                val advicePart = if (advice.isNotBlank()) "\n\nనివారణ సలహా: $advice" else ""
+                "$explain$immediatePart$advicePart"
+            }
+            "hi" -> {
+                val explain = kbEntry.explainText.hi
+                val immediate = kbEntry.immediateStep.hi
+                val advice = kbEntry.severityAdvice[severityBand.name]?.hi ?: ""
+                val immediatePart = if (immediate.isNotBlank()) "\n\nतत्काल कदम: $immediate" else ""
+                val advicePart = if (advice.isNotBlank()) "\n\nसलाह: $advice" else ""
+                "$explain$immediatePart$advicePart"
+            }
+            else -> {
+                val explain = kbEntry.explainText.en
+                val immediate = kbEntry.immediateStep.en
+                val advice = kbEntry.severityAdvice[severityBand.name]?.en ?: ""
+                val immediatePart = if (immediate.isNotBlank()) "\n\nImmediate Step: $immediate" else ""
+                val advicePart = if (advice.isNotBlank()) "\n\nSeverity Guidance ($severityBand): $advice" else ""
+                "$explain$immediatePart$advicePart"
+            }
+        }
     }
 }
