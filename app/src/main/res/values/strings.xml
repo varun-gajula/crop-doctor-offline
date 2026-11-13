@@ -104,4 +104,10 @@
     <!-- Emergency Referral (Rule: labelled Kisan Call Centre, NOT KVK) -->
     <string name="btn_kisan_call_centre">Talk to an extension officer</string>
     <string name="kisan_call_centre_label">Kisan Call Centre (1800-180-1551)</string>
+
+    <!-- T2b Fixes -->
+    <string name="cant_tell_no_disease">Can’t tell – no disease identified</string>
+    <string name="demo_text_not_ai">Demo text – not AI</string>
+    <string name="advisory_card_title">AI Advisory</string>
+    <string name="advisory_generating">Generating advice on-device...</string>
 </resources>

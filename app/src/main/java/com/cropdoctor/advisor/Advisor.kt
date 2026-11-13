@@ -4,6 +4,8 @@ import com.cropdoctor.domain.SeverityBand
 import com.cropdoctor.knowledge.KbEntry
 
 interface Advisor {
+    val isFake: Boolean get() = false
+
     suspend fun generateAdvice(
         classId: String,
         severityBand: SeverityBand,

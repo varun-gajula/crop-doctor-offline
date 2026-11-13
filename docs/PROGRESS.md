@@ -1,6 +1,25 @@
 # Project Progress - Crop Doctor Offline
 
-## Current Status: T2 Completed - CHECKPOINT 2 Reached
+## Current Status: T2 & T2b Completed - Ready for T3
+
+### Done in T2b: Verification & Logic Hardening
+1. **Uncertainty Guidance & Severity Suppression (Fix 1):**
+   - When certainty is `Not sure`, severity bands (Mild/Moderate/Severe) and the "early warning" sentence are suppressed.
+   - Shows "Can’t tell – no disease identified" (`గుర్తించలేకపోయాము – తెగులు కనుగొనబడలేదు` in Telugu, `पहचान नहीं हो सकी – कोई रोग नहीं मिला` in Hindi).
+   - Added unit test `testNotSureSuppressesSeverityAndEarlyWarning` in `RulesEngineTest.kt`.
+2. **Simplified Home & Result Hierarchy (Fix 2):**
+   - Moved "Chat with Agri AI Doctor" and "Farming Tips" strictly into the More menu (`MoreOptionsScreen`).
+   - Removed from Home screen and Result screen.
+3. **Transparent Demo Advisory Attribution (Fix 3):**
+   - When running on emulator/pre-trained model with `FakeAdvisor`, the card displays "Demo text – not AI" (`డెమో వచనం – AI కాదు`, `डेमो टेक्स्ट – AI नहीं`).
+   - Completely removes any mention of "Built with Llama 3.2 1B · ExecuTorch".
+4. **Honest Farmer Details Panel (Fix 4):**
+   - Removed Latency and RAM metrics from the farmer-facing details panel.
+   - Latency and RAM are maintained solely on the hidden Judge Benchmark Panel (long-press on the title).
+5. **Testing & Build Verification:**
+   - 36/36 unit tests passing across all suites (`RulesEngineTest`, `LocalizationTest`, `KnowledgeBaseStepParityTest`, etc.).
+   - Both `./gradlew assembleDebug` and `./gradlew assembleRelease` pass with 0 errors.
+   - Result screens captured across Telugu, Hindi, and English.
 
 ### Done in T2: Language, Region, and the Result Logic (R3, R4, R8, U1, U2, U4)
 1. **XML String Resources Extracted & Localized:**

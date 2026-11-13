@@ -72,4 +72,29 @@ class RulesEngineTest {
         assertEquals(R.string.severity_act_now, RulesEngine.getSeverityActionSentence(SeverityBand.MODERATE))
         assertEquals(R.string.severity_act_now, RulesEngine.getSeverityActionSentence(SeverityBand.SEVERE))
     }
+
+    @Test
+    fun testNotSureSuppressesSeverityAndEarlyWarning() {
+        // T2b Fix (1): When certainty is "Not sure", do not show severity or early warning
+        assertFalse("Severity must not be shown when Not sure", RulesEngine.shouldShowSeverity(CertaintyBand.NOT_SURE))
+        assertFalse("Early warning must not be shown when Not sure", RulesEngine.shouldShowEarlyWarning(CertaintyBand.NOT_SURE, SeverityBand.MILD))
+        assertFalse("Early warning must not be shown when Not sure (moderate)", RulesEngine.shouldShowEarlyWarning(CertaintyBand.NOT_SURE, SeverityBand.MODERATE))
+        assertFalse("Early warning must not be shown when Not sure (severe)", RulesEngine.shouldShowEarlyWarning(CertaintyBand.NOT_SURE, SeverityBand.SEVERE))
+
+        // When certainty is Not sure, guidance sentence must be "Can't tell - no disease identified"
+        assertEquals(R.string.cant_tell_no_disease, RulesEngine.getGuidanceSentence(CertaintyBand.NOT_SURE, SeverityBand.MILD))
+        assertEquals(R.string.cant_tell_no_disease, RulesEngine.getGuidanceSentence(CertaintyBand.NOT_SURE, SeverityBand.MODERATE))
+        assertEquals(R.string.cant_tell_no_disease, RulesEngine.getGuidanceSentence(CertaintyBand.NOT_SURE, SeverityBand.SEVERE))
+
+        // When certainty is SURE or PROBABLY, severity is shown
+        assertTrue("Severity must be shown when SURE", RulesEngine.shouldShowSeverity(CertaintyBand.SURE))
+        assertTrue("Severity must be shown when PROBABLY", RulesEngine.shouldShowSeverity(CertaintyBand.PROBABLY))
+        assertTrue("Early warning must be shown for MILD when SURE", RulesEngine.shouldShowEarlyWarning(CertaintyBand.SURE, SeverityBand.MILD))
+        assertTrue("Early warning must be shown for MILD when PROBABLY", RulesEngine.shouldShowEarlyWarning(CertaintyBand.PROBABLY, SeverityBand.MILD))
+        assertFalse("Early warning not shown for MODERATE", RulesEngine.shouldShowEarlyWarning(CertaintyBand.SURE, SeverityBand.MODERATE))
+
+        assertEquals(R.string.severity_early_warning, RulesEngine.getGuidanceSentence(CertaintyBand.SURE, SeverityBand.MILD))
+        assertEquals(R.string.severity_act_now, RulesEngine.getGuidanceSentence(CertaintyBand.SURE, SeverityBand.MODERATE))
+        assertEquals(R.string.severity_act_now, RulesEngine.getGuidanceSentence(CertaintyBand.SURE, SeverityBand.SEVERE))
+    }
 }

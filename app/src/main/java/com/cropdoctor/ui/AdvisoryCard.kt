@@ -8,23 +8,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.cropdoctor.R
 import com.cropdoctor.ui.theme.FarmGreenPrimary
 
 @Composable
 fun AdvisoryCard(
     advisoryText: String,
     isGenerating: Boolean,
-    language: String
+    language: String,
+    isFake: Boolean = true
 ) {
-    val title = when (language) {
-        "te" -> "🤖 AI సలహాదారు (On-Device Advisor)"
-        "hi" -> "🤖 ऑन-डिवाइस कृषि सलाहकार"
-        else -> "🤖 On-Device Llama Advisory"
-    }
-
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
@@ -39,7 +36,7 @@ fun AdvisoryCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = title,
+                    text = "🤖 " + stringResource(R.string.advisory_card_title),
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     color = FarmGreenPrimary
@@ -57,11 +54,7 @@ fun AdvisoryCard(
 
             Text(
                 text = if (advisoryText.isEmpty() && isGenerating) {
-                    when (language) {
-                        "te" -> "AI సలహా సిద్ధమవుతోంది..."
-                        "hi" -> "सलाह तैयार हो रही है..."
-                        else -> "Generating advice on-device..."
-                    }
+                    stringResource(R.string.advisory_generating)
                 } else advisoryText + (if (isGenerating) " ▌" else ""),
                 fontSize = 17.sp,
                 color = Color(0xFF263238),
@@ -75,14 +68,24 @@ fun AdvisoryCard(
                 horizontalArrangement = Arrangement.End,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = "Built with Llama 3.2 1B • ExecuTorch (CPU)",
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = Color(0xFF689F38)
-                )
+                if (isFake) {
+                    Text(
+                        text = "⚠️ " + stringResource(R.string.demo_text_not_ai),
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFFB45309)
+                    )
+                } else {
+                    Text(
+                        text = "Built with Llama 3.2 1B · ExecuTorch",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = Color(0xFF689F38)
+                    )
+                }
             }
         }
     }
 }
+
 
