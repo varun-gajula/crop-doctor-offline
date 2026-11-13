@@ -108,13 +108,6 @@ fun HomeScreen(
 
                 NavigationBarItem(
                     selected = false,
-                    onClick = onFarmingTipsClick,
-                    icon = { Icon(Icons.AutoMirrored.Filled.MenuBook, contentDescription = "Tips") },
-                    label = { Text(stringResource(R.string.nav_tips), fontSize = 12.sp) }
-                )
-
-                NavigationBarItem(
-                    selected = false,
                     onClick = onMoreOptionsClick,
                     icon = { Icon(Icons.Default.MoreHoriz, contentDescription = "More") },
                     label = { Text(stringResource(R.string.nav_more), fontSize = 12.sp) }
@@ -225,7 +218,7 @@ fun HomeScreen(
 
             Spacer(modifier = Modifier.height(22.dp))
 
-            // 2x2 Quick Action Tiles
+            // Quick Action Tiles (T2b: Farming Tips & Chatbot moved into More menu)
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(14.dp)
@@ -239,80 +232,12 @@ fun HomeScreen(
                 )
 
                 QuickActionTile(
-                    title = stringResource(R.string.farming_tips),
-                    icon = Icons.AutoMirrored.Filled.MenuBook,
+                    title = stringResource(R.string.nav_more),
+                    icon = Icons.Default.MoreHoriz,
                     color = Color(0xFF1565C0),
-                    modifier = Modifier.weight(1f),
-                    onClick = onFarmingTipsClick
-                )
-            }
-
-            Spacer(modifier = Modifier.height(14.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(14.dp)
-            ) {
-                QuickActionTile(
-                    title = stringResource(R.string.settings),
-                    icon = Icons.Default.Settings,
-                    color = Color(0xFF00796B),
                     modifier = Modifier.weight(1f),
                     onClick = onMoreOptionsClick
                 )
-
-                val currentLangLabel = when (language) {
-                    "te" -> "భాష (తెలుగు)"
-                    "hi" -> "भाषा (हिन्दी)"
-                    else -> "Language (English)"
-                }
-                QuickActionTile(
-                    title = currentLangLabel,
-                    icon = Icons.Default.Language,
-                    color = Color(0xFFE65100),
-                    modifier = Modifier.weight(1f),
-                    onClick = { onChangeLanguageClick(if (language == "en") "te" else if (language == "te") "hi" else "en") }
-                )
-            }
-
-            Spacer(modifier = Modifier.height(14.dp))
-
-            // AI Doctor Chatbot Card
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { onChatbotClick() },
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFFE8F5E9)),
-                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(text = "👨‍🌾", fontSize = 34.sp)
-                    Spacer(modifier = Modifier.width(14.dp))
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(
-                            text = stringResource(R.string.chat_ai_doctor),
-                            fontSize = 17.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = FarmGreenDark
-                        )
-                        Text(
-                            text = stringResource(R.string.offline_badge),
-                            fontSize = 13.sp,
-                            color = Color(0xFF555555)
-                        )
-                    }
-                    Icon(
-                        imageVector = Icons.Default.ChevronRight,
-                        contentDescription = null,
-                        tint = FarmGreenPrimary
-                    )
-                }
             }
 
             Spacer(modifier = Modifier.height(24.dp))

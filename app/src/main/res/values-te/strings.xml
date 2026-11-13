@@ -104,4 +104,10 @@
     <!-- Emergency Referral -->
     <string name="btn_kisan_call_centre">వ్యవసాయ విస్తరణ అధికారితో మాట్లాడండి</string>
     <string name="kisan_call_centre_label">కిసాన్ కాల్ సెంటర్ (1800-180-1551)</string>
+
+    <!-- T2b Fixes -->
+    <string name="cant_tell_no_disease">గుర్తించలేకపోయాము – తెగులు కనుగొనబడలేదు</string>
+    <string name="demo_text_not_ai">డెమో వచనం – AI కాదు</string>
+    <string name="advisory_card_title">AI సలహాదారు</string>
+    <string name="advisory_generating">AI సలహా సిద్ధమవుతోంది...</string>
 </resources>

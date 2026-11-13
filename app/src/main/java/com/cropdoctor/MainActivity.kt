@@ -299,6 +299,7 @@ class MainActivity : ComponentActivity() {
                                     language = selectedLanguage,
                                     advisoryText = advisoryText,
                                     isGeneratingAdvice = isGeneratingAdvice,
+                                    isFakeAdvisor = try { (application as CropDoctorApplication).advisor.isFake } catch (e: Exception) { true },
                                     capturedBitmap = capturedLeafBitmap,
                                     onBackClick = { navigateTo(AppScreen.HOME) },
                                     onChangeLanguageClick = { newLang -> switchLanguage(newLang) },

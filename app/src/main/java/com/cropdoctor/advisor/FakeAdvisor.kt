@@ -10,6 +10,8 @@ import kotlinx.coroutines.delay
  */
 class FakeAdvisor : Advisor {
 
+    override val isFake: Boolean = true
+
     override suspend fun generateAdvice(
         classId: String,
         severityBand: SeverityBand,

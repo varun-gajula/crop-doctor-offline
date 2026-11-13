@@ -16,6 +16,9 @@ class ExecuTorchLlamaAdvisor(private val context: Context) : Advisor {
     private var modelFile: File? = null
     private var tokenizerFile: File? = null
 
+    override val isFake: Boolean
+        get() = modelFile == null || tokenizerFile == null
+
     init {
         findModelFiles()
     }

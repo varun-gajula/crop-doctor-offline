@@ -48,11 +48,12 @@ fun ResultScreen(
     language: String,
     advisoryText: String,
     isGeneratingAdvice: Boolean,
+    isFakeAdvisor: Boolean = true,
     capturedBitmap: Bitmap? = null,
     onBackClick: () -> Unit,
     onChangeLanguageClick: (String) -> Unit = {},
     onViewMoreDetails: () -> Unit,
-    onChatbotClick: () -> Unit
+    onChatbotClick: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val scrollState = rememberScrollState()
@@ -235,7 +236,7 @@ fun ResultScreen(
 
             // Alert Banner (Disease / Healthy / Uncertain)
             val alertBannerText = when {
-                isUncertain -> "⚠️ " + stringResource(R.string.alert_uncertain)
+                isUncertain -> "⚠️ " + stringResource(R.string.cant_tell_no_disease)
                 isHealthy -> "✓ " + stringResource(R.string.alert_healthy)
                 else -> "🚨 " + stringResource(R.string.alert_disease_detected)
             }
@@ -266,7 +267,7 @@ fun ResultScreen(
             ) {
                 Column(modifier = Modifier.weight(1f)) {
                     val displayDiseaseTitle = if (isUncertain) {
-                        stringResource(R.string.alert_uncertain)
+                        stringResource(R.string.cant_tell_no_disease)
                     } else {
                         kbEntry.names.forLanguage(language)
                     }
@@ -388,11 +389,6 @@ fun ResultScreen(
                                 fontSize = 14.sp,
                                 color = Color(0xFF444444)
                             )
-                            Text(
-                                text = "Latency: ${result.inferenceTimeMs} ms  |  RAM: ${result.memoryUsedMb} MB",
-                                fontSize = 13.sp,
-                                color = Color(0xFF666666)
-                            )
                         }
                     }
                 }
@@ -400,67 +396,98 @@ fun ResultScreen(
 
             Spacer(modifier = Modifier.height(14.dp))
 
-            // SEVERITY PRESENTATION (T2: Icon + Colour + Word, early warning or act now sentence)
-            val (severityWordRes, severityColor, severityIcon) = when (result.severityBand) {
-                SeverityBand.MILD -> Triple(R.string.severity_mild, Color(0xFF2E7D32), Icons.Default.Eco)
-                SeverityBand.MODERATE -> Triple(R.string.severity_moderate, Color(0xFFD97706), Icons.Default.WarningAmber)
-                SeverityBand.SEVERE -> Triple(R.string.severity_severe, Color(0xFFD32F2F), Icons.Default.ReportProblem)
-            }
-            val severityActionRes = RulesEngine.getSeverityActionSentence(result.severityBand)
-
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(14.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-            ) {
-                Column(modifier = Modifier.padding(14.dp)) {
+            // SEVERITY / STATUS PRESENTATION (T2b Fix: When certainty is NOT_SURE, do not show severity or early warning; show "Can't tell - no disease identified")
+            if (result.certaintyBand == CertaintyBand.NOT_SURE) {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(14.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFFFFEBEE)),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFFFCDD2)),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                ) {
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = stringResource(R.string.severity_title),
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = Color(0xFF333333)
-                        )
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                imageVector = severityIcon,
-                                contentDescription = null,
-                                tint = severityColor,
-                                modifier = Modifier.size(20.dp)
-                            )
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Text(
-                                text = stringResource(severityWordRes),
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = severityColor
-                            )
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    // One-line action banner: early warning or act now (T2)
-                    Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .background(
-                                if (result.severityBand == SeverityBand.MILD) Color(0xFFE8F5E9) else Color(0xFFFFF3CD),
-                                RoundedCornerShape(8.dp)
-                            )
-                            .padding(horizontal = 10.dp, vertical = 8.dp)
+                            .padding(14.dp),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(
-                            text = stringResource(severityActionRes),
-                            fontSize = 14.sp,
-                            color = if (result.severityBand == SeverityBand.MILD) Color(0xFF1B5E20) else Color(0xFF856404),
-                            fontWeight = FontWeight.Medium
+                        Icon(
+                            imageVector = Icons.Default.HelpOutline,
+                            contentDescription = null,
+                            tint = Color(0xFFD32F2F),
+                            modifier = Modifier.size(24.dp)
                         )
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Text(
+                            text = stringResource(R.string.cant_tell_no_disease),
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFFC62828)
+                        )
+                    }
+                }
+            } else {
+                val (severityWordRes, severityColor, severityIcon) = when (result.severityBand) {
+                    SeverityBand.MILD -> Triple(R.string.severity_mild, Color(0xFF2E7D32), Icons.Default.Eco)
+                    SeverityBand.MODERATE -> Triple(R.string.severity_moderate, Color(0xFFD97706), Icons.Default.WarningAmber)
+                    SeverityBand.SEVERE -> Triple(R.string.severity_severe, Color(0xFFD32F2F), Icons.Default.ReportProblem)
+                }
+                val severityActionRes = RulesEngine.getSeverityActionSentence(result.severityBand)
+
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(14.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                ) {
+                    Column(modifier = Modifier.padding(14.dp)) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = stringResource(R.string.severity_title),
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = Color(0xFF333333)
+                            )
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    imageVector = severityIcon,
+                                    contentDescription = null,
+                                    tint = severityColor,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text(
+                                    text = stringResource(severityWordRes),
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = severityColor
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        // One-line action banner: early warning or act now (T2)
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(
+                                    if (result.severityBand == SeverityBand.MILD) Color(0xFFE8F5E9) else Color(0xFFFFF3CD),
+                                    RoundedCornerShape(8.dp)
+                                )
+                                .padding(horizontal = 10.dp, vertical = 8.dp)
+                        ) {
+                            Text(
+                                text = stringResource(severityActionRes),
+                                fontSize = 14.sp,
+                                color = if (result.severityBand == SeverityBand.MILD) Color(0xFF1B5E20) else Color(0xFF856404),
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
                     }
                 }
             }
@@ -655,33 +682,12 @@ fun ResultScreen(
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
-            // Chat with Agri AI Doctor
-            Button(
-                onClick = onChatbotClick,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(54.dp),
-                shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = FarmGreenPrimary),
-                elevation = ButtonDefaults.buttonElevation(defaultElevation = 3.dp)
-            ) {
-                Text(text = "👨‍🌾", fontSize = 20.sp)
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = "💬 " + stringResource(R.string.chat_ai_doctor),
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White
-                )
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // On-Device Llama Advisory Card
+            // On-Device Advisory Card (T2b Fix: if fake advisor used, says "Demo text - not AI")
             AdvisoryCard(
                 advisoryText = advisoryText,
                 isGenerating = isGeneratingAdvice,
-                language = language
+                language = language,
+                isFake = isFakeAdvisor
             )
 
             // ACTIVE KISAN CALL CENTRE EMERGENCY DIALER (T2: Not sure or severe -> red button)

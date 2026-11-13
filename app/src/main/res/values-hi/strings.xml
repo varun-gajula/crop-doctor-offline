@@ -104,4 +104,10 @@
     <!-- Emergency Referral -->
     <string name="btn_kisan_call_centre">कृषि विस्तार अधिकारी से बात करें</string>
     <string name="kisan_call_centre_label">किसान कॉल सेंटर (1800-180-1551)</string>
+
+    <!-- T2b Fixes -->
+    <string name="cant_tell_no_disease">पहचान नहीं हो सकी – कोई रोग नहीं मिला</string>
+    <string name="demo_text_not_ai">डेमो टेक्स्ट – AI नहीं</string>
+    <string name="advisory_card_title">AI कृषि सलाहकार</string>
+    <string name="advisory_generating">सलाह तैयार हो रही है...</string>
 </resources>

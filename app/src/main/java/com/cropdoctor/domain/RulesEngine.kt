@@ -63,6 +63,35 @@ object RulesEngine {
     }
 
     /**
+     * T2b: Determines whether to show severity band to the farmer.
+     * When certainty is NOT_SURE, severity must not be shown.
+     */
+    fun shouldShowSeverity(certaintyBand: CertaintyBand): Boolean {
+        return certaintyBand != CertaintyBand.NOT_SURE
+    }
+
+    /**
+     * T2b: Determines whether to show the early warning action sentence.
+     * When certainty is NOT_SURE, early warning must not be shown.
+     */
+    fun shouldShowEarlyWarning(certaintyBand: CertaintyBand, severityBand: SeverityBand): Boolean {
+        return certaintyBand != CertaintyBand.NOT_SURE && severityBand == SeverityBand.MILD
+    }
+
+    /**
+     * T2b: Resolves guidance / status sentence:
+     * - If certainty is NOT_SURE -> R.string.cant_tell_no_disease ("Can’t tell – no disease identified")
+     * - If MILD -> R.string.severity_early_warning
+     * - Else -> R.string.severity_act_now
+     */
+    fun getGuidanceSentence(certaintyBand: CertaintyBand, severityBand: SeverityBand): Int {
+        if (certaintyBand == CertaintyBand.NOT_SURE) {
+            return R.string.cant_tell_no_disease
+        }
+        return getSeverityActionSentence(severityBand)
+    }
+
+    /**
      * Severity action sentence:
      * - Mild -> early warning
      * - Moderate/Severe -> act now
