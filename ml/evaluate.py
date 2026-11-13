@@ -76,7 +76,7 @@ def evaluate_model(model, dataloader, class_meta, device, temp_scaler=None, outp
         })
 
     # 5. Confusion Matrix Plot
-    cm = confusion_matrix(all_targets, all_preds)
+    cm = confusion_matrix(all_targets, all_preds, labels=list(range(len(class_meta))))
     plt.figure(figsize=(14, 12))
     plt.imshow(cm, interpolation='nearest', cmap=plt.cm.Blues)
     plt.title('Crop Doctor - 25 Class Confusion Matrix')

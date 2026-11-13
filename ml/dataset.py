@@ -73,7 +73,11 @@ def scan_dataset(data_dir, class_map_path):
         cid = info['class_id']
         class_dir = data_dir / cid
         if not class_dir.exists():
-            continue
+            matches = list(data_dir.glob(f"{idx:02d}_*"))
+            if matches:
+                class_dir = matches[0]
+            else:
+                continue
 
         for img_path in class_dir.rglob('*'):
             if img_path.is_file() and img_path.suffix.lower() in valid_exts:
