@@ -132,4 +132,5 @@
     <string name="confirm_clear_cases">Are you sure you want to delete all saved reports?</string>
     <string name="btn_delete">Delete</string>
     <string name="btn_cancel">Cancel</string>
+    <string name="regional_helplines_title">Extension &amp; University Helplines</string>
 </resources>

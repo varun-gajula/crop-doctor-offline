@@ -20,7 +20,10 @@ import kotlin.math.exp
 
 class ExecuTorchClassifier(private val context: Context) : Classifier {
 
-    private val TAG = "ExecuTorchClassifier"
+    companion object {
+        private const val TAG = "ExecuTorchClassifier"
+        const val INPUT_SIZE = 320
+    }
     private var module: Module? = null
     private var labels: List<String> = emptyList()
 
@@ -104,7 +107,7 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
         }
 
         try {
-            val resized = Bitmap.createScaledBitmap(bitmap, 224, 224, true)
+            val resized = Bitmap.createScaledBitmap(bitmap, INPUT_SIZE, INPUT_SIZE, true)
             val inputTensor = preprocessBitmap(resized)
 
             val outputs = module!!.forward(EValue.from(inputTensor))
@@ -126,7 +129,15 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
             val elapsed = SystemClock.elapsedRealtime() - startTime
             val memoryMb = getProcessMemoryMb()
 
-            if (classId == "unknown") {
+            // Energy-based Out-Of-Distribution (OOD) check (Rule H11)
+            var sumExp = 0.0
+            for (logit in logits) {
+                sumExp += exp(logit.toDouble())
+            }
+            val freeEnergy = -Math.log(sumExp)
+
+            // Reject if out-of-distribution (non-crop / noise) or low confidence (Rule H11)
+            if (classId == "unknown" || maxProb < 0.40f || freeEnergy > -1.5) {
                 return@withContext ClassifierResult(
                     classId = "unknown",
                     displayName = "Not sure - ask an extension officer",
@@ -147,7 +158,27 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
                 LesionAreaEstimator.estimateLesionFraction(bitmap)
             }
 
-            val severityBand = SeverityCalculator.calculate(lesionFraction, classId)
+            // Severity: learned severity from multi-task vision head if present; otherwise lesion fraction heuristic
+            val severityBand = if (outputs.size > 1) {
+                val sevTensor = outputs[1].toTensor()
+                val sevLogits = sevTensor.dataAsFloatArray
+                var topSevIdx = 0
+                var maxSevLogit = sevLogits[0]
+                for (i in 1 until sevLogits.size) {
+                    if (sevLogits[i] > maxSevLogit) {
+                        maxSevLogit = sevLogits[i]
+                        topSevIdx = i
+                    }
+                }
+                when (topSevIdx) {
+                    0 -> SeverityBand.MILD
+                    1 -> SeverityBand.MODERATE
+                    else -> SeverityBand.SEVERE
+                }
+            } else {
+                SeverityCalculator.calculate(lesionFraction, classId)
+            }
+
             val certaintyBand = CertaintyCalculator.calculate(maxProb)
 
             ClassifierResult(
@@ -184,8 +215,8 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
     }
 
     private fun preprocessBitmap(bitmap: Bitmap): Tensor {
-        val width = 224
-        val height = 224
+        val width = INPUT_SIZE
+        val height = INPUT_SIZE
         val pixels = IntArray(width * height)
         bitmap.getPixels(pixels, 0, width, 0, 0, width, height)
 
@@ -204,7 +235,7 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
             floatBuffer[2 * width * height + i] = (b - mean[2]) / std[2]
         }
 
-        return Tensor.fromBlob(floatBuffer, longArrayOf(1, 3, 224, 224))
+        return Tensor.fromBlob(floatBuffer, longArrayOf(1, 3, width.toLong(), height.toLong()))
     }
 
     private fun softmax(logits: FloatArray): FloatArray {

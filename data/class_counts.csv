@@ -12,7 +12,7 @@ class_index,crop,problem,unique_photos,sources_count,status
 10,Chilli,Bacterial Spot,2330,2,OK
 11,Chilli,Leaf Curl,400,1,SHORT
 12,Chilli,Cercospora Leaf Spot,177,1,BLOCKED
-13,Chilli,White Spot,0,0,BLOCKED
+13,Chilli,White Spot,195,1,BLOCKED
 14,Chilli,Healthy Chilli,3609,2,OK
 15,Tomato,Early Blight,2271,2,OK
 16,Tomato,Late Blight,4200,2,OK

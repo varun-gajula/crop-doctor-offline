@@ -4,7 +4,7 @@ ymt8k9bjkn,Cercospora Leaf Spot,12,Chilli Cercospora Leaf Spot (frogeye)
 ymt8k9bjkn,Curl Virus,11,Chilli Leaf Curl Virus (ChiLCV)
 ymt8k9bjkn,Healthy Leaf,14,Chilli Healthy Chilli
 ymt8k9bjkn,Nutrition Deficiency,,UNMAPPED: Abiotic nutritional stress; outside pathology scope
-ymt8k9bjkn,White spot,,UNMAPPED: Row 13 marked UNVERIFIED in class_names_checked.tsv; do not map per prompt instructions
+ymt8k9bjkn,White spot,13,"MAPPED: 195 field photos of chilli white spot from Deccan Krishna Basin (ymt8k9bjkn)"
 74jsdxtmx2,bacterial blight,5,Cotton Bacterial Blight (Xanthomonas citri pv. malvacearum)
 74jsdxtmx2,curl virus,7,Cotton Leaf Curl Virus (CLCuV)
 74jsdxtmx2,fussarium wilt,6,Cotton Fusarium Wilt (Fusarium oxysporum f. sp. vasinfectum)

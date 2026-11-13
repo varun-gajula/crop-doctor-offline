@@ -132,4 +132,5 @@
     <string name="confirm_clear_cases">क्या आप वाकई सभी सहेजी गई रिपोर्ट हटाना चाहते हैं?</string>
     <string name="btn_delete">हटाएं</string>
     <string name="btn_cancel">रद्द करें</string>
+    <string name="regional_helplines_title">कृषि विस्तार और विश्वविद्यालय हेल्पलाइन</string>
 </resources>

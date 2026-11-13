@@ -9,15 +9,85 @@ import torch
 import torch.nn as nn
 import torchvision.models as models
 
-def create_model(model_name="mobilenet_v3_large", num_classes=25, pretrained=True):
+class MultiTaskCropVisionModel(nn.Module):
     """
-    Initializes vision backbone and modifies head for 25 target classes.
+    Multi-Task Vision Model for Arm SoC:
+    Simultaneously outputs:
+    1. Disease / Pest Classification (25 target classes)
+    2. Visual Severity Level Classification (0: Mild, 1: Moderate, 2: Severe)
     """
+    def __init__(self, backbone_name="mobilenet_v3_large", num_classes=25, num_severity=3, pretrained=True):
+        super().__init__()
+        self.backbone_name = backbone_name
+        self.num_classes = num_classes
+        self.num_severity = num_severity
+
+        if backbone_name == "mobilenet_v3_large":
+            weights = models.MobileNet_V3_Large_Weights.DEFAULT if pretrained else None
+            base = models.mobilenet_v3_large(weights=weights)
+            self.features = base.features
+            self.avgpool = base.avgpool
+            in_features = base.classifier[0].in_features  # 960
+
+            self.classifier_head = nn.Sequential(
+                nn.Linear(in_features, 512),
+                nn.Hardswish(),
+                nn.Dropout(p=0.2),
+                nn.Linear(512, num_classes)
+            )
+            self.severity_head = nn.Sequential(
+                nn.Linear(in_features, 256),
+                nn.Hardswish(),
+                nn.Dropout(p=0.2),
+                nn.Linear(256, num_severity)
+            )
+
+        elif backbone_name == "efficientnet_b0":
+            weights = models.EfficientNet_B0_Weights.DEFAULT if pretrained else None
+            base = models.efficientnet_b0(weights=weights)
+            self.features = base.features
+            self.avgpool = base.avgpool
+            in_features = base.classifier[1].in_features  # 1280
+
+            self.classifier_head = nn.Sequential(
+                nn.Dropout(p=0.2),
+                nn.Linear(in_features, num_classes)
+            )
+            self.severity_head = nn.Sequential(
+                nn.Dropout(p=0.2),
+                nn.Linear(in_features, num_severity)
+            )
+        else:
+            raise ValueError(f"Unsupported multi-task backbone: {backbone_name}")
+
+    def forward(self, x):
+        feat = self.features(x)
+        feat = self.avgpool(feat)
+        feat = torch.flatten(feat, 1)
+
+        class_logits = self.classifier_head(feat)
+        severity_logits = self.severity_head(feat)
+        return class_logits, severity_logits
+
+def create_model(model_name="mobilenet_v3_large", num_classes=25, num_severity=3, multi_task=False, pretrained=True):
+    """
+    Initializes vision backbone. Supports single-task or multi-task (disease + severity) heads.
+    """
+    if multi_task:
+        return MultiTaskCropVisionModel(model_name, num_classes=num_classes, num_severity=num_severity, pretrained=pretrained)
+
     if model_name == "mobilenet_v3_large":
         weights = models.MobileNet_V3_Large_Weights.DEFAULT if pretrained else None
         model = models.mobilenet_v3_large(weights=weights)
         in_features = model.classifier[3].in_features
         model.classifier[3] = nn.Linear(in_features, num_classes)
+        return model
+
+    elif model_name == "efficientnet_b0":
+        weights = models.EfficientNet_B0_Weights.DEFAULT if pretrained else None
+        model = models.efficientnet_b0(weights=weights)
+        in_features = model.classifier[1].in_features
+        model.classifier[1] = nn.Linear(in_features, num_classes)
         return model
 
     elif model_name == "convnext_tiny":
@@ -29,6 +99,25 @@ def create_model(model_name="mobilenet_v3_large", num_classes=25, pretrained=Tru
 
     else:
         raise ValueError(f"Unsupported model architecture: {model_name}")
+
+class EnergyOODDetector:
+    """
+    Energy-based Out-Of-Distribution (OOD) Detector (Rule H11):
+    Computes free energy E(x; T) = -T * log(sum(exp(logits / T)))
+    Rejects non-crop images (hands, desks, shoes) that exhibit high energy / low calibrated confidence.
+    """
+    def __init__(self, temperature=1.0, energy_threshold=-10.0):
+        self.temperature = temperature
+        self.energy_threshold = energy_threshold
+
+    def compute_energy(self, logits):
+        # logits shape: [batch, num_classes]
+        scaled = logits / self.temperature
+        return -self.temperature * torch.logsumexp(scaled, dim=-1)
+
+    def is_in_distribution(self, logits):
+        energy = self.compute_energy(logits)
+        return energy < self.energy_threshold
 
 class TemperatureScaler(nn.Module):
     """

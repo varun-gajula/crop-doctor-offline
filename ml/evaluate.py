@@ -24,9 +24,14 @@ def evaluate_model(model, dataloader, class_meta, device, temp_scaler=None, outp
     all_is_field = []
 
     with torch.no_grad():
-        for imgs, labels, is_field in dataloader:
-            imgs = imgs.to(device)
-            logits = model(imgs)
+        for batch in dataloader:
+            imgs = batch[0].to(device)
+            labels = batch[1]
+            is_field = batch[-1]
+
+            out = model(imgs)
+            logits = out[0] if isinstance(out, (tuple, list)) else out
+
             if temp_scaler:
                 logits = temp_scaler(logits)
 
