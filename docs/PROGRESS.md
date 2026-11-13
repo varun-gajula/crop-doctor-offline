@@ -1,6 +1,30 @@
 # Project Progress - Crop Doctor Offline
 
-## Current Status: T2, T2b & T2c Completed - Ready for T3
+## Current Status: T3 Completed - Case Report & 60-Second Demo Flow (R8)
+
+### Done in T3: Case Report, Unified History, and 60-Second Demo Flow (R8)
+1. **Save Case Report Screen (`SaveCaseReportScreen.kt`):**
+   - Displays crop, problem label, certainty in plain words (*Sure / Probably / Not sure*), severity (omitted if uncertain), date, region, photo thumbnail, and an editable farmer note field.
+   - "💾 Save Locally" button saves to app private storage.
+   - "📤 Share Report" button launches native Android share sheet (`Intent.ACTION_SEND`, `text/plain`, 0 permissions).
+2. **Local Persistence Repository (`CaseReport.kt` & `CaseReportRepository`):**
+   - Thread-safe JSON persistence (`case_reports.json` in `context.filesDir`).
+   - Photo thumbnails saved to `case_photos/` private directory.
+   - Zero `INTERNET` permission required (Rule H1 compliance).
+3. **Unified Scan History:**
+   - Merged scan history with case reports (`ScanHistoryRepository` delegates to `CaseReportRepository`).
+   - `ScanHistoryScreen` displays unified list with thumbnails, crop/finding, certainty word, severity badge, date, region, farmer note, and instant share action.
+4. **Localization Parity (en, te, hi):**
+   - 20 new string resources added with 100% parity across `values/strings.xml`, `values-te/strings.xml`, and `values-hi/strings.xml`.
+5. **60-Second Demo Script (`docs/DEMO_SCRIPT.md`):**
+   - Exact taps, spoken lines, and timing for a stopwatch-calibrated 60-second live demo (R8).
+   - Pre-flight Airplane Mode Checklist (Checks C1–C8) proving zero connectivity (R1).
+6. **Automated Verification:**
+   - Created `CaseReportTest.kt` with unit tests for certain, uncertain, and severe share text formatting.
+   - **40/40 unit tests passing** across 9 test suites.
+   - `./gradlew assembleDebug` and `./gradlew assembleRelease` compile cleanly with 0 errors.
+
+---
 
 ### Done in T2c: AI Advisory Uncertainty Sanitization & Rule H15 (R3, R4, R8, U1, U2)
 1. **AI Advisory Card Uncertainty Sanitization:**
@@ -115,12 +139,21 @@
 
 ---
 
+### Checkpoint 3 Status
+- `SaveCaseReportScreen` implemented and integrated with `ResultScreen` and `ScanHistoryScreen`.
+- `docs/DEMO_SCRIPT.md` written and validated for 60-second execution with stopwatch and Airplane Mode Checklist.
+- 40/40 unit tests passing.
+- APK build verified (Debug & Release).
+
+---
+
 ### Next
-- Proceed to T3 (Vision model training/export or Advisory pipeline integration as requested).
+- User runs the 60-second demo script on the emulator against the stopwatch (CHECKPOINT 3).
+- Proceed to T4 / subsequent milestone upon user approval.
 
 ### Blocked
-- None. Paused at CHECKPOINT 2 for user review.
+- None. Paused at CHECKPOINT 3 for user stopwatch verification.
 
 ### Needed from User
-- Review CHECKPOINT 2 results (screenshots, test suite pass count, and git status).
-- Provide approval to proceed to the next milestone.
+- Run the 60-second demo flow in `docs/DEMO_SCRIPT.md` against the stopwatch.
+- Provide approval on CHECKPOINT 3 to proceed.

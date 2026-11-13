@@ -40,6 +40,7 @@ enum class AppScreen {
     HOME,
     CAMERA,
     RESULT,
+    SAVE_CASE_REPORT,
     DISEASE_DETAILS,
     KNOWLEDGE_BASE,
     LANGUAGE_PICK,
@@ -129,6 +130,8 @@ class MainActivity : ComponentActivity() {
                     BackHandler(enabled = currentScreen != AppScreen.HOME && currentScreen != AppScreen.FIRST_LAUNCH) {
                         if (currentScreen == AppScreen.RESULT || currentScreen == AppScreen.CAMERA) {
                             currentScreen = AppScreen.HOME
+                        } else if (currentScreen == AppScreen.SAVE_CASE_REPORT) {
+                            currentScreen = AppScreen.RESULT
                         } else {
                             currentScreen = previousScreen
                         }
@@ -309,7 +312,26 @@ class MainActivity : ComponentActivity() {
                                     },
                                     onChatbotClick = {
                                         navigateTo(AppScreen.CHATBOT)
+                                    },
+                                    onSaveCaseReport = {
+                                        navigateTo(AppScreen.SAVE_CASE_REPORT)
                                     }
+                                )
+                            } else {
+                                navigateTo(AppScreen.HOME)
+                            }
+                        }
+
+                        AppScreen.SAVE_CASE_REPORT -> {
+                            if (classifierResult != null && activeKbEntry != null) {
+                                SaveCaseReportScreen(
+                                    result = classifierResult!!,
+                                    kbEntry = activeKbEntry!!,
+                                    language = selectedLanguage,
+                                    region = userPrefs.selectedRegion,
+                                    capturedBitmap = capturedLeafBitmap,
+                                    onBackClick = { navigateTo(AppScreen.RESULT) },
+                                    onViewSavedCases = { navigateTo(AppScreen.SCAN_HISTORY) }
                                 )
                             } else {
                                 navigateTo(AppScreen.HOME)
@@ -378,8 +400,8 @@ class MainActivity : ComponentActivity() {
                             ScanHistoryScreen(
                                 language = selectedLanguage,
                                 onBackClick = { navigateTo(AppScreen.HOME) },
-                                onSelectRecord = { record ->
-                                    val kb = KnowledgeBase.getEntry(record.classId)
+                                onSelectCase = { case ->
+                                    val kb = KnowledgeBase.getEntry(case.classId)
                                     if (kb != null) {
                                         selectedDetailEntry = kb
                                         navigateTo(AppScreen.DISEASE_DETAILS)

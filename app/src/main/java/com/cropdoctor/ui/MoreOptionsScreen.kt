@@ -83,13 +83,13 @@ fun MoreOptionsScreen(
             verticalArrangement = Arrangement.SpaceBetween
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                // Scan History
+                // Saved Case Reports (T3)
                 MoreOptionItem(
                     icon = Icons.Default.History,
                     iconBg = Color(0xFFE8F5E9),
                     iconTint = FarmGreenPrimary,
-                    title = when (language) { "te" -> "స్కాన్ చరిత్ర & ట్రాకర్"; "hi" -> "स्कैन इतिहास और ट्रैकर"; else -> "Scan History & Tracker" },
-                    subtitle = when (language) { "te" -> "గత ఫలితాలు & వ్యాధి రికార్డులు"; "hi" -> "पुराने रिकॉर्ड और रुझान"; else -> "View past scans & timeline" },
+                    title = when (language) { "te" -> "భద్రపరిచిన కేస్ నివేదికలు"; "hi" -> "सहेजी गई केस रिपोर्ट"; else -> "Saved Case Reports" },
+                    subtitle = when (language) { "te" -> "సేవ్ చేసిన వ్యాధి నివేదికలు & షేర్"; "hi" -> "सहेजी गई रिपोर्ट और शेयर"; else -> "View saved reports & share" },
                     onClick = onScanHistoryClick
                 )
 

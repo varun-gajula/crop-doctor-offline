@@ -110,4 +110,26 @@
     <string name="demo_text_not_ai">Demo text – not AI</string>
     <string name="advisory_card_title">AI Advisory</string>
     <string name="advisory_generating">Generating advice on-device...</string>
+
+    <!-- T3: Save Case Report & History -->
+    <string name="btn_save_case_report">Save case report</string>
+    <string name="save_case_report_title">Save Case Report</string>
+    <string name="saved_cases_title">Saved Case Reports</string>
+    <string name="btn_save_locally">Save Locally</string>
+    <string name="btn_saved_locally">Saved Locally</string>
+    <string name="btn_share_report">Share Report</string>
+    <string name="report_crop">Crop</string>
+    <string name="report_problem">Finding</string>
+    <string name="report_certainty">Certainty</string>
+    <string name="report_severity">Severity</string>
+    <string name="report_date">Date</string>
+    <string name="report_region">Region</string>
+    <string name="report_note">Farmer Note</string>
+    <string name="report_note_hint">Add a note (e.g. field location, symptoms)...</string>
+    <string name="no_saved_cases">No saved case reports yet.\nDiagnose crops and save reports for your records.</string>
+    <string name="clear_saved_cases">Clear Saved Cases</string>
+    <string name="case_report_saved_success">Case report saved locally!</string>
+    <string name="confirm_clear_cases">Are you sure you want to delete all saved reports?</string>
+    <string name="btn_delete">Delete</string>
+    <string name="btn_cancel">Cancel</string>
 </resources>
