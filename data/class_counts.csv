@@ -9,18 +9,18 @@ class_index,crop,problem,unique_photos,sources_count,status
 7,Cotton,Leaf Curl Virus,24,1,BLOCKED
 8,Cotton,Alternaria Leaf Spot,172,1,BLOCKED
 9,Cotton,Healthy Cotton,962,2,SHORT
-10,Chilli,Bacterial Spot,141,1,BLOCKED
+10,Chilli,Bacterial Spot,2330,2,OK
 11,Chilli,Leaf Curl,400,1,SHORT
 12,Chilli,Cercospora Leaf Spot,177,1,BLOCKED
 13,Chilli,White Spot,0,0,BLOCKED
-14,Chilli,Healthy Chilli,418,1,SHORT
-15,Tomato,Early Blight,2185,1,OK
-16,Tomato,Late Blight,4093,1,OK
-17,Tomato,Yellow Leaf Curl Virus,12218,1,OK
-18,Tomato,Spider Mites,3512,1,OK
-19,Tomato,Healthy Tomato,3509,1,OK
-20,Maize,Gray Leaf Spot,1661,2,OK
-21,Maize,Common Rust,1403,1,OK
-22,Maize,Northern Leaf Blight,2608,2,OK
+14,Chilli,Healthy Chilli,3609,2,OK
+15,Tomato,Early Blight,2271,2,OK
+16,Tomato,Late Blight,4200,2,OK
+17,Tomato,Yellow Leaf Curl Virus,12292,2,OK
+18,Tomato,Spider Mites,3514,2,OK
+19,Tomato,Healthy Tomato,3572,2,OK
+20,Maize,Gray Leaf Spot,1729,3,OK
+21,Maize,Common Rust,1518,2,OK
+22,Maize,Northern Leaf Blight,2797,3,OK
 23,Maize,Fall Armyworm,524,1,SHORT
 24,Maize,Healthy Maize,2046,2,OK
