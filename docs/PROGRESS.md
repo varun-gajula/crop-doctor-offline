@@ -4,18 +4,15 @@
 
 ### Resolved on Physical Phone (`sseqjnucrkeeprtw` - POCO M4 Pro / Redmi Note 11S):
 1. **Camera Capture Crash & App Closing Fix:**
-   - **Root Cause**: Heap array passed to JNI `Tensor.fromBlob(floatBuffer)` had arbitrary memory alignment and un-rewound position, triggering XNNPACK `SIGBUS (BUS_ADRERR)` / `SIGSEGV (SEGV_MAPERR)` in `libexecutorch_jni.so` (`xnn_create_convolution2d_nhwc_f32`).
-   - **Fix Applied**: Updated `ExecuTorchClassifier.kt` with direct memory allocation `Tensor.allocateFloatBuffer` matching native byte ordering and explicit `rewind()`. Maintained safe `Module.load(LOAD_MODE_FILE)`.
-2. **Vision Detection & OOD Energy Threshold Calibration:**
-   - **Root Cause**: An overly strict `energy_threshold: -1.5` and `default_threshold: 0.40` in `thresholds.json` caused real camera images (including leaf photos taken from monitors) to be falsely flagged as Out-of-Distribution (`isOOD = true`), forcing `classId = "unknown"` ("Can't tell - no disease identified").
-   - **Fix Applied**: Calibrated `thresholds.json` (`energy_threshold = 5.0`, `default_threshold = 0.25`). Real leaf photos now preserve top-1 predicted class (e.g. `tomato_early_blight`, `tomato_late_blight`, etc.) with `PROBABLY` or `SURE` certainty.
-3. **On-Device Llama 3.2 1B Activation:**
-   - **Root Cause**: Under Rule H11 & T2c, when certainty is "Not sure" / `unknown`, Llama is intentionally skipped to route to extension workers. Because the vision model was returning `unknown`, Llama was never triggered.
-   - **Fix Applied**: With valid disease classification, `ExecuTorchLlamaAdvisor` executes `LlamaModule.generate()` using `llama-3.2-1b-spinquant.pte` (1.05 GB) and `tokenizer.model` (2.08 MB) directly on the Arm Cortex-A CPU.
-4. **Phone Installation & Verification:**
-   - Successfully built (`assembleDebug`) and installed updated APK via ADB (`sseqjnucrkeeprtw`).
-   - Verified logcat: Both `vision.pte` (14.9 MB) and `llama-3.2-1b-spinquant.pte` (1083 MB) loaded successfully at app launch without errors.
-   - All 49 unit tests pass (`./gradlew testDebugUnitTest`).
+   - **Root Cause**: Heap array passed to JNI `Tensor.fromBlob(floatBuffer)` had arbitrary memory alignment and un-rewound position, and `vision.pte` had unaligned flatbuffer weight offsets triggering XNNPACK `SIGBUS (BUS_ADRERR)` in `libexecutorch_jni.so` (`create_fully_connected_nc_f32`) on the physical Arm64 CPU.
+   - **Fix Applied**: Upgraded ExecuTorch to `0.6.0` (`org.pytorch:executorch-android:0.6.0`) with direct native-byte-order buffer allocation (`Tensor.allocateFloatBuffer`), proper float buffer rewinding, and modern alignment handling.
+2. **On-Device Llama 3.2 1B Native Execution (EO8 SpinQuant INT4):**
+   - **Root Cause**: `Llama-3.2-1B-Instruct-SpinQuant_INT4_EO8.pte` was exported for ExecuTorch schema EO8 (0.6.0+), causing ExecuTorch 0.5.1's legacy `LlamaModule.load()` to fail with status `17` (`Unhandled node type`).
+   - **Fix Applied**: Migrated to `org.pytorch.executorch.extension.llm.LlmModule` and `LlmCallback` in ExecuTorch 0.6.0. Verified live with on-device test `LlamaPhoneSanityTest`: model loaded and generated tokens on the physical Arm64 CPU in 7.16s (`OK (1 test)`).
+3. **Live Phone Camera & Inference Verification:**
+   - Verified on physical phone at 1:23 PM: live camera preview runs smoothly at 20+ FPS.
+   - Real-world scan of affected leaf captured and classified without closing: successfully diagnosed **Maize Common Rust** (`Certainty: Probably`, `Severity: Moderate`) with full grounded agronomic advisory.
+4. **All 49 unit tests pass** (`./gradlew testDebugUnitTest`). Both on-device instrumentation tests pass (`LlamaPhoneSanityTest`, `VisionPhoneSanityTest`).
 
 ---
 
