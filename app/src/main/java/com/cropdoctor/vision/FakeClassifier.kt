@@ -3,6 +3,7 @@ package com.cropdoctor.vision
 import android.graphics.Bitmap
 import com.cropdoctor.domain.CertaintyBand
 import com.cropdoctor.domain.ClassifierResult
+import com.cropdoctor.domain.ScoredClass
 import com.cropdoctor.domain.SeverityBand
 
 /**
@@ -39,6 +40,12 @@ class FakeClassifier : Classifier {
             else -> "Rice Bacterial Leaf Blight"
         }
 
+        val top3 = listOf(
+            ScoredClass(classId, displayName, 0.88f),
+            ScoredClass("${cropHint ?: "rice"}_healthy", "Healthy Leaf", 0.08f),
+            ScoredClass("unknown", "Other Condition", 0.04f)
+        )
+
         return ClassifierResult(
             classId = classId,
             displayName = displayName,
@@ -48,7 +55,8 @@ class FakeClassifier : Classifier {
             lesionFraction = 0.22f,
             inferenceTimeMs = 42L,
             memoryUsedMb = getProcessMemoryMb(),
-            isDemoMode = true
+            isDemoMode = true,
+            top3 = top3
         )
     }
 

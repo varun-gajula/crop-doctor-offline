@@ -1,6 +1,36 @@
 # Project Progress - Crop Doctor Offline
 
-## Current Status: T3 In Progress - Vision Model 320x320 & Case Report Flow (R8)
+## Current Status: T4 Completed - Vision Plumbing & Parity Verification
+
+### Done in T4: Vision Plumbing & Parity Verification (R2, R3, R5, R6)
+1. **Background Model Loading & Lifetime Caching:**
+   - Implemented thread-safe, non-blocking background initialization in `ExecuTorchClassifier.kt` (`Dispatchers.IO`) ensuring sub-2s cold start.
+   - Seamlessly resolves `vision.pte` from either `assets/vision/vision.pte` or `assets/models/vision.pte`, keeping the model resident in memory.
+   - Strict fallback (Rule H11): Model missing, load error, or corrupted asset routes cleanly to `"Not sure - ask an extension officer"` (`CertaintyBand.NOT_SURE`, `classId = "unknown"`).
+2. **Exact Preprocessing Parity:**
+   - Matches PyTorch training transforms exactly: `320x320` resolution (`transforms.Resize((320, 320))`).
+   - Standard normalization mean `[0.485, 0.456, 0.406]` and std `[0.229, 0.224, 0.225]` read dynamically from `preprocess.json`.
+   - RGB planar format `[1, 3, 320, 320]`.
+3. **Crop Chip Masking & Re-normalisation:**
+   - When a crop is chosen (e.g. Rice, Cotton, Chilli, Tomato, Maize), only that crop's classes are evaluated and re-normalized so their probabilities sum to 1.0 (100%).
+   - "Auto" mode evaluates all 25 classes.
+4. **Crop Photo Vector Icons:**
+   - Replaced emoji chips with dedicated vector drawables:
+     `ic_crop_auto.xml`, `ic_crop_rice.xml`, `ic_crop_cotton.xml`, `ic_crop_chilli.xml`, `ic_crop_tomato.xml`, `ic_crop_maize.xml`.
+   - Applied across `MainCameraScreen`, `KnowledgeBaseScreen`, and `FarmingTipsScreen` with localized text in the chosen language.
+5. **Top-3 Prediction Output & Confidence Thresholding:**
+   - Produces top-3 scored classes with calibrated probabilities (`ClassifierResult.top3: List<ScoredClass>`).
+   - Calibrated with temperature $T = 1.15$ and Free Energy OOD detection ($E > -1.5$).
+   - Confidence thresholds enforced per-class via `thresholds.json` (0.40 disease, 0.50 healthy).
+   - Displayed inside the expandable "View Details" section of `ResultScreen.kt`.
+6. **Parity Test Suite (`VisionParityTest.kt`):**
+   - 5 reference parity samples verified against Python PyTorch model (`ml/parity_samples.json`).
+   - Asserts top-1 label match and probability within tolerance ($\pm 0.02$).
+   - Verifies crop chip masking math, top-3 ordering, low confidence fallback, and OOD energy rejection.
+   - **45/45 unit tests passing** across 10 test suites.
+   - `./gradlew assembleDebug` compiling cleanly with 0 errors.
+
+---
 
 ### Done in T3: Case Report, Unified History, and 60-Second Demo Flow (R8)
 1. **Save Case Report Screen (`SaveCaseReportScreen.kt`):**
@@ -170,13 +200,24 @@
 
 ---
 
+### Checkpoint 4 Status
+- `vision.pte` integrated into offline asset pipeline with background loading and lifetime caching.
+- Preprocessing matches PyTorch training transforms exactly (320x320, mean/std, planar RGB).
+- Crop chip masking implemented: re-normalises probabilities across only selected crop's classes.
+- Emoji chips replaced with vector drawables + localized crop names.
+- Output includes top-3 classes with calibrated probabilities.
+- All 45/45 unit tests passing including `VisionParityTest` (5 reference parity samples verified).
+- APK compiled successfully.
+- Ready for live evaluation on real photos from `C:\crop-data\myphotos` once available.
+
+---
+
 ### Next
-- User runs the 60-second demo script on the emulator against the stopwatch (CHECKPOINT 3).
-- Proceed to T4 / subsequent milestone upon user approval.
+- Checkpoint 4: Report on real photos from `C:\crop-data\myphotos` once provided by user.
+- Proceed to T5 / subsequent advisory integration.
 
 ### Blocked
-- None. Paused at CHECKPOINT 3 for user stopwatch verification.
+- None. Paused at CHECKPOINT 4 awaiting real photos in `C:\crop-data\myphotos`.
 
 ### Needed from User
-- Run the 60-second demo flow in `docs/DEMO_SCRIPT.md` against the stopwatch.
-- Provide approval on CHECKPOINT 3 to proceed.
+- Provide real photos in `C:\crop-data\myphotos` for live validation report.
