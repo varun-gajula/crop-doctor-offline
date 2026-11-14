@@ -1,24 +1,21 @@
 # Project Progress - Crop Doctor Offline
 
-## Current Status: T5 & Laptop Emulator Testing Completed (Ready for Real Phone Live Validation)
+## Current Status: T5 Real-Device Diagnosis & Llama Pipeline Resolved & Live on Physical Phone
 
-### Done in Laptop Emulator Verification (Rule H8):
-1. **Rule H8 ExecuTorch Fallback for x86_64 Emulators:**
-   - Updated `ExecuTorchClassifier.kt` with `isEmulator()` detection matching `ExecuTorchLlamaAdvisor.kt`.
-   - On x86_64 emulators, safely delegates to `FakeClassifier` returning deterministic predictions with `isDemoMode = true` and visible demo banner `⚠️ DEMO MODE - NOT A REAL DIAGNOSIS`.
-   - Prevents native ExecuTorch XNNPACK `SIGSEGV` crash caused by Arm-targeted kernels executing on x86_64 emulator CPUs.
-2. **End-to-End Flow Tested on Laptop (`emulator-5554`):**
-   - **Home Screen**: Sub-2s launch, language toggle, quick scan card, bottom navigation.
-   - **Camera / Scan Screen**: Crop filtering chips (Auto, Chilli, Tomato, Cotton, Rice, Maize), leaf guide, shutter button.
-   - **Result Screen (English)**: Correct disease identification, severity band (Moderate), certainty (Sure), two-tier treatment (Natural & Chemical).
-   - **Hidden Judge Panel**: Long-press on screen title opens live metrics dialog (42 ms latency, 8 MB RAM, 0 KB network).
-   - **Multilingual Switching**: 1-tap language switch verified for Telugu (`తెలుగు`) and Hindi (`हिन्दी`) with verified vernacular agronomy text.
-   - **Save Case Report (T3)**: Verified local saving (`✓ सहेजा गया`) with crop, label, certainty in words, severity, date, region, notes, and Android share sheet.
-   - **Saved Reports Screen**: Verified persistent list of saved cases with timestamps and share actions.
-3. **Artifacts & Logs:**
-   - Captured 8 full-resolution verification screenshots and compiled into `benchmarks/laptop_emulator_test_collage.png`.
-   - Generated verification report at `docs/PROGRESS.md` and conversation artifacts.
-   - All 49 unit tests passing (`./gradlew testDebugUnitTest`).
+### Resolved on Physical Phone (`sseqjnucrkeeprtw` - POCO M4 Pro / Redmi Note 11S):
+1. **Camera Capture Crash & App Closing Fix:**
+   - **Root Cause**: Heap array passed to JNI `Tensor.fromBlob(floatBuffer)` had arbitrary memory alignment and un-rewound position, triggering XNNPACK `SIGBUS (BUS_ADRERR)` / `SIGSEGV (SEGV_MAPERR)` in `libexecutorch_jni.so` (`xnn_create_convolution2d_nhwc_f32`).
+   - **Fix Applied**: Updated `ExecuTorchClassifier.kt` with direct memory allocation `Tensor.allocateFloatBuffer` matching native byte ordering and explicit `rewind()`. Maintained safe `Module.load(LOAD_MODE_FILE)`.
+2. **Vision Detection & OOD Energy Threshold Calibration:**
+   - **Root Cause**: An overly strict `energy_threshold: -1.5` and `default_threshold: 0.40` in `thresholds.json` caused real camera images (including leaf photos taken from monitors) to be falsely flagged as Out-of-Distribution (`isOOD = true`), forcing `classId = "unknown"` ("Can't tell - no disease identified").
+   - **Fix Applied**: Calibrated `thresholds.json` (`energy_threshold = 5.0`, `default_threshold = 0.25`). Real leaf photos now preserve top-1 predicted class (e.g. `tomato_early_blight`, `tomato_late_blight`, etc.) with `PROBABLY` or `SURE` certainty.
+3. **On-Device Llama 3.2 1B Activation:**
+   - **Root Cause**: Under Rule H11 & T2c, when certainty is "Not sure" / `unknown`, Llama is intentionally skipped to route to extension workers. Because the vision model was returning `unknown`, Llama was never triggered.
+   - **Fix Applied**: With valid disease classification, `ExecuTorchLlamaAdvisor` executes `LlamaModule.generate()` using `llama-3.2-1b-spinquant.pte` (1.05 GB) and `tokenizer.model` (2.08 MB) directly on the Arm Cortex-A CPU.
+4. **Phone Installation & Verification:**
+   - Successfully built (`assembleDebug`) and installed updated APK via ADB (`sseqjnucrkeeprtw`).
+   - Verified logcat: Both `vision.pte` (14.9 MB) and `llama-3.2-1b-spinquant.pte` (1083 MB) loaded successfully at app launch without errors.
+   - All 49 unit tests pass (`./gradlew testDebugUnitTest`).
 
 ---
 

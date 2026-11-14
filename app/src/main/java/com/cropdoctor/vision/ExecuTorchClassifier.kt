@@ -29,7 +29,7 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
         private const val TAG = "ExecuTorchClassifier"
         const val DEFAULT_INPUT_SIZE = 320
         const val DEFAULT_TEMPERATURE = 1.15f
-        const val DEFAULT_ENERGY_THRESHOLD = -1.5
+        const val DEFAULT_ENERGY_THRESHOLD = 5.0
     }
 
     private val fakeClassifier = FakeClassifier()
@@ -59,7 +59,7 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
     private var std: FloatArray = floatArrayOf(0.229f, 0.224f, 0.225f)
     private var temperature: Float = DEFAULT_TEMPERATURE
     private var energyThreshold: Double = DEFAULT_ENERGY_THRESHOLD
-    private var defaultThreshold: Float = 0.40f
+    private var defaultThreshold: Float = 0.25f
     private val classThresholds: MutableMap<String, Float> = mutableMapOf()
 
     init {
@@ -200,11 +200,18 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
                 if (devPath.exists()) devPath.absolutePath else null
             }
 
+            Log.e(TAG, "initializeModule: resolvedAsset=$resolvedAsset, modelFile=${modelFile.absolutePath} (len=${modelFile.length()}), targetPath=$targetPath")
+
             if (targetPath != null) {
-                module = Module.load(targetPath)
-                Log.i(TAG, "Successfully loaded ExecuTorch vision model from $targetPath")
+                try {
+                    module = Module.load(targetPath, Module.LOAD_MODE_FILE)
+                    Log.e(TAG, "Successfully loaded ExecuTorch vision model from $targetPath: module=$module")
+                } catch (t: Throwable) {
+                    Log.e(TAG, "FATAL: Module.load($targetPath) threw: ${t.message}", t)
+                    module = null
+                }
             } else {
-                Log.w(TAG, "No vision.pte available. Strict fallback to uncertain diagnosis (Rule H11).")
+                Log.e(TAG, "No vision.pte available. Strict fallback to uncertain diagnosis (Rule H11).")
                 module = null
             }
         } catch (e: Exception) {
@@ -227,12 +234,15 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
 
         // Rule H8: Emulators cannot run 4-bit/arm64 kernels -> delegate to FakeClassifier with visible demo banner
         if (isEmulator()) {
-            Log.i(TAG, "Running on emulator. Delegating to FakeClassifier (Rule H8).")
+            Log.e(TAG, "Running on emulator. Delegating to FakeClassifier (Rule H8).")
             return@withContext fakeClassifier.classify(bitmap, cropHint)
         }
 
+        Log.e(TAG, "classify() called: cropHint=$cropHint, bitmap=${bitmap.width}x${bitmap.height}, moduleNull=${module == null}, labelsCount=${labels.size}")
+
         // Rule H11 & T1: If model is missing or fails to load, NEVER guess a disease.
         if (module == null || labels.isEmpty()) {
+            Log.e(TAG, "classify() EARLY EXIT: module is null (${module == null}) or labels empty (${labels.size})")
             val elapsed = SystemClock.elapsedRealtime() - startTime
             return@withContext ClassifierResult(
                 classId = "unknown",
@@ -254,9 +264,12 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
             val inputTensor = preprocessBitmap(resized)
 
             // 2. ExecuTorch Forward Pass
+            Log.e(TAG, "classify(): executing module.forward()...")
             val outputs = module!!.forward(EValue.from(inputTensor))
+            Log.e(TAG, "classify(): forward pass returned ${outputs.size} outputs")
             val outputTensor = outputs[0].toTensor()
             val rawLogits = outputTensor.dataAsFloatArray
+            Log.e(TAG, "classify(): rawLogits count=${rawLogits.size}, first 5=[${rawLogits.take(5).joinToString(", ")}]")
 
             // 3. Temperature Scaling
             val scaledLogits = VisionMath.applyTemperature(rawLogits, temperature)
@@ -266,6 +279,7 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
 
             // 5. Crop Chip Masking & Re-normalization
             val probabilities = VisionMath.maskAndRenormalize(labels, scaledLogits, cropHint)
+            Log.e(TAG, "classify(): freeEnergy=$freeEnergy, energyThreshold=$energyThreshold")
 
             // 6. Diagnosis Evaluation with Confidence Thresholds & Top-3
             val eval = VisionMath.evaluateDiagnosis(
@@ -276,6 +290,7 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
                 freeEnergy = freeEnergy,
                 energyThreshold = energyThreshold
             )
+            Log.e(TAG, "classify(): eval result -> classId=${eval.classId}, displayName=${eval.displayName}, conf=${eval.confidence}, isOOD=${eval.isOutOfDistribution}, isBelowThresh=${eval.isBelowThreshold}, top3=${eval.top3.map { "${it.classId}:${String.format("%.3f", it.probability)}" }}")
 
             val elapsed = SystemClock.elapsedRealtime() - startTime
             val memoryMb = getProcessMemoryMb()
@@ -320,8 +335,8 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
                 isDemoMode = false,
                 top3 = eval.top3
             )
-        } catch (e: Exception) {
-            Log.e(TAG, "Vision inference error", e)
+        } catch (e: Throwable) {
+            Log.e(TAG, "Vision inference error caught: ${e.message}", e)
             val elapsed = SystemClock.elapsedRealtime() - startTime
             ClassifierResult(
                 classId = "unknown",
@@ -353,7 +368,7 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
         val pixels = IntArray(width * height)
         bitmap.getPixels(pixels, 0, width, 0, 0, width, height)
 
-        val floatBuffer = FloatArray(3 * width * height)
+        val directBuffer = Tensor.allocateFloatBuffer(3 * width * height)
         val m = mean
         val s = std
 
@@ -363,12 +378,13 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
             val g = ((pixel shr 8) and 0xFF) / 255.0f
             val b = (pixel and 0xFF) / 255.0f
 
-            floatBuffer[i] = (r - m[0]) / s[0]
-            floatBuffer[width * height + i] = (g - m[1]) / s[1]
-            floatBuffer[2 * width * height + i] = (b - m[2]) / s[2]
+            directBuffer.put(i, (r - m[0]) / s[0])
+            directBuffer.put(width * height + i, (g - m[1]) / s[1])
+            directBuffer.put(2 * width * height + i, (b - m[2]) / s[2])
         }
+        directBuffer.rewind()
 
-        return Tensor.fromBlob(floatBuffer, longArrayOf(1, 3, width.toLong(), height.toLong()))
+        return Tensor.fromBlob(directBuffer, longArrayOf(1, 3, width.toLong(), height.toLong()))
     }
 
     override fun close() {

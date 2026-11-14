@@ -92,3 +92,4 @@ tap(105, 158)
 tap(160, 2210)
 
 print("All screens captured cleanly!")
+

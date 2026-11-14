@@ -50,3 +50,4 @@ for i, (title, path) in enumerate(screens):
 out_path = "benchmarks/laptop_emulator_test_collage.png"
 collage.save(out_path, quality=92)
 print(f"Successfully saved collage to {out_path} ({total_w}x{total_h})")
+
