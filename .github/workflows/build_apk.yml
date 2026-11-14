@@ -1,0 +1,57 @@
+name: Build Crop Doctor APK
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build & Verify Offline APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Make Gradlew Executable
+        run: chmod +x gradlew
+
+      - name: Run Unit Tests
+        run: ./gradlew testDebugUnitTest --continue
+
+      - name: Build Debug APK
+        run: ./gradlew assembleDebug --stacktrace
+
+      - name: Verify Zero INTERNET Permission (Rule H1)
+        run: |
+          APK="app/build/outputs/apk/debug/app-debug.apk"
+          if [ -f "$APK" ]; then
+            echo "Verifying permissions in $APK..."
+            PERMS=$($ANDROID_HOME/build-tools/35.0.0/aapt2 dump permissions "$APK" 2>/dev/null || true)
+            echo "$PERMS"
+            if echo "$PERMS" | grep -i "android.permission.INTERNET"; then
+              echo "ERROR: INTERNET permission detected! Violation of Rule H1."
+              exit 1
+            else
+              echo "SUCCESS: 0 INTERNET permissions found (Rule H1 verified)."
+            fi
+          fi
+
+      - name: Upload Debug APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: CropDoctor-Offline-APK
+          path: app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 14
