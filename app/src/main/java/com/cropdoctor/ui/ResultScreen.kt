@@ -71,7 +71,8 @@ fun ResultScreen(
 
     val isUncertain = result.classId == "unknown" || result.certaintyBand == CertaintyBand.NOT_SURE
     val shouldRefer = RulesEngine.shouldShowExtensionWorker(result.certaintyBand, result.severityBand)
-    val isHealthy = result.classId.endsWith("_healthy")
+    val isHealthy = result.classId.endsWith("_healthy") || kbEntry.type.equals("healthy", ignoreCase = true)
+    val isPest = kbEntry.type.equals("pest", ignoreCase = true)
     var showJudgeDialog by remember { mutableStateOf(false) }
     var showMeasurementDetails by remember { mutableStateOf(false) }
     var showHelplineDialog by remember { mutableStateOf(false) }
@@ -313,26 +314,34 @@ fun ResultScreen(
 
             Spacer(modifier = Modifier.height(14.dp))
 
-            // Alert Banner (Disease / Healthy / Uncertain)
+            // Alert Banner (Disease / Pest / Healthy / Uncertain)
             val alertBannerText = when {
                 isUncertain -> "⚠️ " + stringResource(R.string.cant_tell_no_disease)
                 isHealthy -> "✓ " + stringResource(R.string.alert_healthy)
+                isPest -> "🐛 " + stringResource(R.string.alert_pest_detected)
                 else -> "🚨 " + stringResource(R.string.alert_disease_detected)
+            }
+            val alertBannerBg = when {
+                isHealthy -> Color(0xFFE8F5E9)
+                isPest -> Color(0xFFFFF3E0)
+                else -> Color(0xFFFFEBEE)
+            }
+            val alertBannerColor = when {
+                isHealthy -> Color(0xFF2E7D32)
+                isPest -> Color(0xFFE65100)
+                else -> Color(0xFFD32F2F)
             }
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(
-                        if (isHealthy) Color(0xFFE8F5E9) else Color(0xFFFFEBEE),
-                        RoundedCornerShape(12.dp)
-                    )
+                    .background(alertBannerBg, RoundedCornerShape(12.dp))
                     .padding(vertical = 10.dp, horizontal = 16.dp)
             ) {
                 Text(
                     text = alertBannerText,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
-                    color = if (isHealthy) Color(0xFF2E7D32) else Color(0xFFD32F2F)
+                    color = alertBannerColor
                 )
             }
 
@@ -359,12 +368,18 @@ fun ResultScreen(
                         lineHeight = 30.sp
                     )
                     if (!isUncertain) {
-                        Text(
-                            text = "(${kbEntry.crop.replaceFirstChar { it.uppercase() }})",
-                            fontSize = 17.sp,
-                            color = Color(0xFF555555),
-                            modifier = Modifier.padding(top = 2.dp)
-                        )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.padding(top = 4.dp)
+                        ) {
+                            Text(
+                                text = "(${kbEntry.crop.replaceFirstChar { it.uppercase() }})",
+                                fontSize = 17.sp,
+                                color = Color(0xFF555555)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            TypeChip(type = kbEntry.type)
+                        }
                     }
                 }
 
@@ -528,7 +543,7 @@ fun ResultScreen(
                     SeverityBand.MODERATE -> Triple(R.string.severity_moderate, Color(0xFFD97706), Icons.Default.WarningAmber)
                     SeverityBand.SEVERE -> Triple(R.string.severity_severe, Color(0xFFD32F2F), Icons.Default.ReportProblem)
                 }
-                val severityActionRes = RulesEngine.getSeverityActionSentence(result.severityBand)
+                val severityActionRes = RulesEngine.getSeverityActionSentence(result.severityBand, kbEntry.type)
 
                 Card(
                     modifier = Modifier.fillMaxWidth(),
@@ -900,6 +915,67 @@ fun ResultScreen(
             }
 
             Spacer(modifier = Modifier.height(28.dp))
+        }
+    }
+}
+
+/**
+ * Type Chip displaying "Disease" / "Pest" / "Healthy" with icon and localized word (Rule G1).
+ */
+@Composable
+fun TypeChip(
+    type: String,
+    modifier: Modifier = Modifier
+) {
+    val wordRes = when (type.lowercase()) {
+        "pest" -> R.string.type_pest
+        "healthy" -> R.string.type_healthy
+        else -> R.string.type_disease
+    }
+    val icon = when (type.lowercase()) {
+        "pest" -> Icons.Default.BugReport
+        "healthy" -> Icons.Default.CheckCircle
+        else -> Icons.Default.Coronavirus
+    }
+    val containerColor = when (type.lowercase()) {
+        "pest" -> Color(0xFFFFF3E0)
+        "healthy" -> Color(0xFFE8F5E9)
+        else -> Color(0xFFFFEBEE)
+    }
+    val contentColor = when (type.lowercase()) {
+        "pest" -> Color(0xFFE65100)
+        "healthy" -> Color(0xFF2E7D32)
+        else -> Color(0xFFC62828)
+    }
+    val borderColor = when (type.lowercase()) {
+        "pest" -> Color(0xFFFFCC80)
+        "healthy" -> Color(0xFFA5D6A7)
+        else -> Color(0xFFFFCDD2)
+    }
+
+    Surface(
+        modifier = modifier,
+        shape = RoundedCornerShape(14.dp),
+        color = containerColor,
+        border = androidx.compose.foundation.BorderStroke(1.dp, borderColor)
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = contentColor,
+                modifier = Modifier.size(16.dp)
+            )
+            Spacer(modifier = Modifier.width(5.dp))
+            Text(
+                text = stringResource(wordRes),
+                fontSize = 13.sp,
+                fontWeight = FontWeight.Bold,
+                color = contentColor
+            )
         }
     }
 }

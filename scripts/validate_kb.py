@@ -76,6 +76,23 @@ def validate_kb(kb_path):
         for field in ["crop", "type", "pathogen", "referral_threshold"]:
             if not item.get(field):
                 errors.append(f"{cid}: missing field '{field}'")
+
+        # Type validation: must be strictly disease, pest, or healthy
+        item_type = item.get("type")
+        if item_type not in ["disease", "pest", "healthy"]:
+            errors.append(f"{cid}: invalid type '{item_type}', must be 'disease', 'pest', or 'healthy'")
+
+        # Pest specific validations: pest management steps (scouting, ETL, biological/cultural control first)
+        if item_type == "pest":
+            trt = item.get("treatment", {})
+            nat_steps = trt.get("natural", [])
+            if len(nat_steps) < 2:
+                errors.append(f"{cid}: pest entry must have at least 2 biological/cultural pest-management steps")
+            # Verify official pest source citations
+            for n_idx, n_step in enumerate(nat_steps):
+                src = n_step.get("source", "")
+                if not any(auth in src for auth in ["NBAIR", "NIPHM", "ICAR", "PJTSAU", "ANGRAU", "IIHR"]):
+                    errors.append(f"{cid}.treatment.natural[{n_idx}]: pest step requires recognized authority (NBAIR/NIPHM/ICAR/PJTSAU/ANGRAU/IIHR), got '{src}'")
         
         if item.get("needs_expert_review") is not True:
             errors.append(f"{cid}: 'needs_expert_review' must be True")
@@ -135,10 +152,83 @@ def validate_kb(kb_path):
         
     return errors
 
+def validate_class_lists(base_dir, kb_data):
+    errors = []
+    kb_classes = {c["class_id"]: c.get("type") for c in kb_data.get("classes", [])}
+
+    # 1. Validate data/class_map.yaml
+    yaml_path = os.path.join(base_dir, "data", "class_map.yaml")
+    if not os.path.exists(yaml_path):
+        errors.append(f"Missing {yaml_path}")
+    else:
+        try:
+            import yaml
+            with open(yaml_path, "r", encoding="utf-8") as f:
+                cmap = yaml.safe_load(f).get("classes", {})
+            if len(cmap) != 25:
+                errors.append(f"class_map.yaml expected 25 classes, got {len(cmap)}")
+            for idx, cinfo in cmap.items():
+                cid = cinfo.get("class_id")
+                ctype = cinfo.get("type")
+                if ctype not in ["disease", "pest", "healthy"]:
+                    errors.append(f"class_map.yaml class {cid}: invalid type '{ctype}'")
+                if cid in kb_classes and ctype != kb_classes[cid]:
+                    errors.append(f"class_map.yaml class {cid} type '{ctype}' does not match KB type '{kb_classes[cid]}'")
+        except Exception as e:
+            errors.append(f"Error parsing class_map.yaml: {e}")
+
+    # 2. Validate data/supported_classes.json and app asset copy
+    for sp_rel in ["data/supported_classes.json", "app/src/main/assets/supported_classes.json"]:
+        sp_path = os.path.join(base_dir, sp_rel.replace("/", os.sep))
+        if not os.path.exists(sp_path):
+            errors.append(f"Missing {sp_path}")
+            continue
+        try:
+            with open(sp_path, "r", encoding="utf-8") as f:
+                sdata = json.load(f).get("classes", {})
+            if len(sdata) != 25:
+                errors.append(f"{sp_rel} expected 25 classes, got {len(sdata)}")
+            for idx_str, sinfo in sdata.items():
+                cid = sinfo.get("class_id")
+                stype = sinfo.get("type")
+                if stype not in ["disease", "pest", "healthy"]:
+                    errors.append(f"{sp_rel} class {cid}: invalid or missing type '{stype}'")
+                if cid in kb_classes and stype != kb_classes[cid]:
+                    errors.append(f"{sp_rel} class {cid} type '{stype}' does not match KB type '{kb_classes[cid]}'")
+        except Exception as e:
+            errors.append(f"Error parsing {sp_rel}: {e}")
+
+    # 3. Validate app assets KB copy parity
+    asset_kb_path = os.path.join(base_dir, "app", "src", "main", "assets", "kb", "knowledge_base.json")
+    if not os.path.exists(asset_kb_path):
+        errors.append(f"Missing assets copy: {asset_kb_path}")
+    else:
+        try:
+            with open(asset_kb_path, "r", encoding="utf-8") as f:
+                asset_data = json.load(f)
+            asset_classes = {c["class_id"]: c.get("type") for c in asset_data.get("classes", [])}
+            if asset_classes != kb_classes:
+                errors.append("app/src/main/assets/kb/knowledge_base.json class types do not match data/kb/knowledge_base.json")
+        except Exception as e:
+            errors.append(f"Error reading asset KB: {e}")
+
+    return errors
+
 def main():
-    kb_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "kb", "knowledge_base.json")
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    kb_path = os.path.join(base_dir, "data", "kb", "knowledge_base.json")
     print(f"Validating Knowledge Base: {kb_path} ...")
     errors = validate_kb(kb_path)
+    
+    try:
+        with open(kb_path, "r", encoding="utf-8") as f:
+            kb_data = json.load(f)
+        print("Validating class lists (class_map.yaml, supported_classes.json, assets) ...")
+        cl_errors = validate_class_lists(base_dir, kb_data)
+        errors.extend(cl_errors)
+    except Exception as e:
+        errors.append(f"Failed to load KB data for class list validation: {e}")
+
     if errors:
         print(f"FAILED with {len(errors)} errors:")
         for err in errors[:20]:
@@ -147,7 +237,7 @@ def main():
             print(f"  ... and {len(errors) - 20} more errors.")
         sys.exit(1)
     else:
-        print("PASS: Knowledge Base schema and constraints verified! All 25 classes valid.")
+        print("PASS: Knowledge Base and class lists verified! All 25 classes have valid 'type' (disease/pest/healthy).")
         sys.exit(0)
 
 if __name__ == "__main__":

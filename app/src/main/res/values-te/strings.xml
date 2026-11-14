@@ -69,8 +69,14 @@
     <string name="result_title">ఫలితం</string>
     <string name="demo_banner">డెమో మోడ్ - ఇది నిజమైన రోగ నిర్ధారణ కాదు</string>
     <string name="alert_disease_detected">తెగులు గుర్తించబడింది!</string>
+    <string name="alert_pest_detected">పురుగు గుర్తించబడింది!</string>
     <string name="alert_healthy">ఆరోగ్యకరమైన పంట!</string>
     <string name="alert_uncertain">ఖచ్చితంగా తెలియదు - వ్యవసాయ విస్తరణ అధికారిని సంప్రదించండి</string>
+
+    <!-- Type Chips -->
+    <string name="type_disease">తెగులు</string>
+    <string name="type_pest">పురుగు</string>
+    <string name="type_healthy">ఆరోగ్యకరం</string>
 
     <!-- Certainty -->
     <string name="certainty_title">నిశ్చయత</string>
@@ -89,6 +95,8 @@
     <string name="severity_severe">తీవ్రం</string>
     <string name="severity_early_warning">ముందస్తు హెచ్చరిక: జాగ్రత్తగా గమనించి నివారణ చర్యలు చేపట్టండి.</string>
     <string name="severity_act_now">తక్షణ చర్య అవసరం: పంట నష్టాన్ని నివారించడానికి ఇప్పుడే చర్య తీసుకోండి.</string>
+    <string name="severity_pest_early_warning">ముందస్తు హెచ్చరిక: పొలంలో పురుగుల ఉధృతిని గమనించి నివారణ చర్యలు చేపట్టండి.</string>
+    <string name="severity_pest_act_now">తక్షణ చర్య అవసరం: పురుగుల నష్ట పరిమితి దాటింది; వెంటనే సస్యరక్షణ చర్యలు చేపట్టండి.</string>
 
     <!-- About & Treatments -->
     <string name="about_condition">పరిస్థితి వివరాలు</string>

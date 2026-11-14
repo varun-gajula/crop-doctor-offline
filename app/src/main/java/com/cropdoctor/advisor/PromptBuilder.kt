@@ -59,6 +59,12 @@ object PromptBuilder {
             else -> "15.0"
         }
 
+        val severityDamageDescription = when {
+            kbEntry.type.equals("pest", ignoreCase = true) -> "$sevPctDisplay% pest infestation / plant damage"
+            kbEntry.type.equals("healthy", ignoreCase = true) -> "clean healthy foliage"
+            else -> "$sevPctDisplay% affected leaf area"
+        }
+
         val confScoreDisplay = if (confidenceScore > 0) String.format("%.1f", confidenceScore) else when (certainty) {
             "Sure" -> "92.0"
             "Probably" -> "75.0"
@@ -76,7 +82,7 @@ Strict Rules:
 [FIELD DIAGNOSTIC FINDING]
 - Crop: $crop
 - Problem Identified: $diseaseName (${kbEntry.type})
-- Detected Severity: $severity ($sevPctDisplay% affected leaf area)
+- Detected Severity: $severity ($severityDamageDescription)
 - Confidence Level: $certainty ($confScoreDisplay%)
 
 [VERIFIED ADVISORY CONTEXT]

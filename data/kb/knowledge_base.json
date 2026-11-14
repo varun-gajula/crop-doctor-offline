@@ -1348,46 +1348,68 @@
       "pathogen": "Tetranychus urticae (Two-Spotted Spider Mite)",
       "names": {
         "en": "Tomato Spider Mites",
-        "te": "టమాటా ఎర్ర నల్లి పురుగు",
+        "te": "టమాటా ఎర్ర నల్లి",
         "hi": "टमाटर का मकड़ी कीट (माइट्स)"
       },
       "needs_expert_review": true,
       "referral_threshold": "SEVERE",
       "severity_advice": {
         "MILD": {
-          "en": "Tiny yellow/white specks or stippling on upper leaf surface. Check underside for mites.",
-          "te": "ఆకుల పైభాగంలో చిన్న పసుపు, తెల్లని మచ్చలు. ఆకు అడుగున నల్లి పురుగులను గమనించండి.",
-          "hi": "पत्तियों की ऊपरी सतह पर छोटे पीले-सफेद बिंदु। पत्ती के नीचे बारीक कीड़े देखें।"
+          "en": "Field check: Inspect underside of 20 sample plants with a 10x lens for tiny yellow/white specks and mites. Action threshold: <5 mites per leaf.",
+          "te": "పొలం పరిశీలన: 20 మొక్కల ఆకుల అడుగున 10x లెన్స్ తో చిన్న పసుపు/తెల్లటి మచ్చలు, నల్లిని గమనించండి. నష్ట పరిమితి: ఆకుకు 5 కంటే తక్కువ నల్లులు.",
+          "hi": "खेत निरीक्षण: 20 पौधों की निचली पत्तियों पर 10x लेंस से पीले/सफेद बिंदु और माइट्स देखें। आर्थिक सीमा: प्रति पत्ती 5 से कम माइट्स।"
         },
         "MODERATE": {
-          "en": "Fine silky webbing under leaves, leaves bronzing and turning dry. Spray acaricide or wettable sulphur.",
-          "te": "ఆకుల అడుగున సన్నని బూజు గూడు, ఆకులు ఎండిపోయి రాగి రంగులోకి మారడం. గంధకం లేదా నల్లి మందు చల్లండి.",
-          "hi": "पत्तियों के नीचे बारीक जाला, पत्तियां तांबई रंग की होकर सूखना। गंधक या माइटनाशक छिड़कें।"
+          "en": "Action needed: 5-10 mites per leaf and visible webbing under leaves. Wash leaves with water jet; apply neem oil (5 ml/L) or wettable sulphur.",
+          "te": "చర్య అవసరం: ఆకుకు 5-10 నల్లులు మరియు ఆకుల అడుగున బూజు గూడు. నీటిని బలంగా పిచికారీ చేసి, వేప నూనె (5 మి.లీ/లీ) లేదా గంధకం చల్లండి.",
+          "hi": "कार्रवाई आवश्यक: प्रति पत्ती 5-10 माइट्स और जाले दिखना। पत्तियों पर तेज पानी छिड़कें; नीम तेल (5 मिली/लीटर) या गंधक का प्रयोग करें।"
         },
         "SEVERE": {
-          "en": "Extensive webbing covering plant canopy; leaves desiccated and falling. Consult extension entomologist.",
-          "te": "మొక్కంతా బూజు గూడుతో కప్పబడి ఆకులు పూర్తిగా రాలిపోతాయి. కీటక శాస్త్రవేత్తను సంప్రదించండి.",
-          "hi": "पौधों पर पूरा जाला फैल जाना और पत्तियां सूखकर गिरना। कीट विशेषज्ञ से तुरंत मिलें।"
+          "en": "Severe infestation: Heavy webbing covering canopy; leaf bronzing and defoliation. Spray registered acaricide and consult extension specialist.",
+          "te": "తీవ్ర ఉధృతి: మొక్కంతా బూజు గూడుతో కప్పబడి ఆకులు రాలిపోవడం. సిఫార్సు చేసిన నల్లి మందు పిచికారీ చేసి వ్యవసాయ విస్తరణ అధికారిని సంప్రదించండి.",
+          "hi": "गंभीर प्रकोप: पूरे पौधे पर भारी जाला, पत्तियां तांबई होकर गिरना। पंजीकृत माइटनाशक का छिड़काव करें और कृषि विशेषज्ञ से मिलें।"
         }
       },
       "immediate_step": {
-        "en": "Spray forceful jets of clean water to wash off webs and mites from the lower leaf surface, followed by an acaricide.",
-        "te": "ఆకుల అడుగుభాగాన బూజు, నల్లి పోయేలా నీటిని బలంగా పిచికారీ చేయండి, ఆపై నల్లి నివారణ మందు చల్లండి.",
-        "hi": "पत्तियों के नीचे तेज पानी की फुहार मारकर जाले हटाएं, फिर अनुशंसित दवा का छिड़काव करें।"
+        "en": "Check leaf undersides with a hand lens. If webbing and mites appear on >10% of plants, spray forceful water jets and release predatory mites or apply neem oil.",
+        "te": "ఆకుల అడుగున భూతద్దంతో నల్లి పురుగులను గమనించండి. 10% మొక్కలపై నల్లి కనిపిస్తే, నీటిని బలంగా పిచికారీ చేసి వేప నూనె లేదా మిత్ర పురుగులను వాడండి.",
+        "hi": "पत्तियों के नीचे लेंस से माइट्स देखें। 10% पौधों पर जाला दिखने पर तेज पानी की बौछार करें और नीम तेल या मित्र कीट छोड़ें।"
       },
       "explain_text": {
-        "en": "Microscopic sap-sucking arachnids that multiply explosively in hot, dry weather, spinning webs and chlorotizing leaves.",
-        "te": "వేడి, పొడి వాతావరణంలో వేగంగా వృద్ధి చెంది ఆకుల రసాన్ని పీల్చి బూజు గూడు కట్టి ఆకులను ఎండబెడతాయి.",
-        "hi": "गर्म और शुष्क मौसम में यह बारीक कीट बहुत तेजी से जाला बनाकर पत्तियों का रस चूस लेते हैं।"
+        "en": "Two-spotted spider mites are sap-sucking arachnids that multiply rapidly in hot, dry conditions. They form fine webs under leaves, causing yellow stippling and drying.",
+        "te": "ఎర్ర నల్లి వేడి, పొడి వాతావరణంలో వేగంగా వృద్ధి చెందే రసం పీల్చే పురుగులు. ఆకుల అడుగున సన్నని గూడు కట్టి రసాన్ని పీల్చడం వల్ల ఆకులు పసుపు రంగులోకి మారి ఎండిపోతాయి.",
+        "hi": "लाल मकड़ी (माइट) गर्म व शुष्क मौसम में तेजी से बढ़ने वाले रस चूसक कीट हैं। यह पत्तियों के नीचे जाला बनाते हैं, जिससे पत्तियां पीली पड़कर सूखने लगती हैं।"
       },
       "treatment": {
         "natural": [
           {
             "step": 1,
             "action": {
-              "en": "Release predatory mites (Neoseiulus or Phytoseiulus) or spray Neem oil (5 ml/L).",
-              "te": "మిత్ర పురుగులైన వేటాడే నల్లులను విడుదల చేయండి లేదా వేప నూనె (5 మి.లీ/లీ) పిచికారీ చేయండి.",
-              "hi": "मित्र कीट (परभक्षी माइट्स) छोड़ें या 5 मिली/लीटर नीम तेल का छिड़काव करें।"
+              "en": "Field Scouting & Cultural Control: Inspect underside of leaves weekly; remove and burn heavily infested lower leaves to prevent spread.",
+              "te": "క్షేత్ర పరిశీలన & సాంస్కృతిక నివారణ: ప్రతి వారం ఆకుల అడుగు భాగాన్ని పరిశీలించండి; నల్లి తీవ్రంగా ఉన్న అడుగు ఆకులను తుంచి కాల్చివేయండి.",
+              "hi": "खेत निगरानी और सांस्कृतिक नियंत्रण: हर हफ्ते पत्तियों के नीचे जांचें; अत्यधिक ग्रसित निचली पत्तियों को तोड़कर नष्ट करें।"
+            },
+            "source": "ICAR-IIHR Tomato IPM",
+            "source_url": "https://iihr.res.in",
+            "source_quote": "Regular scouting of lower leaf surfaces and sanitation reduces spider mite infestation."
+          },
+          {
+            "step": 2,
+            "action": {
+              "en": "Mechanical Washing: Spray forceful clean water jets onto the underside of foliage in morning hours to physically disrupt webs and dislodge mites.",
+              "te": "నీటి పిచికారీ: ఉదయం వేళల్లో ఆకుల అడుగున నీటిని బలంగా పిచికారీ చేసి బూజు గూళ్లను, నల్లి పురుగులను తొలగించండి.",
+              "hi": "तेज पानी का छिड़काव: सुबह के समय पत्तियों के नीचे तेज पानी की धार मारकर जालों और कीटों को गिराएं।"
+            },
+            "source": "ANGRAU Crop Production Guide",
+            "source_url": "https://angrau.ac.in",
+            "source_quote": "Water spray dislodges spider mite colonies and reduces web accumulation."
+          },
+          {
+            "step": 3,
+            "action": {
+              "en": "Biological Control: Spray Azadirachtin / Neem oil 1500 ppm (5 ml/L) or release predatory mites (Neoseiulus longispinosus) at 10 mites/plant.",
+              "te": "జీవ నియంత్రణ: వేప నూనె 1500 ppm (5 మి.లీ/లీ) పిచికారీ చేయండి లేదా వేటాడే మిత్ర నల్లులు (నియోసియులస్) ఎకరాకు విడుదల చేయండి.",
+              "hi": "जैविक नियंत्रण: नीम तेल 1500 ppm (5 मिली/लीटर) का छिड़काव करें या परभक्षी माइट्स (नियोसियूलस) छोड़ें।"
             },
             "source": "NBAIR Bengaluru",
             "source_url": "https://nbair.res.in",
@@ -1403,9 +1425,9 @@
             "dose": "follow the product label",
             "phi_days": null,
             "safety_line": {
-              "en": "Do not spray sulphur when temperature exceeds 32°C to prevent phytotoxicity. Wear goggles.",
-              "te": "ఎండ తీవ్రత 32°C దాటినప్పుడు గంధకం చల్లవద్దు. కళ్ళద్దాలు, మాస్క్ ధరించండి.",
-              "hi": "32°C से अधिक तापमान में गंधक का छिड़काव न करें ताकि पत्ते न जलें। चश्मा पहनें।"
+              "en": "Do not spray sulphur when temperature exceeds 32°C to prevent phytotoxicity. Wear goggles and protective clothing.",
+              "te": "ఎండ తీవ్రత 32°C దాటినప్పుడు గంధకం చల్లవద్దు. కళ్ళద్దాలు, రక్షణ దుస్తులు ధరించండి.",
+              "hi": "32°C से अधिक तापमान होने पर गंधक न छिड़कें। चश्मा और सुरक्षात्मक कपड़े पहनें।"
             },
             "source": "CIB&RC Major Uses",
             "source_url": "https://cibrc.nic.in",
@@ -1708,54 +1730,65 @@
       "referral_threshold": "SEVERE",
       "severity_advice": {
         "MILD": {
-          "en": "Pin-hole and window-pane feeding on young whorl leaves; fine sawdust-like frass.",
-          "te": "సుడులలోని లేత ఆకులపై చిన్న రంధ్రాలు, ఆకు పొరలు తిన్నట్లు కనిపించడం; రంపపు పొట్టు వంటి పురుగు విసర్జన.",
-          "hi": "पत्तियों पर छोटे छेद और जालीदार खरोंच; बुरादे जैसा कीड़े का मल दिखना।"
+          "en": "Field check: Scout 100 plants (20 plants in 5 spots). Look for pin-holes and small window-pane feeding on whorl leaves. ETL: <5% damaged plants.",
+          "te": "పొలం పరిశీలన: 5 చోట్ల 20 చొప్పున 100 మొక్కలను పరిశీలించండి. ఆకులపై చిన్న రంధ్రాలు, రంపపు పొట్టు మలాన్ని గమనించండి. నష్ట పరిమితి: <5% మొక్కలు.",
+          "hi": "खेत निरीक्षण: 5 जगहों पर 20-20 कर 100 पौधे देखें। पत्तियों पर छोटे छेद और बुरादे जैसा मल देखें। ईटीएल: 5% से कम पौधे।"
         },
         "MODERATE": {
-          "en": "Ragged shot-holes, heavy frass accumulating in leaf whorls; larvae feeding inside whorl. Apply whorl treatment.",
-          "te": "ఆకులు పెద్ద రంధ్రాలతో చినిగిపోతాయి, సుడులలో పురుగు మలం నిండి ఉంటుంది. సుడులలో మందు వేయండి.",
-          "hi": "पत्तियों में बड़े छेद, पोंगे में बहुत सारा मल; सूंडी अंदर बैठकर खाती है। पोंगे में दवा डालें।"
+          "en": "Action needed: 5-10% damaged plants with ragged holes and heavy frass in whorls. Apply sand+ash whorl application; spray Bt or Metarhizium.",
+          "te": "చర్య అవసరం: 5-10% మొక్కలలో ఆకులకు పెద్ద రంధ్రాలు, సుడులలో పురుగు మలం. సుడులలో ఇసుక+బూడిద వేసి, బి.టి లేదా మెటారైజియం పిచికారీ చేయండి.",
+          "hi": "कार्रवाई आवश्यक: 5-10% पौधों में बड़े छेद और पोंगे में मल। गोभ में रेत+राख डालें और बीटी या मेटाराइजियम का छिड़काव करें।"
         },
         "SEVERE": {
-          "en": "Whorls destroyed, growing point dead (dead-heart); tassels and cobs chewed. Alert KVK immediately.",
-          "te": "సుడి చనిపోయి మొవ్వు ఎండిపోతుంది; కంకెలపై పురుగులు దాడి చేస్తాయి. వెంటనే కృషి విజ్ఞాన కేంద్రంను సంప్రదించండి.",
-          "hi": "पोंगा नष्ट, गोभ सूखना (डेड हार्ट); भुट्टों को सूंडियां खा जाती हैं। तुरंत कृषि विशेषज्ञ से संपर्क करें।"
+          "en": "Severe infestation: >10% plants damaged, whorls chewed, dead-hearts forming. Direct approved chemical spray strictly into whorls; alert KVK.",
+          "te": "తీవ్ర ఉధృతి: >10% మొక్కలు దెబ్బతిని మొవ్వు ఎండిపోవడం. సిఫార్సు చేసిన మందును నేరుగా సుడిలోకి పిచికారీ చేసి కృషి విజ్ఞాన కేంద్రంను సంప్రదించండి.",
+          "hi": "गंभीर प्रकोप: 10% से अधिक पौधे क्षतिग्रस्त, गोभ सूखना (डेड हार्ट)। अनुशंसित दवा सीधे पोंगे में डालें और कृषि विशेषज्ञ से मिलें।"
         }
       },
       "immediate_step": {
-        "en": "Apply dry sand mixed with neem cake/lime into plant whorls to mechanically abrade and kill young larvae.",
-        "te": "మొక్క సుడులలో ఇసుక మరియు వేప పిండి లేదా సున్నం మిశ్రమాన్ని వేసి లేత పురుగులను నలిపి చంపండి.",
-        "hi": "पौधों के पोंगे (गोभ) में सूखी रेत और नीम की खली का मिश्रण डालें ताकि सूंडी नष्ट हो सके।"
+        "en": "Scout central whorls in a W-pattern. At 5-10% plant damage, apply dry sand mixed with wood ash or neem cake into whorls immediately.",
+        "te": "పొలంలో W-ఆకారంలో సుడులను పరిశీలించండి. 5-10% మొక్కలపై నష్టం ఉంటే, సుడులలో ఇసుక + బూడిద లేదా వేప పిండి మిశ్రమాన్ని వేయండి.",
+        "hi": "खेत में W-पैटर्न में पौधों की गोभ जांचें। 5-10% नुकसान पर गोभ में रेत और राख या नीम की खली तुरंत डालें।"
       },
       "explain_text": {
-        "en": "Invasive voracious pest whose larvae feed hidden inside the central whorl, identifiable by four dots in a square on the 8th segment and an inverted Y mark on head.",
-        "te": "మొక్క సుడిలో దాగి ఆకులను తినే ప్రమాదకరమైన విదేశీ పురుగు. తలపై తిరగబడిన Y గుర్తు, తోక భాగంలో 4 చుక్కలు ఉంటాయి.",
-        "hi": "यह घातक कीट पौधों के पोंगे में छिपकर खाता है। इसके सिर पर उल्टा Y और पूंछ पर 4 बिंदी का निशान होता है।"
+        "en": "Invasive nocturnal pest whose larvae feed concealed inside the central leaf whorl. Identifiable by four dark spots in a square on the 8th abdominal segment and an inverted Y mark on head.",
+        "te": "మొక్క సుడిలో దాగి ఆకులను తినే ప్రమాదకరమైన విదేశీ కత్తెర పురుగు. తలపై తిరగబడిన Y గుర్తు, 8వ కండరంపై 4 చుక్కలు చతురస్రాకారంలో ఉంటాయి.",
+        "hi": "यह एक आक्रामक कीट है जिसकी सूंडी गोभ (पोंगे) में छिपकर पत्तियां खाती है। इसके सिर पर उल्टा Y और 8वें खंड पर चार बिंदु होते हैं।"
       },
       "treatment": {
         "natural": [
           {
             "step": 1,
             "action": {
-              "en": "Apply sand + wood ash or neem cake into the central whorls of plants at 15-20 days after emergence.",
-              "te": "మొలకెత్తిన 15-20 రోజులకు సుడులలో ఇసుక + బూడిద లేదా వేప పిండి మిశ్రమాన్ని వేయండి.",
-              "hi": "बुवाई के 15-20 दिन बाद पौधों की गोभ में रेत और राख का मिश्रण डालें।"
+              "en": "Field Scouting & Cultural Control: Scout weekly in a W-pattern; handpick and crush egg masses and young larvae; install 10 bird perches per acre.",
+              "te": "క్షేత్ర పరిశీలన & సాంస్కృతిక చర్యలు: ప్రతి వారం W-పద్ధతిలో గమనించండి; గుడ్ల సముదాయాలు, లేత పురుగులను ఏరి నాశనం చేయండి; ఎకరాకు 10 పక్షి స్థావరాలు ఏర్పాటు చేయండి.",
+              "hi": "खेत निगरानी और सांस्कृतिक नियंत्रण: हर हफ्ते W-पैटर्न में खेत का निरीक्षण करें; अंडे और सूंडियों को चुनकर नष्ट करें; प्रति एकड़ 10 पक्षी मचान लगाएं।"
             },
             "source": "ICAR-NBAIR FAW Advisory",
             "source_url": "https://nbair.res.in",
-            "source_quote": "Whorl application of abrasive sand and botanicals suffocates first and second instar FAW larvae."
+            "source_quote": "Regular scouting in W pattern and bird perches suppress early larval populations."
           },
           {
             "step": 2,
             "action": {
-              "en": "Install pheromone traps (5 per acre) for monitoring and spray Metarhizium rileyi or Bacillus thuringiensis (2 g/L).",
-              "te": "ఎకరాకు 5 లింగాకర్షక బుట్టలను అమర్చండి మరియు మెటారైజియం లేదా బి.టి (2 గ్రా/లీ) పిచికారీ చేయండి.",
-              "hi": "प्रति एकड़ 5 फेरोमोन ट्रैप लगाएं और बीटी (Bt) या मेटाराइजियम (2 ग्राम/लीटर) छिड़कें।"
+              "en": "Mechanical Whorl Barrier: Apply dry abrasive sand mixed with wood ash or neem cake (9:1 ratio) directly into central plant whorls at 15-20 days after emergence.",
+              "te": "సుడులలో ఇసుక పూరకం: మొలకెత్తిన 15-20 రోజులకు మొక్కల సుడులలో ఇసుక + బూడిద లేదా వేప పిండి మిశ్రమాన్ని (9:1 నిష్పత్తి) వేసి పురుగులను నలిపి చంపండి.",
+              "hi": "गोभ में रेत का उपयोग: बुवाई के 15-20 दिन बाद पौधों की गोभ में सूखी रेत और लकड़ी की राख (9:1 अनुपात) डालें ताकि सूंडी नष्ट हो सके।"
             },
-            "source": "NIPHM FAW Management",
+            "source": "PJTSAU Maize Pest Advisory",
+            "source_url": "https://pjtsau.edu.in",
+            "source_quote": "Whorl application of dry sand mixed with ash suffocates and abrades FAW larvae."
+          },
+          {
+            "step": 3,
+            "action": {
+              "en": "Biological Monitoring & Bio-agents: Install pheromone traps (5/acre) to monitor adult moths; spray Metarhizium rileyi or Bacillus thuringiensis (Bt) at 2 g/L, or Azadirachtin 1500 ppm (5 ml/L).",
+              "te": "జీవ నియంత్రణ: రెక్కల పురుగుల నిఘా కోసం ఎకరాకు 5 లింగాకర్షక బుట్టలు అమర్చండి; మెటారైజియం లేదా బి.టి (2 గ్రా/లీ) లేదా వేప నూనె 1500 ppm (5 మి.లీ/లీ) పిచికారీ చేయండి.",
+              "hi": "जैविक नियंत्रण: निगरानी के लिए प्रति एकड़ 5 फेरोमोन ट्रैप लगाएं; मेटाराइजियम या बीटी (2 ग्राम/लीटर) या नीम तेल (5 मिली/लीटर) का छिड़काव करें।"
+            },
+            "source": "NIPHM FAW Management Protocol",
             "source_url": "https://niphm.gov.in",
-            "source_quote": "Bio-pesticides are effective against early instar FAW larvae."
+            "source_quote": "Pheromone monitoring and bio-pesticides (Bt / Metarhizium) are highly effective in early whorl stages."
           }
         ],
         "chemical": [
@@ -1767,9 +1800,9 @@
             "dose": "follow the product label",
             "phi_days": null,
             "safety_line": {
-              "en": "Direct nozzle directly into plant whorls. Wear gloves and mask. Keep away from domestic animals.",
-              "te": "మందు నాజిల్ ను నేరుగా మొక్క సుడిలోకి పెట్టి పిచికారీ చేయండి. గ్లౌజులు, మాస్క్ ధరించండి.",
-              "hi": "स्प्रे की धार सीधे पौधे के पोंगे (गोभ) में डालें। दस्ताने और मास्क पहनें।"
+              "en": "Direct spray nozzle strictly into plant whorls. Wear chemical-resistant gloves and mask. Avoid spraying during high heat.",
+              "te": "మందు నాజిల్ ను నేరుగా మొక్క సుడిలోకి పెట్టి పిచికారీ చేయండి. గ్లౌజులు, మాస్క్ ధరించండి. ఎండలో పిచికారీ చేయవద్దు.",
+              "hi": "स्प्रे की धार सीधे पौधे के पोंगे (गोभ) में डालें। दस्ताने और मास्क पहनें। तेज धूप में छिड़काव न करें।"
             },
             "source": "CIB&RC Major Uses",
             "source_url": "https://cibrc.nic.in",

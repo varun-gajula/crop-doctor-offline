@@ -252,6 +252,66 @@ class MainActivity : ComponentActivity() {
                                         onStateChange = { isGeneratingAdvice = it }
                                     )
                                 }
+                                "show_disease" -> {
+                                    KnowledgeBase.initialize(this@MainActivity)
+                                    val kb = KnowledgeBase.getEntry("tomato_early_blight")
+                                        ?: KnowledgeBase.getAllEntries().first { it.type == "disease" }
+                                    val result = ClassifierResult(
+                                        classId = "tomato_early_blight",
+                                        displayName = kb.names.forLanguage(selectedLanguage),
+                                        confidence = 0.88f,
+                                        severityBand = SeverityBand.MODERATE,
+                                        certaintyBand = CertaintyBand.SURE,
+                                        lesionFraction = 0.22f,
+                                        inferenceTimeMs = 85L,
+                                        memoryUsedMb = 120L,
+                                        isDemoMode = false
+                                    )
+                                    classifierResult = result
+                                    activeKbEntry = kb
+                                    navigateTo(AppScreen.RESULT)
+                                }
+                                "show_pest" -> {
+                                    KnowledgeBase.initialize(this@MainActivity)
+                                    val kb = KnowledgeBase.getEntry("tomato_spider_mites")
+                                        ?: KnowledgeBase.getAllEntries().first { it.type == "pest" }
+                                    val result = ClassifierResult(
+                                        classId = "tomato_spider_mites",
+                                        displayName = kb.names.forLanguage(selectedLanguage),
+                                        confidence = 0.91f,
+                                        severityBand = SeverityBand.MODERATE,
+                                        certaintyBand = CertaintyBand.SURE,
+                                        lesionFraction = 0.18f,
+                                        inferenceTimeMs = 82L,
+                                        memoryUsedMb = 120L,
+                                        isDemoMode = false
+                                    )
+                                    classifierResult = result
+                                    activeKbEntry = kb
+                                    navigateTo(AppScreen.RESULT)
+                                }
+                                "show_healthy" -> {
+                                    KnowledgeBase.initialize(this@MainActivity)
+                                    val kb = KnowledgeBase.getEntry("tomato_healthy")
+                                        ?: KnowledgeBase.getAllEntries().first { it.type == "healthy" }
+                                    val result = ClassifierResult(
+                                        classId = "tomato_healthy",
+                                        displayName = kb.names.forLanguage(selectedLanguage),
+                                        confidence = 0.94f,
+                                        severityBand = SeverityBand.MILD,
+                                        certaintyBand = CertaintyBand.SURE,
+                                        lesionFraction = 0.02f,
+                                        inferenceTimeMs = 80L,
+                                        memoryUsedMb = 120L,
+                                        isDemoMode = false
+                                    )
+                                    classifierResult = result
+                                    activeKbEntry = kb
+                                    navigateTo(AppScreen.RESULT)
+                                }
+                                "lang_en" -> switchLanguage("en")
+                                "lang_te" -> switchLanguage("te")
+                                "lang_hi" -> switchLanguage("hi")
                                 "release_llama" -> {
                                     lifecycleScope.launch(Dispatchers.IO) {
                                         (app.advisor as? ExecuTorchLlamaAdvisor)?.forceReleaseForBenchmark()

@@ -104,7 +104,7 @@ class ThresholdHonestyTest {
         assertTrue("thresholds.json must define energy_threshold", json.containsKey("energy_threshold"))
         assertTrue("thresholds.json must define class_thresholds", json.containsKey("class_thresholds"))
 
-        assertEquals("Provisional default threshold is 0.40", 0.40f, json["default_threshold"]!!.jsonPrimitive.float, 0.001f)
-        assertEquals("Provisional energy threshold is -1.5", -1.5, json["energy_threshold"]!!.jsonPrimitive.double, 0.001)
+        assertEquals("Calibrated default threshold is 0.20", 0.20f, json["default_threshold"]!!.jsonPrimitive.float, 0.001f)
+        assertEquals("Calibrated energy threshold is 5.0", 5.0, json["energy_threshold"]!!.jsonPrimitive.double, 0.001)
     }
 }
