@@ -2,6 +2,7 @@ package com.cropdoctor.vision
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.os.Build
 import android.os.SystemClock
 import android.util.Log
 import com.cropdoctor.domain.CertaintyBand
@@ -31,6 +32,21 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
         const val DEFAULT_ENERGY_THRESHOLD = -1.5
     }
 
+    private val fakeClassifier = FakeClassifier()
+
+    private fun isEmulator(): Boolean {
+        return (Build.FINGERPRINT.startsWith("generic")
+                || Build.FINGERPRINT.startsWith("unknown")
+                || Build.MODEL.contains("google_sdk")
+                || Build.MODEL.contains("Emulator")
+                || Build.MODEL.contains("Android SDK built for x86")
+                || Build.MANUFACTURER.contains("Genymotion")
+                || (Build.BRAND.startsWith("generic") && Build.DEVICE.startsWith("generic"))
+                || "google_sdk" == Build.PRODUCT
+                || Build.HARDWARE.contains("goldfish")
+                || Build.HARDWARE.contains("ranchu"))
+    }
+
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private val initDeferred = CompletableDeferred<Boolean>()
 
@@ -58,8 +74,12 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
             loadLabels()
             loadPreprocessConfig()
             loadThresholds()
-            initializeModule()
-            initDeferred.complete(module != null)
+            if (!isEmulator()) {
+                initializeModule()
+            } else {
+                Log.i(TAG, "Running on emulator: skipping native ExecuTorch vision module load (Rule H8).")
+            }
+            initDeferred.complete(isEmulator() || module != null)
         } catch (e: Exception) {
             Log.e(TAG, "Initialization failed in background thread", e)
             initDeferred.complete(false)
@@ -203,6 +223,12 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
         // Wait for background initialization if not yet finished
         if (!initDeferred.isCompleted) {
             initDeferred.await()
+        }
+
+        // Rule H8: Emulators cannot run 4-bit/arm64 kernels -> delegate to FakeClassifier with visible demo banner
+        if (isEmulator()) {
+            Log.i(TAG, "Running on emulator. Delegating to FakeClassifier (Rule H8).")
+            return@withContext fakeClassifier.classify(bitmap, cropHint)
         }
 
         // Rule H11 & T1: If model is missing or fails to load, NEVER guess a disease.
