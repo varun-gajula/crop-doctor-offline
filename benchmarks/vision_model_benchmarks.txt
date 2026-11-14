@@ -1,0 +1,27 @@
+Crop Doctor - Vision Model Benchmark Log (Rule H3 & Rule H12)
+Generated: 2026-11-14 07:30 IST
+--------------------------------------------------------------------------------
+
+1. Model Specifications:
+   - Architecture: MobileNetV3-Large (Multi-Task Dual Head: 25 Disease/Pest Classes + 3 Severity Tiers)
+   - Input Tensor: [1, 3, 320, 320] FP32
+   - Normalization: Mean [0.485, 0.456, 0.406], Std [0.229, 0.224, 0.225]
+   - Loss Function: Joint Multi-Task Loss (CrossEntropy_Class + 0.5 * CrossEntropy_Severity)
+   - Calibration: Post-hoc Temperature Scaling (T = 1.1500)
+   - OOD Detection: Free Energy E(x; T) = -T * ln(sum(exp(z_i / T))) with energy_threshold = -1.5
+
+2. Dataset & Training Log:
+   - Total Unique Images Curated: 46,152 (Purged 16,470 duplicates/corrupts)
+   - Target Classes: 25 classes (Rice, Cotton, Chilli, Tomato, Maize)
+   - Split: Train = 36,921 (80%), Val = 9,231 (20%)
+   - Epochs Completed: 15 / 15
+   - Final Train Accuracy: 99.62%
+   - Final Validation Top-1 Accuracy: 98.80%
+
+3. Hardware Budget & Compliance (Rules H2, H15):
+   - Export Runtime: ExecuTorch (XnnpackPartitioner backend for Arm Neon SIMD)
+   - Output File: vision.pte
+   - Binary Size: 14.25 MB (14,942,208 bytes)
+   - Rule H15 Compliance (<= 30 MB budget for 6 GB RAM phones): PASS (14.25 MB <= 30 MB)
+   - Rule H2 Compliance (<= 90 MB GitHub commit limit): PASS (14.25 MB <= 90 MB)
+
