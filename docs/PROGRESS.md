@@ -1,6 +1,41 @@
 # Project Progress - Crop Doctor Offline
 
-## Current Status: Task M1c Complete (Real Field Leaves Speed & Fallback Rate Benchmarks)
+## Current Status: Task G1 Complete (Pest vs Disease Differentiation & IPM Advisory)
+
+### Done in Task G1: Pest vs Disease (Requirements F3, Rules H4, H5, G1)
+1. **Type Field on All 25 Classes & Schema Validation:**
+   - Ensured `type` ("disease", "pest", or "healthy") is explicitly present across all 25 classes in `data/kb/knowledge_base.json` and `app/src/main/assets/kb/knowledge_base.json`.
+   - Added `type` to every entry in `data/supported_classes.json` and `app/src/main/assets/supported_classes.json` aligned with `data/class_map.yaml`.
+   - Enhanced `scripts/validate_kb.py` to strictly validate `type` across Knowledge Base, `class_map.yaml`, and `supported_classes.json`, as well as checking asset parity. All 25 classes verified.
+2. **Result Screen Type Chip & Pest-Specific Alerts in 3 Languages:**
+   - Added a prominent `TypeChip` component in `ResultScreen.kt` displaying icon and localized word:
+     - Disease: `[ 🦠 Disease ]` / `[ 🦠 తెగులు ]` / `[ 🦠 रोग ]`
+     - Pest: `[ 🪲 Pest ]` / `[ 🪲 పురుగు ]` / `[ 🪲 कीट ]`
+     - Healthy: `[ ✔ Healthy ]` / `[ ✔ ఆరోగ్యకరం ]` / `[ ✔ स्वस्थ ]`
+   - Added pest-specific alert banner:
+     - Disease: `🚨 Disease Detected!` / `🚨 తెగులు గుర్తించబడింది!` / `🚨 रोग पाया गया!`
+     - Pest: `🐛 Pest Detected!` / `🐛 పురుగు గుర్తించబడింది!` / `🐛 कीट पाया गया!`
+     - Healthy: `✓ Healthy Crop!` / `✓ ఆరోగ్యకరమైన పంట!` / `✓ स्वस्थ फसल!`
+3. **Pest-Management Steps (IPM: Cultural & Biological First, Chemical Last):**
+   - Refined both committed pest entries (`tomato_spider_mites`, `maize_fall_armyworm`):
+     - Field checking & scouting protocols (W-pattern scouting, 10x lens checking of leaf undersides and central whorls).
+     - Economic Threshold Levels (ETL: e.g. <5 vs 5-10 mites/leaf; <5% vs 5-10% FAW whorl damage).
+     - Cultural and mechanical steps: water jet washing, abrasive sand + ash/neem cake whorl application.
+     - Biological controls: predatory phytoseiid mites, neem oil (Azadirachtin 1500 ppm), Bt, Metarhizium rileyi, pheromone traps.
+     - Chemical treatments strictly last, unverified doses (`follow the product label`), citing CIB&RC major uses.
+     - All entries retain `needs_expert_review: true`.
+4. **Unit Tests & Elimination of Leaf-Disease Sentences for Pests:**
+   - Updated `RulesEngine.getSeverityActionSentence(severityBand, type)` and `getGuidanceSentence`:
+     - Pests show pest-monitoring & threshold guidance (`severity_pest_early_warning`, `severity_pest_act_now`) and NEVER leaf-disease severity sentences.
+   - Updated `PromptBuilder` for Llama to describe `% pest infestation / plant damage` rather than `% affected leaf area`.
+   - Added comprehensive suite `PestVsDiseaseTest.kt` covering class type distribution, class list matching, pest action sentences, and grounded prompt formatting (73/73 unit tests pass).
+5. **CHECKPOINT G1 Verified on Live Emulator:**
+   - Captured 6 result screenshots covering 1 disease (`tomato_early_blight`) and 1 pest (`tomato_spider_mites`) across English, Telugu, and Hindi in `benchmarks/g1_*.png`.
+   - Generated composite 6-panel verification collage: `benchmarks/g1_pest_disease_collage.png`.
+
+---
+
+## Previous Status: Task M1c Complete (Real Field Leaves Speed & Fallback Rate Benchmarks)
 
 ### Done in Task M1c: Two Fixes to M1 Measurements (Rule H3, H15, PS1)
 1. **Shutter-to-Result on Real Diagnosed Field Leaves (Requirement 1):**

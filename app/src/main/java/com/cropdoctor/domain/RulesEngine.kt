@@ -76,22 +76,29 @@ object RulesEngine {
     /**
      * T2b: Resolves guidance / status sentence:
      * - If certainty is NOT_SURE -> R.string.cant_tell_no_disease ("Can’t tell – no disease identified")
-     * - If MILD -> R.string.severity_early_warning
-     * - Else -> R.string.severity_act_now
+     * - If MILD -> R.string.severity_early_warning (or severity_pest_early_warning for pests)
+     * - Else -> R.string.severity_act_now (or severity_pest_act_now for pests)
      */
-    fun getGuidanceSentence(certaintyBand: CertaintyBand, severityBand: SeverityBand): Int {
+    fun getGuidanceSentence(certaintyBand: CertaintyBand, severityBand: SeverityBand, type: String = "disease"): Int {
         if (certaintyBand == CertaintyBand.NOT_SURE) {
             return R.string.cant_tell_no_disease
         }
-        return getSeverityActionSentence(severityBand)
+        return getSeverityActionSentence(severityBand, type)
     }
 
     /**
      * Severity action sentence:
      * - Mild -> early warning
      * - Moderate/Severe -> act now
+     * Pest results use pest-specific monitoring & ETL guidance (Rule G1).
      */
-    fun getSeverityActionSentence(severityBand: SeverityBand): Int {
+    fun getSeverityActionSentence(severityBand: SeverityBand, type: String = "disease"): Int {
+        if (type.equals("pest", ignoreCase = true)) {
+            return when (severityBand) {
+                SeverityBand.MILD -> R.string.severity_pest_early_warning
+                SeverityBand.MODERATE, SeverityBand.SEVERE -> R.string.severity_pest_act_now
+            }
+        }
         return when (severityBand) {
             SeverityBand.MILD -> R.string.severity_early_warning
             SeverityBand.MODERATE, SeverityBand.SEVERE -> R.string.severity_act_now

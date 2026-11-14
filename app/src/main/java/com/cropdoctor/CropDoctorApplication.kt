@@ -33,9 +33,11 @@ class CropDoctorApplication : Application() {
 
         detectDeviceRam()
 
-        // Asynchronous initialization guaranteeing sub-2s cold launch
+        // Immediate Knowledge Base initialization (~15 ms)
+        KnowledgeBase.initialize(this)
+
+        // Asynchronous background initialization for vision & advisory engines
         applicationScope.launch {
-            KnowledgeBase.initialize(this@CropDoctorApplication)
             classifier = ExecuTorchClassifier(this@CropDoctorApplication)
 
             // On-device ExecuTorch Llama 3.2 Advisor

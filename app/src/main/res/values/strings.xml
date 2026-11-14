@@ -69,8 +69,14 @@
     <string name="result_title">Result</string>
     <string name="demo_banner">DEMO MODE - NOT A REAL DIAGNOSIS</string>
     <string name="alert_disease_detected">Disease Detected!</string>
+    <string name="alert_pest_detected">Pest Detected!</string>
     <string name="alert_healthy">Healthy Crop!</string>
     <string name="alert_uncertain">Not sure - ask an extension officer</string>
+
+    <!-- Type Chips -->
+    <string name="type_disease">Disease</string>
+    <string name="type_pest">Pest</string>
+    <string name="type_healthy">Healthy</string>
 
     <!-- Certainty -->
     <string name="certainty_title">Certainty</string>
@@ -89,6 +95,8 @@
     <string name="severity_severe">Severe</string>
     <string name="severity_early_warning">Early warning: Monitor closely and take preventive measures.</string>
     <string name="severity_act_now">Immediate action required: Take corrective action now to prevent crop loss.</string>
+    <string name="severity_pest_early_warning">Early warning: Check pest population and monitor field thresholds.</string>
+    <string name="severity_pest_act_now">Action required: Economic threshold reached; take immediate IPM control steps.</string>
 
     <!-- About & Treatments -->
     <string name="about_condition">About the Condition</string>

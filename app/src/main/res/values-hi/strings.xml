@@ -69,8 +69,14 @@
     <string name="result_title">परिणाम</string>
     <string name="demo_banner">डेमो मोड - यह वास्तविक निदान नहीं है</string>
     <string name="alert_disease_detected">रोग पाया गया!</string>
+    <string name="alert_pest_detected">कीट पाया गया!</string>
     <string name="alert_healthy">स्वस्थ फसल!</string>
     <string name="alert_uncertain">अनिश्चित - कृषि विस्तार अधिकारी से संपर्क करें</string>
+
+    <!-- Type Chips -->
+    <string name="type_disease">रोग</string>
+    <string name="type_pest">कीट</string>
+    <string name="type_healthy">स्वस्थ</string>
 
     <!-- Certainty -->
     <string name="certainty_title">निश्चितता</string>
@@ -89,6 +95,8 @@
     <string name="severity_severe">गंभीर</string>
     <string name="severity_early_warning">शुरुआती चेतावनी: फसल पर नजर रखें और निवारक उपाय करें।</string>
     <string name="severity_act_now">त्वरित कार्रवाई आवश्यक: फसल के नुकसान को रोकने के लिए अभी कदम उठाएं।</string>
+    <string name="severity_pest_early_warning">शुरुआती चेतावनी: खेत में कीटों की संख्या देखें और निगरानी रखें।</string>
+    <string name="severity_pest_act_now">त्वरित कार्रवाई आवश्यक: कीटों का आर्थिक नुकसान स्तर पार; तुरंत नियंत्रण उपाय करें।</string>
 
     <!-- About & Treatments -->
     <string name="about_condition">स्थिति का विवरण</string>
