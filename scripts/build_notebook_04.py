@@ -49,9 +49,9 @@ def create_notebook_04():
         "metadata": {},
         "outputs": [],
         "source": [
-            "# ── 1. Install Dependencies & Pin ExecuTorch 0.6.0 ────────────────────────────\n",
+            "# ── 1. Install Dependencies & ExecuTorch ────────────────────────────────────\n",
             "!pip install -q timm scikit-learn matplotlib pyyaml pillow\n",
-            "!pip install -q executorch==0.6.0 torchvision torch\n",
+            "!pip install -q executorch torchvision torch\n",
             "\n",
             "import os, sys, json, math, time, glob, shutil, random\n",
             "from pathlib import Path\n",
