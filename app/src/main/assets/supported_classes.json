@@ -1,0 +1,129 @@
+{
+  "classes": {
+    "0": {
+      "class_id": "rice_bacterial_leaf_blight",
+      "supported": true,
+      "reason": "sufficient verified photos"
+    },
+    "1": {
+      "class_id": "rice_brown_spot",
+      "supported": true,
+      "reason": "sufficient verified photos"
+    },
+    "2": {
+      "class_id": "rice_leaf_blast",
+      "supported": true,
+      "reason": "sufficient verified photos"
+    },
+    "3": {
+      "class_id": "rice_sheath_blight",
+      "supported": true,
+      "reason": "sufficient verified photos"
+    },
+    "4": {
+      "class_id": "rice_healthy",
+      "supported": true,
+      "reason": "sufficient verified photos"
+    },
+    "5": {
+      "class_id": "cotton_bacterial_blight",
+      "supported": true,
+      "reason": "sufficient verified photos"
+    },
+    "6": {
+      "class_id": "cotton_fusarium_wilt",
+      "supported": true,
+      "reason": "sufficient verified photos"
+    },
+    "7": {
+      "class_id": "cotton_leaf_curl_virus",
+      "supported": false,
+      "reason": "fewer than 300 unique photos"
+    },
+    "8": {
+      "class_id": "cotton_alternaria_leaf_spot",
+      "supported": false,
+      "reason": "fewer than 300 unique photos"
+    },
+    "9": {
+      "class_id": "cotton_healthy",
+      "supported": true,
+      "reason": "sufficient verified photos"
+    },
+    "10": {
+      "class_id": "chilli_bacterial_spot",
+      "supported": true,
+      "reason": "sufficient verified photos"
+    },
+    "11": {
+      "class_id": "chilli_leaf_curl_virus",
+      "supported": true,
+      "reason": "sufficient verified photos"
+    },
+    "12": {
+      "class_id": "chilli_cercospora_leaf_spot",
+      "supported": false,
+      "reason": "fewer than 300 unique photos"
+    },
+    "13": {
+      "class_id": "chilli_white_spot",
+      "supported": false,
+      "reason": "fewer than 300 unique photos; cause unverified"
+    },
+    "14": {
+      "class_id": "chilli_healthy",
+      "supported": true,
+      "reason": "sufficient verified photos"
+    },
+    "15": {
+      "class_id": "tomato_early_blight",
+      "supported": true,
+      "reason": "sufficient verified photos"
+    },
+    "16": {
+      "class_id": "tomato_late_blight",
+      "supported": true,
+      "reason": "sufficient verified photos"
+    },
+    "17": {
+      "class_id": "tomato_yellow_leaf_curl_virus",
+      "supported": true,
+      "reason": "sufficient verified photos"
+    },
+    "18": {
+      "class_id": "tomato_spider_mites",
+      "supported": true,
+      "reason": "sufficient verified photos"
+    },
+    "19": {
+      "class_id": "tomato_healthy",
+      "supported": true,
+      "reason": "sufficient verified photos"
+    },
+    "20": {
+      "class_id": "maize_gray_leaf_spot",
+      "supported": true,
+      "reason": "sufficient verified photos"
+    },
+    "21": {
+      "class_id": "maize_common_rust",
+      "supported": true,
+      "reason": "sufficient verified photos"
+    },
+    "22": {
+      "class_id": "maize_northern_leaf_blight",
+      "supported": true,
+      "reason": "sufficient verified photos"
+    },
+    "23": {
+      "class_id": "maize_fall_armyworm",
+      "supported": true,
+      "reason": "sufficient verified photos"
+    },
+    "24": {
+      "class_id": "maize_healthy",
+      "supported": true,
+      "reason": "sufficient verified photos"
+    }
+  }
+}

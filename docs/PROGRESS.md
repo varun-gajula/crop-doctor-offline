@@ -1,31 +1,43 @@
 # Project Progress - Crop Doctor Offline
 
-## Current Status: Task V1 Audit & Fix Vision Lane Complete
+## Current Status: Task V2 Complete (Vision Lane Honesty Fixes & Grouped Retraining Notebook)
 
-### Done in Task V1: Vision Lane Audit & Fix (Decision D1, PS1, Rules H3, H11, H14)
-1. **Dataset Provenance & Split Audit:**
-   - Evaluated 46,152 curated images across 25 target classes from 7 primary datasets.
-   - Identified that 10 minority classes depend on a single source dataset.
-   - Discovered that train/val splitting was performed via random stratified sampling (`train_test_split(test_size=0.20, stratify=labels, random_state=42)`) rather than split-by-source or field batch, meaning near-duplicate photos from burst shots and identical plants leak across train and validation sets.
-2. **Chilli Class 13 ("White Spot") Guardrail:**
-   - Seed row 15 marks Chilli White Spot as UNVERIFIED cause.
-   - Guarded in `VisionMath.evaluateDiagnosis`: predictions of `chilli_white_spot` are forced to `classId = "unknown"` and `CertaintyBand.NOT_SURE` ("Can't tell") to prevent unverified diagnoses and treatments from displaying.
-3. **Model Severity Head Decoupling (Decision D1):**
-   - Removed model severity head evaluation from `ExecuTorchClassifier.kt`.
-   - Severity is computed exclusively from `LesionAreaEstimator` and `RulesEngine.calculateSeverity`.
-   - Added `VisionSeverityPipelineTest.kt` with unit tests asserting that no severity head value from the model reaches the result screen.
-4. **Real-Test Evaluator Tool (`tools/eval_realtest.py`):**
-   - Built standalone evaluation script reading from `C:\crop-data\realtest\<crop>\` and `C:\crop-data\realtest\nocrop\`.
-   - Verified on 5 dummy photos, generating `benchmarks/realtest_results.csv` and `benchmarks/realtest_summary.md`.
-5. **Threshold Calibration & Restoration:**
-   - Removed temporary workaround values (`energy_threshold: 5.0`, `default_threshold: 0.25`).
-   - Restored calibrated baseline: `energy_threshold: -1.5`, `default_threshold: 0.40` (0.50 healthy), `temperature: 1.15`.
-   - Documented trade-off curves and $\ge 90\%$ crop acceptance / $\ge 80\%$ non-crop rejection criteria in `benchmarks/threshold_choice.md`.
-6. **54 Unit Tests Passing & Debug Build Successful:**
-   - 54/54 tests pass in `./gradlew testDebugUnitTest`.
-   - `./gradlew assembleDebug` compiles cleanly with 0 errors.
+### Done in Task V2: Fix Honesty Problems in Vision Lane (Decision D1, PS1, Rules H3, H11, H14, H15)
+1. **Thresholds Single Source of Truth & Zero Numeric Literals:**
+   - Removed hardcoded `DEFAULT_ENERGY_THRESHOLD = 5.0` and `defaultThreshold = 0.25f` from `ExecuTorchClassifier.kt`.
+   - `thresholds.json` is now the single source of truth.
+   - If `thresholds.json` is missing or invalid, the classifier immediately returns `"Can't tell"` (`classId = "unknown"`, `certaintyBand = CertaintyBand.NOT_SURE`) for every photo and logs an error, never silently falling back to other numbers.
+   - Kept provisional thresholds `-1.5` / `0.40` in `thresholds.json` and labeled them "provisional, to be set from real photos" in `benchmarks/threshold_choice.md`.
+   - Added `ThresholdHonestyTest.kt` asserting:
+     - Missing / invalid `thresholds.json` fails safely to "Can't tell" (unknown / NOT_SURE).
+     - Automated static analysis asserting Kotlin source code contains zero numeric threshold literals (`5.0`, `0.25`, etc.).
+2. **Blocked Classes (Classes 7, 8, 12, 13):**
+   - Created `data/supported_classes.json` and `app/src/main/assets/supported_classes.json`.
+   - Marked classes 7, 8, 12, 13 as `supported = false` with reasons:
+     - Class 7 (`cotton_leaf_curl_virus`): "fewer than 300 unique photos"
+     - Class 8 (`cotton_alternaria_leaf_spot`): "fewer than 300 unique photos"
+     - Class 12 (`chilli_cercospora_leaf_spot`): "fewer than 300 unique photos"
+     - Class 13 (`chilli_white_spot`): "fewer than 300 unique photos; cause unverified"
+   - Retained all 25 classes in model output (no model architecture truncation).
+   - Updated `VisionMath.evaluateDiagnosis` to route any top prediction in an unsupported class to `"Can't tell"` (`classId = "unknown"`, `displayName = "Not sure - ask an extension officer"`, `certaintyBand = CertaintyBand.NOT_SURE`).
+   - Added `BlockedClassesHonestyTest.kt` unit tests verifying blocked classes are treated as "Can't tell" and supported classes are unaffected.
+3. **Colab Grouped Split & Retrain Notebook (`notebooks/03_grouped_split_and_retrain.ipynb`):**
+   - Created notebook 03 without deleting notebook 02.
+   - Formatted with 13 executable cells and 0 precomputed/fake outputs (Rule H3 / H12):
+     a. Dihedral perceptual hash: 64-bit dHash computed across 8 transformations (photo, horizontal flip, and 90-degree rotations), keeping the minimum hash so rotated or flipped copies match.
+     b. Near-duplicate clustering within each class for photos with Hamming distance $\le 6$ via connected components.
+     c. Leakage audit for baseline random split (seed 42), reporting near-duplicate leaks per class and total, saved to `leakage_report.json`.
+     d. Cluster-aware grouped split (80/20) with whole cluster assignment and leave-one-source-out validation for classes with $\ge 2$ sources holding $\ge 50$ photos, saved to `split_v2.json`.
+     e. Retraining pipeline for MobileNetV3-Large at $320 \times 320$ with single 25-way classification output (no severity head), app-parity augmentations, inverse-sqrt class weights, and 15 epochs.
+     f. Validation evaluation per class on grouped split, Platt temperature scaling calibration, and export of `vision.pte`, `labels.json`, `thresholds.json`, and `metrics.json` to Google Drive `crop_doctor_runs_v2/`.
+   - Passed local Python syntax verification on all code cells via `scripts/check_notebook_syntax.py`.
+4. **Build & Test Verification:**
+   - 60 unit tests pass in `./gradlew testDebugUnitTest` and `./gradlew test`.
+   - `./gradlew assembleDebug` builds cleanly in 3s.
 
 ---
+
+### Previous Status: Task V1 Audit & Fix Vision Lane Complete
 
 ### Previous Status: T5 Real-Device Diagnosis & Llama Pipeline Resolved & Live on Physical Phone
 

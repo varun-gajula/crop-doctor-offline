@@ -29,8 +29,6 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
     companion object {
         private const val TAG = "ExecuTorchClassifier"
         const val DEFAULT_INPUT_SIZE = 320
-        const val DEFAULT_TEMPERATURE = 1.15f
-        const val DEFAULT_ENERGY_THRESHOLD = 5.0
     }
 
     private val fakeClassifier = FakeClassifier()
@@ -58,10 +56,18 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
     private var inputSize: Int = DEFAULT_INPUT_SIZE
     private var mean: FloatArray = floatArrayOf(0.485f, 0.456f, 0.406f)
     private var std: FloatArray = floatArrayOf(0.229f, 0.224f, 0.225f)
-    private var temperature: Float = DEFAULT_TEMPERATURE
-    private var energyThreshold: Double = DEFAULT_ENERGY_THRESHOLD
-    private var defaultThreshold: Float = 0.25f
-    private val classThresholds: MutableMap<String, Float> = mutableMapOf()
+    private var temperature: Float = 1.0f
+
+    // thresholds.json is the SINGLE SOURCE OF TRUTH (Task V2).
+    // Absolutely NO hard-coded numeric threshold fallbacks (Rule H11 & V2).
+    var defaultThreshold: Float? = null
+        private set
+    var energyThreshold: Double? = null
+        private set
+    val classThresholds: MutableMap<String, Float> = mutableMapOf()
+    val unsupportedClasses: MutableSet<String> = mutableSetOf()
+    var isThresholdsLoaded: Boolean = false
+        private set
 
     init {
         // Load assets and ExecuTorch model once in a background thread and keep them in memory
@@ -75,6 +81,7 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
             loadLabels()
             loadPreprocessConfig()
             loadThresholds()
+            loadSupportedClasses()
             if (!isEmulator()) {
                 initializeModule()
             } else {
@@ -113,7 +120,6 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
                     val json = JSONObject(text)
                     if (json.has("input_size")) inputSize = json.getInt("input_size")
                     if (json.has("temperature")) temperature = json.getDouble("temperature").toFloat()
-                    if (json.has("energy_threshold")) energyThreshold = json.getDouble("energy_threshold")
 
                     if (json.has("mean")) {
                         val mArr = json.getJSONArray("mean")
@@ -131,35 +137,121 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
         }
     }
 
+    /**
+     * Parses thresholds from JSON string. Returns true if valid, false otherwise.
+     * Enforces thresholds.json as the single source of truth without numeric fallbacks.
+     */
+    fun parseThresholds(jsonText: String): Boolean {
+        return try {
+            val json = JSONObject(jsonText)
+            if (!json.has("default_threshold") || !json.has("energy_threshold")) {
+                Log.e(TAG, "FATAL: thresholds.json missing required default_threshold or energy_threshold!")
+                isThresholdsLoaded = false
+                defaultThreshold = null
+                energyThreshold = null
+                return false
+            }
+            defaultThreshold = json.getDouble("default_threshold").toFloat()
+            energyThreshold = json.getDouble("energy_threshold")
+            if (json.has("temperature")) {
+                temperature = json.getDouble("temperature").toFloat()
+            }
+            classThresholds.clear()
+            if (json.has("class_thresholds")) {
+                val ct = json.getJSONObject("class_thresholds")
+                val keys = ct.keys()
+                while (keys.hasNext()) {
+                    val k = keys.next()
+                    classThresholds[k] = ct.getDouble(k).toFloat()
+                }
+            }
+            isThresholdsLoaded = true
+            Log.i(TAG, "Successfully loaded thresholds.json: default=$defaultThreshold, energy=$energyThreshold, classes=${classThresholds.size}")
+            true
+        } catch (e: Exception) {
+            Log.e(TAG, "FATAL: Failed to parse thresholds.json", e)
+            isThresholdsLoaded = false
+            defaultThreshold = null
+            energyThreshold = null
+            false
+        }
+    }
+
     private fun loadThresholds() {
         try {
             val names = context.assets.list("") ?: emptyArray()
             if ("thresholds.json" in names) {
                 context.assets.open("thresholds.json").use { stream ->
                     val text = stream.bufferedReader().use { it.readText() }
-                    val json = JSONObject(text)
-                    if (json.has("default_threshold")) {
-                        defaultThreshold = json.getDouble("default_threshold").toFloat()
-                    }
-                    if (json.has("temperature")) {
-                        temperature = json.getDouble("temperature").toFloat()
-                    }
-                    if (json.has("energy_threshold")) {
-                        energyThreshold = json.getDouble("energy_threshold")
-                    }
-                    if (json.has("class_thresholds")) {
-                        val ct = json.getJSONObject("class_thresholds")
-                        val keys = ct.keys()
-                        while (keys.hasNext()) {
-                            val k = keys.next()
-                            classThresholds[k] = ct.getDouble(k).toFloat()
-                        }
-                    }
+                    parseThresholds(text)
                 }
-                Log.i(TAG, "Loaded thresholds.json: ${classThresholds.size} class thresholds")
+            } else {
+                Log.e(TAG, "FATAL: thresholds.json is missing from assets! Single source of truth violated.")
+                isThresholdsLoaded = false
+                defaultThreshold = null
+                energyThreshold = null
             }
         } catch (e: Exception) {
-            Log.w(TAG, "thresholds.json not loaded, using defaults", e)
+            Log.e(TAG, "FATAL: Error loading thresholds.json from assets", e)
+            isThresholdsLoaded = false
+            defaultThreshold = null
+            energyThreshold = null
+        }
+    }
+
+    /**
+     * Parses supported_classes.json to identify blocked / unsupported classes.
+     */
+    fun parseSupportedClasses(jsonText: String): Boolean {
+        return try {
+            val json = JSONObject(jsonText)
+            unsupportedClasses.clear()
+            val targetObj = if (json.has("classes")) {
+                val c = json.get("classes")
+                if (c is JSONObject) c else null
+            } else json
+
+            if (targetObj != null) {
+                val keys = targetObj.keys()
+                while (keys.hasNext()) {
+                    val k = keys.next()
+                    val entry = targetObj.getJSONObject(k)
+                    val supported = if (entry.has("supported")) entry.getBoolean("supported") else true
+                    if (!supported && entry.has("class_id")) {
+                        unsupportedClasses.add(entry.getString("class_id"))
+                    }
+                }
+            } else if (json.has("classes")) {
+                val arr = json.getJSONArray("classes")
+                for (i in 0 until arr.length()) {
+                    val entry = arr.getJSONObject(i)
+                    val supported = if (entry.has("supported")) entry.getBoolean("supported") else true
+                    if (!supported && entry.has("class_id")) {
+                        unsupportedClasses.add(entry.getString("class_id"))
+                    }
+                }
+            }
+            Log.i(TAG, "Loaded supported_classes.json: unsupportedCount=${unsupportedClasses.size} (${unsupportedClasses.joinToString()})")
+            true
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to parse supported_classes.json", e)
+            false
+        }
+    }
+
+    private fun loadSupportedClasses() {
+        try {
+            val names = context.assets.list("") ?: emptyArray()
+            if ("supported_classes.json" in names) {
+                context.assets.open("supported_classes.json").use { stream ->
+                    val text = stream.bufferedReader().use { it.readText() }
+                    parseSupportedClasses(text)
+                }
+            } else {
+                Log.w(TAG, "supported_classes.json not found in assets, defaulting to empty unsupported set")
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error loading supported_classes.json", e)
         }
     }
 
@@ -233,6 +325,28 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
             initDeferred.await()
         }
 
+        // Single Source of Truth Enforcement (Task V2):
+        // If thresholds.json is missing or invalid, NEVER guess or fall back to silent numbers.
+        // Classifier must return "Can't tell" for every photo and log an error.
+        val curDefaultThresh = defaultThreshold
+        val curEnergyThresh = energyThreshold
+        if (!isThresholdsLoaded || curDefaultThresh == null || curEnergyThresh == null) {
+            Log.e(TAG, "classify() aborted: thresholds.json is missing or invalid! Single source of truth violated. Returning 'Can't tell'.")
+            val elapsed = SystemClock.elapsedRealtime() - startTime
+            return@withContext ClassifierResult(
+                classId = "unknown",
+                displayName = "Not sure - ask an extension officer",
+                confidence = 0.0f,
+                severityBand = SeverityBand.MILD,
+                certaintyBand = CertaintyBand.NOT_SURE,
+                lesionFraction = 0.0f,
+                inferenceTimeMs = elapsed,
+                memoryUsedMb = getProcessMemoryMb(),
+                isDemoMode = false,
+                top3 = emptyList()
+            )
+        }
+
         // Rule H8: Emulators cannot run 4-bit/arm64 kernels -> delegate to FakeClassifier with visible demo banner
         if (isEmulator()) {
             Log.e(TAG, "Running on emulator. Delegating to FakeClassifier (Rule H8).")
@@ -280,16 +394,17 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
 
             // 5. Crop Chip Masking & Re-normalization
             val probabilities = VisionMath.maskAndRenormalize(labels, scaledLogits, cropHint)
-            Log.e(TAG, "classify(): freeEnergy=$freeEnergy, energyThreshold=$energyThreshold")
+            Log.e(TAG, "classify(): freeEnergy=$freeEnergy, energyThreshold=$curEnergyThresh")
 
-            // 6. Diagnosis Evaluation with Confidence Thresholds & Top-3
+            // 6. Diagnosis Evaluation with Confidence Thresholds, Top-3 & Blocked Classes (Task V2)
             val eval = VisionMath.evaluateDiagnosis(
                 labels = labels,
                 probabilities = probabilities,
                 thresholds = classThresholds,
-                defaultThreshold = defaultThreshold,
+                defaultThreshold = curDefaultThresh,
                 freeEnergy = freeEnergy,
-                energyThreshold = energyThreshold
+                energyThreshold = curEnergyThresh,
+                unsupportedClasses = unsupportedClasses
             )
             Log.e(TAG, "classify(): eval result -> classId=${eval.classId}, displayName=${eval.displayName}, conf=${eval.confidence}, isOOD=${eval.isOutOfDistribution}, isBelowThresh=${eval.isBelowThreshold}, top3=${eval.top3.map { "${it.classId}:${String.format("%.3f", it.probability)}" }}")
 
@@ -363,9 +478,9 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
 
         for (i in pixels.indices) {
             val pixel = pixels[i]
-            val r = ((pixel shr 16) and 0xFF) / 255.0f
-            val g = ((pixel shr 8) and 0xFF) / 255.0f
-            val b = (pixel and 0xFF) / 255.0f
+            val r = ((pixel shr 16) and 0xFF) / 255f
+            val g = ((pixel shr 8) and 0xFF) / 255f
+            val b = (pixel and 0xFF) / 255f
 
             directBuffer.put(i, (r - m[0]) / s[0])
             directBuffer.put(width * height + i, (g - m[1]) / s[1])

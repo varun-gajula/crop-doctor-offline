@@ -150,6 +150,7 @@ object VisionMath {
 
     /**
      * Evaluates diagnosis with temperature scaling, confidence thresholds, and OOD detection.
+     * Blocked / unsupported classes (classes 7, 8, 12, 13) or unverified causes are forced to "unknown" ("Can't tell").
      */
     fun evaluateDiagnosis(
         labels: List<String>,
@@ -157,15 +158,16 @@ object VisionMath {
         thresholds: Map<String, Float>,
         defaultThreshold: Float,
         freeEnergy: Double,
-        energyThreshold: Double
+        energyThreshold: Double,
+        unsupportedClasses: Set<String> = emptySet()
     ): DiagnosisEvaluation {
         val topK = extractTopK(labels, probabilities, 3)
         val top1 = topK.firstOrNull()
 
-        // Task V1 / seed/class_names_checked.tsv row 15:
-        // Chilli class 13 ("White Spot" / "chilli_white_spot") has UNVERIFIED cause.
-        // It must never be returned as a confident diagnosis; returns "unknown" ("Can't tell").
-        val isUnverifiedClass = top1?.classId == "chilli_white_spot"
+        // Task V2 / data/supported_classes.json:
+        // Classes marked unsupported (e.g. 7, 8, 12, 13) or unverified causes
+        // must never be returned as a confident diagnosis; returns "unknown" ("Can't tell").
+        val isUnsupportedClass = top1 != null && (unsupportedClasses.contains(top1.classId) || top1.classId == "chilli_white_spot")
 
         val isOOD = freeEnergy > energyThreshold
         val requiredThreshold = if (top1 != null) {
@@ -176,7 +178,7 @@ object VisionMath {
 
         val isBelowThreshold = top1 == null || top1.probability < requiredThreshold
 
-        return if (isOOD || isBelowThreshold || isUnverifiedClass) {
+        return if (isOOD || isBelowThreshold || isUnsupportedClass) {
             val candidateConfidence = top1?.probability ?: 0.0f
             DiagnosisEvaluation(
                 classId = "unknown",
@@ -186,7 +188,7 @@ object VisionMath {
                 top3 = topK,
                 freeEnergy = freeEnergy,
                 isOutOfDistribution = isOOD,
-                isBelowThreshold = isBelowThreshold || isUnverifiedClass
+                isBelowThreshold = isBelowThreshold || isUnsupportedClass
             )
         } else {
             DiagnosisEvaluation(
