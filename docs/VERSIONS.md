@@ -15,3 +15,4 @@
 - The Android ExecuTorch runtime (`0.5.1`) matches the PyTorch ExecuTorch export version (`0.5.1`) exactly.
 - Models exported with ExecuTorch 0.5.1 contain operator schema hash version 8 (`EO8`), which is natively supported by `LlamaModule` in `executorch-android:0.5.1`.
 - The SentencePiece `tokenizer.model` is loaded directly by the native runtime tokenizer (avoiding legacy `tokenizer.bin` incompatibility).
+

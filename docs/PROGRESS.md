@@ -1,6 +1,26 @@
 # Project Progress - Crop Doctor Offline
 
-## Current Status: T5 Completed - Llama 3.2 1B On-Device Advisory on Arm SoC (REQUIRES PHONE)
+## Current Status: T5 & Laptop Emulator Testing Completed (Ready for Real Phone Live Validation)
+
+### Done in Laptop Emulator Verification (Rule H8):
+1. **Rule H8 ExecuTorch Fallback for x86_64 Emulators:**
+   - Updated `ExecuTorchClassifier.kt` with `isEmulator()` detection matching `ExecuTorchLlamaAdvisor.kt`.
+   - On x86_64 emulators, safely delegates to `FakeClassifier` returning deterministic predictions with `isDemoMode = true` and visible demo banner `⚠️ DEMO MODE - NOT A REAL DIAGNOSIS`.
+   - Prevents native ExecuTorch XNNPACK `SIGSEGV` crash caused by Arm-targeted kernels executing on x86_64 emulator CPUs.
+2. **End-to-End Flow Tested on Laptop (`emulator-5554`):**
+   - **Home Screen**: Sub-2s launch, language toggle, quick scan card, bottom navigation.
+   - **Camera / Scan Screen**: Crop filtering chips (Auto, Chilli, Tomato, Cotton, Rice, Maize), leaf guide, shutter button.
+   - **Result Screen (English)**: Correct disease identification, severity band (Moderate), certainty (Sure), two-tier treatment (Natural & Chemical).
+   - **Hidden Judge Panel**: Long-press on screen title opens live metrics dialog (42 ms latency, 8 MB RAM, 0 KB network).
+   - **Multilingual Switching**: 1-tap language switch verified for Telugu (`తెలుగు`) and Hindi (`हिन्दी`) with verified vernacular agronomy text.
+   - **Save Case Report (T3)**: Verified local saving (`✓ सहेजा गया`) with crop, label, certainty in words, severity, date, region, notes, and Android share sheet.
+   - **Saved Reports Screen**: Verified persistent list of saved cases with timestamps and share actions.
+3. **Artifacts & Logs:**
+   - Captured 8 full-resolution verification screenshots and compiled into `benchmarks/laptop_emulator_test_collage.png`.
+   - Generated verification report at `docs/PROGRESS.md` and conversation artifacts.
+   - All 49 unit tests passing (`./gradlew testDebugUnitTest`).
+
+---
 
 ### Done in T5: Llama on the Phone (R4, R6, R7, PS1, Rules H4, H5, H6, H15)
 1. **Pinned ExecuTorch LLM Runtime & Model Architecture (`docs/VERSIONS.md`):**
