@@ -12,6 +12,12 @@ enum class CertaintyBand {
     NOT_SURE    // confidence < 0.60
 }
 
+data class ScoredClass(
+    val classId: String,
+    val displayName: String,
+    val probability: Float
+)
+
 data class ClassifierResult(
     val classId: String,
     val displayName: String,
@@ -21,5 +27,6 @@ data class ClassifierResult(
     val lesionFraction: Float,
     val inferenceTimeMs: Long = 0L,
     val memoryUsedMb: Long = 0L,
-    val isDemoMode: Boolean = false
+    val isDemoMode: Boolean = false,
+    val top3: List<ScoredClass> = emptyList()
 )

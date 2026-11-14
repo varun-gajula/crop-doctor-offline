@@ -14,9 +14,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.cropdoctor.R
 import com.cropdoctor.ui.theme.FarmGreenDark
 import com.cropdoctor.ui.theme.FarmGreenPrimary
 
@@ -49,12 +52,12 @@ fun FarmingTipsScreen(
     }
 
     val crops = listOf(
-        Pair("all", when (language) { "te" -> "అన్నీ"; "hi" -> "सभी"; else -> "All Crops" }),
-        Pair("rice", "🌾 Rice"),
-        Pair("cotton", "☁️ Cotton"),
-        Pair("chilli", "🌶️ Chilli"),
-        Pair("tomato", "🍅 Tomato"),
-        Pair("maize", "🌽 Maize")
+        CropChipItem("all", R.string.crop_auto, R.drawable.ic_crop_auto),
+        CropChipItem("rice", R.string.crop_rice, R.drawable.ic_crop_rice),
+        CropChipItem("cotton", R.string.crop_cotton, R.drawable.ic_crop_cotton),
+        CropChipItem("chilli", R.string.crop_chilli, R.drawable.ic_crop_chilli),
+        CropChipItem("tomato", R.string.crop_tomato, R.drawable.ic_crop_tomato),
+        CropChipItem("maize", R.string.crop_maize, R.drawable.ic_crop_maize)
     )
 
     val tips = listOf(
@@ -237,20 +240,31 @@ fun FarmingTipsScreen(
                     .padding(horizontal = 14.dp, vertical = 10.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                crops.forEach { (cropKey, cropLabel) ->
-                    val isSelected = selectedCropFilter == cropKey
+                crops.forEach { item ->
+                    val isSelected = selectedCropFilter == item.key
                     Surface(
                         shape = RoundedCornerShape(20.dp),
                         color = if (isSelected) FarmGreenPrimary else Color(0xFFE8F5E9),
-                        modifier = Modifier.clickable { selectedCropFilter = cropKey }
+                        modifier = Modifier.clickable { selectedCropFilter = item.key }
                     ) {
-                        Text(
-                            text = cropLabel,
-                            fontSize = 14.sp,
-                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                            color = if (isSelected) Color.White else FarmGreenDark,
-                            modifier = Modifier.padding(horizontal = 14.dp, vertical = 7.dp)
-                        )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 7.dp)
+                        ) {
+                            Icon(
+                                painter = painterResource(id = item.iconRes),
+                                contentDescription = stringResource(item.nameRes),
+                                tint = if (isSelected) Color.White else FarmGreenDark,
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = stringResource(item.nameRes),
+                                fontSize = 14.sp,
+                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                                color = if (isSelected) Color.White else FarmGreenDark
+                            )
+                        }
                     }
                 }
             }

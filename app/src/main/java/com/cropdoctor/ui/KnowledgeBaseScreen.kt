@@ -17,9 +17,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.cropdoctor.R
 import com.cropdoctor.knowledge.KbEntry
 import com.cropdoctor.knowledge.KnowledgeBase
 import com.cropdoctor.ui.theme.FarmGreenDark
@@ -33,11 +36,11 @@ fun KnowledgeBaseScreen(
 ) {
     var selectedCrop by remember { mutableStateOf("rice") }
     val crops = listOf(
-        Pair("rice", "🌾 Rice"),
-        Pair("cotton", "☁️ Cotton"),
-        Pair("chilli", "🌶️ Chilli"),
-        Pair("tomato", "🍅 Tomato"),
-        Pair("maize", "🌽 Maize")
+        CropChipItem("rice", R.string.crop_rice, R.drawable.ic_crop_rice),
+        CropChipItem("cotton", R.string.crop_cotton, R.drawable.ic_crop_cotton),
+        CropChipItem("chilli", R.string.crop_chilli, R.drawable.ic_crop_chilli),
+        CropChipItem("tomato", R.string.crop_tomato, R.drawable.ic_crop_tomato),
+        CropChipItem("maize", R.string.crop_maize, R.drawable.ic_crop_maize)
     )
 
     val allEntries = remember { KnowledgeBase.getAllEntries() }
@@ -90,14 +93,22 @@ fun KnowledgeBaseScreen(
                     .padding(horizontal = 16.dp, vertical = 14.dp),
                 horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                crops.forEach { (cropKey, cropLabel) ->
-                    val isSelected = selectedCrop == cropKey
+                crops.forEach { item ->
+                    val isSelected = selectedCrop == item.key
                     FilterChip(
                         selected = isSelected,
-                        onClick = { selectedCrop = cropKey },
+                        onClick = { selectedCrop = item.key },
+                        leadingIcon = {
+                            Icon(
+                                painter = painterResource(id = item.iconRes),
+                                contentDescription = stringResource(item.nameRes),
+                                tint = if (isSelected) Color.White else FarmGreenPrimary,
+                                modifier = Modifier.size(18.dp)
+                            )
+                        },
                         label = {
                             Text(
-                                text = cropLabel,
+                                text = stringResource(item.nameRes),
                                 fontSize = 15.sp,
                                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
                             )

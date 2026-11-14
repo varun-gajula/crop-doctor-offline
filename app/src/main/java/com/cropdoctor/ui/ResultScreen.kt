@@ -464,8 +464,25 @@ fun ResultScreen(
                             Text(
                                 text = "${stringResource(R.string.confidence_score_label)}: ${(result.confidence * 100).toInt()}%",
                                 fontSize = 14.sp,
+                                fontWeight = FontWeight.Medium,
                                 color = Color(0xFF444444)
                             )
+                            if (result.top3.isNotEmpty()) {
+                                Spacer(modifier = Modifier.height(6.dp))
+                                Text(
+                                    text = "Top-3 Candidates:",
+                                    fontSize = 13.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color(0xFF333333)
+                                )
+                                result.top3.forEachIndexed { idx, sc ->
+                                    Text(
+                                        text = "${idx + 1}. ${sc.displayName} (${(sc.probability * 100).toInt()}%)",
+                                        fontSize = 12.sp,
+                                        color = Color(0xFF555555)
+                                    )
+                                }
+                            }
                         }
                     }
                 }
@@ -792,23 +809,23 @@ fun ResultScreen(
                     reportBuilder.append("Severity: ${result.severityBand.name}\n")
                     reportBuilder.append("Certainty: ${result.certaintyBand.name} (${(result.confidence * 100).toInt()}%)\n\n")
 
-                    val immediate = kbEntry.immediateSteps.forLanguage(language)
+                    val immediate = kbEntry.immediateStep.forLanguage(language)
                     if (immediate.isNotBlank() && !isUncertain) {
                         reportBuilder.append("Immediate Action:\n$immediate\n\n")
                     }
 
-                    if (kbEntry.treatments.natural.isNotEmpty()) {
+                    if (kbEntry.treatment.natural.isNotEmpty()) {
                         reportBuilder.append("Natural / Traditional Methods:\n")
-                        kbEntry.treatments.natural.take(2).forEach {
-                            reportBuilder.append("• ${it.title.forLanguage(language)}: ${it.description.forLanguage(language)}\n")
+                        kbEntry.treatment.natural.take(2).forEach {
+                            reportBuilder.append("• Step ${it.step}: ${it.action.forLanguage(language)}\n")
                         }
                         reportBuilder.append("\n")
                     }
 
-                    if (kbEntry.treatments.chemical.isNotEmpty() && result.severityBand != SeverityBand.MILD) {
+                    if (kbEntry.treatment.chemical.isNotEmpty() && result.severityBand != SeverityBand.MILD) {
                         reportBuilder.append("CIB&RC Registered Chemical Actives:\n")
-                        kbEntry.treatments.chemical.take(2).forEach {
-                            reportBuilder.append("• ${it.activeIngredient} (${it.formulation}) - Dose: ${it.dose ?: "Follow label"}\n")
+                        kbEntry.treatment.chemical.take(2).forEach {
+                            reportBuilder.append("• ${it.activeIngredient} (${it.productExample}) - Dose: ${if (it.doseVerified) it.dose else "Follow label"}\n")
                         }
                         reportBuilder.append("\n")
                     }

@@ -27,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -40,6 +41,12 @@ import com.cropdoctor.ui.theme.FarmGreenPrimary
 import java.io.InputStream
 import java.util.concurrent.Executors
 import kotlin.math.max
+
+data class CropChipItem(
+    val key: String,
+    val nameRes: Int,
+    val iconRes: Int
+)
 
 @Composable
 fun MainCameraScreen(
@@ -60,12 +67,12 @@ fun MainCameraScreen(
     val cameraExecutor = remember { Executors.newSingleThreadExecutor() }
 
     val cropOptions = listOf(
-        Pair("all", "🔍 " + stringResource(R.string.crop_auto)),
-        Pair("chilli", "🌶️ " + stringResource(R.string.crop_chilli)),
-        Pair("tomato", "🍅 " + stringResource(R.string.crop_tomato)),
-        Pair("cotton", "☁️ " + stringResource(R.string.crop_cotton)),
-        Pair("rice", "🌾 " + stringResource(R.string.crop_rice)),
-        Pair("maize", "🌽 " + stringResource(R.string.crop_maize))
+        CropChipItem("all", R.string.crop_auto, R.drawable.ic_crop_auto),
+        CropChipItem("chilli", R.string.crop_chilli, R.drawable.ic_crop_chilli),
+        CropChipItem("tomato", R.string.crop_tomato, R.drawable.ic_crop_tomato),
+        CropChipItem("cotton", R.string.crop_cotton, R.drawable.ic_crop_cotton),
+        CropChipItem("rice", R.string.crop_rice, R.drawable.ic_crop_rice),
+        CropChipItem("maize", R.string.crop_maize, R.drawable.ic_crop_maize)
     )
 
     // Gallery Photo Picker
@@ -181,23 +188,35 @@ fun MainCameraScreen(
                     .padding(horizontal = 12.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                cropOptions.forEach { (key, label) ->
-                    val isSelected = selectedCropFilter == key
+                cropOptions.forEach { item ->
+                    val isSelected = selectedCropFilter == item.key
                     Box(
                         modifier = Modifier
                             .clip(RoundedCornerShape(20.dp))
                             .background(
                                 if (isSelected) FarmGreenPrimary else Color(0x99000000)
                             )
-                            .clickable { selectedCropFilter = key }
+                            .clickable { selectedCropFilter = item.key }
                             .padding(horizontal = 14.dp, vertical = 8.dp)
                     ) {
-                        Text(
-                            text = label,
-                            color = Color.White,
-                            fontSize = 14.sp,
-                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
-                        )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Icon(
+                                painter = painterResource(id = item.iconRes),
+                                contentDescription = stringResource(item.nameRes),
+                                tint = Color.White,
+                                modifier = Modifier.size(18.dp)
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = stringResource(item.nameRes),
+                                color = Color.White,
+                                fontSize = 14.sp,
+                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+                            )
+                        }
                     }
                 }
             }
