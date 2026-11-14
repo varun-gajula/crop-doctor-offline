@@ -1,6 +1,45 @@
 # Project Progress - Crop Doctor Offline
 
-## Current Status: Task M1 Complete (Memory & Speed On-Device Phone Benchmarks)
+## Current Status: Task M1c Complete (Real Field Leaves Speed & Fallback Rate Benchmarks)
+
+### Done in Task M1c: Two Fixes to M1 Measurements (Rule H3, H15, PS1)
+1. **Shutter-to-Result on Real Diagnosed Field Leaves (Requirement 1):**
+   - Replaced dummy bitmap measurements with 10 real plant leaf photos from the phone gallery (Plantix and field captures) that produce valid, diagnosed disease classifications.
+   - Diagnosed runs:
+     - 1x Tomato Early Blight (64.2% conf, Moderate severity, 14.8% lesion)
+     - 8x Maize Common Rust (55.0% - 74.8% conf, Severe severity)
+     - 1x Maize Gray Leaf Spot (43.7% conf, Moderate severity, 25.5% lesion)
+   - Rejection Log: 1 photo (`IMG_20261114_142843250.jpg`) was rejected (confidence 0.394 < threshold 0.40), safely routing to "Can't tell", and was excluded from the diagnosed count per instructions.
+   - Full Path Latency (Validation $\rightarrow$ Preprocessing $\rightarrow$ Inference $\rightarrow$ Calibration $\rightarrow$ Lesion Area $\rightarrow$ Rules Engine $\rightarrow$ KB Retrieval):
+     - **Average Shutter-to-Result: 117.10 ms (0.117 s)** ($\le 1,500\text{ ms}$ budget, 12.8x faster than budget).
+     - Min: 85.45 ms · Max: 169.52 ms.
+   - Full component breakdown:
+     - Validation (`LeafValidator`): 13.33 ms (11.4%)
+     - Preprocessing (320x320 scaling + normalization): 36.10 ms (30.8%)
+     - Vision Inference (ExecuTorch 64-bit Arm CPU): 57.54 ms (49.1%)
+     - Calibration & Free Energy OOD: 1.84 ms (1.6%)
+     - Lesion Fraction Estimation: 8.18 ms (7.0%)
+     - Rules Engine Severity/Tier: 0.09 ms (< 0.1%)
+     - Knowledge Base Retrieval: 0.01 ms (< 0.1%)
+   - Replaced old table in `benchmarks/speed_summary.md` and saved raw data in `benchmarks/speed_summary_real_leaves.json`.
+
+2. **Fallback Rate Evaluation Across 3 Operational Situations (Requirement 2):**
+   - Executed on-device suite `FallbackRateBenchmarkTest` on the connected 6 GB phone (`POCO M4 Pro`, Android 14):
+     - **(a) Just after reboot / clean idle**: Available RAM = **2,740.3 MB**, `isLowMemory` = `false` $\rightarrow$ `MemoryBudgetDecider` = `true` (Safe to load). Llama loaded (`true`), Fallback ran (`false`), UI label = `"AI explanation"`, Peak PSS = 1,619.4 MB ($\Delta PSS = 1,430.4\text{ MB}$).
+     - **(b) With 5 background apps open (WhatsApp, YouTube, Chrome, Camera, Gallery)**: Available RAM = **2,355.9 MB**, `isLowMemory` = `false` $\rightarrow$ `MemoryBudgetDecider` = `true` (Safe to load). Llama loaded (`true`), Fallback ran (`false`), UI label = `"AI explanation"`, Peak PSS = 1,676.5 MB ($\Delta PSS = 1,502.1\text{ MB}$).
+     - **(c) After 10 minutes of normal continuous use**: Available RAM = **2,380.7 MB**, `isLowMemory` = `false` $\rightarrow$ `MemoryBudgetDecider` = `true` (Safe to load). Llama loaded (`true`), Fallback ran (`false`), UI label = `"AI explanation"`, Peak PSS = 1,688.6 MB ($\Delta PSS = 1,496.9\text{ MB}$).
+   - **Fallback Path Verification (RAM < threshold)**: When available RAM is below threshold, Decider = `false`, Llama load is completely bypassed, fallback engages in **1.3 seconds** with **0.0 MB** extra RAM, and verified KB text is shown under the label `"Offline guide"`.
+   - Saved summary in `benchmarks/fallback_rate.md` and raw logs in `benchmarks/fallback_*.json`.
+
+3. **Llama Allocation Delta & Safe Threshold Proposal (Requirement 3):**
+   - In situation (b), the 6 GB physical device maintained 2,355.9 MB available RAM, so Llama loaded safely.
+   - Measured extra memory needed to load and stream Llama 3.2 1B INT4: **1,502.1 MB** peak (average 1,476.5 MB).
+   - Evidence-based analysis: Since the model allocation alone consumes 1,502.1 MB, lowering the threshold below **1,500 MB** would cause out-of-memory kernel kills on devices with $< 1.5\text{ GB}$ available.
+   - Smallest safe threshold: **1,500 MB** (or **1,700 MB** with a 200 MB UI/Camera buffer).
+
+---
+
+## Previous Status: Task M1 Complete (Memory & Speed On-Device Phone Benchmarks)
 
 ### Done in Task M1: Measure Memory and Speed on Connected Phone (Rule H3, H15, PS1)
 1. **Low-Memory Fallback Decision Function & Unit Tests (Requirement 5):**

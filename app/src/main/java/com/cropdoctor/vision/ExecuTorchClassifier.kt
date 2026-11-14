@@ -466,7 +466,7 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
      * Preprocesses bitmap into Tensor matching PyTorch transforms exactly:
      * Planar [1, 3, H, W], RGB channel order, normalized by mean and std.
      */
-    private fun preprocessBitmap(bitmap: Bitmap): Tensor {
+    internal fun preprocessBitmap(bitmap: Bitmap): Tensor {
         val width = inputSize
         val height = inputSize
         val pixels = IntArray(width * height)
