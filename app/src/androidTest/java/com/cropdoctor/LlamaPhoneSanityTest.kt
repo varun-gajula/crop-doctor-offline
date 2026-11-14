@@ -65,7 +65,7 @@ class LlamaPhoneSanityTest {
         }
 
         val prompt = "<|begin_of_text|><|start_header_id|>system<|end_header_id|>\nYou are an agricultural advisor.<|eot_id|><|start_header_id|>user<|end_header_id|>\nSay one word: Healthy<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n"
-        val genStatus = llama.generate(prompt, 10, callback)
+        val genStatus = llama.generate(prompt, 64, callback)
         val genDuration = SystemClock.elapsedRealtime() - genStart
         val tokPerSec = if (genDuration > 0) (tokenCount * 1000.0) / genDuration else 0.0
 
