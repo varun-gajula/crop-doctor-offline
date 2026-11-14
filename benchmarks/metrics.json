@@ -1,0 +1,19 @@
+{
+  "model_name": "mobilenet_v3_large",
+  "input_size": 320,
+  "epochs": 15,
+  "overall_top1_accuracy": 98.8,
+  "final_train_accuracy": 99.62,
+  "temperature_T": 1.15,
+  "model_file_size_mb": 14.25,
+  "rule_h15_budget_mb": 30.0,
+  "rule_h15_compliance": "PASS",
+  "rule_h2_github_limit_mb": 90.0,
+  "rule_h2_compliance": "PASS",
+  "data_leakage": {
+    "total_val_photos": 9240,
+    "total_leaked_val_photos": 1955,
+    "overall_leakage_percentage": 21.16,
+    "hamming_distance_threshold": 6
+  }
+}
