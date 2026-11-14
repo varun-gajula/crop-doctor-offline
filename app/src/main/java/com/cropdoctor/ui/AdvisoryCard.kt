@@ -1,6 +1,6 @@
 package com.cropdoctor.ui
 
-import androidx.compose.foundation.background
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -20,13 +20,20 @@ fun AdvisoryCard(
     advisoryText: String,
     isGenerating: Boolean,
     language: String,
-    isFake: Boolean = true
+    isFake: Boolean = true,
+    onCancel: () -> Unit = {}
 ) {
+    val cancelLabel = when (language) {
+        "te" -> "రద్దు చేయి"
+        "hi" -> "रद्द करें"
+        else -> "Cancel"
+    }
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = Color(0xFFF1F8E9)),
-        border = androidx.compose.foundation.BorderStroke(1.5.dp, Color(0xFFC8E6C9)),
+        border = BorderStroke(1.5.dp, Color(0xFFC8E6C9)),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
@@ -41,12 +48,27 @@ fun AdvisoryCard(
                     fontWeight = FontWeight.Bold,
                     color = FarmGreenPrimary
                 )
+
                 if (isGenerating) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(20.dp),
-                        strokeWidth = 2.5.dp,
-                        color = FarmGreenPrimary
-                    )
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        TextButton(
+                            onClick = onCancel,
+                            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp)
+                        ) {
+                            Text(
+                                text = "✕ $cancelLabel",
+                                fontSize = 13.sp,
+                                color = Color(0xFFC62828),
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(4.dp))
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(18.dp),
+                            strokeWidth = 2.5.dp,
+                            color = FarmGreenPrimary
+                        )
+                    }
                 }
             }
 
@@ -77,15 +99,13 @@ fun AdvisoryCard(
                     )
                 } else {
                     Text(
-                        text = "Built with Llama 3.2 1B · ExecuTorch",
+                        text = "AI explanation · Built with Llama 3.2 1B · ExecuTorch",
                         fontSize = 12.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = Color(0xFF689F38)
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color(0xFF2E7D32)
                     )
                 }
             }
         }
     }
 }
-
-

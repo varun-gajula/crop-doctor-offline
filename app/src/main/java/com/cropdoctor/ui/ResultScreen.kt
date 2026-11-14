@@ -54,7 +54,8 @@ fun ResultScreen(
     onChangeLanguageClick: (String) -> Unit = {},
     onViewMoreDetails: () -> Unit,
     onChatbotClick: () -> Unit = {},
-    onSaveCaseReport: () -> Unit = {}
+    onSaveCaseReport: () -> Unit = {},
+    onCancelAdvice: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val scrollState = rememberScrollState()
@@ -794,7 +795,8 @@ fun ResultScreen(
                 advisoryText = filteredAdvisoryText,
                 isGenerating = isGeneratingAdvice,
                 language = language,
-                isFake = isFakeAdvisor
+                isFake = isFakeAdvisor,
+                onCancel = onCancelAdvice
             )
 
             // 1-TAP SHARE FIELD REPORT (Agri-Extension & Decision Support)

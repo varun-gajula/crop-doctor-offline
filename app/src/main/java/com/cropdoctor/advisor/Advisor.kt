@@ -14,6 +14,8 @@ interface Advisor {
         kbEntry: KbEntry,
         onToken: (String) -> Unit
     )
+
+    fun stop() {}
+
     fun close()
 }
-

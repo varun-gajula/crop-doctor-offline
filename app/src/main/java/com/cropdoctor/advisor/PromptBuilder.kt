@@ -5,9 +5,9 @@ import com.cropdoctor.knowledge.KbEntry
 object PromptBuilder {
 
     /**
-     * Builds the grounded Llama 3.2 1B-Instruct prompt.
-     * The prompt enforces grounded reasoning strictly based on verified ICAR/CIB&RC findings
-     * and forbids unauthorized dosage numbers.
+     * Builds the grounded Llama 3.2 1B-Instruct prompt strictly following seed/prompt_template.txt.
+     * Enforces grounded reasoning strictly based on verified ICAR/CIB&RC findings
+     * and forbids unauthorized dosage numbers (Rule H4 & H5).
      */
     fun buildPrompt(
         crop: String,
@@ -15,55 +15,78 @@ object PromptBuilder {
         severity: String,
         certainty: String,
         kbEntry: KbEntry,
-        language: String
+        language: String,
+        severityPercent: Float = 0f,
+        confidenceScore: Float = 0f
     ): String {
-        val langName = when (language.lowercase()) {
-            "hi" -> "Hindi (हिंदी)"
-            else -> "English"
+        val langInstruction = when (language.lowercase()) {
+            "hi" -> " in simple Hindi (सरल हिंदी में)"
+            else -> ""
         }
 
-        val isNotSure = certainty.equals("NOT_SURE", ignoreCase = true) ||
-                certainty.equals("Not sure", ignoreCase = true) ||
-                diseaseName.equals("unknown", ignoreCase = true)
-
-        val naturalSteps = kbEntry.treatment.natural.joinToString("; ") { it.action.en }
-        val chemicalActives = kbEntry.treatment.chemical.joinToString(", ") { it.activeIngredient }
-
-        val userContext = if (isNotSure) {
-            """
-Crop: $crop
-Diagnosis: Unidentified condition
-Confidence: Not sure
-Official Finding: ${kbEntry.explainText.en}
-
-Explain that the condition is uncertain and guide the farmer to contact the local agriculture extension officer.
-            """.trimIndent()
+        val naturalRemedy = if (kbEntry.treatment.natural.isNotEmpty()) {
+            kbEntry.treatment.natural.joinToString("; ") { it.action.en }
         } else {
-            """
-Crop: $crop
-Diagnosis: $diseaseName
-Severity: $severity
-Confidence: $certainty
-Official Finding: ${kbEntry.explainText.en}
-Recommended Natural Practice: $naturalSteps
-Approved Chemical Actives: $chemicalActives
+            "Field hygiene, crop rotation, and removing infected plant debris."
+        }
 
-Explain what is happening to the plant, provide the most urgent action, and state when to consult the local agriculture officer.
-            """.trimIndent()
+        val chemicalActives = if (kbEntry.treatment.chemical.isNotEmpty()) {
+            kbEntry.treatment.chemical.joinToString(", ") { "${it.activeIngredient} (${it.productExample})" }
+        } else {
+            "None recommended for current stage. Follow official state agricultural university guidelines."
+        }
+
+        val precautions = if (kbEntry.treatment.chemical.isNotEmpty()) {
+            kbEntry.treatment.chemical.mapNotNull { it.safetyLine.en.takeIf { s -> s.isNotBlank() } }.distinct().joinToString("; ")
+                .ifEmpty { "Wear protective gear, avoid spraying during high wind or mid-day heat, and follow waiting period (PHI)." }
+        } else {
+            "Wear protective gloves and mask when handling diseased plant tissues."
+        }
+
+        val referralStatus = if (severity.equals("SEVERE", ignoreCase = true)) {
+            "Immediate Referral Required"
+        } else {
+            "Routine Field Monitoring"
+        }
+        val referralContact = "Local Krishi Vigyan Kendra (KVK) or Agriculture Extension Officer"
+
+        val urgentStep = kbEntry.immediateStep.en.ifEmpty { "Isolate infected plants and avoid overhead watering." }
+
+        val sevPctDisplay = if (severityPercent > 0) String.format("%.1f", severityPercent) else when (severity.uppercase()) {
+            "MILD" -> "10.0"
+            "MODERATE" -> "25.0"
+            "SEVERE" -> "45.0"
+            else -> "15.0"
+        }
+
+        val confScoreDisplay = if (confidenceScore > 0) String.format("%.1f", confidenceScore) else when (certainty) {
+            "Sure" -> "92.0"
+            "Probably" -> "75.0"
+            else -> "55.0"
         }
 
         return """<|begin_of_text|><|start_header_id|>system<|end_header_id|>
-You are an expert Indian agricultural extension specialist. 
-Your role is to explain crop diagnosis clearly and safely to Indian smallholder farmers.
-RULES:
-1. Base your explanation strictly on the provided official findings.
-2. Answer in $langName.
-3. NEVER state specific chemical dosages or units (e.g. ml/L, kg/ha). Always say "follow the product label".
-4. Keep explanation concise (under 80 words) and practical.<|eot_id|>
-<|start_header_id|>user<|end_header_id|>
-$userContext<|eot_id|>
-<|start_header_id|>assistant<|end_header_id|>
-""".trimIndent()
+You are Crop Doctor, an offline agricultural field assistant for smallholder farmers in India.
+Your mission is to explain the crop diagnosis clearly, calmly, and practically$langInstruction.
+Strict Rules:
+1. Never invent or guess chemical names, dosages, or spray dilution rates.
+2. Rely strictly and only on the verified context provided below.
+3. Keep your advice practical, concise, and easy to understand (Grade-6 reading level).
+4. Do not contradict the severity assessment or the referral recommendation.<|eot_id|><|start_header_id|>user<|end_header_id|>
+[FIELD DIAGNOSTIC FINDING]
+- Crop: $crop
+- Problem Identified: $diseaseName (${kbEntry.type})
+- Detected Severity: $severity ($sevPctDisplay% affected leaf area)
+- Confidence Level: $certainty ($confScoreDisplay%)
+
+[VERIFIED ADVISORY CONTEXT]
+- Urgent Step: $urgentStep
+- Natural/Traditional Method: $naturalRemedy
+- Chemical Method: $chemicalActives
+- Precautions: $precautions
+- Extension Officer Referral: $referralStatus ($referralContact)
+
+Explain what this problem is in plain words, whether it is an emergency, and what the farmer should do today.<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+"""
     }
 }
-
