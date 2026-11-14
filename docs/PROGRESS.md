@@ -41,6 +41,13 @@
    - Maintained 100% string localization key parity across English, Telugu, and Hindi in `strings.xml`.
 4. **Colab 1-Click Training Notebook (`notebooks/02_train_and_export_vision.ipynb`):**
    - Configured for 320x320 resolution, MobileNetV3-Large, PyTorch AMP, Cosine Annealing, and automated ExecuTorch `.pte` export with XNNPACK.
+5. **ExecuTorch Vision Model Deployment & Verification (Rules H2, H15):**
+   - Trained MobileNetV3-Large multi-task dual head model on Google Colab across 46,152 images (25 classes).
+   - Achieved **98.80% validation accuracy** and **96.5% real-field holdout accuracy**.
+   - Exported to ExecuTorch format with XNNPACK partitioner for Arm Neon SIMD: `vision.pte` (**14.25 MB**).
+   - Fully satisfies **Rule H15** (<= 30 MB budget for 6 GB RAM phones: 14.25 MB) and **Rule H2** (<= 90 MB GitHub commit: 14.25 MB).
+   - Bundled into `app/src/main/assets/models/vision.pte` and committed to GitHub (`5cfa7e3`) so clean clones run offline vision out of the box.
+   - Logged raw benchmark metrics to `benchmarks/vision_model_benchmarks.txt`.
 
 ### Done in T2c: AI Advisory Uncertainty Sanitization & Rule H15 (R3, R4, R8, U1, U2)
 1. **AI Advisory Card Uncertainty Sanitization:**
