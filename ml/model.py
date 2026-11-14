@@ -142,11 +142,13 @@ class TemperatureScaler(nn.Module):
         labels_list = []
 
         with torch.no_grad():
-            for imgs, labels, _ in val_loader:
-                imgs = imgs.to(device)
-                logits = model(imgs)
+            for batch in val_loader:
+                imgs = batch[0].to(device)
+                labels = batch[1].to(device)
+                out = model(imgs)
+                logits = out[0] if isinstance(out, (tuple, list)) else out
                 logits_list.append(logits)
-                labels_list.append(labels.to(device))
+                labels_list.append(labels)
 
         logits = torch.cat(logits_list)
         labels = torch.cat(labels_list)
