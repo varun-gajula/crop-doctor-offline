@@ -1,0 +1,159 @@
+{
+  "description": "Near-duplicate leakage report for baseline random 80/20 split (seed 42)",
+  "total_val_photos": 9240,
+  "total_leaked_val_photos": 1955,
+  "overall_leakage_percentage": 21.16,
+  "hamming_distance_threshold": 6,
+  "leakage_by_class": {
+    "rice_bacterial_leaf_blight": {
+      "class_idx": 0,
+      "val_photos": 127,
+      "leaked_photos": 6,
+      "leakage_percentage": 4.72
+    },
+    "rice_brown_spot": {
+      "class_idx": 1,
+      "val_photos": 127,
+      "leaked_photos": 9,
+      "leakage_percentage": 7.09
+    },
+    "rice_leaf_blast": {
+      "class_idx": 2,
+      "val_photos": 123,
+      "leaked_photos": 12,
+      "leakage_percentage": 9.76
+    },
+    "rice_sheath_blight": {
+      "class_idx": 3,
+      "val_photos": 125,
+      "leaked_photos": 5,
+      "leakage_percentage": 4.0
+    },
+    "rice_healthy": {
+      "class_idx": 4,
+      "val_photos": 128,
+      "leaked_photos": 22,
+      "leakage_percentage": 17.19
+    },
+    "cotton_bacterial_blight": {
+      "class_idx": 5,
+      "val_photos": 63,
+      "leaked_photos": 6,
+      "leakage_percentage": 9.52
+    },
+    "cotton_fusarium_wilt": {
+      "class_idx": 6,
+      "val_photos": 74,
+      "leaked_photos": 3,
+      "leakage_percentage": 4.05
+    },
+    "cotton_leaf_curl_virus": {
+      "class_idx": 7,
+      "val_photos": 5,
+      "leaked_photos": 2,
+      "leakage_percentage": 40.0
+    },
+    "cotton_alternaria_leaf_spot": {
+      "class_idx": 8,
+      "val_photos": 35,
+      "leaked_photos": 2,
+      "leakage_percentage": 5.71
+    },
+    "cotton_healthy": {
+      "class_idx": 9,
+      "val_photos": 193,
+      "leaked_photos": 1,
+      "leakage_percentage": 0.52
+    },
+    "chilli_bacterial_spot": {
+      "class_idx": 10,
+      "val_photos": 466,
+      "leaked_photos": 63,
+      "leakage_percentage": 13.52
+    },
+    "chilli_leaf_curl_virus": {
+      "class_idx": 11,
+      "val_photos": 80,
+      "leaked_photos": 28,
+      "leakage_percentage": 35.0
+    },
+    "chilli_cercospora_leaf_spot": {
+      "class_idx": 12,
+      "val_photos": 36,
+      "leaked_photos": 4,
+      "leakage_percentage": 11.11
+    },
+    "chilli_white_spot": {
+      "class_idx": 13,
+      "val_photos": 39,
+      "leaked_photos": 15,
+      "leakage_percentage": 38.46
+    },
+    "chilli_healthy": {
+      "class_idx": 14,
+      "val_photos": 722,
+      "leaked_photos": 146,
+      "leakage_percentage": 20.22
+    },
+    "tomato_early_blight": {
+      "class_idx": 15,
+      "val_photos": 455,
+      "leaked_photos": 57,
+      "leakage_percentage": 12.53
+    },
+    "tomato_late_blight": {
+      "class_idx": 16,
+      "val_photos": 840,
+      "leaked_photos": 166,
+      "leakage_percentage": 19.76
+    },
+    "tomato_yellow_leaf_curl_virus": {
+      "class_idx": 17,
+      "val_photos": 2459,
+      "leaked_photos": 611,
+      "leakage_percentage": 24.85
+    },
+    "tomato_spider_mites": {
+      "class_idx": 18,
+      "val_photos": 703,
+      "leaked_photos": 174,
+      "leakage_percentage": 24.75
+    },
+    "tomato_healthy": {
+      "class_idx": 19,
+      "val_photos": 715,
+      "leaked_photos": 254,
+      "leakage_percentage": 35.52
+    },
+    "maize_gray_leaf_spot": {
+      "class_idx": 20,
+      "val_photos": 346,
+      "leaked_photos": 37,
+      "leakage_percentage": 10.69
+    },
+    "maize_common_rust": {
+      "class_idx": 21,
+      "val_photos": 304,
+      "leaked_photos": 66,
+      "leakage_percentage": 21.71
+    },
+    "maize_northern_leaf_blight": {
+      "class_idx": 22,
+      "val_photos": 560,
+      "leaked_photos": 89,
+      "leakage_percentage": 15.89
+    },
+    "maize_fall_armyworm": {
+      "class_idx": 23,
+      "val_photos": 105,
+      "leaked_photos": 0,
+      "leakage_percentage": 0.0
+    },
+    "maize_healthy": {
+      "class_idx": 24,
+      "val_photos": 410,
+      "leaked_photos": 177,
+      "leakage_percentage": 43.17
+    }
+  }
+}
