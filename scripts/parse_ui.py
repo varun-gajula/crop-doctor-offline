@@ -10,3 +10,4 @@ for node in root.iter("node"):
     bounds = node.attrib.get("bounds", "")
     if text or desc:
         print(f"text: {text!r:35} | desc: {desc!r:25} | bounds: {bounds}")
+

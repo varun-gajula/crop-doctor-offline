@@ -47,6 +47,7 @@ class ExecuTorchLlamaAdvisor(private val context: Context) : Advisor {
     }
 
     fun findModelFiles() {
+        Log.e(TAG, "findModelFiles() called...")
         // 1. Check in app's private filesDir
         val candidates = context.filesDir.listFiles()?.filter {
             it.name.endsWith(".pte") && (it.name.contains("llama", ignoreCase = true) || it.name.contains("1b", ignoreCase = true))
@@ -55,24 +56,27 @@ class ExecuTorchLlamaAdvisor(private val context: Context) : Advisor {
         val appModel = candidates.maxByOrNull { it.length() } ?: File(context.filesDir, "llama-3.2-1b-spinquant.pte")
         val appTokenizer = File(context.filesDir, "tokenizer.model")
 
+        Log.e(TAG, "appModel: ${appModel.absolutePath} (exists=${appModel.exists()}, len=${appModel.length()}), appTokenizer: ${appTokenizer.absolutePath} (exists=${appTokenizer.exists()}, len=${appTokenizer.length()})")
+
         if (appModel.exists() && appModel.length() > 50_000_000L && appTokenizer.exists() && appTokenizer.length() > 100_000L) {
             modelFile = appModel
             tokenizerFile = appTokenizer
-            Log.i(TAG, "Located Llama 3.2 1B in app files: ${appModel.name} (${appModel.length() / (1024 * 1024)} MB)")
+            Log.e(TAG, "Located Llama 3.2 1B in app files: ${appModel.name} (${appModel.length() / (1024 * 1024)} MB)")
             return
         }
 
         // 2. Check /data/local/tmp/ fallback
         val tmpModel = File("/data/local/tmp/llama-3.2-1b-spinquant.pte")
         val tmpTokenizer = File("/data/local/tmp/tokenizer.model")
+        Log.e(TAG, "tmpModel: ${tmpModel.absolutePath} (exists=${tmpModel.exists()}, len=${tmpModel.length()}), tmpTokenizer: ${tmpTokenizer.absolutePath} (exists=${tmpTokenizer.exists()}, len=${tmpTokenizer.length()})")
         if (tmpModel.exists() && tmpModel.length() > 50_000_000L && tmpTokenizer.exists() && tmpTokenizer.length() > 100_000L) {
             modelFile = tmpModel
             tokenizerFile = tmpTokenizer
-            Log.i(TAG, "Located Llama 3.2 1B at ${tmpModel.absolutePath} (${tmpModel.length() / (1024 * 1024)} MB)")
+            Log.e(TAG, "Located Llama 3.2 1B at ${tmpModel.absolutePath} (${tmpModel.length() / (1024 * 1024)} MB)")
             return
         }
 
-        Log.i(TAG, "Llama 3.2 1B weights not found in private files or /data/local/tmp/. Using grounded KB advisor fallback.")
+        Log.e(TAG, "Llama 3.2 1B weights not found in private files or /data/local/tmp/. Using grounded KB advisor fallback.")
     }
 
     private fun isEmulator(): Boolean {
@@ -120,12 +124,12 @@ class ExecuTorchLlamaAdvisor(private val context: Context) : Advisor {
             }
 
             try {
-                Log.i(TAG, "Loading Llama 3.2 1B ExecuTorch module (arm64-v8a)...")
+                Log.e(TAG, "Loading Llama 3.2 1B ExecuTorch module (arm64-v8a): model=${mFile.absolutePath}, tok=${tFile.absolutePath}...")
                 val startTime = System.currentTimeMillis()
                 val module = LlamaModule(mFile.absolutePath, tFile.absolutePath, 0.7f)
                 val status = module.load()
                 val loadDurationMs = System.currentTimeMillis() - startTime
-                Log.i(TAG, "LlamaModule.load() returned status $status in ${loadDurationMs} ms")
+                Log.e(TAG, "LlamaModule.load() returned status $status in ${loadDurationMs} ms")
 
                 if (status == 0) {
                     llamaModule = module
@@ -137,7 +141,7 @@ class ExecuTorchLlamaAdvisor(private val context: Context) : Advisor {
                     return false
                 }
             } catch (e: Throwable) {
-                Log.e(TAG, "Failed to instantiate or load LlamaModule", e)
+                Log.e(TAG, "Failed to instantiate or load LlamaModule: ${e.message}", e)
                 return false
             }
         }
@@ -153,7 +157,7 @@ class ExecuTorchLlamaAdvisor(private val context: Context) : Advisor {
                     llamaModule = null
                     isModelLoaded = false
                     System.gc()
-                    Log.i(TAG, "Released Llama 3.2 1B model after 60s idle (Rule H15).")
+                    Log.e(TAG, "Released Llama 3.2 1B model after 60s idle (Rule H15).")
                 } catch (e: Throwable) {
                     Log.e(TAG, "Error during idle model release", e)
                 }
@@ -173,20 +177,29 @@ class ExecuTorchLlamaAdvisor(private val context: Context) : Advisor {
                 certainty.equals("Not sure", ignoreCase = true) ||
                 classId.equals("unknown", ignoreCase = true)
 
+        Log.e(TAG, "generateAdvice() called: classId=$classId, isNotSure=$isNotSure, severityBand=$severityBand, certainty=$certainty, language=$language")
+
         // RULE H11 & T2c: When certainty is Not sure or disease unknown, NEVER ask Llama to reason about severity.
         if (isNotSure) {
+            Log.e(TAG, "generateAdvice(): isNotSure is true -> routing to fakeAdvisor (static KB referral text)")
             fakeAdvisor.generateAdvice(classId, severityBand, certainty, language, kbEntry, onToken)
             return@withContext
         }
 
         // RULE H6: Telugu is NEVER generated by Llama (unsupported by Meta Llama 3.2).
         if (language.equals("te", ignoreCase = true)) {
+            Log.e(TAG, "generateAdvice(): language is Telugu -> routing to verified KB text (Rule H6)")
             fakeAdvisor.generateAdvice(classId, severityBand, certainty, language, kbEntry, onToken)
             return@withContext
         }
 
+        if (modelFile == null || tokenizerFile == null) {
+            findModelFiles()
+        }
+
         // Emulator check: Emulator cannot run 4-bit Arm kernels -> use FakeAdvisor
         if (isEmulator() || modelFile == null || tokenizerFile == null) {
+            Log.e(TAG, "generateAdvice() fallback: isEmulator=${isEmulator()}, modelFileNull=${modelFile == null}, tokFileNull=${tokenizerFile == null}")
             fakeAdvisor.generateAdvice(classId, severityBand, certainty, language, kbEntry, onToken)
             return@withContext
         }
