@@ -162,6 +162,11 @@ object VisionMath {
         val topK = extractTopK(labels, probabilities, 3)
         val top1 = topK.firstOrNull()
 
+        // Task V1 / seed/class_names_checked.tsv row 15:
+        // Chilli class 13 ("White Spot" / "chilli_white_spot") has UNVERIFIED cause.
+        // It must never be returned as a confident diagnosis; returns "unknown" ("Can't tell").
+        val isUnverifiedClass = top1?.classId == "chilli_white_spot"
+
         val isOOD = freeEnergy > energyThreshold
         val requiredThreshold = if (top1 != null) {
             thresholds[top1.classId] ?: defaultThreshold
@@ -171,7 +176,7 @@ object VisionMath {
 
         val isBelowThreshold = top1 == null || top1.probability < requiredThreshold
 
-        return if (isOOD || isBelowThreshold) {
+        return if (isOOD || isBelowThreshold || isUnverifiedClass) {
             val candidateConfidence = top1?.probability ?: 0.0f
             DiagnosisEvaluation(
                 classId = "unknown",
@@ -181,7 +186,7 @@ object VisionMath {
                 top3 = topK,
                 freeEnergy = freeEnergy,
                 isOutOfDistribution = isOOD,
-                isBelowThreshold = isBelowThreshold
+                isBelowThreshold = isBelowThreshold || isUnverifiedClass
             )
         } else {
             DiagnosisEvaluation(

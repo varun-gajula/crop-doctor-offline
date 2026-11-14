@@ -1,0 +1,6 @@
+file,true_crop,predicted_class,confidence,energy
+test_rice_sample.jpg,rice,rice_bacterial_leaf_blight,0.7094,-4.4259
+test_cotton_sample.jpg,cotton,cotton_bacterial_blight,0.4617,-3.7925
+test_chilli_sample.jpg,chilli,chilli_bacterial_spot,0.5204,-3.9653
+test_tomato_sample.jpg,tomato,tomato_early_blight,0.6547,-4.2220
+test_nocrop_sample.jpg,nocrop,unknown,0.0591,-3.7098

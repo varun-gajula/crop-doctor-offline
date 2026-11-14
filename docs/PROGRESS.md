@@ -1,6 +1,33 @@
 # Project Progress - Crop Doctor Offline
 
-## Current Status: T5 Real-Device Diagnosis & Llama Pipeline Resolved & Live on Physical Phone
+## Current Status: Task V1 Audit & Fix Vision Lane Complete
+
+### Done in Task V1: Vision Lane Audit & Fix (Decision D1, PS1, Rules H3, H11, H14)
+1. **Dataset Provenance & Split Audit:**
+   - Evaluated 46,152 curated images across 25 target classes from 7 primary datasets.
+   - Identified that 10 minority classes depend on a single source dataset.
+   - Discovered that train/val splitting was performed via random stratified sampling (`train_test_split(test_size=0.20, stratify=labels, random_state=42)`) rather than split-by-source or field batch, meaning near-duplicate photos from burst shots and identical plants leak across train and validation sets.
+2. **Chilli Class 13 ("White Spot") Guardrail:**
+   - Seed row 15 marks Chilli White Spot as UNVERIFIED cause.
+   - Guarded in `VisionMath.evaluateDiagnosis`: predictions of `chilli_white_spot` are forced to `classId = "unknown"` and `CertaintyBand.NOT_SURE` ("Can't tell") to prevent unverified diagnoses and treatments from displaying.
+3. **Model Severity Head Decoupling (Decision D1):**
+   - Removed model severity head evaluation from `ExecuTorchClassifier.kt`.
+   - Severity is computed exclusively from `LesionAreaEstimator` and `RulesEngine.calculateSeverity`.
+   - Added `VisionSeverityPipelineTest.kt` with unit tests asserting that no severity head value from the model reaches the result screen.
+4. **Real-Test Evaluator Tool (`tools/eval_realtest.py`):**
+   - Built standalone evaluation script reading from `C:\crop-data\realtest\<crop>\` and `C:\crop-data\realtest\nocrop\`.
+   - Verified on 5 dummy photos, generating `benchmarks/realtest_results.csv` and `benchmarks/realtest_summary.md`.
+5. **Threshold Calibration & Restoration:**
+   - Removed temporary workaround values (`energy_threshold: 5.0`, `default_threshold: 0.25`).
+   - Restored calibrated baseline: `energy_threshold: -1.5`, `default_threshold: 0.40` (0.50 healthy), `temperature: 1.15`.
+   - Documented trade-off curves and $\ge 90\%$ crop acceptance / $\ge 80\%$ non-crop rejection criteria in `benchmarks/threshold_choice.md`.
+6. **54 Unit Tests Passing & Debug Build Successful:**
+   - 54/54 tests pass in `./gradlew testDebugUnitTest`.
+   - `./gradlew assembleDebug` compiles cleanly with 0 errors.
+
+---
+
+### Previous Status: T5 Real-Device Diagnosis & Llama Pipeline Resolved & Live on Physical Phone
 
 ### Resolved on Physical Phone (`sseqjnucrkeeprtw` - POCO M4 Pro / Redmi Note 11S):
 1. **Camera Capture Crash & App Closing Fix:**
