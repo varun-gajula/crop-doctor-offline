@@ -8,8 +8,8 @@ import android.util.Log
 import com.cropdoctor.domain.SeverityBand
 import com.cropdoctor.knowledge.KbEntry
 import kotlinx.coroutines.*
-import org.pytorch.executorch.LlamaCallback
-import org.pytorch.executorch.LlamaModule
+import org.pytorch.executorch.extension.llm.LlmCallback
+import org.pytorch.executorch.extension.llm.LlmModule
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -34,7 +34,7 @@ class ExecuTorchLlamaAdvisor(private val context: Context) : Advisor {
     private var modelFile: File? = null
     private var tokenizerFile: File? = null
 
-    private var llamaModule: LlamaModule? = null
+    private var llamaModule: LlmModule? = null
     private var isModelLoaded = false
     private var idleJob: Job? = null
     private val modelLock = Any()
@@ -126,7 +126,7 @@ class ExecuTorchLlamaAdvisor(private val context: Context) : Advisor {
             try {
                 Log.e(TAG, "Loading Llama 3.2 1B ExecuTorch module (arm64-v8a): model=${mFile.absolutePath}, tok=${tFile.absolutePath}...")
                 val startTime = System.currentTimeMillis()
-                val module = LlamaModule(mFile.absolutePath, tFile.absolutePath, 0.7f)
+                val module = LlmModule(mFile.absolutePath, tFile.absolutePath, 0.7f)
                 val status = module.load()
                 val loadDurationMs = System.currentTimeMillis() - startTime
                 Log.e(TAG, "LlamaModule.load() returned status $status in ${loadDurationMs} ms")
@@ -232,7 +232,7 @@ class ExecuTorchLlamaAdvisor(private val context: Context) : Advisor {
         var firstTokenTimeMs = 0L
         var totalTokens = 0
 
-        val llamaCallback = object : LlamaCallback {
+        val llamaCallback = object : LlmCallback {
             override fun onResult(token: String?) {
                 if (token.isNullOrEmpty()) return
                 totalTokens++
