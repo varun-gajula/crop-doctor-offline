@@ -36,12 +36,16 @@ class ExecuTorchLlamaAdvisor(private val context: Context) : Advisor {
 
     private var llamaModule: LlmModule? = null
     private var isModelLoaded = false
+    val isModelCurrentlyLoaded: Boolean
+        get() = isModelLoaded
     private var idleJob: Job? = null
     private val modelLock = Any()
 
     private var _isLowMemoryFallback: Boolean = false
     override val isLowMemoryFallback: Boolean
         get() = _isLowMemoryFallback
+
+    var memoryThresholdBytes: Long = MemoryBudgetDecider.MIN_AVAILABLE_RAM_BYTES
 
     override val isFake: Boolean
         get() = isEmulator() || modelFile == null || tokenizerFile == null
@@ -97,10 +101,10 @@ class ExecuTorchLlamaAdvisor(private val context: Context) : Advisor {
     }
 
     private fun checkMemoryBudget(): Boolean {
-        val sufficient = MemoryBudgetDecider.isMemorySufficient(context)
+        val sufficient = MemoryBudgetDecider.isMemorySufficient(context, memoryThresholdBytes)
         if (!sufficient) {
             _isLowMemoryFallback = true
-            Log.w(TAG, "Low device RAM (< 1500 MB). Fallback to KB text alone with label 'Offline guide' (Rule H15).")
+            Log.w(TAG, "Low device RAM (< ${memoryThresholdBytes / (1024 * 1024)} MB). Fallback to KB text alone with label 'Offline guide' (Rule H15).")
         }
         return sufficient
     }
