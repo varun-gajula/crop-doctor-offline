@@ -58,8 +58,8 @@ dependencies {
     implementation(libs.androidx.camera.view)
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.kotlinx.serialization.json)
-    // ExecuTorch – official Maven Central artifact
-    implementation("org.pytorch:executorch-android:0.5.1")
+    // ExecuTorch – official Maven Central artifact (0.6.0 for EO8 SpinQuant & LlmModule)
+    implementation("org.pytorch:executorch-android:0.6.0")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

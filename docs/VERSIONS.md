@@ -2,7 +2,7 @@
 
 | Component | Specification / Version | File / Artifact | Source & Verification |
 | :--- | :--- | :--- | :--- |
-| **ExecuTorch Android SDK** | `0.5.1` (`org.pytorch:executorch-android:0.5.1`) | `app/build.gradle.kts` | Maven Central official release |
+| **ExecuTorch Android SDK** | `0.6.0` (`org.pytorch:executorch-android:0.6.0`) | `app/build.gradle.kts` | Maven Central official release (supports EO8 LlmModule) |
 | **ExecuTorch Python Runtime** | `0.5.1` (`torch 2.5.1+cpu` / `torch 2.5.1+cu124`) | Colab export environment | PyTorch ExecuTorch release 0.5.1 |
 | **Advisory Model** | `meta-llama/Llama-3.2-1B-Instruct` | `llama-3.2-1b-spinquant.pte` (1.05 GB) | `executorch-community` Hugging Face |
 | **Quantization Scheme** | SpinQuant INT4 (4-bit weight, group-wise 128) | INT4-EO8 Arm optimized | Hardware-accelerated for Arm Cortex-A |
