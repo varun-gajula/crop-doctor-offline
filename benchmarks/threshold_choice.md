@@ -24,11 +24,11 @@ During earlier development, thresholds were temporarily relaxed to:
 
 ### Current Calibrated Baseline (Restored in `thresholds.json`):
 - **Temperature ($T$)**: `1.15` (post-hoc Platt temperature scaling fitted on validation set).
-- **Free Energy Threshold ($E_{\text{thresh}}$)**: `-1.5`
+- **Free Energy Threshold ($E_{\text{thresh}}$)**: `-1.5` (provisional, to be set from real photos)
   - In-distribution leaf/pest images produce negative free energy: $E(x; T) \le -1.5$ (e.g. $-3.8$ to $-5.2$).
   - High-entropy noise and non-agricultural subjects exceed $-1.5$ (or produce flat diffuse probability spreads).
 - **Confidence Thresholds ($p_{\text{thresh}}$)**:
-  - **Disease & Pest Classes (20 classes)**: `0.40` (40%)
+  - **Disease & Pest Classes (20 classes)**: `0.40` (provisional, to be set from real photos)
   - **Healthy Classes (5 classes)**: `0.50` (50% to prevent under-diagnosing active infections)
 
 ### Certainty Bands in Code:
@@ -51,7 +51,7 @@ When the real field test set is populated in `C:\crop-data\realtest\<crop>\` and
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | `+5.0` (Old temporary) | `0.25` | 98.5% | 10.0% (1/10 rejected) | **FAIL** | Rejects almost no non-crops; leaky |
 | `+0.0` | `0.30` | 95.0% | 50.0% (5/10 rejected) | **FAIL** | Insufficient OOD rejection |
-| **`-1.5` (Current Baseline)** | **`0.40` (0.50 healthy)** | **92.4%** | **90.0% (9/10 rejected)** | **PASS** | Meets $\ge 90\%$ crop & $\ge 80\%$ non-crop |
+| **`-1.5` (provisional, to be set from real photos)** | **`0.40` (0.50 healthy, provisional)** | **92.4%** | **90.0% (9/10 rejected)** | **PASS** | Target operating point; provisional, to be set from real photos |
 | `-2.5` | `0.50` | 86.0% | 100.0% (10/10 rejected) | **FAIL** | Overly strict; drops valid field crops |
 | `-3.5` | `0.60` | 74.0% | 100.0% (10/10 rejected) | **FAIL** | Excessive false negatives on field crops |
 
