@@ -49,6 +49,7 @@ fun ResultScreen(
     advisoryText: String,
     isGeneratingAdvice: Boolean,
     isFakeAdvisor: Boolean = true,
+    isLowMemoryFallback: Boolean = false,
     capturedBitmap: Bitmap? = null,
     onBackClick: () -> Unit,
     onChangeLanguageClick: (String) -> Unit = {},
@@ -796,6 +797,7 @@ fun ResultScreen(
                 isGenerating = isGeneratingAdvice,
                 language = language,
                 isFake = isFakeAdvisor,
+                isLowMemoryFallback = isLowMemoryFallback,
                 onCancel = onCancelAdvice
             )
 

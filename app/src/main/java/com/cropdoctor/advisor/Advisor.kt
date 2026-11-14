@@ -5,6 +5,7 @@ import com.cropdoctor.knowledge.KbEntry
 
 interface Advisor {
     val isFake: Boolean get() = false
+    val isLowMemoryFallback: Boolean get() = false
 
     suspend fun generateAdvice(
         classId: String,

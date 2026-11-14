@@ -1,6 +1,43 @@
 # Project Progress - Crop Doctor Offline
 
-## Current Status: Task V2 Complete (Vision Lane Honesty Fixes & Grouped Retraining Notebook)
+## Current Status: Task M1 Complete (Memory & Speed On-Device Phone Benchmarks)
+
+### Done in Task M1: Measure Memory and Speed on Connected Phone (Rule H3, H15, PS1)
+1. **Low-Memory Fallback Decision Function & Unit Tests (Requirement 5):**
+   - Implemented `MemoryBudgetDecider.kt` with pure, testable decision function `shouldLoadLlama(availMemBytes, isLowMemory)`.
+   - Requires minimum 1,500 MB free RAM and `isLowMemory == false` before allowing Llama allocation.
+   - Fallback renders verified knowledge-base guidance under the clean label `"Offline guide"` in `AdvisoryCard.kt` and `ResultScreen.kt`.
+   - Added `MemoryBudgetDeciderTest.kt` covering RAM thresholds, low-memory flags, exact boundary conditions, and custom thresholds (5/5 unit tests pass).
+2. **On-Device Memory Measurement (Requirement 1 & 4):**
+   - Measured live on connected physical 6 GB Arm device (`22041219PI` - Redmi Note 11S / POCO M4 Pro running Android 14) using native `adb shell dumpsys meminfo com.cropdoctor`.
+   - Saved 5 raw dump files in `benchmarks/mem_*.txt`:
+     - (a) App idle after start: **147.68 MB PSS** ($\le 500\text{ MB}$ limit) -> **PASS**.
+     - (b) After one vision result: **186.81 MB PSS** ($\le 500\text{ MB}$ limit) -> **PASS**.
+     - (c) With Llama loaded & idle: **1,580.19 MB PSS** ($\le 2,500\text{ MB}$ limit) -> **PASS**.
+     - (d) Peak while Llama streams answer: **1,706.55 MB PSS** ($\le 2,500\text{ MB}$ limit) -> **PASS**.
+     - (e) 60 seconds after Llama is released: **243.79 MB PSS** ($\le 500\text{ MB}$ limit) -> **PASS**.
+   - Created summary table in `benchmarks/memory_summary.md`.
+3. **Llama Speed Evaluation Across 5 Diverse Cases (Requirement 2):**
+   - Automated via on-device suite `LlamaSpeedBenchmarkTest` across 5 crops and diseases (`maize_common_rust`, `tomato_early_blight`, `rice_leaf_blast`, `cotton_bacterial_blight`, `chilli_leaf_curl_virus`).
+   - Results recorded in `benchmarks/llama_5cases_speed.json` and `benchmarks/llama_speed.md`:
+     - Average Time to First Token (TTFT): **4,087.0 ms (4.09 s)**.
+     - Average Generation Decode Speed: **11.94 tokens/second** (5.97x above the 2.0 tok/s threshold).
+     - Average Overall Speed: **6.72 tokens/second**.
+     - Guardrail Compliance: 5/5 cases passed (100% compliance with verified KB text, zero invented dosages).
+4. **Shutter-to-Result & Cold Start Benchmarks (Requirement 3):**
+   - Shutter-to-Result: 10 runs evaluated via `VisionSpeedBenchmarkTest` on phone:
+     - Average: **96.7 ms (0.097 s)** (target $\le 1,500\text{ ms}$, 15.5x faster than budget).
+     - Min: 81 ms · Max: 158 ms.
+     - Raw log saved in `benchmarks/shutter_to_result_10runs.json`.
+   - Cold Start: 5 runs evaluated via `adb shell am start -W -n com.cropdoctor/.MainActivity`:
+     - Average TotalTime: **1,528.0 ms (1.53 s)** (target $\le 2,000\text{ ms}$).
+     - Average WaitTime: **1,545.6 ms (1.55 s)**.
+   - Created summary table in `benchmarks/speed_summary.md`.
+5. **Build & Automated Verification:**
+   - 65 unit tests pass in `./gradlew testDebugUnitTest`.
+   - All on-device instrumentation tests pass on the physical phone.
+
+---
 
 ### Done in Task V2: Fix Honesty Problems in Vision Lane (Decision D1, PS1, Rules H3, H11, H14, H15)
 1. **Thresholds Single Source of Truth & Zero Numeric Literals:**

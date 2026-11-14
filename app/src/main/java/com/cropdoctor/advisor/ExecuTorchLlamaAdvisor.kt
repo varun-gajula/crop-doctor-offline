@@ -39,6 +39,10 @@ class ExecuTorchLlamaAdvisor(private val context: Context) : Advisor {
     private var idleJob: Job? = null
     private val modelLock = Any()
 
+    private var _isLowMemoryFallback: Boolean = false
+    override val isLowMemoryFallback: Boolean
+        get() = _isLowMemoryFallback
+
     override val isFake: Boolean
         get() = isEmulator() || modelFile == null || tokenizerFile == null
 
@@ -93,21 +97,12 @@ class ExecuTorchLlamaAdvisor(private val context: Context) : Advisor {
     }
 
     private fun checkMemoryBudget(): Boolean {
-        return try {
-            val actManager = context.getSystemService(Context.ACTIVITY_SERVICE) as? ActivityManager ?: return true
-            val memInfo = ActivityManager.MemoryInfo()
-            actManager.getMemoryInfo(memInfo)
-            val availMb = memInfo.availMem / (1024 * 1024)
-            Log.i(TAG, "Rule H15 check: Available RAM = ${availMb} MB, LowMemory = ${memInfo.lowMemory}")
-            if (memInfo.lowMemory || memInfo.availMem < 1500L * 1024L * 1024L) {
-                Log.w(TAG, "Low device RAM (${availMb} MB < 1500 MB). Fallback to KB text alone (Rule H15).")
-                false
-            } else {
-                true
-            }
-        } catch (e: Exception) {
-            true
+        val sufficient = MemoryBudgetDecider.isMemorySufficient(context)
+        if (!sufficient) {
+            _isLowMemoryFallback = true
+            Log.w(TAG, "Low device RAM (< 1500 MB). Fallback to KB text alone with label 'Offline guide' (Rule H15).")
         }
+        return sufficient
     }
 
     private fun ensureModelLoaded(): Boolean {
@@ -134,6 +129,7 @@ class ExecuTorchLlamaAdvisor(private val context: Context) : Advisor {
                 if (status == 0) {
                     llamaModule = module
                     isModelLoaded = true
+                    _isLowMemoryFallback = false
                     scheduleIdleRelease()
                     return true
                 } else {
@@ -156,8 +152,16 @@ class ExecuTorchLlamaAdvisor(private val context: Context) : Advisor {
                     llamaModule?.resetNative()
                     llamaModule = null
                     isModelLoaded = false
+                    System.runFinalization()
                     System.gc()
-                    Log.e(TAG, "Released Llama 3.2 1B model after 60s idle (Rule H15).")
+                    try {
+                        val wmgClass = Class.forName("android.view.WindowManagerGlobal")
+                        val getInstance = wmgClass.getMethod("getInstance")
+                        val wmg = getInstance.invoke(null)
+                        val trimMemory = wmgClass.getMethod("trimMemory", Int::class.javaPrimitiveType)
+                        trimMemory.invoke(wmg, android.content.ComponentCallbacks2.TRIM_MEMORY_COMPLETE)
+                    } catch (ignored: Throwable) {}
+                    Log.i(TAG, "Released Llama 3.2 1B model after 60s idle (Rule H15).")
                 } catch (e: Throwable) {
                     Log.e(TAG, "Error during idle model release", e)
                 }
@@ -252,6 +256,11 @@ class ExecuTorchLlamaAdvisor(private val context: Context) : Advisor {
                     lastEmitTime = now
                     onToken(chunk)
                 }
+
+                // Enforce max 120 answer tokens (Rule H15 & CHECKPOINT M1)
+                if (totalTokens >= 120) {
+                    stop()
+                }
             }
 
             override fun onStats(stats: Float) {
@@ -260,9 +269,9 @@ class ExecuTorchLlamaAdvisor(private val context: Context) : Advisor {
         }
 
         try {
-            // Apply 25-second timeout safeguard
+            // Apply 25-second timeout safeguard and total sequence length of 512 (allowing ~350 prompt + 120 generated tokens)
             withTimeoutOrNull(25_000L) {
-                llamaModule?.generate(prompt, 128, llamaCallback, false)
+                llamaModule?.generate(prompt, 512, llamaCallback, false)
             }
 
             // Flush any remaining buffered tokens
@@ -373,10 +382,27 @@ class ExecuTorchLlamaAdvisor(private val context: Context) : Advisor {
                 llamaModule?.resetNative()
                 llamaModule = null
                 isModelLoaded = false
+                System.runFinalization()
+                System.gc()
+                try {
+                    val wmgClass = Class.forName("android.view.WindowManagerGlobal")
+                    val getInstance = wmgClass.getMethod("getInstance")
+                    val wmg = getInstance.invoke(null)
+                    val trimMemory = wmgClass.getMethod("trimMemory", Int::class.javaPrimitiveType)
+                    trimMemory.invoke(wmg, android.content.ComponentCallbacks2.TRIM_MEMORY_COMPLETE)
+                } catch (ignored: Throwable) {}
             } catch (e: Throwable) {
                 Log.e(TAG, "Error closing LlamaModule", e)
             }
         }
         fakeAdvisor.close()
+    }
+
+    fun ensureLoadedForBenchmark(): Boolean {
+        return ensureModelLoaded()
+    }
+
+    fun forceReleaseForBenchmark() {
+        close()
     }
 }

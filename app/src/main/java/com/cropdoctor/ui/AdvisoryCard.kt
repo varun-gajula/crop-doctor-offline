@@ -21,6 +21,7 @@ fun AdvisoryCard(
     isGenerating: Boolean,
     language: String,
     isFake: Boolean = true,
+    isLowMemoryFallback: Boolean = false,
     onCancel: () -> Unit = {}
 ) {
     val cancelLabel = when (language) {
@@ -90,7 +91,14 @@ fun AdvisoryCard(
                 horizontalArrangement = Arrangement.End,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                if (isFake) {
+                if (isLowMemoryFallback) {
+                    Text(
+                        text = "Offline guide",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color(0xFF1565C0)
+                    )
+                } else if (isFake) {
                     Text(
                         text = "⚠️ " + stringResource(R.string.demo_text_not_ai),
                         fontSize = 13.sp,
