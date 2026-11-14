@@ -1,10 +1,12 @@
 package com.cropdoctor
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.LocalActivityResultRegistryOwner
@@ -20,8 +22,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
+import com.cropdoctor.advisor.ExecuTorchLlamaAdvisor
 import com.cropdoctor.data.UserPreferences
+import com.cropdoctor.domain.CertaintyBand
 import com.cropdoctor.domain.ClassifierResult
+import com.cropdoctor.domain.SeverityBand
 import com.cropdoctor.knowledge.KbEntry
 import com.cropdoctor.knowledge.KnowledgeBase
 import com.cropdoctor.knowledge.LocalizedText
@@ -30,6 +35,7 @@ import com.cropdoctor.ui.*
 import com.cropdoctor.ui.theme.CropDoctorTheme
 import com.cropdoctor.ui.theme.FarmGreenPrimary
 import com.cropdoctor.vision.LeafValidator
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import java.util.Locale
@@ -53,10 +59,19 @@ enum class AppScreen {
 class MainActivity : ComponentActivity() {
 
     private var currentAdviceJob: Job? = null
+    private var onBenchmarkAction: ((String) -> Unit)? = null
 
     private val cameraPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { /* Graceful handling */ }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        val action = intent.getStringExtra("benchmark_action")
+        Log.i("MainActivityBenchmark", "onNewIntent received action: $action")
+        action?.let { onBenchmarkAction?.invoke(it) }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -137,7 +152,7 @@ class MainActivity : ComponentActivity() {
                         }
                     }
 
-                    fun processDiagnosis(bitmap: Bitmap, cropFilter: String?) {
+                    fun processDiagnosis(bitmap: Bitmap, cropFilter: String?, autoStartAdvisor: Boolean = true) {
                         isProcessingImage = true
                         capturedLeafBitmap = bitmap
                         lifecycleScope.launch {
@@ -174,19 +189,82 @@ class MainActivity : ComponentActivity() {
                                 activeKbEntry = kb
                                 navigateTo(AppScreen.RESULT)
 
-                                triggerAdvisoryStream(
-                                    app = app,
-                                    result = result,
-                                    kbEntry = kb,
-                                    language = selectedLanguage,
-                                    onUpdate = { advisoryText = it },
-                                    onStateChange = { isGeneratingAdvice = it }
-                                )
+                                if (autoStartAdvisor) {
+                                    triggerAdvisoryStream(
+                                        app = app,
+                                        result = result,
+                                        kbEntry = kb,
+                                        language = selectedLanguage,
+                                        onUpdate = { advisoryText = it },
+                                        onStateChange = { isGeneratingAdvice = it }
+                                    )
+                                }
                             } catch (e: Exception) {
                                 e.printStackTrace()
                             } finally {
                                 isProcessingImage = false
                             }
+                        }
+                    }
+
+                    DisposableEffect(Unit) {
+                        onBenchmarkAction = { action ->
+                            Log.i("MainActivityBenchmark", "Executing benchmark action: $action")
+                            when (action) {
+                                "vision" -> {
+                                    val bmp = Bitmap.createBitmap(320, 320, Bitmap.Config.ARGB_8888)
+                                    for (x in 0 until 320) {
+                                        for (y in 0 until 320) {
+                                            bmp.setPixel(x, y, android.graphics.Color.rgb(34, 139, 34))
+                                        }
+                                    }
+                                    processDiagnosis(bmp, "tomato", autoStartAdvisor = false)
+                                }
+                                "load_llama" -> {
+                                    lifecycleScope.launch(Dispatchers.IO) {
+                                        (app.advisor as? ExecuTorchLlamaAdvisor)?.ensureLoadedForBenchmark()
+                                        Log.i("MainActivityBenchmark", "Llama model loaded and idle")
+                                    }
+                                }
+                                "stream_llama" -> {
+                                    val kb = KnowledgeBase.getEntry("tomato_early_blight")
+                                        ?: KnowledgeBase.getAllEntries().first()
+                                    val result = ClassifierResult(
+                                        classId = "tomato_early_blight",
+                                        displayName = "Tomato Early Blight",
+                                        confidence = 0.88f,
+                                        severityBand = SeverityBand.MODERATE,
+                                        certaintyBand = CertaintyBand.SURE,
+                                        lesionFraction = 0.22f,
+                                        inferenceTimeMs = 85L,
+                                        memoryUsedMb = 120L,
+                                        isDemoMode = false
+                                    )
+                                    classifierResult = result
+                                    activeKbEntry = kb
+                                    navigateTo(AppScreen.RESULT)
+                                    triggerAdvisoryStream(
+                                        app = app,
+                                        result = result,
+                                        kbEntry = kb,
+                                        language = "en",
+                                        onUpdate = { advisoryText = it },
+                                        onStateChange = { isGeneratingAdvice = it }
+                                    )
+                                }
+                                "release_llama" -> {
+                                    lifecycleScope.launch(Dispatchers.IO) {
+                                        (app.advisor as? ExecuTorchLlamaAdvisor)?.forceReleaseForBenchmark()
+                                        Log.i("MainActivityBenchmark", "Llama model released")
+                                    }
+                                }
+                            }
+                        }
+                        intent?.getStringExtra("benchmark_action")?.let { action ->
+                            onBenchmarkAction?.invoke(action)
+                        }
+                        onDispose {
+                            onBenchmarkAction = null
                         }
                     }
 
@@ -303,6 +381,7 @@ class MainActivity : ComponentActivity() {
                                     advisoryText = advisoryText,
                                     isGeneratingAdvice = isGeneratingAdvice,
                                     isFakeAdvisor = try { (application as CropDoctorApplication).advisor.isFake } catch (e: Exception) { true },
+                                    isLowMemoryFallback = try { (application as CropDoctorApplication).advisor.isLowMemoryFallback } catch (e: Exception) { false },
                                     capturedBitmap = capturedLeafBitmap,
                                     onBackClick = { navigateTo(AppScreen.HOME) },
                                     onChangeLanguageClick = { newLang -> switchLanguage(newLang) },
