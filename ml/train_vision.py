@@ -15,10 +15,11 @@ import json
 import time
 import argparse
 from pathlib import Path
+from collections import Counter
 
 import torch
 import torch.nn as nn
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, WeightedRandomSampler
 from sklearn.model_selection import train_test_split
 
 # Add project root to sys.path
@@ -164,6 +165,8 @@ def main():
     parser.add_argument("--epochs", type=int, default=15)
     parser.add_argument("--lr", type=float, default=3e-4)
     parser.add_argument("--img_size", type=int, default=320)
+    parser.add_argument("--max_per_class", type=int, default=800, help="Max images per class to cap majority bias")
+    parser.add_argument("--balanced", default=True, action=argparse.BooleanOptionalAction, help="Enable class-balanced WeightedRandomSampler")
     parser.add_argument("--device", type=str, default="auto", choices=["auto", "cuda", "cpu"])
     parser.add_argument("--multi_task", default=True, action=argparse.BooleanOptionalAction, help="Enable multi-task dual heads for disease and severity")
     parser.add_argument("--export", action="store_true", help="Attempt export to ExecuTorch .pte")
@@ -181,16 +184,17 @@ def main():
     print(f"Data Dir:    {args.data_dir}")
     print(f"Model:       {args.model_name} (Image Size: {args.img_size}x{args.img_size})")
     print(f"Multi-Task:  {args.multi_task} (Dual Heads: Disease + Severity)")
+    print(f"Balanced:    {args.balanced} (Cap: {args.max_per_class} per class)")
     print(f"Batch Size:  {args.batch_size} | Epochs: {args.epochs} | LR: {args.lr}")
     print("=" * 60)
 
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    # Scan dataset
+    # Scan dataset with class-capping
     print("\nScanning dataset...")
-    samples, class_meta = scan_dataset(args.data_dir, args.class_map)
-    print(f"Found {len(samples)} valid images across classes.")
+    samples, class_meta = scan_dataset(args.data_dir, args.class_map, max_samples_per_class=args.max_per_class)
+    print(f"Found {len(samples)} balanced images across classes.")
     if len(samples) == 0:
         print("[ERROR] No samples found in data_dir! Please check the path.", file=sys.stderr)
         sys.exit(1)
@@ -207,15 +211,30 @@ def main():
     val_tf = get_transforms(img_size=args.img_size, is_train=False)
 
     num_workers = min(4, os.cpu_count() or 2) if device.type == 'cuda' else 0
-    train_loader = DataLoader(
-        CropDataset(train_samples, train_tf),
-        batch_size=args.batch_size,
-        shuffle=True,
-        num_workers=num_workers,
-        pin_memory=(device.type == 'cuda'),
-        persistent_workers=(num_workers > 0),
-        prefetch_factor=2 if num_workers > 0 else None
-    )
+
+    if args.balanced:
+        train_counts = Counter(s[1] for s in train_samples)
+        sample_weights = [1.0 / train_counts[s[1]] for s in train_samples]
+        sampler = WeightedRandomSampler(weights=sample_weights, num_samples=len(train_samples), replacement=True)
+        train_loader = DataLoader(
+            CropDataset(train_samples, train_tf),
+            batch_size=args.batch_size,
+            sampler=sampler,
+            num_workers=num_workers,
+            pin_memory=(device.type == 'cuda'),
+            persistent_workers=(num_workers > 0),
+            prefetch_factor=2 if num_workers > 0 else None
+        )
+    else:
+        train_loader = DataLoader(
+            CropDataset(train_samples, train_tf),
+            batch_size=args.batch_size,
+            shuffle=True,
+            num_workers=num_workers,
+            pin_memory=(device.type == 'cuda'),
+            persistent_workers=(num_workers > 0),
+            prefetch_factor=2 if num_workers > 0 else None
+        )
     val_loader = DataLoader(
         CropDataset(val_samples, val_tf),
         batch_size=args.batch_size,
