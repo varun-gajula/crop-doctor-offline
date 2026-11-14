@@ -7,6 +7,7 @@ import android.os.SystemClock
 import android.util.Log
 import com.cropdoctor.domain.CertaintyBand
 import com.cropdoctor.domain.ClassifierResult
+import com.cropdoctor.domain.RulesEngine
 import com.cropdoctor.domain.SeverityBand
 import com.cropdoctor.domain.SeverityCalculator
 import kotlinx.coroutines.CompletableDeferred
@@ -302,25 +303,13 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
                 LesionAreaEstimator.estimateLesionFraction(bitmap)
             }
 
-            // 8. Severity Band: learned multi-task head if available; otherwise lesion area calculation
-            val severityBand = if (outputs.size > 1 && eval.classId != "unknown" && !eval.classId.endsWith("_healthy")) {
-                val sevTensor = outputs[1].toTensor()
-                val sevLogits = sevTensor.dataAsFloatArray
-                var topSevIdx = 0
-                var maxSevLogit = sevLogits[0]
-                for (i in 1 until sevLogits.size) {
-                    if (sevLogits[i] > maxSevLogit) {
-                        maxSevLogit = sevLogits[i]
-                        topSevIdx = i
-                    }
-                }
-                when (topSevIdx) {
-                    0 -> SeverityBand.MILD
-                    1 -> SeverityBand.MODERATE
-                    else -> SeverityBand.SEVERE
-                }
+            // 8. Severity Band: Decision D1 - The app uses ONLY the 25-class output.
+            // Any learned severity head from the vision model is completely ignored.
+            // Severity comes EXCLUSIVELY from LesionAreaEstimator and RulesEngine.
+            val severityBand = if (eval.classId == "unknown" || eval.classId.endsWith("_healthy")) {
+                SeverityBand.MILD
             } else {
-                SeverityCalculator.calculate(lesionFraction, eval.classId)
+                RulesEngine.calculateSeverity(lesionFraction, eval.classId)
             }
 
             ClassifierResult(

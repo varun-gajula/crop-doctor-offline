@@ -28,12 +28,14 @@ tokenizer.model
 # Datasets & Raw Images (Rule H2)
 data_raw/
 data_processed/
+benchmarks/dummy_realtest/
 *.zip
 *.tar
 *.tar.gz
 *.csv
 !data/source_class_map.csv
 !data/class_counts.csv
+!benchmarks/realtest_results.csv
 
 # Gradle & Android Build Outputs
 .gradle/

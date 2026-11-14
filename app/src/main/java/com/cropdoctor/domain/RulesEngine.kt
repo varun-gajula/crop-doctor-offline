@@ -30,16 +30,10 @@ object RulesEngine {
 
     /**
      * Calculates severity band from lesion area fraction (< 10% mild, 10-30% moderate, > 30% severe)
+     * and specific pathology rules via SeverityCalculator.
      */
     fun calculateSeverity(lesionFraction: Float, classId: String = ""): SeverityBand {
-        if (classId.endsWith("_healthy")) {
-            return SeverityBand.MILD
-        }
-        return when {
-            lesionFraction < 0.10f -> SeverityBand.MILD
-            lesionFraction <= 0.30f -> SeverityBand.MODERATE
-            else -> SeverityBand.SEVERE
-        }
+        return SeverityCalculator.calculate(lesionFraction, classId)
     }
 
     /**
