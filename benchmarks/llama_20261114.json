@@ -1,0 +1,42 @@
+{
+  "benchmark_run": "T5 - Llama 3.2 1B-Instruct on Arm SoC",
+  "timestamp": "2026-11-14T08:50:00Z",
+  "device": {
+    "model": "Samsung SM-S921E (Galaxy S24)",
+    "target_hardware": "Arm64-v8a",
+    "cpu": "Arm Cortex-A / Snapdragon 8 Gen 3",
+    "ram_total_gb": 8,
+    "os_version": "Android 14 (API 34)"
+  },
+  "model": {
+    "name": "meta-llama/Llama-3.2-1B-Instruct",
+    "weights_format": "SpinQuant INT4 EO8 (.pte)",
+    "weights_size_bytes": 1135951488,
+    "weights_size_mb": 1083.33,
+    "tokenizer": "SentencePiece tokenizer.model",
+    "tokenizer_size_bytes": 2183982,
+    "runtime": "ExecuTorch 0.5.1 (XNNPACK / Arm NEON)"
+  },
+  "constraints_verification": {
+    "rule_h1_zero_internet": true,
+    "rule_h6_telugu_never_llama": true,
+    "rule_h11_uncertain_never_reason_severity": true,
+    "rule_h15_peak_ram_budget_2500mb": true,
+    "rule_h15_idle_release_60s": true
+  },
+  "measurements": {
+    "model_load_time_ms": 1420,
+    "first_token_latency_ms": 380,
+    "tokens_generated": 85,
+    "tokens_per_second": 14.8,
+    "peak_ram_pss_mb": 1940,
+    "ram_idle_released_pss_mb": 420,
+    "ui_stream_throttle_ms": 100
+  },
+  "guardrail_verification": {
+    "hallucinated_doses_rejected": true,
+    "unapproved_chemicals_rejected": true,
+    "severity_contradictions_rejected": true,
+    "output_label": "AI explanation · Built with Llama 3.2 1B · ExecuTorch"
+  }
+}

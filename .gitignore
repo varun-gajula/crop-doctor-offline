@@ -37,6 +37,7 @@ data_processed/
 
 # Gradle & Android Build Outputs
 .gradle/
+.kotlin/
 build/
 app/build/
 *.apk

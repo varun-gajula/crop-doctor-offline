@@ -2,6 +2,10 @@ package com.cropdoctor.ui
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -16,6 +20,7 @@ import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -25,8 +30,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.cropdoctor.CropDoctorApplication
+import com.cropdoctor.advisor.ExecuTorchLlamaAdvisor
 import com.cropdoctor.ui.theme.FarmGreenDark
 import com.cropdoctor.ui.theme.FarmGreenPrimary
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.File
 
 @Composable
 fun MoreOptionsScreen(
@@ -39,6 +50,55 @@ fun MoreOptionsScreen(
 ) {
     val context = LocalContext.current
     val scrollState = rememberScrollState()
+    val coroutineScope = rememberCoroutineScope()
+
+    val importModelLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenDocument()
+    ) { uri: Uri? ->
+        if (uri != null) {
+            coroutineScope.launch(Dispatchers.IO) {
+                try {
+                    val contentResolver = context.contentResolver
+                    val cursor = contentResolver.query(uri, null, null, null, null)
+                    val displayName = cursor?.use {
+                        if (it.moveToFirst()) {
+                            val nameIndex = it.getColumnIndex(android.provider.OpenableColumns.DISPLAY_NAME)
+                            if (nameIndex != -1) it.getString(nameIndex) else null
+                        } else null
+                    } ?: "model_import.bin"
+
+                    val targetFile = if (displayName.endsWith(".model") || displayName.contains("tokenizer", ignoreCase = true)) {
+                        File(context.filesDir, "tokenizer.model")
+                    } else if (displayName.endsWith(".pte")) {
+                        File(context.filesDir, "llama-3.2-1b-spinquant.pte")
+                    } else {
+                        File(context.filesDir, displayName)
+                    }
+
+                    contentResolver.openInputStream(uri)?.use { input ->
+                        java.io.FileOutputStream(targetFile).use { output ->
+                            input.copyTo(output)
+                        }
+                    }
+
+                    val app = context.applicationContext as? CropDoctorApplication
+                    (app?.advisor as? ExecuTorchLlamaAdvisor)?.findModelFiles()
+
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(
+                            context,
+                            "Imported: ${targetFile.name} (${targetFile.length() / (1024 * 1024)} MB)",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                } catch (e: Exception) {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(context, "Import failed: ${e.localizedMessage}", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        }
+    }
 
     val screenTitle = when (language) {
         "te" -> "మరిన్ని ఎంపికలు"
@@ -142,6 +202,23 @@ fun MoreOptionsScreen(
                     subtitle = when (language) { "te" -> "రైతు మిత్రులతో పంచుకోండి"; "hi" -> "किसान भाइयों को भेजें"; else -> "Share with friends & farmers" },
                     onClick = {
                         shareAppViaWhatsApp(context)
+                    }
+                )
+
+                // Import Llama 3.2 Model Fallback (Rule T5)
+                val hasLlamaModel = File(context.filesDir, "llama-3.2-1b-spinquant.pte").exists() || File("/data/local/tmp/llama-3.2-1b-spinquant.pte").exists()
+                MoreOptionItem(
+                    icon = Icons.Default.CloudDownload,
+                    iconBg = Color(0xFFFFF3E0),
+                    iconTint = Color(0xFFE65100),
+                    title = when (language) { "te" -> "AI మోడల్ దిగుమతి (.pte)"; "hi" -> "AI मॉडल आयात करें (.pte)"; else -> "Import AI Model (.pte)" },
+                    subtitle = if (hasLlamaModel) {
+                        when (language) { "te" -> "Llama 3.2 1B సిద్ధంగా ఉంది"; "hi" -> "Llama 3.2 1B तैयार है"; else -> "Llama 3.2 1B Installed" }
+                    } else {
+                        when (language) { "te" -> ".pte లేదా tokenizer.model ఎంచుకోండి"; "hi" -> ".pte या tokenizer.model चुनें"; else -> "Select .pte or tokenizer.model" }
+                    },
+                    onClick = {
+                        importModelLauncher.launch(arrayOf("*/*"))
                     }
                 )
             }

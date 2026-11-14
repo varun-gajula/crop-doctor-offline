@@ -315,6 +315,11 @@ class MainActivity : ComponentActivity() {
                                     },
                                     onSaveCaseReport = {
                                         navigateTo(AppScreen.SAVE_CASE_REPORT)
+                                    },
+                                    onCancelAdvice = {
+                                        currentAdviceJob?.cancel()
+                                        (application as? CropDoctorApplication)?.advisor?.stop()
+                                        isGeneratingAdvice = false
                                     }
                                 )
                             } else {

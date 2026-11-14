@@ -144,34 +144,29 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
 
     private fun initializeModule() {
         try {
-            // Check both vision/vision.pte and models/vision.pte
-            val candidateAssets = listOf("vision/vision.pte", "models/vision.pte")
+            // Check both models/vision.pte and vision/vision.pte
+            val candidateAssets = listOf("models/vision.pte", "vision/vision.pte")
             var resolvedAsset: String? = null
 
             for (candidate in candidateAssets) {
                 try {
-                    val dir = candidate.substringBeforeLast('/')
-                    val file = candidate.substringAfterLast('/')
-                    val filesInDir = context.assets.list(dir) ?: emptyArray()
-                    if (file in filesInDir) {
-                        resolvedAsset = candidate
-                        break
-                    }
+                    context.assets.open(candidate).close()
+                    resolvedAsset = candidate
+                    break
                 } catch (_: Exception) {}
             }
 
             val modelFile = File(context.filesDir, "vision.pte")
             if (resolvedAsset != null) {
                 try {
-                    context.assets.open(resolvedAsset).use { input ->
-                        val assetLength = input.available()
-                        // Copy only if modelFile doesn't exist or file size differs
-                        if (!modelFile.exists() || modelFile.length() != assetLength.toLong()) {
+                    // Extract if not present or corrupt/incomplete (< 10 MB)
+                    if (!modelFile.exists() || modelFile.length() < 10_000_000L) {
+                        context.assets.open(resolvedAsset).use { input ->
                             FileOutputStream(modelFile).use { output ->
                                 input.copyTo(output)
                             }
-                            Log.i(TAG, "Copied $resolvedAsset to ${modelFile.absolutePath} ($assetLength bytes)")
                         }
+                        Log.i(TAG, "Extracted $resolvedAsset to ${modelFile.absolutePath} (${modelFile.length()} bytes)")
                     }
                 } catch (e: Exception) {
                     Log.w(TAG, "Failed to copy $resolvedAsset", e)
