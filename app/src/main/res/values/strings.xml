@@ -110,6 +110,8 @@
     <string name="btn_pause">Pause</string>
     <string name="btn_stop">Stop</string>
     <string name="voice_not_installed">Voice not installed</string>
+    <string name="voice_install_guide">Voice data for this language is not installed on your phone. To install it once for offline use:\n\n1. Open Android Settings → System → Languages &amp; input → Text-to-speech output.\n2. Tap Settings icon next to Preferred engine → Install voice data.\n3. Download speech data for this language.</string>
+    <string name="btn_open_settings">Open Settings</string>
     <string name="speed_normal">1.0x</string>
     <string name="speed_slow">0.75x</string>
 

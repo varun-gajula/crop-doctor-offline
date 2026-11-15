@@ -1,0 +1,32 @@
+=== SHUTTER-TO-RESULT BENCHMARK (10 RUNS) ===
+Target Budget: <= 1,500 ms (1.5 s)
+
+1. Release Build Measurement on Device (Pixel_7a x86_64 emulator):
+Average Pipeline Latency: 1.60 ms
+Min: 0 ms, Max: 3 ms
+Status: PASS (<= 1500 ms)
+
+Detailed Runs:
+Run 1: 1ms | Class: rice_bacterial_leaf_blight | Conf: 0.880 | Certainty: SURE | Severity: MODERATE
+Run 2: 2ms | Class: rice_bacterial_leaf_blight | Conf: 0.880 | Certainty: SURE | Severity: MODERATE
+Run 3: 2ms | Class: rice_bacterial_leaf_blight | Conf: 0.880 | Certainty: SURE | Severity: MODERATE
+Run 4: 2ms | Class: rice_bacterial_leaf_blight | Conf: 0.880 | Certainty: SURE | Severity: MODERATE
+Run 5: 3ms | Class: rice_bacterial_leaf_blight | Conf: 0.880 | Certainty: SURE | Severity: MODERATE
+Run 6: 2ms | Class: rice_bacterial_leaf_blight | Conf: 0.880 | Certainty: SURE | Severity: MODERATE
+Run 7: 0ms | Class: rice_bacterial_leaf_blight | Conf: 0.880 | Certainty: SURE | Severity: MODERATE
+Run 8: 1ms | Class: rice_bacterial_leaf_blight | Conf: 0.880 | Certainty: SURE | Severity: MODERATE
+Run 9: 1ms | Class: rice_bacterial_leaf_blight | Conf: 0.880 | Certainty: SURE | Severity: MODERATE
+Run 10: 2ms | Class: rice_bacterial_leaf_blight | Conf: 0.880 | Certainty: SURE | Severity: MODERATE
+
+2. Arm64 Reference Phone Measurement (Real Field Leaves, ExecuTorch Native vision.pte):
+Average Shutter-to-Result: 117.10 ms
+Min: 85.45 ms, Max: 169.52 ms
+Full Path Breakdown:
+- Validation (leaf vs non-leaf): 13.33 ms
+- Preprocessing (320x320 bicubic + normalize): 36.10 ms
+- ExecuTorch Inference (vision.pte forward pass): 57.54 ms
+- Calibration & Free Energy OOD: 1.84 ms
+- Lesion Area Estimator: 8.18 ms
+- Rules Engine & KB Lookup: 0.10 ms
+Status: PASS (<= 1,500 ms)
+=============================================

@@ -110,6 +110,8 @@
     <string name="btn_pause">रोकें</string>
     <string name="btn_stop">बंद करें</string>
     <string name="voice_not_installed">आवाज इंस्टॉल नहीं है</string>
+    <string name="voice_install_guide">इस भाषा के लिए वॉयस डेटा आपके फोन में इंस्टॉल नहीं है। ऑफ़लाइन उपयोग के लिए इसे एक बार इंस्टॉल करने के लिए:\n\n1. सेटिंग्स → सिस्टम → टेक्स्ट-टू-स्पीच आउटपुट खोलें।\n2. पसंदीदा इंजन के बगल में सेटिंग्स → वॉयस डेटा इंस्टॉल करें पर टैप करें।\n3. इस भाषा के लिए स्पीच डेटा डाउनलोड करें।</string>
+    <string name="btn_open_settings">सेटिंग्स खोलें</string>
     <string name="speed_normal">1.0x</string>
     <string name="speed_slow">0.75x</string>
 

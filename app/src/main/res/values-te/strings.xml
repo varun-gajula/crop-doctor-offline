@@ -110,6 +110,8 @@
     <string name="btn_pause">పాజ్</string>
     <string name="btn_stop">ఆపండి</string>
     <string name="voice_not_installed">వాయిస్ ఇన్‌స్టాల్ చేయబడలేదు</string>
+    <string name="voice_install_guide">ఈ భాషకు వాయిస్ డేటా మీ ఫోన్‌లో ఇన్‌స్టాల్ చేయబడలేదు. ఆఫ్‌లైన్ ఉపయోగం కోసం ఒకసారి ఇన్‌స్టాల్ చేయడానికి:\n\n1. సెట్టింగ్‌లు → సిస్టమ్ → టెక్స్ట్-టు-స్పీచ్ అవుట్‌పుట్ తెరవండి.\n2. ఇష్టపడే ఇంజిన్ పక్కన సెట్టింగ్‌లు → వాయిస్ డేటాను ఇన్‌స్టాల్ చేయండి నొక్కండి.\n3. ఈ భాష కోసం స్పీచ్ డేటాను డౌన్‌లోడ్ చేసుకోండి.</string>
+    <string name="btn_open_settings">సెట్టింగ్‌లు తెరవండి</string>
     <string name="speed_normal">1.0x</string>
     <string name="speed_slow">0.75x</string>
 
