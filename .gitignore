@@ -61,3 +61,5 @@ local.properties
 # Benchmarks raw logs (keep scripts and summaries, ignore huge dumps)
 *.hprof
 *.prof
+
+test_images/
