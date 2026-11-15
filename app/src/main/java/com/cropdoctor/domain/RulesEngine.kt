@@ -14,6 +14,18 @@ object RulesEngine {
         CHEMICAL_FIRST
     }
 
+    enum class FieldSpread {
+        FEW_PLANTS,
+        SOME,
+        MOST
+    }
+
+    enum class UrgencyLevel {
+        EARLY_WARNING,
+        ACT_THIS_WEEK,
+        ACT_NOW
+    }
+
     /**
      * Maps raw classifier confidence to farmer-readable certainty bands:
      * - Sure: >= 0.80
@@ -37,10 +49,41 @@ object RulesEngine {
     }
 
     /**
-     * openTier decision logic:
-     * - Mild: Natural tier opened first
-     * - Moderate: Both shown
-     * - Severe: Chemical tier + extension worker first
+     * Requirement F4 / Task G3:
+     * Combines leaf-damage severity band with the farmer's field spread answer into an urgency level.
+     * Full decision table documented in docs/RULES.md.
+     */
+    fun calculateUrgency(severityBand: SeverityBand, fieldSpread: FieldSpread): UrgencyLevel {
+        return when (severityBand) {
+            SeverityBand.MILD -> when (fieldSpread) {
+                FieldSpread.FEW_PLANTS -> UrgencyLevel.EARLY_WARNING
+                FieldSpread.SOME -> UrgencyLevel.ACT_THIS_WEEK
+                FieldSpread.MOST -> UrgencyLevel.ACT_NOW
+            }
+            SeverityBand.MODERATE -> when (fieldSpread) {
+                FieldSpread.FEW_PLANTS -> UrgencyLevel.ACT_THIS_WEEK
+                FieldSpread.SOME, FieldSpread.MOST -> UrgencyLevel.ACT_NOW
+            }
+            SeverityBand.SEVERE -> UrgencyLevel.ACT_NOW
+        }
+    }
+
+    /**
+     * openTier decision logic based on UrgencyLevel:
+     * - Early Warning: Natural tier opened first
+     * - Act This Week: Both shown
+     * - Act Now: Chemical tier + extension worker first
+     */
+    fun determineOpenTier(urgencyLevel: UrgencyLevel): OpenTier {
+        return when (urgencyLevel) {
+            UrgencyLevel.EARLY_WARNING -> OpenTier.NATURAL_FIRST
+            UrgencyLevel.ACT_THIS_WEEK -> OpenTier.BOTH_SHOWN
+            UrgencyLevel.ACT_NOW -> OpenTier.CHEMICAL_FIRST
+        }
+    }
+
+    /**
+     * openTier decision logic (fallback by severity alone).
      */
     fun determineOpenTier(severityBand: SeverityBand): OpenTier {
         return when (severityBand) {
@@ -51,8 +94,20 @@ object RulesEngine {
     }
 
     /**
-     * Referral rule: Not sure or severe -> red "Talk to an extension officer" button
+     * Determines whether the field spread question should be shown.
+     * Question is shown for "Sure" and "Probably", and skipped for "Not sure" or healthy plants.
      */
+    fun shouldShowFieldSpreadQuestion(certaintyBand: CertaintyBand, isHealthy: Boolean = false): Boolean {
+        return certaintyBand != CertaintyBand.NOT_SURE && !isHealthy
+    }
+
+    /**
+     * Referral rule: Not sure, severe, or Act Now urgency -> red "Talk to an extension officer" button.
+     */
+    fun shouldShowExtensionWorker(certaintyBand: CertaintyBand, urgencyLevel: UrgencyLevel): Boolean {
+        return certaintyBand == CertaintyBand.NOT_SURE || urgencyLevel == UrgencyLevel.ACT_NOW
+    }
+
     fun shouldShowExtensionWorker(certaintyBand: CertaintyBand, severityBand: SeverityBand): Boolean {
         return certaintyBand == CertaintyBand.NOT_SURE || severityBand == SeverityBand.SEVERE
     }

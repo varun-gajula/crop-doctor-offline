@@ -321,6 +321,25 @@ class MainActivity : ComponentActivity() {
                                 "region_telangana" -> switchRegion("Telangana")
                                 "region_andhra" -> switchRegion("Andhra Pradesh")
                                 "region_other" -> switchRegion("Other")
+                                "show_mild_chilli" -> {
+                                    KnowledgeBase.initialize(this@MainActivity)
+                                    val kb = KnowledgeBase.getEntry("chilli_leaf_curl_virus")
+                                        ?: KnowledgeBase.getAllEntries().first()
+                                    val result = ClassifierResult(
+                                        classId = "chilli_leaf_curl_virus",
+                                        displayName = kb.names.forLanguage(selectedLanguage),
+                                        confidence = 0.90f,
+                                        severityBand = SeverityBand.MILD,
+                                        certaintyBand = CertaintyBand.SURE,
+                                        lesionFraction = 0.05f,
+                                        inferenceTimeMs = 82L,
+                                        memoryUsedMb = 120L,
+                                        isDemoMode = false
+                                    )
+                                    classifierResult = result
+                                    activeKbEntry = kb
+                                    navigateTo(AppScreen.RESULT)
+                                }
                                 "show_chilli" -> {
                                     KnowledgeBase.initialize(this@MainActivity)
                                     val kb = KnowledgeBase.getEntry("chilli_leaf_curl_virus")

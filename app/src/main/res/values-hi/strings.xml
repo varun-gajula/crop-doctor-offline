@@ -144,4 +144,19 @@
     <string name="regional_advisory_title">क्षेत्रीय सलाह</string>
     <string name="advice_source">सलाह स्रोत: %1$s</string>
     <string name="same_advice_all_regions">सभी क्षेत्रों के लिए समान सलाह</string>
+
+    <!-- Urgency and Field Spread (Requirement F4, F11 / Task G3) -->
+    <string name="field_spread_question">खेत का कितना हिस्सा प्रभावित है?</string>
+    <string name="field_spread_few_plants">कुछ पौधे</string>
+    <string name="field_spread_some">कुछ हिस्सा</string>
+    <string name="field_spread_most">अधिकांश खेत</string>
+    <string name="urgency_title">कार्रवाई की तात्कालिकता</string>
+    <string name="urgency_early_warning">प्रारंभिक चेतावनी</string>
+    <string name="urgency_act_this_week">इस सप्ताह कार्रवाई करें</string>
+    <string name="urgency_act_now">तत्काल कार्रवाई करें</string>
+    <string name="urgency_desc_early_warning">संक्रमण कम है। खेत की निगरानी करें और निवारक उपाय करें।</string>
+    <string name="urgency_desc_act_this_week">मध्यम फैलाव। बीमारी को फैलने से रोकने के लिए 3-5 दिनों में उपचार करें।</string>
+    <string name="urgency_desc_act_now">अत्यधिक जरूरी! फसल के नुकसान को रोकने के लिए तुरंत सुधारात्मक कार्रवाई करें।</string>
+    <string name="watch_for_title">आने वाले दिनों में क्या देखना है</string>
+    <string name="watch_for_content">हर 2-3 दिनों में पत्तियों के निचले हिस्से में धब्बों या कीटों के विस्तार की जांच करें। हवा की दिशा में पड़ोसी पौधों का निरीक्षण करें। यदि लक्षण फैलते हैं, तो तुरंत नियंत्रण शुरू करें।</string>
 </resources>

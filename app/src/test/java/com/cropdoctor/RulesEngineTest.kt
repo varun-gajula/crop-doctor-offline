@@ -179,4 +179,99 @@ class RulesEngineTest {
         assertTrue("Advisory must contain Immediate Step when SURE", sureAdvice.contains("Immediate Step: Drain excess water immediately."))
         assertTrue("Advisory must contain Severity Guidance when SURE", sureAdvice.contains("Severity Guidance (MILD): Monitor field weekly."))
     }
+
+    /**
+     * Requirement F4 / Task G3: Unit test verifying every single combination of the 9-cell
+     * decision matrix documented in docs/RULES.md.
+     */
+    @Test
+    fun testCalculateUrgencyAll9Combinations() {
+        // 1. MILD Leaf Damage:
+        // - Few plants -> EARLY_WARNING
+        assertEquals(
+            RulesEngine.UrgencyLevel.EARLY_WARNING,
+            RulesEngine.calculateUrgency(SeverityBand.MILD, RulesEngine.FieldSpread.FEW_PLANTS)
+        )
+        // - Some -> ACT_THIS_WEEK
+        assertEquals(
+            RulesEngine.UrgencyLevel.ACT_THIS_WEEK,
+            RulesEngine.calculateUrgency(SeverityBand.MILD, RulesEngine.FieldSpread.SOME)
+        )
+        // - Most -> ACT_NOW
+        assertEquals(
+            RulesEngine.UrgencyLevel.ACT_NOW,
+            RulesEngine.calculateUrgency(SeverityBand.MILD, RulesEngine.FieldSpread.MOST)
+        )
+
+        // 2. MODERATE Leaf Damage:
+        // - Few plants -> ACT_THIS_WEEK
+        assertEquals(
+            RulesEngine.UrgencyLevel.ACT_THIS_WEEK,
+            RulesEngine.calculateUrgency(SeverityBand.MODERATE, RulesEngine.FieldSpread.FEW_PLANTS)
+        )
+        // - Some -> ACT_NOW
+        assertEquals(
+            RulesEngine.UrgencyLevel.ACT_NOW,
+            RulesEngine.calculateUrgency(SeverityBand.MODERATE, RulesEngine.FieldSpread.SOME)
+        )
+        // - Most -> ACT_NOW
+        assertEquals(
+            RulesEngine.UrgencyLevel.ACT_NOW,
+            RulesEngine.calculateUrgency(SeverityBand.MODERATE, RulesEngine.FieldSpread.MOST)
+        )
+
+        // 3. SEVERE Leaf Damage:
+        // - Few plants -> ACT_NOW
+        assertEquals(
+            RulesEngine.UrgencyLevel.ACT_NOW,
+            RulesEngine.calculateUrgency(SeverityBand.SEVERE, RulesEngine.FieldSpread.FEW_PLANTS)
+        )
+        // - Some -> ACT_NOW
+        assertEquals(
+            RulesEngine.UrgencyLevel.ACT_NOW,
+            RulesEngine.calculateUrgency(SeverityBand.SEVERE, RulesEngine.FieldSpread.SOME)
+        )
+        // - Most -> ACT_NOW
+        assertEquals(
+            RulesEngine.UrgencyLevel.ACT_NOW,
+            RulesEngine.calculateUrgency(SeverityBand.SEVERE, RulesEngine.FieldSpread.MOST)
+        )
+    }
+
+    @Test
+    fun testOpenTierFromUrgencyLevel() {
+        assertEquals(RulesEngine.OpenTier.NATURAL_FIRST, RulesEngine.determineOpenTier(RulesEngine.UrgencyLevel.EARLY_WARNING))
+        assertEquals(RulesEngine.OpenTier.BOTH_SHOWN, RulesEngine.determineOpenTier(RulesEngine.UrgencyLevel.ACT_THIS_WEEK))
+        assertEquals(RulesEngine.OpenTier.CHEMICAL_FIRST, RulesEngine.determineOpenTier(RulesEngine.UrgencyLevel.ACT_NOW))
+    }
+
+    @Test
+    fun testFieldSpreadQuestionSkippedForNotSureAndHealthy() {
+        // Question is shown for SURE or PROBABLY on non-healthy crops
+        assertTrue(RulesEngine.shouldShowFieldSpreadQuestion(CertaintyBand.SURE, isHealthy = false))
+        assertTrue(RulesEngine.shouldShowFieldSpreadQuestion(CertaintyBand.PROBABLY, isHealthy = false))
+
+        // Question is strictly skipped for NOT_SURE
+        assertFalse(RulesEngine.shouldShowFieldSpreadQuestion(CertaintyBand.NOT_SURE, isHealthy = false))
+        assertFalse(RulesEngine.shouldShowFieldSpreadQuestion(CertaintyBand.NOT_SURE, isHealthy = true))
+
+        // Question is skipped for healthy plants
+        assertFalse(RulesEngine.shouldShowFieldSpreadQuestion(CertaintyBand.SURE, isHealthy = true))
+        assertFalse(RulesEngine.shouldShowFieldSpreadQuestion(CertaintyBand.PROBABLY, isHealthy = true))
+    }
+
+    @Test
+    fun testExtensionWorkerReferralWithUrgency() {
+        // ACT_NOW always triggers extension referral
+        assertTrue(RulesEngine.shouldShowExtensionWorker(CertaintyBand.SURE, RulesEngine.UrgencyLevel.ACT_NOW))
+        assertTrue(RulesEngine.shouldShowExtensionWorker(CertaintyBand.PROBABLY, RulesEngine.UrgencyLevel.ACT_NOW))
+
+        // NOT_SURE always triggers referral regardless of urgency
+        assertTrue(RulesEngine.shouldShowExtensionWorker(CertaintyBand.NOT_SURE, RulesEngine.UrgencyLevel.EARLY_WARNING))
+        assertTrue(RulesEngine.shouldShowExtensionWorker(CertaintyBand.NOT_SURE, RulesEngine.UrgencyLevel.ACT_THIS_WEEK))
+
+        // Non-severe certainty with early warning or act this week does not trigger emergency referral
+        assertFalse(RulesEngine.shouldShowExtensionWorker(CertaintyBand.SURE, RulesEngine.UrgencyLevel.EARLY_WARNING))
+        assertFalse(RulesEngine.shouldShowExtensionWorker(CertaintyBand.SURE, RulesEngine.UrgencyLevel.ACT_THIS_WEEK))
+    }
 }
