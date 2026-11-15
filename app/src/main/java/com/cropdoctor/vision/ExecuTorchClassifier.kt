@@ -29,6 +29,7 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
     companion object {
         private const val TAG = "ExecuTorchClassifier"
         const val DEFAULT_INPUT_SIZE = 320
+        const val MODEL_OUTPUT_SIZE = VisionMath.MODEL_OUTPUT_SIZE
     }
 
     private val fakeClassifier = FakeClassifier()
@@ -69,6 +70,10 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
     var isThresholdsLoaded: Boolean = false
         private set
 
+    // Task V5b: Model-to-Label mapping for 25-output model to 21 app classes
+    var modelClassMap: List<Int?> = VisionMath.DEFAULT_MODEL_CLASS_MAP
+        private set
+
     init {
         // Load assets and ExecuTorch model once in a background thread and keep them in memory
         scope.launch {
@@ -79,6 +84,7 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
     private fun loadConfigAndModel() {
         try {
             loadLabels()
+            loadModelClassMap()
             loadPreprocessConfig()
             loadThresholds()
             loadSupportedClasses()
@@ -108,6 +114,42 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
             }
         } catch (e: Exception) {
             Log.e(TAG, "Failed to load labels.json", e)
+        }
+    }
+
+    fun parseModelClassMap(jsonText: String): Boolean {
+        return try {
+            val array = JSONArray(jsonText)
+            val list = mutableListOf<Int?>()
+            for (i in 0 until array.length()) {
+                if (array.isNull(i)) {
+                    list.add(null)
+                } else {
+                    list.add(array.getInt(i))
+                }
+            }
+            modelClassMap = list
+            Log.i(TAG, "Loaded model_class_map.json: size=${list.size}")
+            true
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to parse model_class_map.json", e)
+            false
+        }
+    }
+
+    private fun loadModelClassMap() {
+        try {
+            val names = context.assets.list("") ?: emptyArray()
+            if ("model_class_map.json" in names) {
+                context.assets.open("model_class_map.json").use { stream ->
+                    val text = stream.bufferedReader().use { it.readText() }
+                    parseModelClassMap(text)
+                }
+            } else {
+                Log.w(TAG, "model_class_map.json not found in assets, using default map")
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error loading model_class_map.json", e)
         }
     }
 
@@ -386,25 +428,15 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
             val rawLogits = outputTensor.dataAsFloatArray
             Log.e(TAG, "classify(): rawLogits count=${rawLogits.size}, first 5=[${rawLogits.take(5).joinToString(", ")}]")
 
-            // 3. Temperature Scaling
-            val scaledLogits = VisionMath.applyTemperature(rawLogits, temperature)
-
-            // 4. Free Energy Calculation for OOD Rejection
-            val freeEnergy = VisionMath.computeFreeEnergy(scaledLogits, temperature)
-
-            // 5. Crop Chip Masking & Re-normalization
-            val probabilities = VisionMath.maskAndRenormalize(labels, scaledLogits, cropHint)
-            Log.e(TAG, "classify(): freeEnergy=$freeEnergy, energyThreshold=$curEnergyThresh")
-
-            // 6. Diagnosis Evaluation with Confidence Thresholds, Top-3 & Blocked Classes (Task V2)
-            val eval = VisionMath.evaluateDiagnosis(
-                labels = labels,
-                probabilities = probabilities,
+            // 3. Task V5b: Evaluate 25 model outputs with modelClassMap mapping to 21 classes
+            val eval = VisionMath.evaluateModel25Output(
+                rawLogits = rawLogits,
+                modelClassMap = modelClassMap,
+                labels21 = labels,
+                temperature = temperature,
                 thresholds = classThresholds,
                 defaultThreshold = curDefaultThresh,
-                freeEnergy = freeEnergy,
-                energyThreshold = curEnergyThresh,
-                unsupportedClasses = unsupportedClasses
+                energyThreshold = curEnergyThresh
             )
             Log.e(TAG, "classify(): eval result -> classId=${eval.classId}, displayName=${eval.displayName}, conf=${eval.confidence}, isOOD=${eval.isOutOfDistribution}, isBelowThresh=${eval.isBelowThreshold}, top3=${eval.top3.map { "${it.classId}:${String.format("%.3f", it.probability)}" }}")
 

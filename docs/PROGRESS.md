@@ -1,6 +1,28 @@
 # Project Progress - Crop Doctor Offline
 
-## Current Status: Release APK, Baseline Profile, Benchmarks, Airplane-Mode & Usability Completed
+## Current Status: Task V5b Complete (Model/Label Mismatch Resolved via ModelClassMap)
+
+### Done in Task V5b: Fix Model/Label Mismatch (Rule H11, Rule H3)
+1. **Added `app/src/main/assets/model_class_map.json`**:
+   - Maps each of the 25 model outputs from bundled `vision.pte` to the 21 app classes.
+   - Maps the 4 dropped classes (original indices 7, 8, 12, 13) to `null`.
+   - All 21 shipped classes reachable exactly once.
+2. **Updated Classifier Architecture (`VisionMath.kt`, `ExecuTorchClassifier.kt`)**:
+   - Softmax over all 25 logits (with temperature).
+   - If top-1 is one of the four nulls, returns "Can't tell" (`classId = "unknown"`, `certaintyBand = NOT_SURE`).
+   - Otherwise maps to the 21-class index and evaluates free energy OOD and confidence threshold gates.
+   - Ignores severity head completely (Rule H5).
+3. **Unit Tests Added (`ModelClassMapTest.kt`)**:
+   - (a) Model output size constant equals 25 (`ExecuTorchClassifier.MODEL_OUTPUT_SIZE`).
+   - (b) Each of the 21 labels is reachable exactly once.
+   - (c) Top-1 in a dropped class gives "Can't tell".
+   - (d) Known case: original index 21 (`maize_common_rust`) maps to the label named `maize_common_rust`.
+   - All 108 unit tests pass (`./gradlew testDebugUnitTest`).
+4. **Phone Installation & Verification on 10 Real Leaf Photos**:
+   - Assembled and installed debug APK onto connected device.
+   - Evaluated 10 real diagnosed leaf photos: 10/10 successfully diagnosed with plausible labels (Tomato Early Blight, Maize Common Rust, Maize Gray Leaf Spot).
+
+---
 
 ### Done: Release APK, Baseline Profile, Benchmarks, Airplane-Mode & Usability (Requirements R1, R7, R8, R9, R14 / Rules H1, H9, H15)
 1. **Release Build Configuration & Baseline Profile:**
