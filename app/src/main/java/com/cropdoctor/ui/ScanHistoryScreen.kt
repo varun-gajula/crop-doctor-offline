@@ -205,6 +205,13 @@ fun ScanHistoryScreen(
                                             fontWeight = FontWeight.Medium
                                         )
                                         Spacer(modifier = Modifier.width(6.dp))
+                                        Text(
+                                            text = "• ${item.type}",
+                                            fontSize = 13.sp,
+                                            color = Color(0xFF616161),
+                                            fontWeight = FontWeight.Medium
+                                        )
+                                        Spacer(modifier = Modifier.width(6.dp))
                                         // Certainty Badge
                                         Text(
                                             text = "• ${item.certaintyWord}",

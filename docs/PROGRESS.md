@@ -1,6 +1,25 @@
 # Project Progress - Crop Doctor Offline
 
-## Current Status: Knowledge Base Enrichment Complete (All 21 Shipped Classes)
+## Current Status: Tasks G1, G2, G3, G4, V2b, V3, V4, and A2 Complete
+
+### Done in Task G4: Review Share Field Report Feature (Requirement F9)
+1. **Field Report Structure Enforced Strictly Per Requirement F9:**
+   - Report text contains ONLY: `Crop`, `Finding`, `Type`, `Severity`, `Certainty`, `Region`, `Date`, `Photo`, and `Note`.
+   - Removed all extraneous content not in F9 (e.g., marketing tagline `"100% Offline AI Diagnosis (ICAR / SAU Grounded)"`).
+2. **Dose & Chemical Safety Hardening (Rule H4 & F9):**
+   - When `dose_verified == false`: The report text strictly contains ZERO active ingredients, zero product names, and zero dosage figures. Even if chemical properties are present on the record, they are suppressed.
+   - When `dose_verified == true`: The report appends verified treatment information (`Treatment: <activeIngredient> (<productExample>) - Dose: <verifiedDose>`).
+   - Farmer notes are automatically sanitized through `GuardrailFilter.sanitize` to scrub any accidental raw dosage numbers.
+3. **Offline Saved Cases Integration:**
+   - Saved cases are persistently stored in local JSON format in `context.filesDir` (zero INTERNET permission).
+   - "Saved Cases" screen (`ScanHistoryScreen.kt`) lists all saved records with thumbnails, problem names, crop, type, certainty, severity, date, region, notes, and direct Android share sheet invocation (`CaseReportRepository.shareCaseReport`).
+   - Accessible directly from `MoreOptionsScreen` ("Saved Case Reports"), `HomeScreen`, and from `SaveCaseReportScreen` ("Saved Cases →").
+4. **Unit Tests & Build:**
+   - Added comprehensive tests in `CaseReportTest.kt` verifying report formatting with verified doses, unverified cases (strictly excluding chemicals and doses), suppression of accidental fields, uncertain cases, and note dosage sanitization.
+   - All 95 unit tests pass (`./gradlew testDebugUnitTest`).
+   - Debug APK assembled (`./gradlew assembleDebug`) and verified on emulator (`emulator-5554`).
+
+---
 
 ### Done in Knowledge Base Enrichment (Task A2/6):
 1. **Three Mandatory Enriched Blocks across All 21 Classes in `en`, `te`, `hi`:**

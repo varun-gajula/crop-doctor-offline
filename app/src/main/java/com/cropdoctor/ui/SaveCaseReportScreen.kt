@@ -60,6 +60,12 @@ fun SaveCaseReportScreen(
     } else {
         kbEntry.names.forLanguage(language)
     }
+    val displayType = if (isUncertain) "N/A" else when (kbEntry.type.lowercase()) {
+        "pest" -> stringResource(R.string.type_pest)
+        "healthy" -> stringResource(R.string.type_healthy)
+        else -> stringResource(R.string.type_disease)
+    }
+    val verifiedChem = kbEntry.treatment.chemical.firstOrNull { it.doseVerified }
 
     val certaintyWord = when (result.certaintyBand) {
         CertaintyBand.SURE -> stringResource(R.string.certainty_sure)
@@ -174,6 +180,13 @@ fun SaveCaseReportScreen(
                     )
                     HorizontalDivider(color = Color(0xFFEEEEEE))
 
+                    // Type (Disease / Pest / Healthy)
+                    ReportDetailRow(
+                        label = stringResource(R.string.report_type),
+                        value = displayType
+                    )
+                    HorizontalDivider(color = Color(0xFFEEEEEE))
+
                     // Certainty (in words: Sure / Probably / Not sure)
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -249,6 +262,15 @@ fun SaveCaseReportScreen(
                         label = stringResource(R.string.report_region),
                         value = region.ifEmpty { "India" }
                     )
+
+                    // Verified Treatment (Only shown if dose_verified is true per Rule H4 & F9)
+                    if (verifiedChem != null) {
+                        HorizontalDivider(color = Color(0xFFEEEEEE))
+                        ReportDetailRow(
+                            label = stringResource(R.string.report_verified_treatment),
+                            value = "${verifiedChem.activeIngredient} (${verifiedChem.productExample}) - ${verifiedChem.dose}"
+                        )
+                    }
                 }
             }
 
@@ -292,13 +314,18 @@ fun SaveCaseReportScreen(
                         context = context,
                         crop = displayCrop,
                         problemLabel = displayProblem,
+                        type = displayType,
                         certaintyWord = certaintyWord,
                         severity = if (isUncertain) "N/A" else severityWord,
                         region = region.ifEmpty { "India" },
                         note = farmerNote,
                         bitmap = capturedBitmap,
                         isUncertain = isUncertain,
-                        classId = result.classId
+                        classId = result.classId,
+                        doseVerified = verifiedChem != null,
+                        activeIngredient = verifiedChem?.activeIngredient,
+                        productExample = verifiedChem?.productExample,
+                        verifiedDose = verifiedChem?.dose
                     )
                     savedReport = report
                     isSaved = true
@@ -330,13 +357,18 @@ fun SaveCaseReportScreen(
                     val reportToShare = savedReport ?: CaseReport(
                         crop = displayCrop,
                         problemLabel = displayProblem,
+                        type = displayType,
                         certaintyWord = certaintyWord,
                         severity = if (isUncertain) "N/A" else severityWord,
                         region = region.ifEmpty { "India" },
                         dateString = currentDateStr,
                         note = farmerNote,
                         isUncertain = isUncertain,
-                        classId = result.classId
+                        classId = result.classId,
+                        doseVerified = verifiedChem != null,
+                        activeIngredient = verifiedChem?.activeIngredient,
+                        productExample = verifiedChem?.productExample,
+                        verifiedDose = verifiedChem?.dose
                     )
                     CaseReportRepository.shareCaseReport(context, reportToShare)
                 },

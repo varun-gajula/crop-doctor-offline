@@ -42,6 +42,7 @@ object ScanHistoryRepository {
             context = context,
             crop = crop.replaceFirstChar { it.uppercase() },
             problemLabel = diseaseName,
+            type = if (isUncertain) "N/A" else "Disease",
             certaintyWord = certaintyWord,
             severity = if (isUncertain) "N/A" else severity,
             region = "India",
