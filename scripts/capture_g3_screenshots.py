@@ -28,16 +28,22 @@ def scroll_to_field_question():
     time.sleep(0.8)
 
 def tap_spread_option(option_name):
-    dump = adb("exec-out uiautomator dump /dev/tty")
-    m = re.search(rf'text="([^"]*{option_name}[^"]*)"[^>]*bounds="\[(\d+),(\d+)\]\[(\d+),(\d+)\]"', dump)
-    if m:
-        x = (int(m.group(2)) + int(m.group(4))) // 2
-        y = (int(m.group(3)) + int(m.group(5))) // 2
-        print(f"Tapping '{option_name}' at ({x}, {y})")
-        adb(f"shell input tap {x} {y}")
-        time.sleep(1.0)
-    else:
-        print(f"Could not find button for '{option_name}'")
+    for attempt in range(3):
+        dump = adb("exec-out uiautomator dump /dev/tty")
+        m = re.search(rf'text="([^"]*{re.escape(option_name)}[^"]*)"[^>]*bounds="\[(\d+),(\d+)\]\[(\d+),(\d+)\]"', dump)
+        if m:
+            x = (int(m.group(2)) + int(m.group(4))) // 2
+            y = (int(m.group(3)) + int(m.group(5))) // 2
+            print(f"Tapping '{option_name}' at ({x}, {y})")
+            adb(f"shell input tap {x} {y}")
+            time.sleep(1.0)
+            return True
+        else:
+            print(f"Attempt {attempt+1}: '{option_name}' not in view, scrolling slightly...")
+            adb("shell input swipe 540 1400 540 1100 200")
+            time.sleep(0.6)
+    print(f"Could not find button for '{option_name}'")
+    return False
 
 def capture(filename):
     os.makedirs("benchmarks", exist_ok=True)
