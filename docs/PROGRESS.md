@@ -1,6 +1,27 @@
 # Project Progress - Crop Doctor Offline
 
-## Current Status: Task V5b Complete (Model/Label Mismatch Resolved via ModelClassMap)
+## Current Status: Task L1 Complete (Severity / Lesion Area Estimate Audit & Refactor)
+
+### Done in Task L1: Severity (Lesion Area) Estimate Audit & Refactor (Rules H11, H12, H15)
+1. **Audited Saturated 95.0% Anomaly**:
+   - Identified root cause in `LesionAreaEstimator.kt` line 78: arbitrary multiplier `spotRatio * 1.2f` caused any spot ratio $\ge 0.80$ to saturate the hard-coded `.coerceIn(0.0f, 0.95f)` clamp.
+   - Plant segmentation erroneously allowed non-foliage browns into `totalFoliageCount` AND counted them as `darkSpotCount`.
+   - Neutral backgrounds with minor sensor noise were miscounted as diseased foliage.
+2. **Re-engineered `LesionAreaEstimator.kt` with Robust Botanical Segmentation**:
+   - Multi-stage background exclusion: eliminates deep shadow ($v < 0.15$), bright glare ($v > 0.92, s < 0.18$), neutral/gray surfaces ($s < 0.12$), low color variance ($|r-g|+|g-b|+|b-r| < 25$), and non-plant hues ($180^\circ..330^\circ$).
+   - Strict leaf segmentation: isolates healthy green foliage ($50^\circ..175^\circ$), chlorosis ($35^\circ..50^\circ$), rust ($14^\circ..34^\circ$), necrosis ($12^\circ..40^\circ$), and fungal mold.
+   - Evaluates lesion proportion strictly within segmented leaf tissue (`totalLeaf`), completely eliminating arbitrary clamping.
+   - If foliage coverage is below threshold ($< 0.12\%$ foliage or $< 0.36\%$ total leaf), returns `isLeafFound = false, status = "no leaf found", fraction = 0.0f`.
+3. **Artifacts Generated & Validated**:
+   - Saved 10 composite overlays in `benchmarks/lesion_masks/` showing original photo on left and lesion mask on right.
+   - Generated `benchmarks/lesion_masks/summary.csv` recording old vs new fractions, pixel counts, and status.
+4. **Unit Tests Added (`LesionAreaEstimatorTest.kt`)**:
+   - `testSyntheticFullyGreenLeafYieldsUnderTwoPercent`: all-green yields $0.0\% < 2.0\%$.
+   - `testSyntheticLeafWithTwentyPercentBrownPatchYieldsAboutTwentyPercent`: $20\%$ brown necrosis yields $20.0\%$ (within $15\% - 25\%$).
+   - `testSyntheticPlainBackgroundYieldsNoLeafFound`: gray, white, and dark backgrounds yield `status = "no leaf found"` and `fraction = 0.0f`.
+   - Total unit tests: 111 passed, 0 failures. Built debug APK successfully.
+
+---
 
 ### Done in Task V5b: Fix Model/Label Mismatch (Rule H11, Rule H3)
 1. **Added `app/src/main/assets/model_class_map.json`**:

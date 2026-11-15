@@ -1,0 +1,11 @@
+photo_index,file_name,old_lesion_fraction,new_lesion_fraction,status,leaf_pixel_count,lesion_pixel_count,overlay_image
+1,IMG_20261114_142908958.jpg,0.1363,0.0427,leaf detected,2293,98,IMG_20261114_142908958_overlay.png
+2,image-1794556664071.jpg,0.9500,1.0000,leaf detected,288,288,image-1794556664071_overlay.png
+3,image-1794556767020.jpg,0.9500,0.9920,leaf detected,125,124,image-1794556767020_overlay.png
+4,image-1794556853285.jpg,0.9500,0.0000,no leaf found,48,0,image-1794556853285_overlay.png
+5,image-1794556874503.jpg,0.2848,0.0000,no leaf found,8,0,image-1794556874503_overlay.png
+6,image-1794556884748.jpg,0.9500,0.9571,leaf detected,70,67,image-1794556884748_overlay.png
+7,image-1794556904743.jpg,0.9368,1.0000,leaf detected,28,28,image-1794556904743_overlay.png
+8,image-1794556930132.jpg,0.9500,0.9928,leaf detected,138,137,image-1794556930132_overlay.png
+9,image-1794556956978.jpg,0.9500,0.9765,leaf detected,85,83,image-1794556956978_overlay.png
+10,image-1794556986200.jpg,0.9391,0.0000,no leaf found,7,0,image-1794556986200_overlay.png

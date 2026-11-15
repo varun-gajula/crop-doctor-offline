@@ -36,6 +36,8 @@ benchmarks/dummy_realtest/
 !data/source_class_map.csv
 !data/class_counts.csv
 !benchmarks/realtest_results.csv
+!benchmarks/lesion_masks/summary.csv
+test_photos/
 
 # Gradle & Android Build Outputs
 .gradle/
