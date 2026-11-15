@@ -24,10 +24,6 @@
       -2.0,
       -2.0,
       -2.0,
-      -2.0,
-      -2.0,
-      -2.0,
-      -2.0,
       -2.0
     ],
     "temperature": 1.15,
@@ -35,8 +31,8 @@
     "expected_top1_prob": 0.9407
   },
   {
-    "sample_id": "sample_2_cotton_clcv",
-    "description": "High confidence Cotton Leaf Curl Virus with Cotton crop chip",
+    "sample_id": "sample_2_cotton_bb",
+    "description": "High confidence Cotton Bacterial Blight with Cotton crop chip",
     "crop_hint": "cotton",
     "logits": [
       -2.0,
@@ -44,12 +40,8 @@
       -2.0,
       -2.0,
       -2.0,
-      0.5,
-      -2.0,
       5.0,
-      -2.0,
-      -2.0,
-      -2.0,
+      0.5,
       -2.0,
       -2.0,
       -2.0,
@@ -66,8 +58,8 @@
       -2.0
     ],
     "temperature": 1.15,
-    "expected_top1_label": "cotton_leaf_curl_virus",
-    "expected_top1_prob": 0.9739
+    "expected_top1_label": "cotton_bacterial_blight",
+    "expected_top1_prob": 0.9782
   },
   {
     "sample_id": "sample_3_chilli_spot",
@@ -82,11 +74,7 @@
       -1.5,
       -1.5,
       -1.5,
-      -1.5,
-      -1.5,
       4.2,
-      -1.5,
-      -1.5,
       -1.5,
       -1.5,
       1.2,
@@ -102,17 +90,13 @@
     ],
     "temperature": 1.15,
     "expected_top1_label": "chilli_bacterial_spot",
-    "expected_top1_prob": 0.8094
+    "expected_top1_prob": 0.8283
   },
   {
     "sample_id": "sample_4_tomato_early_blight",
     "description": "Tomato Early Blight with Tomato crop chip masking",
     "crop_hint": "tomato",
     "logits": [
-      -1.0,
-      -1.0,
-      -1.0,
-      -1.0,
       -1.0,
       -1.0,
       -1.0,
@@ -160,10 +144,6 @@
       -2.0,
       -2.0,
       -2.0,
-      -2.0,
-      -2.0,
-      -2.0,
-      -2.0,
       0.8,
       4.6,
       -2.0,
@@ -172,6 +152,6 @@
     ],
     "temperature": 1.15,
     "expected_top1_label": "maize_common_rust",
-    "expected_top1_prob": 0.9003
+    "expected_top1_prob": 0.9109
   }
 ]

@@ -1,0 +1,365 @@
+[
+  {
+    "class_id": "cotton_leaf_curl_virus",
+    "index": 7,
+    "crop": "cotton",
+    "type": "disease",
+    "pathogen": "Cotton leaf curl virus (CLCuV)",
+    "names": {
+      "en": "Cotton Leaf Curl Virus",
+      "te": "పత్తి ఆకుముడుత వైరస్ తెగులు",
+      "hi": "कपास का पत्ती मरोड़ विषाणु (लीफ़ कर्ल)"
+    },
+    "needs_expert_review": true,
+    "referral_threshold": "MODERATE",
+    "severity_advice": {
+      "MILD": {
+        "en": "Upward or downward curling of young leaves and thickening of veins. Manage whitefly vectors.",
+        "te": "లేత ఆకులు పైకి లేదా కిందికి ముడుచుకుపోవడం మరియు ఈనెలు మందంగా మారడం. తెల్లదోమను అరికట్టండి.",
+        "hi": "नई पत्तियों का ऊपर या नीचे मुड़ना और नसों का मोटा होना। सफेद मक्खी का नियंत्रण करें।"
+      },
+      "MODERATE": {
+        "en": "Enations (leaf-like outgrowths) under leaves, stunted growth. Rogue out infected plants; spray whitefly control.",
+        "te": "ఆకుల అడుగున చిన్న ఆకు వంటి పొడుపులు ఏర్పడటం, ఎదుగుదల ఆగడం. రోగగ్రస్థ మొక్కలను పీకివేయండి.",
+        "hi": "पत्तियों के नीचे छोटी पत्ती जैसी गांठें बनना, पौधों का बौना होना। ग्रसित पौधे उखाड़ें।"
+      },
+      "SEVERE": {
+        "en": "Severe stunting, no boll formation. Alert agriculture department immediately.",
+        "te": "మొక్కలు పూర్తిగా గిడసబారి పూత, కాత నిలిచిపోతుంది. వెంటనే వ్యవసాయ విభాగాన్ని సంప్రదించండి.",
+        "hi": "पौधे बिल्कुल नहीं बढ़ते, टिंडे नहीं बनते। तुरंत कृषि विभाग को सूचित करें।"
+      }
+    },
+    "immediate_step": {
+      "en": "There is NO chemical cure for the virus. Rogue out infected plants and control the whitefly vector (Bemisia tabaci).",
+      "te": "వైరస్ కు రసాయన నివారణ లేదు. తెగులు సోకిన మొక్కలను పీకి నాశనం చేయండి మరియు తెల్లదోమను నివారించండి.",
+      "hi": "इस वायरस का कोई रासायनिक इलाज नहीं है। रोगी पौधों को उखाड़ें और सफेद मक्खी का नियंत्रण करें।"
+    },
+    "explain_text": {
+      "en": "A begomovirus transmitted exclusively by whiteflies that causes severe leaf distortion, cup-shaped outgrowths, and yield loss.",
+      "te": "ఈ వైరస్ తెల్లదోమ ద్వారా మాత్రమే వ్యాపిస్తుంది. దీనివల్ల ఆకులు ముడుచుకుపోయి పత్తి దిగుబడి తీవ్రంగా పడిపోతుంది.",
+      "hi": "यह वायरस सफेद मक्खी द्वारा फैलता है, जिससे पत्तियां मुड़ जाती हैं और पौधे का विकास रुक जाता है।"
+    },
+    "treatment": {
+      "natural": [
+        {
+          "step": 1,
+          "action": {
+            "en": "Install yellow sticky traps (15-20 traps per acre) at canopy level to monitor and trap whiteflies.",
+            "te": "తెల్లదోమలను ఆకర్షించి చంపడానికి ఎకరాకు 15-20 పసుపు రంగు జిగురు బోర్డులను అమర్చండి.",
+            "hi": "सफेद मक्खी को फंसाने के लिए प्रति एकड़ 15-20 पीले चिपचिपे कार्ड लगाएं।"
+          },
+          "source": "NIPHM IPM Package for Cotton",
+          "source_url": "https://niphm.gov.in",
+          "source_quote": "Yellow sticky traps monitor and suppress whitefly vector population."
+        },
+        {
+          "step": 2,
+          "action": {
+            "en": "Spray Neem oil 1500 ppm or 5% NSKE on lower leaf surface where whiteflies congregate.",
+            "te": "తెల్లదోమలు ఉండే ఆకుల అడుగు భాగాన వేప నూనె (1500 పి.పి.ఎం) లేదా 5% వేప కషాయం పిచికారీ చేయండి.",
+            "hi": "पत्तियों की निचली सतह पर 1500 ppm नीम का तेल या 5% नीम काढ़ा छिड़कें।"
+          },
+          "source": "ICAR-CICR IPM",
+          "source_url": "https://cicr.icar.gov.in",
+          "source_quote": "Neem repels whiteflies and disrupts oviposition."
+        }
+      ],
+      "chemical": [
+        {
+          "step": 1,
+          "active_ingredient": "Diafenthiuron 50% WP or Spiromesifen 22.9% SC (VECTOR CONTROL ONLY)",
+          "product_example": "Pegasus / Oberon",
+          "dose_verified": false,
+          "dose": "follow the product label",
+          "phi_days": null,
+          "safety_line": {
+            "en": "This insecticide targets the whitefly vector only; it does NOT cure the viral infection. Wear mask.",
+            "te": "ఈ పురుగుమందు తెల్లదోమను మాత్రమే చంపుతుంది, వైరస్ ను నయం చేయదు. మాస్క్ ధరించండి.",
+            "hi": "यह दवा केवल सफेद मक्खी को मारती है, वायरस को ठीक नहीं करती। सुरक्षा उपकरण पहनें।"
+          },
+          "source": "CIB&RC Major Uses",
+          "source_url": "https://cibrc.nic.in",
+          "source_quote": "Registered for whitefly management in cotton."
+        }
+      ]
+    },
+    "regional": {
+      "telangana": {
+        "source": "PJTSAU",
+        "differs": false
+      },
+      "andhra_pradesh": {
+        "source": "ANGRAU",
+        "differs": false
+      },
+      "other": {
+        "source": "ICAR",
+        "differs": false
+      }
+    }
+  },
+  {
+    "class_id": "cotton_alternaria_leaf_spot",
+    "index": 8,
+    "crop": "cotton",
+    "type": "disease",
+    "pathogen": "Alternaria macrospora",
+    "names": {
+      "en": "Cotton Alternaria Leaf Spot",
+      "te": "పత్తి ఆల్టర్నేరియా ఆకుమచ్చ తెగులు",
+      "hi": "कपास का अल्टरनेरिया पत्ती धब्बा"
+    },
+    "needs_expert_review": true,
+    "referral_threshold": "SEVERE",
+    "severity_advice": {
+      "MILD": {
+        "en": "Small circular brown spots with concentric rings on older leaves. Maintain plant vigour.",
+        "te": "ముదిరిన ఆకులపై వలయాలు కలిగిన గోధుమరంగు మచ్చలు. మొక్కలకు సరైన బలాన్ని అందించండి.",
+        "hi": "पुरानी पत्तियों पर गोल भूरे धब्बे जिनमें छल्ले दिखते हैं। फसल को मजबूत बनाएं।"
+      },
+      "MODERATE": {
+        "en": "Spots expanding and coalescing, necrotic centers dropping out forming shot-holes. Apply foliar fungicide.",
+        "te": "మచ్చలు పెద్దవై మధ్యలో రంధ్రాలు పడతాయి. ఆకులపై శిలీంద్రనాశిని పిచికారీ చేయండి.",
+        "hi": "धब्बे बड़े होकर आपस में मिल रहे हैं और बीच में छेद हो रहे हैं। कवकनाशी छिड़कें।"
+      },
+      "SEVERE": {
+        "en": "Extensive defoliation; squares and bolls affected. Consult KVK scientist.",
+        "te": "ఆకులు రాలిపోయి పూత, పిందెలు దెబ్బతింటాయి. కృషి విజ్ఞాన కేంద్ర శాస్త్రవేత్తను సంప్రదించండి.",
+        "hi": "पत्तियां झड़ रही हैं और फूल-टिंडे गिर रहे हैं। कृषि विशेषज्ञ से तुरंत संपर्क करें।"
+      }
+    },
+    "immediate_step": {
+      "en": "Avoid water stress and spray potassium nitrate (1%) to boost leaf resistance against Alternaria.",
+      "te": "పైరుకు నీటి ఎద్దడి లేకుండా చూడండి మరియు పొటాషియం నైట్రేట్ (1%) పిచికారీ చేసి ఆకులకు రోగనిరోధక శక్తినివ్వండి.",
+      "hi": "फसल में नमी की कमी न होने दें और 1% पोटेशियम नाइट्रेट का छिड़काव करें।"
+    },
+    "explain_text": {
+      "en": "Fungal pathogen that produces target-board concentric spots on leaves, thriving when high humidity follows rains.",
+      "te": "వర్షాల తర్వాత అధిక తేమ ఉన్నప్పుడు ఈ శిలీంధ్రం వ్యాపించి ఆకులపై వలయాల వంటి మచ్చలను కలిగిస్తుంది.",
+      "hi": "यह फफूंद अधिक नमी में फैलती है और पत्तियों पर गोल छल्लेदार धब्बे बनाती है जिससे पत्तियां गिर जाती हैं।"
+    },
+    "treatment": {
+      "natural": [
+        {
+          "step": 1,
+          "action": {
+            "en": "Spray Cow urine (10%) mixed with asafoetida (hing 1 g/L) or NSKE 5%.",
+            "te": "గోమూత్రం (10%) లో ఇంగువ (1 గ్రా/లీ) లేదా 5% వేప కషాయం కలిపి పిచికారీ చేయండి.",
+            "hi": "10% गोमूत्र में 1 ग्राम हींग या 5% नीम काढ़ा मिलाकर छिड़कें।"
+          },
+          "source": "ANGRAU Traditional Knowledge",
+          "source_url": "https://angrau.ac.in",
+          "source_quote": "Cow urine formulation inhibits fungal mycelial growth."
+        }
+      ],
+      "chemical": [
+        {
+          "step": 1,
+          "active_ingredient": "Mancozeb 75% WP or Propiconazole 25% EC",
+          "product_example": "Indofil M-45 / Tilt",
+          "dose_verified": false,
+          "dose": "follow the product label",
+          "phi_days": null,
+          "safety_line": {
+            "en": "Spray during clear weather. Wear gloves and mask.",
+            "te": "వాతావరణం అనుకూలంగా ఉన్నప్పుడు పిచికారీ చేయండి. గ్లౌజులు, మాస్క్ ధరించండి.",
+            "hi": "साफ मौसम में छिड़काव करें। दस्ताने और मास्क पहनें।"
+          },
+          "source": "CIB&RC Major Uses",
+          "source_url": "https://cibrc.nic.in",
+          "source_quote": "Approved for Alternaria leaf spot in cotton."
+        }
+      ]
+    },
+    "regional": {
+      "telangana": {
+        "source": "PJTSAU",
+        "differs": false
+      },
+      "andhra_pradesh": {
+        "source": "ANGRAU",
+        "differs": false
+      },
+      "other": {
+        "source": "ICAR",
+        "differs": false
+      }
+    }
+  },
+  {
+    "class_id": "chilli_cercospora_leaf_spot",
+    "index": 12,
+    "crop": "chilli",
+    "type": "disease",
+    "pathogen": "Cercospora capsici",
+    "names": {
+      "en": "Chilli Cercospora Leaf Spot (Frog-Eye)",
+      "te": "మిరప సర్కోస్పోరా ఆకుమచ్చ తెగులు",
+      "hi": "मिर्च का सर्कोस्पोरा पत्ती धब्बा (मेंढक आँख)"
+    },
+    "needs_expert_review": true,
+    "referral_threshold": "SEVERE",
+    "severity_advice": {
+      "MILD": {
+        "en": "Circular lesions with grayish-white centers and dark brown prominent borders (frog-eye appearance).",
+        "te": "కప్ప కన్ను వంటి మధ్యలో బూడిద రంగు, అంచులలో ముదురు గోధుమ రంగు మచ్చలు.",
+        "hi": "मेंढक की आँख जैसे धब्बे जिनका केंद्र सफेद और किनारे गहरे भूरे होते हैं।"
+      },
+      "MODERATE": {
+        "en": "Spots coalescing, causing widespread chlorosis and premature leaf drop.",
+        "te": "మచ్చలు కలిసిపోయి ఆకులు పసుపు రంగులోకి మారి రాలిపోతాయి.",
+        "hi": "धब्बे आपस में मिलकर पत्तियों को पीला कर गिरा देते हैं।"
+      },
+      "SEVERE": {
+        "en": "Extensive defoliation leaving bare stems and sunscalded fruit. Contact horticulture officer.",
+        "te": "ఆకులన్నీ రాలిపోయి కాయలు ఎండకు కమిలిపోతాయి. ఉద్యానవన అధికారిని సంప్రదించండి.",
+        "hi": "सारी पत्तियां गिर जाती हैं और फल धूप से झुलस जाते हैं। तुरंत विशेषज्ञ से सलाह लें।"
+      }
+    },
+    "immediate_step": {
+      "en": "Collect and destroy fallen diseased leaves and improve air circulation within the canopy.",
+      "te": "రాలిపడిన తెగులు ఆకులను ఏరి కాల్చండి మరియు మొక్కల మధ్య గాలి ఆడేలా చూడండి.",
+      "hi": "गिरी हुई बीमार पत्तियों को जलाएं और पौधों के बीच हवा का प्रवाह बढ़ाएं।"
+    },
+    "explain_text": {
+      "en": "Fungal disease thriving in warm, wet conditions, producing frog-eye spots that trigger severe defoliation.",
+      "te": "వెచ్చని, తేమతో కూడిన వాతావరణంలో ఈ శిలీంధ్రం వ్యాపించి ఆకులను రాల్చివేసి కాయలు కమిలిపోయేలా చేస్తుంది.",
+      "hi": "गर्म और नम मौसम में यह फफूंद मेंढक की आंख जैसे धब्बे बनाती है जिससे पत्तियां तेजी से गिरती हैं।"
+    },
+    "treatment": {
+      "natural": [
+        {
+          "step": 1,
+          "action": {
+            "en": "Spray Trichoderma harzianum or Bacillus subtilis (5-10 g/L) on foliage.",
+            "te": "ట్రైకోడెర్మా లేదా బాసిల్లస్ సబ్టిలిస్ (5-10 గ్రా/లీ) ఆకులపై పిచికారీ చేయండి.",
+            "hi": "ट्राइकोडर्मा या बैसिलस सबटिलिस (5-10 ग्राम/लीटर) का छिड़काव करें।"
+          },
+          "source": "IIHR Organic Chilli Guidelines",
+          "source_url": "https://iihr.res.in",
+          "source_quote": "Bio-agents effectively antagonize Cercospora conidia."
+        }
+      ],
+      "chemical": [
+        {
+          "step": 1,
+          "active_ingredient": "Mancozeb 75% WP or Azoxystrobin 23% SC",
+          "product_example": "Indofil M-45 / Amistar",
+          "dose_verified": false,
+          "dose": "follow the product label",
+          "phi_days": null,
+          "safety_line": {
+            "en": "Do not spray against the wind. Wash hands and face after application.",
+            "te": "గాలి వీచే దిశకు ఎదురుగా పిచికారీ చేయవద్దు. మందు చల్లిన తర్వాత ముఖం, చేతులు శుభ్రం చేసుకోండి.",
+            "hi": "हवा के विपरीत दिशा में छिड़काव न करें। बाद में हाथ-मुंह धोएं।"
+          },
+          "source": "CIB&RC Major Uses",
+          "source_url": "https://cibrc.nic.in",
+          "source_quote": "Approved for leaf spot in chilli."
+        }
+      ]
+    },
+    "regional": {
+      "telangana": {
+        "source": "PJTSAU",
+        "differs": false
+      },
+      "andhra_pradesh": {
+        "source": "ANGRAU",
+        "differs": false
+      },
+      "other": {
+        "source": "ICAR",
+        "differs": false
+      }
+    }
+  },
+  {
+    "class_id": "chilli_white_spot",
+    "index": 13,
+    "crop": "chilli",
+    "type": "disease",
+    "pathogen": "Cercospora capsici / Choanephora",
+    "names": {
+      "en": "Chilli White Spot Disease",
+      "te": "మిరప తెల్ల మచ్చ తెగులు",
+      "hi": "मिर्च का सफेद धब्बा रोग"
+    },
+    "needs_expert_review": true,
+    "referral_threshold": "SEVERE",
+    "severity_advice": {
+      "MILD": {
+        "en": "Bleached white or light-tan spots on leaf lamina. Ensure good soil drainage.",
+        "te": "ఆకులపై తెల్లటి లేదా లేత గోధుమరంగు మచ్చలు. నీరు నిలవకుండా చూడండి.",
+        "hi": "पत्तियों पर सफेद या हल्के रंग के धब्बे। खेत से जल निकासी अच्छी रखें।"
+      },
+      "MODERATE": {
+        "en": "Spots expanding and becoming papery thin with necrotic borders. Apply broad-spectrum fungicide.",
+        "te": "మచ్చలు పెద్దవై కాగితంలా పలుచగా మారతాయి. శిలీంద్రనాశిని పిచికారీ చేయండి.",
+        "hi": "धब्बे कागज की तरह पतले होकर फैल रहे हैं। कवकनाशी का छिड़काव करें।"
+      },
+      "SEVERE": {
+        "en": "Extensive leaf bleaching and twig dieback. Consult horticulture extension officer.",
+        "te": "ఆకులన్నీ తెల్లబడి కొమ్మలు ఎండిపోతాయి. ఉద్యానవన అధికారిని సంప్రదించండి.",
+        "hi": "पत्तियां पूरी तरह सफेद होकर टहनियां सूखने लगती हैं। विशेषज्ञ से तुरंत मिलें।"
+      }
+    },
+    "immediate_step": {
+      "en": "Drain any waterlogged field furrows and spray broad-spectrum protective bio-fungicide.",
+      "te": "కాలువలలో నిలిచిన నీటిని తొలగించండి మరియు రక్షక శిలీంద్రనాశినిని పిచికారీ చేయండి.",
+      "hi": "खेत में जमा पानी निकालें और फफूंदनाशक का छिड़काव करें।"
+    },
+    "explain_text": {
+      "en": "Fungal infection causing circular bleached-white spots on leaves that turn parchment-like and fragile.",
+      "te": "ఈ శిలీంధ్ర తెగులు వల్ల ఆకులపై తెల్లటి పొక్కు మచ్చలు ఏర్పడి ఆకులు కాగితంలా పలుచబడి రాలిపోతాయి.",
+      "hi": "फफूंद के कारण पत्तियों पर सफेद रंग के धब्बे बनते हैं जो सूखकर कागज जैसे पतले हो जाते हैं।"
+    },
+    "treatment": {
+      "natural": [
+        {
+          "step": 1,
+          "action": {
+            "en": "Spray NSKE 5% or Cow urine distillate (5%) on lower and upper leaf surfaces.",
+            "te": "5% వేప గింజల కషాయం లేదా గోమూత్రం ద్రావణాన్ని ఆకుల పైభాగం, అడుగుభాగం తడిసేలా పిచికారీ చేయండి.",
+            "hi": "5% नीम काढ़ा या गोमूत्र का पत्तियों के दोनों तरफ छिड़काव करें।"
+          },
+          "source": "ANGRAU Chilli Practices",
+          "source_url": "https://angrau.ac.in",
+          "source_quote": "Botanicals arrest foliar leaf spot progression."
+        }
+      ],
+      "chemical": [
+        {
+          "step": 1,
+          "active_ingredient": "Copper Hydroxide 53.8% DF or Mancozeb 75% WP",
+          "product_example": "Kocide / Indofil M-45",
+          "dose_verified": false,
+          "dose": "follow the product label",
+          "phi_days": null,
+          "safety_line": {
+            "en": "Wear gloves and protective apron during preparation. Keep away from water sources.",
+            "te": "మందు కలిపేటప్పుడు గ్లౌజులు ధరించండి. జల వనరులకు దూరంగా ఉంచండి.",
+            "hi": "दवा बनाते समय दस्ताने पहनें और पानी के स्रोतों से दूर रखें।"
+          },
+          "source": "CIB&RC Major Uses",
+          "source_url": "https://cibrc.nic.in",
+          "source_quote": "Approved contact fungicide for foliar spots in chilli."
+        }
+      ]
+    },
+    "regional": {
+      "telangana": {
+        "source": "PJTSAU",
+        "differs": false
+      },
+      "andhra_pradesh": {
+        "source": "ANGRAU",
+        "differs": false
+      },
+      "other": {
+        "source": "ICAR",
+        "differs": false
+      }
+    }
+  }
+]

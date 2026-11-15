@@ -11,14 +11,17 @@ import org.junit.Test
 import java.io.File
 
 /**
- * Task V2 Unit Tests: Blocked & Unsupported Classes
- * 1. data/supported_classes.json marks classes 7, 8, 12, 13 as supported=false with required reasons.
- * 2. Classifier / VisionMath treats a top prediction in an unsupported class as "Can't tell" (unknown / NOT_SURE).
- * 3. Does not retrain or remove them from the 25-way model output.
+ * Task V4 Unit Tests: Verification of Dropped Classes & 21-Class Architecture
+ * 1. Confirms the 4 dropped classes (cotton_leaf_curl_virus, cotton_alternaria_leaf_spot,
+ *    chilli_cercospora_leaf_spot, chilli_white_spot) are completely absent from supported_classes.json,
+ *    labels.json, and thresholds.json.
+ * 2. Confirms supported_classes.json has exactly 21 classes (indices 0..20), all supported=true.
+ * 3. Confirms removed text is safely archived in docs/removed_classes/.
+ * 4. Confirms VisionMath safety: if any class is marked unsupported, it returns "Can't tell" (unknown / NOT_SURE).
  */
 class BlockedClassesHonestyTest {
 
-    private val all25Labels = listOf(
+    private val all21Labels = listOf(
         "rice_bacterial_leaf_blight",       // 0
         "rice_brown_spot",                  // 1
         "rice_leaf_blast",                  // 2
@@ -26,195 +29,172 @@ class BlockedClassesHonestyTest {
         "rice_healthy",                     // 4
         "cotton_bacterial_blight",          // 5
         "cotton_fusarium_wilt",             // 6
-        "cotton_leaf_curl_virus",           // 7  (UNSUPPORTED)
-        "cotton_alternaria_leaf_spot",      // 8  (UNSUPPORTED)
-        "cotton_healthy",                   // 9
-        "chilli_bacterial_spot",            // 10
-        "chilli_leaf_curl_virus",           // 11
-        "chilli_cercospora_leaf_spot",       // 12 (UNSUPPORTED)
-        "chilli_white_spot",                // 13 (UNSUPPORTED)
-        "chilli_healthy",                   // 14
-        "tomato_early_blight",              // 15
-        "tomato_late_blight",               // 16
-        "tomato_yellow_leaf_curl_virus",    // 17
-        "tomato_spider_mites",              // 18
-        "tomato_healthy",                   // 19
-        "maize_gray_leaf_spot",             // 20
-        "maize_common_rust",                // 21
-        "maize_northern_leaf_blight",       // 22
-        "maize_fall_armyworm",              // 23
-        "maize_healthy"                     // 24
+        "cotton_healthy",                   // 7
+        "chilli_bacterial_spot",            // 8
+        "chilli_leaf_curl_virus",           // 9
+        "chilli_healthy",                   // 10
+        "tomato_early_blight",              // 11
+        "tomato_late_blight",               // 12
+        "tomato_yellow_leaf_curl_virus",    // 13
+        "tomato_spider_mites",              // 14
+        "tomato_healthy",                   // 15
+        "maize_gray_leaf_spot",             // 16
+        "maize_common_rust",                // 17
+        "maize_northern_leaf_blight",       // 18
+        "maize_fall_armyworm",              // 19
+        "maize_healthy"                     // 20
+    )
+
+    private val droppedClassIds = setOf(
+        "cotton_leaf_curl_virus",
+        "cotton_alternaria_leaf_spot",
+        "chilli_cercospora_leaf_spot",
+        "chilli_white_spot"
     )
 
     private val thresholds = mapOf(
         "rice_bacterial_leaf_blight" to 0.40f,
-        "cotton_leaf_curl_virus" to 0.40f,
-        "cotton_alternaria_leaf_spot" to 0.40f,
-        "chilli_cercospora_leaf_spot" to 0.40f,
-        "chilli_white_spot" to 0.40f,
+        "cotton_bacterial_blight" to 0.40f,
         "tomato_early_blight" to 0.40f
     )
 
-    private fun loadUnsupportedClassIds(): Set<String> {
-        val candidates = listOf(
-            File("src/main/assets/supported_classes.json"),
-            File("../data/supported_classes.json"),
-            File("data/supported_classes.json")
-        )
-        val target = candidates.firstOrNull { it.exists() }
-            ?: throw IllegalStateException("Could not find supported_classes.json in $candidates")
-
-        val json = Json.parseToJsonElement(target.readText()).jsonObject
-        val unsupported = mutableSetOf<String>()
-        val classesObj = json["classes"]!!.jsonObject
-        for ((_, entryEl) in classesObj) {
-            val entry = entryEl.jsonObject
-            if (entry.containsKey("supported") && !entry["supported"]!!.jsonPrimitive.boolean) {
-                unsupported.add(entry["class_id"]!!.jsonPrimitive.content)
-            }
+    private fun findFile(relativePaths: List<String>): File {
+        for (rel in relativePaths) {
+            val f = File(rel)
+            if (f.exists()) return f
+            val f2 = File("../$rel")
+            if (f2.exists()) return f2
         }
-        return unsupported
+        throw IllegalStateException("Could not find any of $relativePaths")
     }
 
     @Test
-    fun testSupportedClassesJsonMarksClasses7_8_12_13AsUnsupported() {
-        val candidates = listOf(
-            File("src/main/assets/supported_classes.json"),
-            File("../data/supported_classes.json"),
-            File("data/supported_classes.json")
-        )
-        val target = candidates.firstOrNull { it.exists() }
-            ?: throw IllegalStateException("Could not find supported_classes.json in $candidates")
+    fun testSupportedClassesJsonHasExactly21ClassesAllSupported() {
+        val target = findFile(listOf(
+            "app/src/main/assets/supported_classes.json",
+            "src/main/assets/supported_classes.json",
+            "data/supported_classes.json"
+        ))
 
         val json = Json.parseToJsonElement(target.readText()).jsonObject
         val classesObj = json["classes"]!!.jsonObject
 
-        // 1. Verify class 7 (cotton_leaf_curl_virus)
-        val c7 = classesObj["7"]!!.jsonObject
-        assertEquals("cotton_leaf_curl_virus", c7["class_id"]!!.jsonPrimitive.content)
-        assertFalse("Class 7 must have supported=false", c7["supported"]!!.jsonPrimitive.boolean)
-        assertTrue(
-            "Class 7 reason must state fewer than 300 unique photos",
-            c7["reason"]!!.jsonPrimitive.content.contains("fewer than 300 unique photos")
-        )
+        assertEquals("Must have exactly 21 classes", 21, classesObj.size)
 
-        // 2. Verify class 8 (cotton_alternaria_leaf_spot)
-        val c8 = classesObj["8"]!!.jsonObject
-        assertEquals("cotton_alternaria_leaf_spot", c8["class_id"]!!.jsonPrimitive.content)
-        assertFalse("Class 8 must have supported=false", c8["supported"]!!.jsonPrimitive.boolean)
-        assertTrue(
-            "Class 8 reason must state fewer than 300 unique photos",
-            c8["reason"]!!.jsonPrimitive.content.contains("fewer than 300 unique photos")
-        )
-
-        // 3. Verify class 12 (chilli_cercospora_leaf_spot)
-        val c12 = classesObj["12"]!!.jsonObject
-        assertEquals("chilli_cercospora_leaf_spot", c12["class_id"]!!.jsonPrimitive.content)
-        assertFalse("Class 12 must have supported=false", c12["supported"]!!.jsonPrimitive.boolean)
-        assertTrue(
-            "Class 12 reason must state fewer than 300 unique photos",
-            c12["reason"]!!.jsonPrimitive.content.contains("fewer than 300 unique photos")
-        )
-
-        // 4. Verify class 13 (chilli_white_spot)
-        val c13 = classesObj["13"]!!.jsonObject
-        assertEquals("chilli_white_spot", c13["class_id"]!!.jsonPrimitive.content)
-        assertFalse("Class 13 must have supported=false", c13["supported"]!!.jsonPrimitive.boolean)
-        assertTrue(
-            "Class 13 reason must state fewer than 300 unique photos",
-            c13["reason"]!!.jsonPrimitive.content.contains("fewer than 300 unique photos")
-        )
-        assertTrue(
-            "Class 13 reason must state cause unverified",
-            c13["reason"]!!.jsonPrimitive.content.contains("cause unverified")
-        )
-
-        // 5. Verify total 25 classes and all other 21 classes are supported=true
-        assertEquals(25, classesObj.size)
-        var supportedCount = 0
-        var unsupportedCount = 0
-        for (i in 0 until 25) {
+        for (i in 0 until 21) {
             val entry = classesObj[i.toString()]!!.jsonObject
-            if (entry["supported"]!!.jsonPrimitive.boolean) {
-                supportedCount++
-            } else {
-                unsupportedCount++
-            }
-        }
-        assertEquals("Exactly 4 unsupported classes", 4, unsupportedCount)
-        assertEquals("Exactly 21 supported classes", 21, supportedCount)
-    }
-
-    @Test
-    fun testTopPredictionInUnsupportedClassTreatedAsCantTell() {
-        val unsupported = loadUnsupportedClassIds()
-        assertTrue("Must include cotton_leaf_curl_virus", unsupported.contains("cotton_leaf_curl_virus"))
-        assertTrue("Must include cotton_alternaria_leaf_spot", unsupported.contains("cotton_alternaria_leaf_spot"))
-        assertTrue("Must include chilli_cercospora_leaf_spot", unsupported.contains("chilli_cercospora_leaf_spot"))
-        assertTrue("Must include chilli_white_spot", unsupported.contains("chilli_white_spot"))
-
-        val blockedIndices = listOf(7, 8, 12, 13)
-
-        for (blockedIdx in blockedIndices) {
-            val blockedClassId = all25Labels[blockedIdx]
-
-            // Simulate confident top prediction (95% confidence) for the blocked class
-            val probs = FloatArray(25) { 0.002f }
-            probs[blockedIdx] = 0.95f
-
-            val eval = VisionMath.evaluateDiagnosis(
-                labels = all25Labels,
-                probabilities = probs,
-                thresholds = thresholds,
-                defaultThreshold = 0.40f,
-                freeEnergy = -5.0, // Normal in-distribution energy
-                energyThreshold = -1.5,
-                unsupportedClasses = unsupported
-            )
-
-            // Must strictly return "Can't tell" (unknown / NOT_SURE)
-            assertEquals("Top prediction in blocked class $blockedClassId must return 'unknown'", "unknown", eval.classId)
-            assertEquals("Top prediction in blocked class $blockedClassId must return NOT_SURE certainty", CertaintyBand.NOT_SURE, eval.certaintyBand)
-            assertEquals("Top prediction in blocked class $blockedClassId must return referral displayName", "Not sure - ask an extension officer", eval.displayName)
-
-            // UI rules: when certainty is NOT_SURE, severity should never be shown
-            assertFalse("Severity must not be shown for unsupported class", RulesEngine.shouldShowSeverity(eval.certaintyBand))
+            val classId = entry["class_id"]!!.jsonPrimitive.content
+            assertEquals("Index $i must match all21Labels[$i]", all21Labels[i], classId)
+            assertTrue("Class $classId must have supported=true", entry["supported"]!!.jsonPrimitive.boolean)
         }
     }
 
     @Test
-    fun testSupportedClassesAreNotBlocked() {
-        val unsupported = loadUnsupportedClassIds()
+    fun testDroppedClassesAreCompletelyAbsentFromAssets() {
+        val supportedFile = findFile(listOf(
+            "app/src/main/assets/supported_classes.json",
+            "src/main/assets/supported_classes.json",
+            "data/supported_classes.json"
+        ))
+        val supportedText = supportedFile.readText()
 
+        val labelsFile = findFile(listOf(
+            "app/src/main/assets/labels.json",
+            "src/main/assets/labels.json"
+        ))
+        val labelsText = labelsFile.readText()
+
+        val thresholdsFile = findFile(listOf(
+            "app/src/main/assets/thresholds.json",
+            "src/main/assets/thresholds.json",
+            "ml/thresholds.json"
+        ))
+        val thresholdsText = thresholdsFile.readText()
+
+        val kbFile = findFile(listOf(
+            "app/src/main/assets/kb/knowledge_base.json",
+            "src/main/assets/kb/knowledge_base.json",
+            "data/kb/knowledge_base.json"
+        ))
+        val kbText = kbFile.readText()
+
+        for (dropped in droppedClassIds) {
+            assertFalse("dropped class $dropped must NOT be in supported_classes.json", supportedText.contains("\"$dropped\""))
+            assertFalse("dropped class $dropped must NOT be in labels.json", labelsText.contains("\"$dropped\""))
+            assertFalse("dropped class $dropped must NOT be in thresholds.json", thresholdsText.contains("\"$dropped\""))
+            assertFalse("dropped class $dropped must NOT be in knowledge_base.json", kbText.contains("\"$dropped\""))
+        }
+    }
+
+    @Test
+    fun testRemovedClassesAreArchivedInDocs() {
+        val archiveFile = findFile(listOf(
+            "docs/removed_classes/removed_kb_entries.json",
+            "../docs/removed_classes/removed_kb_entries.json"
+        ))
+        assertTrue("Archive file must exist", archiveFile.exists())
+        val archiveText = archiveFile.readText()
+        for (dropped in droppedClassIds) {
+            assertTrue("Archive must preserve $dropped", archiveText.contains("\"$dropped\""))
+        }
+    }
+
+    @Test
+    fun testSimulatedUnsupportedClassIsTreatedAsCantTell() {
+        // If an unsupported class set is passed to evaluateDiagnosis, it must return "Can't tell"
+        val syntheticUnsupported = setOf("cotton_leaf_curl_virus", "synthetic_test_class")
+
+        val probs = FloatArray(21) { 0.002f }
+        probs[0] = 0.95f // Top prediction is index 0
+
+        // Simulate index 0 being in unsupportedClasses
+        val eval = VisionMath.evaluateDiagnosis(
+            labels = all21Labels,
+            probabilities = probs,
+            thresholds = thresholds,
+            defaultThreshold = 0.40f,
+            freeEnergy = -5.0,
+            energyThreshold = -1.5,
+            unsupportedClasses = setOf(all21Labels[0])
+        )
+
+        assertEquals("Blocked class must return 'unknown'", "unknown", eval.classId)
+        assertEquals("Blocked class must return NOT_SURE certainty", CertaintyBand.NOT_SURE, eval.certaintyBand)
+        assertEquals("Blocked class must return referral displayName", "Not sure - ask an extension officer", eval.displayName)
+        assertFalse("Severity must not be shown for unsupported class", RulesEngine.shouldShowSeverity(eval.certaintyBand))
+    }
+
+    @Test
+    fun testSupportedClassesAreDiagnosedCorrectly() {
         // Test Rice Bacterial Leaf Blight (index 0) with 92% confidence
-        val probsRice = FloatArray(25) { 0.003f }
+        val probsRice = FloatArray(21) { 0.003f }
         probsRice[0] = 0.92f
 
         val evalRice = VisionMath.evaluateDiagnosis(
-            labels = all25Labels,
+            labels = all21Labels,
             probabilities = probsRice,
             thresholds = thresholds,
             defaultThreshold = 0.40f,
             freeEnergy = -5.0,
             energyThreshold = -1.5,
-            unsupportedClasses = unsupported
+            unsupportedClasses = emptySet()
         )
 
         assertEquals("Supported rice class must be diagnosed", "rice_bacterial_leaf_blight", evalRice.classId)
         assertEquals("Supported rice class certainty must be SURE", CertaintyBand.SURE, evalRice.certaintyBand)
 
-        // Test Tomato Early Blight (index 15) with 88% confidence
-        val probsTomato = FloatArray(25) { 0.005f }
-        probsTomato[15] = 0.88f
+        // Test Tomato Early Blight (index 11) with 88% confidence
+        val probsTomato = FloatArray(21) { 0.005f }
+        probsTomato[11] = 0.88f
 
         val evalTomato = VisionMath.evaluateDiagnosis(
-            labels = all25Labels,
+            labels = all21Labels,
             probabilities = probsTomato,
             thresholds = thresholds,
             defaultThreshold = 0.40f,
             freeEnergy = -5.0,
             energyThreshold = -1.5,
-            unsupportedClasses = unsupported
+            unsupportedClasses = emptySet()
         )
 
         assertEquals("Supported tomato class must be diagnosed", "tomato_early_blight", evalTomato.classId)

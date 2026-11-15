@@ -34,10 +34,10 @@ class SeverityCalculatorTest {
     @Test
     fun testVirusClassesMinimumSeverityIsModerate() {
         // Even small lesions on leaf curl virus warrant minimum MODERATE due to vector risk
-        val cottonVirus = "cotton_leaf_curl_virus"
-        assertEquals(SeverityBand.MODERATE, SeverityCalculator.calculate(0.02f, cottonVirus))
-        assertEquals(SeverityBand.MODERATE, SeverityCalculator.calculate(0.20f, cottonVirus))
-        assertEquals(SeverityBand.SEVERE, SeverityCalculator.calculate(0.35f, cottonVirus))
+        val chilliVirus = "chilli_leaf_curl_virus"
+        assertEquals(SeverityBand.MODERATE, SeverityCalculator.calculate(0.02f, chilliVirus))
+        assertEquals(SeverityBand.MODERATE, SeverityCalculator.calculate(0.20f, chilliVirus))
+        assertEquals(SeverityBand.SEVERE, SeverityCalculator.calculate(0.35f, chilliVirus))
 
         val tomatoVirus = "tomato_yellow_leaf_curl_virus"
         assertEquals(SeverityBand.MODERATE, SeverityCalculator.calculate(0.05f, tomatoVirus))

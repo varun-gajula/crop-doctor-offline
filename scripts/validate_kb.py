@@ -2,7 +2,7 @@
 """
 Knowledge Base Validator for Crop Doctor.
 Verifies structure, language completeness (en, te, hi), agronomic citations,
-and safety constraints across all 25 classes.
+and safety constraints across all 21 classes.
 """
 
 import json
@@ -18,13 +18,9 @@ REQUIRED_CLASS_IDS = [
     "rice_healthy",
     "cotton_bacterial_blight",
     "cotton_fusarium_wilt",
-    "cotton_leaf_curl_virus",
-    "cotton_alternaria_leaf_spot",
     "cotton_healthy",
     "chilli_bacterial_spot",
     "chilli_leaf_curl_virus",
-    "chilli_cercospora_leaf_spot",
-    "chilli_white_spot",
     "chilli_healthy",
     "tomato_early_blight",
     "tomato_late_blight",
@@ -60,8 +56,8 @@ def validate_kb(kb_path):
         return [f"Invalid JSON: {e}"]
     
     classes = data.get("classes", [])
-    if len(classes) != 25:
-        errors.append(f"Expected exactly 25 classes, found {len(classes)}")
+    if len(classes) != 21:
+        errors.append(f"Expected exactly 21 classes, found {len(classes)}")
     
     found_ids = []
     for idx, item in enumerate(classes):
@@ -191,8 +187,8 @@ def validate_class_lists(base_dir, kb_data):
             import yaml
             with open(yaml_path, "r", encoding="utf-8") as f:
                 cmap = yaml.safe_load(f).get("classes", {})
-            if len(cmap) != 25:
-                errors.append(f"class_map.yaml expected 25 classes, got {len(cmap)}")
+            if len(cmap) != 21:
+                errors.append(f"class_map.yaml expected 21 classes, got {len(cmap)}")
             for idx, cinfo in cmap.items():
                 cid = cinfo.get("class_id")
                 ctype = cinfo.get("type")
@@ -212,8 +208,8 @@ def validate_class_lists(base_dir, kb_data):
         try:
             with open(sp_path, "r", encoding="utf-8") as f:
                 sdata = json.load(f).get("classes", {})
-            if len(sdata) != 25:
-                errors.append(f"{sp_rel} expected 25 classes, got {len(sdata)}")
+            if len(sdata) != 21:
+                errors.append(f"{sp_rel} expected 21 classes, got {len(sdata)}")
             for idx_str, sinfo in sdata.items():
                 cid = sinfo.get("class_id")
                 stype = sinfo.get("type")
@@ -263,7 +259,7 @@ def main():
             print(f"  ... and {len(errors) - 20} more errors.")
         sys.exit(1)
     else:
-        print("PASS: Knowledge Base and class lists verified! All 25 classes have valid 'type' (disease/pest/healthy).")
+        print("PASS: Knowledge Base and class lists verified! All 21 classes have valid 'type' (disease/pest/healthy).")
         sys.exit(0)
 
 if __name__ == "__main__":

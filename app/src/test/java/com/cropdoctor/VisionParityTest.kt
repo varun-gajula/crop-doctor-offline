@@ -36,13 +36,9 @@ class VisionParityTest {
         "rice_healthy",
         "cotton_bacterial_blight",
         "cotton_fusarium_wilt",
-        "cotton_leaf_curl_virus",
-        "cotton_alternaria_leaf_spot",
         "cotton_healthy",
         "chilli_bacterial_spot",
         "chilli_leaf_curl_virus",
-        "chilli_cercospora_leaf_spot",
-        "chilli_white_spot",
         "chilli_healthy",
         "tomato_early_blight",
         "tomato_late_blight",
@@ -59,7 +55,7 @@ class VisionParityTest {
     private val thresholds = mapOf(
         "rice_bacterial_leaf_blight" to 0.40f,
         "rice_healthy" to 0.50f,
-        "cotton_leaf_curl_virus" to 0.40f,
+        "cotton_bacterial_blight" to 0.40f,
         "cotton_healthy" to 0.50f,
         "chilli_bacterial_spot" to 0.40f,
         "chilli_healthy" to 0.50f,
@@ -118,7 +114,7 @@ class VisionParityTest {
 
     @Test
     fun testCropChipMaskingReNormalization() {
-        val logits = FloatArray(25) { 1.0f }
+        val logits = FloatArray(21) { 1.0f }
         val scaled = VisionMath.applyTemperature(logits, 1.15f)
 
         // 1. When Rice is selected, only the 5 rice classes get probabilities and sum to 1.0
@@ -136,14 +132,14 @@ class VisionParityTest {
         assertEquals("Rice classes must sum to 1.0", 1.0f, riceSum, 0.001f)
         assertEquals("Non-rice classes must be 0.0", 0.0f, nonRiceSum, 0.0001f)
 
-        // 2. When Cotton is selected, only the 5 cotton classes get probabilities and sum to 1.0
+        // 2. When Cotton is selected, only the 3 cotton classes get probabilities and sum to 1.0
         val cottonProbs = VisionMath.maskAndRenormalize(labels, scaled, "cotton")
         var cottonSum = 0.0f
         var nonCottonSum = 0.0f
         for (i in labels.indices) {
             if (labels[i].startsWith("cotton_")) {
                 cottonSum += cottonProbs[i]
-                assertEquals(0.20f, cottonProbs[i], 0.001f)
+                assertEquals(1.0f / 3.0f, cottonProbs[i], 0.001f)
             } else {
                 nonCottonSum += cottonProbs[i]
             }
@@ -151,18 +147,18 @@ class VisionParityTest {
         assertEquals("Cotton classes must sum to 1.0", 1.0f, cottonSum, 0.001f)
         assertEquals("Non-cotton classes must be 0.0", 0.0f, nonCottonSum, 0.0001f)
 
-        // 3. When Auto / All is selected, all 25 classes get probabilities and sum to 1.0
+        // 3. When Auto / All is selected, all 21 classes get probabilities and sum to 1.0
         val autoProbs = VisionMath.maskAndRenormalize(labels, scaled, "auto")
         val autoSum = autoProbs.sum()
         assertEquals("Auto classes must sum to 1.0", 1.0f, autoSum, 0.001f)
         for (p in autoProbs) {
-            assertEquals(1.0f / 25.0f, p, 0.001f)
+            assertEquals(1.0f / 21.0f, p, 0.001f)
         }
     }
 
     @Test
     fun testTop3OutputOrdering() {
-        val probs = FloatArray(25) { 0.01f }
+        val probs = FloatArray(21) { 0.01f }
         probs[2] = 0.65f  // rice_leaf_blast
         probs[1] = 0.20f  // rice_brown_spot
         probs[0] = 0.10f  // rice_bacterial_leaf_blight
@@ -182,7 +178,7 @@ class VisionParityTest {
     @Test
     fun testLowConfidenceRoutesToNotSure() {
         // Logits resulting in low probability below threshold (e.g. 0.25 < 0.40)
-        val probs = FloatArray(25) { 0.04f }
+        val probs = FloatArray(21) { 1.0f / 21.0f }
 
         val eval = VisionMath.evaluateDiagnosis(
             labels = labels,
@@ -202,7 +198,7 @@ class VisionParityTest {
     @Test
     fun testHighEnergyOODRoutesToNotSure() {
         // High confidence class but high free energy (OOD / random noise)
-        val probs = FloatArray(25) { 0.0f }
+        val probs = FloatArray(21) { 0.0f }
         probs[0] = 0.90f
         probs[1] = 0.10f
 

@@ -8,7 +8,6 @@ Preprocessing matches Android app and training transforms exactly:
 - Normalization: ImageNet mean [0.485, 0.456, 0.406], std [0.229, 0.224, 0.225]
 - Temperature Scaling: T = 1.15
 - Free Energy calculation: E(x; T) = -T * ln(sum(exp(z_i / T)))
-- Unverified Class Rule: chilli_white_spot forced to 'unknown' ('Can't tell')
 
 Outputs:
 - benchmarks/realtest_results.csv: (file, true_crop, predicted_class, confidence, energy)
@@ -155,15 +154,12 @@ class VisionEvaluator:
         top1_prob = float(probs[top1_idx])
         pred_class = self.labels[top1_idx] if top1_idx < len(self.labels) else "unknown"
 
-        # 5. Task V1 Rule: Chilli class 13 ("chilli_white_spot") has unverified cause
-        is_unverified = (pred_class == "chilli_white_spot")
-
-        # 6. Thresholding & OOD Rejection
+        # 5. Thresholding & OOD Rejection
         required_threshold = float(self.class_thresholds.get(pred_class, self.default_threshold))
         is_ood = free_energy > self.energy_threshold
         is_below_thresh = top1_prob < required_threshold
 
-        if is_ood or is_below_thresh or is_unverified:
+        if is_ood or is_below_thresh:
             accepted = False
             final_pred = "unknown"
         else:
@@ -177,8 +173,7 @@ class VisionEvaluator:
             "energy": free_energy,
             "accepted": accepted,
             "is_ood": is_ood,
-            "is_below_thresh": is_below_thresh,
-            "is_unverified": is_unverified
+            "is_below_thresh": is_below_thresh
         }
 
 def find_photos(data_dir):

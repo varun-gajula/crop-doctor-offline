@@ -6,13 +6,9 @@
   "rice_healthy",
   "cotton_bacterial_blight",
   "cotton_fusarium_wilt",
-  "cotton_leaf_curl_virus",
-  "cotton_alternaria_leaf_spot",
   "cotton_healthy",
   "chilli_bacterial_spot",
   "chilli_leaf_curl_virus",
-  "chilli_cercospora_leaf_spot",
-  "chilli_white_spot",
   "chilli_healthy",
   "tomato_early_blight",
   "tomato_late_blight",
@@ -25,4 +21,3 @@
   "maize_fall_armyworm",
   "maize_healthy"
 ]
-
