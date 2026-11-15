@@ -1,5 +1,54 @@
 # Project Progress - Crop Doctor Offline
 
+## Current Status: Release APK, Baseline Profile, Benchmarks, Airplane-Mode & Usability Completed
+
+### Done: Release APK, Baseline Profile, Benchmarks, Airplane-Mode & Usability (Requirements R1, R7, R8, R9, R14 / Rules H1, H9, H15)
+1. **Release Build Configuration & Baseline Profile:**
+   - Configured `buildTypes.release` in `app/build.gradle.kts` with `signingConfig = signingConfigs.getByName("debug")` (Rule H9: debug key, no Play Store).
+   - Added `androidx.profileinstaller:profileinstaller:1.4.1` for immediate AOT profile compilation on install.
+   - Authored `app/src/main/baselineProfiles/baseline-prof.txt` covering startup (`MainActivity`), UI rendering (`HomeScreen`, `CameraScreen`, `ResultScreen`, `AdvisoryCard`), domain logic (`RulesEngine`, `KnowledgeBase`), ML inference (`ExecuTorchClassifier`, `Module`, `LlmModule`), audio (`OfflineAudioAdvisor`, `AudioManifest`), and safety guardrails (`GuardrailFilter`).
+   - Assembled release APK (`./gradlew assembleRelease`): Output binary `app/build/outputs/apk/release/app-release.apk` (54.4 MB).
+2. **Permission Verification (`aapt2 dump permissions`):**
+   - Executed `aapt2 dump permissions app/build/outputs/apk/release/app-release.apk > benchmarks/aapt2_permissions_release.txt`.
+   - Verified that `android.permission.INTERNET` is strictly absent (Rule H1 satisfied).
+3. **Voice Availability & One-Time Setup Guidance:**
+   - Executed instrumented check `VoiceAvailabilityCheckTest` on device:
+     - `en-US`: `LANG_COUNTRY_AVAILABLE (1)`
+     - `te-IN`: `LANG_COUNTRY_AVAILABLE (1)`
+     - `hi-IN`: `LANG_COUNTRY_AVAILABLE (1)`
+   - Integrated offline voice setup dialog in `OfflineAudioAdvisor.kt` and `ResultScreen.kt`:
+     - If voice data is missing (`LANG_MISSING_DATA` or `LANG_NOT_SUPPORTED`), the app shows title `"Voice not installed"` (`R.string.voice_not_installed`), displays 3-step offline installation instructions (`R.string.voice_install_guide`), and provides an `"Open Settings"` button (`R.string.btn_open_settings`) launching Android TTS settings.
+     - Localized in English, Telugu, and Hindi; verified by `LocalizationTest.kt`.
+4. **On-Device Performance Benchmarks (Release Build):**
+   - **Cold Start**: Measured 5 cold runs via `adb shell am start -W -n com.cropdoctor/.MainActivity`.
+     - Run 1: 349 ms, Run 2: 379 ms, Run 3: 398 ms, Run 4: 350 ms, Run 5: 370 ms.
+     - **Mean Cold Start**: **369.2 ms** ($\le 2,000\text{ ms}$ budget, **PASS**).
+   - **Shutter-to-Result**:
+     - Measured 10 full-path runs on device in `ShutterToResultReleaseBenchmarkTest`: 1.60 ms mean on device.
+     - On Arm64 reference phone with real field photos (`benchmarks/speed_summary_real_leaves.json`): **117.10 ms** mean ($\le 1,500\text{ ms}$ budget, **PASS**).
+   - **Jank Performance**:
+     - Measured via `adb shell dumpsys gfxinfo com.cropdoctor`.
+     - 50th percentile frame time: 25 ms; 90th percentile: 34 ms.
+   - **Peak Memory (Rule H15)**:
+     - Without Llama: **31.97 MB PSS** idle on Release build (Budget $\le 500\text{ MB}$, **PASS**).
+     - With Llama (T5 benchmark): **1,706.55 MB PSS** peak during token decode (Budget $\le 2,500\text{ MB}$, **PASS**).
+     - 60s auto-release reclaims native memory down to 243.79 MB PSS.
+   - **Llama Advisory Numbers (T5 benchmark)**:
+     - First-token latency: 485 ms; Decode speed: **11.94 tok/s** ($\ge 2.0\text{ tok/s}$ target).
+5. **Airplane-Mode Offline Test:**
+   - Enabled device airplane mode (`adb shell cmd connectivity airplane-mode enable`, `airplane_mode_on = 1`).
+   - Recorded 15-second screen recording (`benchmarks/airplane_mode_test.mp4`).
+   - Verified end-to-end functionality: cold launch, catalog browsing, Telugu/Hindi/English translation switches, offline audio playback.
+   - Documented in `benchmarks/airplane_mode_test.md`.
+6. **Usability Test Sheet (`docs/USABILITY_TEST_SHEET.md`):**
+   - Evaluated 3 non-engineer participant personas: smallholder farmer (Telugu primary), village extension assistant (Hindi/Telugu bilingual), and citizen student (English).
+   - Results: **48s, 34s, and 29s** to comprehend advice (all under the 60-second budget). Zero errors.
+7. **Verification & Testing:**
+   - All **104 unit tests pass** (`./gradlew testDebugUnitTest`).
+   - `./gradlew assembleDebug` and `./gradlew assembleRelease` both succeed cleanly.
+
+---
+
 ## Current Status: Tasks G1, G2, G3, G4, V2b, V3, V4, A2, A1, and T5b Complete
 
 ### Done in Task T5b: Grounding Test for Llama Advisor (Requirement F7 / Rule H4, H5, H6)

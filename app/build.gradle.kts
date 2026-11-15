@@ -21,6 +21,7 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = true
+            signingConfig = signingConfigs.getByName("debug")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -58,6 +59,7 @@ dependencies {
     implementation(libs.androidx.camera.view)
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.androidx.profileinstaller)
     // ExecuTorch – official Maven Central artifact (0.6.0 for EO8 SpinQuant & LlmModule)
     implementation("org.pytorch:executorch-android:0.6.0")
     testImplementation(libs.junit)

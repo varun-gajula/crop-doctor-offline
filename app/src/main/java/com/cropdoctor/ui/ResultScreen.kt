@@ -239,6 +239,46 @@ fun ResultScreen(
         )
     }
 
+    // Voice Not Installed Guidance Dialog (Offline Audio & TTS setup)
+    if (audioAdvisor.showVoiceInstallDialog.value) {
+        AlertDialog(
+            onDismissRequest = { audioAdvisor.dismissVoiceInstallDialog() },
+            title = {
+                Text(
+                    text = "🔊 " + stringResource(R.string.voice_not_installed),
+                    fontWeight = FontWeight.Bold,
+                    color = FarmGreenDark,
+                    fontSize = 18.sp
+                )
+            },
+            text = {
+                Text(
+                    text = stringResource(R.string.voice_install_guide),
+                    fontSize = 15.sp,
+                    lineHeight = 22.sp
+                )
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        audioAdvisor.openTtsSettings()
+                        audioAdvisor.dismissVoiceInstallDialog()
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = FarmGreenPrimary)
+                ) {
+                    Text(stringResource(R.string.btn_open_settings))
+                }
+            },
+            dismissButton = {
+                OutlinedButton(
+                    onClick = { audioAdvisor.dismissVoiceInstallDialog() }
+                ) {
+                    Text(stringResource(R.string.close))
+                }
+            }
+        )
+    }
+
     Scaffold(
         topBar = {
             Row(

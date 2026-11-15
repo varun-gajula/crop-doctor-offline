@@ -1,0 +1,44 @@
+Iteration 1:
+Starting: Intent { cmp=com.cropdoctor/.MainActivity }
+Status: ok
+LaunchState: COLD
+Activity: com.cropdoctor/.MainActivity
+TotalTime: 349
+WaitTime: 351
+Complete
+---
+Iteration 2:
+Starting: Intent { cmp=com.cropdoctor/.MainActivity }
+Status: ok
+LaunchState: COLD
+Activity: com.cropdoctor/.MainActivity
+TotalTime: 379
+WaitTime: 385
+Complete
+---
+Iteration 3:
+Starting: Intent { cmp=com.cropdoctor/.MainActivity }
+Status: ok
+LaunchState: COLD
+Activity: com.cropdoctor/.MainActivity
+TotalTime: 398
+WaitTime: 405
+Complete
+---
+Iteration 4:
+Starting: Intent { cmp=com.cropdoctor/.MainActivity }
+Status: ok
+LaunchState: COLD
+Activity: com.cropdoctor/.MainActivity
+TotalTime: 350
+WaitTime: 353
+Complete
+---
+Iteration 5:
+Starting: Intent { cmp=com.cropdoctor/.MainActivity }
+Status: ok
+LaunchState: COLD
+Activity: com.cropdoctor/.MainActivity
+TotalTime: 370
+WaitTime: 377
+Complete

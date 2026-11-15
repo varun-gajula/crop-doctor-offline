@@ -1,6 +1,7 @@
 package com.cropdoctor.advisor
 
 import android.content.Context
+import android.content.Intent
 import android.content.res.AssetFileDescriptor
 import android.media.MediaPlayer
 import android.os.Build
@@ -59,6 +60,12 @@ class OfflineAudioAdvisor(
 
     private val _statusMessage = mutableStateOf<String?>(null)
     val statusMessage: State<String?> = _statusMessage
+
+    private val _showVoiceInstallDialog = mutableStateOf(false)
+    val showVoiceInstallDialog: State<Boolean> = _showVoiceInstallDialog
+
+    private val _missingVoiceLanguage = mutableStateOf("")
+    val missingVoiceLanguage: State<String> = _missingVoiceLanguage
 
     private val queue = mutableListOf<AudioPlayItem>()
     private var currentItemIndex = 0
@@ -238,6 +245,8 @@ class OfflineAudioAdvisor(
         if (avail == TextToSpeech.LANG_MISSING_DATA || avail == TextToSpeech.LANG_NOT_SUPPORTED) {
             val msg = context.getString(R.string.voice_not_installed)
             _statusMessage.value = msg
+            _missingVoiceLanguage.value = language
+            _showVoiceInstallDialog.value = true
             Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
             Log.w(TAG, "TTS voice not available for $language ($avail)")
             playNextInQueue()
@@ -334,6 +343,53 @@ class OfflineAudioAdvisor(
         _isPaused.value = false
         currentItemIndex = 0
         queue.clear()
+    }
+
+    /**
+     * Checks if TTS voice data is installed and available for the given language code ("te", "hi", "en").
+     * Returns TextToSpeech availability status.
+     * If missing, sets showVoiceInstallDialog to true.
+     */
+    fun checkLanguageAvailable(language: String): Int {
+        val locale = when (language.lowercase()) {
+            "te" -> Locale("te", "IN")
+            "hi" -> Locale("hi", "IN")
+            else -> Locale.ENGLISH
+        }
+        val avail = tts?.isLanguageAvailable(locale) ?: TextToSpeech.LANG_NOT_SUPPORTED
+        if (avail == TextToSpeech.LANG_MISSING_DATA || avail == TextToSpeech.LANG_NOT_SUPPORTED) {
+            _missingVoiceLanguage.value = language
+            _showVoiceInstallDialog.value = true
+        }
+        return avail
+    }
+
+    /**
+     * Dismisses the voice install guidance dialog.
+     */
+    fun dismissVoiceInstallDialog() {
+        _showVoiceInstallDialog.value = false
+    }
+
+    /**
+     * Launches system TTS settings to install voice data once for offline use.
+     */
+    fun openTtsSettings() {
+        try {
+            val intent = Intent("com.android.settings.TTS_SETTINGS").apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            }
+            context.startActivity(intent)
+        } catch (e: Exception) {
+            try {
+                val intent = Intent(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA).apply {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                }
+                context.startActivity(intent)
+            } catch (e2: Exception) {
+                Log.e(TAG, "Failed to open TTS settings", e2)
+            }
+        }
     }
 
     /**

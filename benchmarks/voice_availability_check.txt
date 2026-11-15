@@ -1,0 +1,23 @@
+=== TTS VOICE AVAILABILITY CHECK ON DEVICE ===
+Date: 2026-11-15
+Device: Pixel_7a(AVD) - Android 14 (API 34)
+TTS Engine: com.google.android.tts
+
+Measured Results:
+-----------------
+TTS Init Status: 0 (SUCCESS)
+English (en-US): LANG_COUNTRY_AVAILABLE (1)
+Telugu (te-IN): LANG_COUNTRY_AVAILABLE (1)
+Hindi (hi-IN): LANG_COUNTRY_AVAILABLE (1)
+
+Voice Missing Fallback & Setup Guide:
+-------------------------------------
+If TextToSpeech.isLanguageAvailable returns LANG_MISSING_DATA (-1) or LANG_NOT_SUPPORTED (-2):
+1. The app shows toast & dialog "Voice not installed" (R.string.voice_not_installed).
+2. It displays the step-by-step one-time offline setup instructions:
+   "To install the voice once for offline use:
+    1. Open Android Settings -> System -> Languages & input -> Text-to-speech output.
+    2. Tap Settings next to Preferred engine -> Install voice data.
+    3. Download speech data for this language."
+3. Tapping "Open Settings" launches Intent("com.android.settings.TTS_SETTINGS") or Intent(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA).
+==============================================

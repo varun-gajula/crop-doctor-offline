@@ -1,0 +1,30 @@
+# Baseline Profile for Crop Doctor Offline
+# Guides ahead-of-time (AOT) compilation of critical user journeys:
+# 1. App Startup (MainActivity, Navigation, Datastore)
+# 2. Camera & Vision inference (ExecuTorchClassifier, Module)
+# 3. Decision Logic & Rules Engine (RulesEngine, KnowledgeBase)
+# 4. Multilingual Advisory & Safety Guardrail (PromptBuilder, GuardrailFilter)
+# 5. Offline Audio Guidance (OfflineAudioAdvisor, AudioManifest)
+# 6. Result & Advisory UI rendering (ResultScreen, AdvisoryCard)
+
+HSPLcom/cropdoctor/MainActivity;-><init>()V
+HSPLcom/cropdoctor/MainActivity;->onCreate(Landroid/os/Bundle;)V
+HSPLcom/cropdoctor/CropDoctorAppKt;->CropDoctorApp(Lcom/cropdoctor/vision/Classifier;Lcom/cropdoctor/advisor/Advisor;Lcom/cropdoctor/data/UserPreferences;Landroidx/compose/runtime/Composer;I)V
+HSPLcom/cropdoctor/ui/HomeScreenKt;->HomeScreen(Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Landroidx/compose/runtime/Composer;I)V
+HSPLcom/cropdoctor/ui/CameraScreenKt;->CameraScreen(Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function0;Landroidx/compose/runtime/Composer;I)V
+HSPLcom/cropdoctor/ui/ResultScreenKt;->ResultScreen(Lcom/cropdoctor/domain/ClassifierResult;Lkotlin/jvm/functions/Function0;Landroidx/compose/runtime/Composer;I)V
+HSPLcom/cropdoctor/ui/AdvisoryCardKt;->AdvisoryCard(Lcom/cropdoctor/advisor/CaseSpecificAdvisory;Landroidx/compose/runtime/Composer;I)V
+HSPLcom/cropdoctor/advisor/OfflineAudioAdvisor;-><init>(Landroid/content/Context;)V
+HSPLcom/cropdoctor/advisor/OfflineAudioAdvisor;->playSequence(Ljava/util/List;)V
+HSPLcom/cropdoctor/advisor/OfflineAudioAdvisor;->stop()V
+HSPLcom/cropdoctor/advisor/AudioManifest;->parse(Ljava/io/InputStream;)Lcom/cropdoctor/advisor/AudioManifest;
+HSPLcom/cropdoctor/advisor/AudioManifest$Companion;->parse(Ljava/io/InputStream;)Lcom/cropdoctor/advisor/AudioManifest;
+HSPLcom/cropdoctor/domain/RulesEngine;->determineUrgency(Ljava/lang/String;Ljava/lang/String;)Lcom/cropdoctor/domain/UrgencyLevel;
+HSPLcom/cropdoctor/domain/RulesEngine;->buildEnglishAdvisory(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lcom/cropdoctor/advisor/CaseSpecificAdvisory;
+HSPLcom/cropdoctor/advisor/PromptBuilder;->buildPrompt(Lcom/cropdoctor/advisor/AdvisoryContext;)Ljava/lang/String;
+HSPLcom/cropdoctor/advisor/GuardrailFilter;->validate(Ljava/lang/String;Lcom/cropdoctor/advisor/AdvisoryContext;)Lcom/cropdoctor/advisor/GuardrailResult;
+HSPLcom/cropdoctor/knowledge/KnowledgeBase;->load(Landroid/content/Context;)Ljava/util/Map;
+HSPLcom/cropdoctor/vision/ExecuTorchClassifier;-><init>(Landroid/content/Context;)V
+HSPLcom/cropdoctor/vision/ExecuTorchClassifier;->classify(Landroid/graphics/Bitmap;)Lcom/cropdoctor/domain/ClassifierResult;
+HSPLorg/pytorch/executorch/Module;-><init>(Ljava/lang/String;)V
+HSPLorg/pytorch/executorch/LlmModule;-><init>(Ljava/lang/String;)V
