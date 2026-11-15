@@ -144,4 +144,19 @@
     <string name="regional_advisory_title">ప్రాంతీయ సలహా</string>
     <string name="advice_source">సలహా మూలం: %1$s</string>
     <string name="same_advice_all_regions">అన్ని ప్రాంతాలకు ఒకే సలహా</string>
+
+    <!-- Urgency and Field Spread (Requirement F4, F11 / Task G3) -->
+    <string name="field_spread_question">మీ పొలంలో ఎంత భాగం ప్రభావితమైంది?</string>
+    <string name="field_spread_few_plants">కొన్ని మొక్కలు</string>
+    <string name="field_spread_some">కొంత భాగం</string>
+    <string name="field_spread_most">ఎక్కువ భాగం</string>
+    <string name="urgency_title">తీవ్రత &amp; చర్యల ఆవశ్యకత</string>
+    <string name="urgency_early_warning">ముందస్తు హెచ్చరిక</string>
+    <string name="urgency_act_this_week">ఈ వారం చర్య తీసుకోండి</string>
+    <string name="urgency_act_now">వెంటనే చర్య తీసుకోండి</string>
+    <string name="urgency_desc_early_warning">లక్షణాలు తక్కువగా ఉన్నాయి. చేనును గమనిస్తూ నివారణ చర్యలు చేపట్టండి.</string>
+    <string name="urgency_desc_act_this_week">వ్యాప్తి పెరుగుతోంది. తెగులు చేనంతా పాకకముందే 3–5 రోజుల్లో చర్యలు చేపట్టండి.</string>
+    <string name="urgency_desc_act_now">అత్యవసరం! పంట నష్టాన్ని నివారించడానికి తక్షణమే చర్యలు చేపట్టండి.</string>
+    <string name="watch_for_title">రాబోయే రోజుల్లో ఏమి గమనించాలి</string>
+    <string name="watch_for_content">ప్రతి 2-3 రోజులకు ఒకసారి ఆకుల అడుగు భాగాన్ని పరిశీలించండి. తెగులు లేదా పురుగులు పక్క మొక్కలకు వ్యాపిస్తున్నాయో లేదో చూడండి. మచ్చలు పెరిగితే వెంటనే తగిన నివారణ చర్యలు చేపట్టండి.</string>
 </resources>

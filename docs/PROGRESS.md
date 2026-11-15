@@ -1,6 +1,33 @@
 # Project Progress - Crop Doctor Offline
 
-## Current Status: Task G1, Task G2, and Task V2b Complete
+## Current Status: Tasks G1, G2, G3, and V2b Complete
+
+### Done in Task G3: Urgency from Field Spread (Requirements F4, F11, Rules H4, H5)
+1. **One-Tap Field Spread Question (`ResultScreen.kt`):**
+   - After a result with certainty "Sure" or "Probably", the app presents: *"How much of the field is affected?"* (`మీ పొలంలో ఎంత భాగం ప్రభావితమైంది?` / `खेत का कितना हिस्सा प्रभावित है?`).
+   - Three large, farmer-friendly touch targets with icons:
+     - `A few plants` (`కొన్ని మొక్కలు` / `कुछ पौधे`)
+     - `Some` (`కొంత భాగం` / `कुछ हिस्सा`)
+     - `Most` (`ఎక్కువ భాగం` / `अधिकांश खेत`)
+   - Strictly skipped for uncertain results (`CertaintyBand.NOT_SURE`) and healthy plants per Rule H5 & F4.
+2. **RulesEngine Decision Matrix (`docs/RULES.md` & `RulesEngine.kt`):**
+   - Implemented deterministic Kotlin evaluation combining leaf-damage severity (Mild, Moderate, Severe) and field spread (Few plants, Some, Most) into Urgency levels:
+     - `EARLY_WARNING` (Mild + Few plants) -> Opens Natural tier first; displays "What to watch for in the next days".
+     - `ACT_THIS_WEEK` (Mild + Some, or Moderate + Few plants) -> Opens Both tiers; advises treatment within 3–5 days.
+     - `ACT_NOW` (Mild + Most, Moderate + Some/Most, or Severe + Any) -> Opens Chemical tier first; prioritizes the extension referral button at the top.
+   - Fully documented in `docs/RULES.md`.
+3. **Unit Tests (82/82 Unit Tests Pass):**
+   - Added unit tests in `RulesEngineTest.kt` verifying all 9 cells of the decision matrix, open tier mappings, question display conditions, and extension referral rules.
+4. **CHECKPOINT G3 Verified on Live Emulator (`Pixel_7a`):**
+   - Captured result screens for all 3 urgency levels and languages:
+     - `benchmarks/g3_urgency_early_warning_en.png`, `te.png`, `hi.png`
+     - `benchmarks/g3_urgency_act_this_week_en.png`
+     - `benchmarks/g3_urgency_act_now_en.png`, `te.png`, `hi.png`
+   - Generated composite 3-panel collages:
+     - `benchmarks/g3_urgency_levels_collage.png` (Early warning vs Act this week vs Act now)
+     - `benchmarks/g3_urgency_languages_collage.png` (English, Telugu, Hindi)
+
+---
 
 ### Done in Task G2: Region-Specific Advice (Requirement F6, Rules H4, R11)
 1. **Region Choices Restricted to 3 Target Zones:**

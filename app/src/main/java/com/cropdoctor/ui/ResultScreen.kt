@@ -65,18 +65,31 @@ fun ResultScreen(
     val scrollState = rememberScrollState()
     var currentRegion by remember(region) { mutableStateOf(region) }
 
-    // openTier decision based on RulesEngine (T2)
-    val openTier = RulesEngine.determineOpenTier(result.severityBand)
+    val isUncertain = result.classId == "unknown" || result.certaintyBand == CertaintyBand.NOT_SURE
+    val isHealthy = result.classId.endsWith("_healthy") || kbEntry.type.equals("healthy", ignoreCase = true)
+    val isPest = kbEntry.type.equals("pest", ignoreCase = true)
+    var selectedFieldSpread by remember { mutableStateOf<RulesEngine.FieldSpread?>(null) }
+
+    // Urgency calculation (Requirement F4 / Task G3)
+    val urgency = if (selectedFieldSpread != null) {
+        RulesEngine.calculateUrgency(result.severityBand, selectedFieldSpread!!)
+    } else {
+        when (result.severityBand) {
+            SeverityBand.MILD -> RulesEngine.UrgencyLevel.EARLY_WARNING
+            SeverityBand.MODERATE -> RulesEngine.UrgencyLevel.ACT_THIS_WEEK
+            SeverityBand.SEVERE -> RulesEngine.UrgencyLevel.ACT_NOW
+        }
+    }
+
+    // openTier decision based on UrgencyLevel (Requirement F5 / Task G3)
+    val openTier = RulesEngine.determineOpenTier(urgency)
     var selectedTreatmentTab by remember(openTier) {
         mutableStateOf(
             if (openTier == RulesEngine.OpenTier.CHEMICAL_FIRST) "chemical" else "natural"
         )
     }
 
-    val isUncertain = result.classId == "unknown" || result.certaintyBand == CertaintyBand.NOT_SURE
-    val shouldRefer = RulesEngine.shouldShowExtensionWorker(result.certaintyBand, result.severityBand)
-    val isHealthy = result.classId.endsWith("_healthy") || kbEntry.type.equals("healthy", ignoreCase = true)
-    val isPest = kbEntry.type.equals("pest", ignoreCase = true)
+    val shouldRefer = RulesEngine.shouldShowExtensionWorker(result.certaintyBand, urgency)
     var showJudgeDialog by remember { mutableStateOf(false) }
     var showMeasurementDetails by remember { mutableStateOf(false) }
     var showHelplineDialog by remember { mutableStateOf(false) }
@@ -623,6 +636,205 @@ fun ResultScreen(
                                 fontWeight = FontWeight.Medium
                             )
                         }
+                    }
+                }
+            }
+
+            // FIELD SPREAD QUESTION & URGENCY TRIAGE (Requirement F4, F11 / Task G3)
+            if (RulesEngine.shouldShowFieldSpreadQuestion(result.certaintyBand, isHealthy)) {
+                Spacer(modifier = Modifier.height(16.dp))
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(text = "🌱", fontSize = 20.sp)
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = stringResource(R.string.field_spread_question),
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF212121)
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(12.dp))
+
+                        // Three large one-tap buttons: A few plants, Some, Most
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            val options = listOf(
+                                Triple(RulesEngine.FieldSpread.FEW_PLANTS, R.string.field_spread_few_plants, "🌱"),
+                                Triple(RulesEngine.FieldSpread.SOME, R.string.field_spread_some, "🌿"),
+                                Triple(RulesEngine.FieldSpread.MOST, R.string.field_spread_most, "🌾")
+                            )
+                            options.forEach { (spread, labelRes, emoji) ->
+                                val isSelected = selectedFieldSpread == spread
+                                Surface(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .height(64.dp)
+                                        .clickable { selectedFieldSpread = spread },
+                                    shape = RoundedCornerShape(12.dp),
+                                    color = if (isSelected) Color(0xFFE8F5E9) else Color(0xFFF5F5F5),
+                                    border = androidx.compose.foundation.BorderStroke(
+                                        width = if (isSelected) 2.dp else 1.dp,
+                                        color = if (isSelected) FarmGreenPrimary else Color(0xFFE0E0E0)
+                                    )
+                                ) {
+                                    Column(
+                                        modifier = Modifier.fillMaxSize().padding(4.dp),
+                                        horizontalAlignment = Alignment.CenterHorizontally,
+                                        verticalArrangement = Arrangement.Center
+                                    ) {
+                                        Text(text = emoji, fontSize = 15.sp)
+                                        Spacer(modifier = Modifier.height(2.dp))
+                                        Text(
+                                            text = stringResource(labelRes),
+                                            fontSize = 12.sp,
+                                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                                            color = if (isSelected) FarmGreenDark else Color(0xFF333333),
+                                            textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                                            maxLines = 2
+                                        )
+                                    }
+                                }
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(14.dp))
+
+                        // Urgency Level Display
+                        val urgencyColor = when (urgency) {
+                            RulesEngine.UrgencyLevel.EARLY_WARNING -> Color(0xFF2E7D32)
+                            RulesEngine.UrgencyLevel.ACT_THIS_WEEK -> Color(0xFFD97706)
+                            RulesEngine.UrgencyLevel.ACT_NOW -> Color(0xFFD32F2F)
+                        }
+                        val urgencyBg = when (urgency) {
+                            RulesEngine.UrgencyLevel.EARLY_WARNING -> Color(0xFFE8F5E9)
+                            RulesEngine.UrgencyLevel.ACT_THIS_WEEK -> Color(0xFFFFF3CD)
+                            RulesEngine.UrgencyLevel.ACT_NOW -> Color(0xFFFFEBEE)
+                        }
+                        val urgencyIcon = when (urgency) {
+                            RulesEngine.UrgencyLevel.EARLY_WARNING -> Icons.Default.Info
+                            RulesEngine.UrgencyLevel.ACT_THIS_WEEK -> Icons.Default.WarningAmber
+                            RulesEngine.UrgencyLevel.ACT_NOW -> Icons.Default.ReportProblem
+                        }
+                        val urgencyWordRes = when (urgency) {
+                            RulesEngine.UrgencyLevel.EARLY_WARNING -> R.string.urgency_early_warning
+                            RulesEngine.UrgencyLevel.ACT_THIS_WEEK -> R.string.urgency_act_this_week
+                            RulesEngine.UrgencyLevel.ACT_NOW -> R.string.urgency_act_now
+                        }
+                        val urgencyDescRes = when (urgency) {
+                            RulesEngine.UrgencyLevel.EARLY_WARNING -> R.string.urgency_desc_early_warning
+                            RulesEngine.UrgencyLevel.ACT_THIS_WEEK -> R.string.urgency_desc_act_this_week
+                            RulesEngine.UrgencyLevel.ACT_NOW -> R.string.urgency_desc_act_now
+                        }
+
+                        Surface(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(10.dp),
+                            color = urgencyBg,
+                            border = androidx.compose.foundation.BorderStroke(1.dp, urgencyColor.copy(alpha = 0.5f))
+                        ) {
+                            Column(modifier = Modifier.padding(12.dp)) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = stringResource(R.string.urgency_title),
+                                        fontSize = 14.sp,
+                                        fontWeight = FontWeight.SemiBold,
+                                        color = Color(0xFF444444)
+                                    )
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Icon(
+                                            imageVector = urgencyIcon,
+                                            contentDescription = null,
+                                            tint = urgencyColor,
+                                            modifier = Modifier.size(18.dp)
+                                        )
+                                        Spacer(modifier = Modifier.width(4.dp))
+                                        Text(
+                                            text = stringResource(urgencyWordRes),
+                                            fontSize = 15.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = urgencyColor
+                                        )
+                                    }
+                                }
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text(
+                                    text = stringResource(urgencyDescRes),
+                                    fontSize = 13.sp,
+                                    color = urgencyColor,
+                                    lineHeight = 18.sp
+                                )
+                            }
+                        }
+                    }
+                }
+
+                // If Early Warning: Show "What to watch for in the next days" (Requirement F11)
+                if (urgency == RulesEngine.UrgencyLevel.EARLY_WARNING) {
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(14.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color(0xFFF1F8E9)),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFA5D6A7))
+                    ) {
+                        Column(modifier = Modifier.padding(14.dp)) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    imageVector = Icons.Default.Visibility,
+                                    contentDescription = null,
+                                    tint = Color(0xFF2E7D32),
+                                    modifier = Modifier.size(20.dp)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = stringResource(R.string.watch_for_title),
+                                    fontSize = 15.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color(0xFF1B5E20)
+                                )
+                            }
+                            Spacer(modifier = Modifier.height(6.dp))
+                            Text(
+                                text = stringResource(R.string.watch_for_content),
+                                fontSize = 13.sp,
+                                color = Color(0xFF2E7D32),
+                                lineHeight = 19.sp
+                            )
+                        }
+                    }
+                }
+
+                // If Act Now: Show Extension Officer call button first (Requirement G3.3)
+                if (urgency == RulesEngine.UrgencyLevel.ACT_NOW) {
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Button(
+                        onClick = { showHelplineDialog = true },
+                        modifier = Modifier.fillMaxWidth().height(56.dp),
+                        shape = RoundedCornerShape(14.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD32F2F))
+                    ) {
+                        Icon(imageVector = Icons.Default.PhoneInTalk, contentDescription = null, tint = Color.White)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "🚨 " + stringResource(R.string.kisan_call_centre_label) + " (Act Now)",
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White
+                        )
                     }
                 }
             }

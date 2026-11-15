@@ -144,4 +144,19 @@
     <string name="regional_advisory_title">Regional Advisory</string>
     <string name="advice_source">Advice source: %1$s</string>
     <string name="same_advice_all_regions">Same advice for all regions</string>
+
+    <!-- Urgency and Field Spread (Requirement F4, F11 / Task G3) -->
+    <string name="field_spread_question">How much of the field is affected?</string>
+    <string name="field_spread_few_plants">A few plants</string>
+    <string name="field_spread_some">Some</string>
+    <string name="field_spread_most">Most</string>
+    <string name="urgency_title">Urgency Level</string>
+    <string name="urgency_early_warning">Early Warning</string>
+    <string name="urgency_act_this_week">Act this week</string>
+    <string name="urgency_act_now">Act now</string>
+    <string name="urgency_desc_early_warning">Low spread detected. Monitor field and practice preventive care.</string>
+    <string name="urgency_desc_act_this_week">Moderate spread. Plan treatment within 3–5 days to prevent wider outbreak.</string>
+    <string name="urgency_desc_act_now">High urgency! Take corrective action immediately to prevent crop loss.</string>
+    <string name="watch_for_title">What to watch for in the next days</string>
+    <string name="watch_for_content">Check leaf undersides for spot expansion or pest colonies every 2–3 days. Inspect neighbouring plants downwind. If spots expand or spread beyond isolated plants, initiate treatment immediately.</string>
 </resources>
