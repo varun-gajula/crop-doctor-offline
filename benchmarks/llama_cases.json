@@ -1,0 +1,222 @@
+[
+  {
+    "id": 1,
+    "crop": "rice",
+    "classId": "rice_bacterial_leaf_blight",
+    "problem": "Rice Bacterial Leaf Blight",
+    "type": "disease",
+    "severity": "MODERATE",
+    "certainty": "SURE",
+    "fieldSpread": "some",
+    "region": "andhra"
+  },
+  {
+    "id": 2,
+    "crop": "rice",
+    "classId": "rice_brown_spot",
+    "problem": "Rice Brown Spot",
+    "type": "disease",
+    "severity": "MILD",
+    "certainty": "PROBABLY",
+    "fieldSpread": "few_plants",
+    "region": "telangana"
+  },
+  {
+    "id": 3,
+    "crop": "rice",
+    "classId": "rice_leaf_blast",
+    "problem": "Rice Leaf Blast",
+    "type": "disease",
+    "severity": "SEVERE",
+    "certainty": "SURE",
+    "fieldSpread": "most",
+    "region": "telangana"
+  },
+  {
+    "id": 4,
+    "crop": "rice",
+    "classId": "rice_healthy",
+    "problem": "Rice Healthy Plant",
+    "type": "healthy",
+    "severity": "MILD",
+    "certainty": "SURE",
+    "fieldSpread": "few_plants",
+    "region": "other"
+  },
+  {
+    "id": 5,
+    "crop": "cotton",
+    "classId": "cotton_bacterial_blight",
+    "problem": "Cotton Bacterial Blight",
+    "type": "disease",
+    "severity": "MODERATE",
+    "certainty": "PROBABLY",
+    "fieldSpread": "some",
+    "region": "telangana"
+  },
+  {
+    "id": 6,
+    "crop": "cotton",
+    "classId": "cotton_fusarium_wilt",
+    "problem": "Cotton Fusarium Wilt",
+    "type": "disease",
+    "severity": "SEVERE",
+    "certainty": "SURE",
+    "fieldSpread": "most",
+    "region": "andhra"
+  },
+  {
+    "id": 7,
+    "crop": "cotton",
+    "classId": "cotton_healthy",
+    "problem": "Cotton Healthy Plant",
+    "type": "healthy",
+    "severity": "MILD",
+    "certainty": "SURE",
+    "fieldSpread": "few_plants",
+    "region": "telangana"
+  },
+  {
+    "id": 8,
+    "crop": "cotton",
+    "classId": "unknown",
+    "problem": "Unknown Cotton Symptom",
+    "type": "disease",
+    "severity": "MILD",
+    "certainty": "NOT_SURE",
+    "fieldSpread": "few_plants",
+    "region": "other"
+  },
+  {
+    "id": 9,
+    "crop": "chilli",
+    "classId": "chilli_bacterial_spot",
+    "problem": "Chilli Bacterial Spot",
+    "type": "disease",
+    "severity": "MODERATE",
+    "certainty": "SURE",
+    "fieldSpread": "some",
+    "region": "andhra"
+  },
+  {
+    "id": 10,
+    "crop": "chilli",
+    "classId": "chilli_leaf_curl_virus",
+    "problem": "Chilli Leaf Curl Virus",
+    "type": "disease",
+    "severity": "SEVERE",
+    "certainty": "SURE",
+    "fieldSpread": "most",
+    "region": "telangana"
+  },
+  {
+    "id": 11,
+    "crop": "chilli",
+    "classId": "chilli_healthy",
+    "problem": "Chilli Healthy Plant",
+    "type": "healthy",
+    "severity": "MILD",
+    "certainty": "PROBABLY",
+    "fieldSpread": "few_plants",
+    "region": "other"
+  },
+  {
+    "id": 12,
+    "crop": "chilli",
+    "classId": "unknown",
+    "problem": "Unknown Chilli Symptom",
+    "type": "disease",
+    "severity": "MODERATE",
+    "certainty": "NOT_SURE",
+    "fieldSpread": "some",
+    "region": "telangana"
+  },
+  {
+    "id": 13,
+    "crop": "tomato",
+    "classId": "tomato_early_blight",
+    "problem": "Tomato Early Blight",
+    "type": "disease",
+    "severity": "MILD",
+    "certainty": "SURE",
+    "fieldSpread": "few_plants",
+    "region": "telangana"
+  },
+  {
+    "id": 14,
+    "crop": "tomato",
+    "classId": "tomato_late_blight",
+    "problem": "Tomato Late Blight",
+    "type": "disease",
+    "severity": "SEVERE",
+    "certainty": "SURE",
+    "fieldSpread": "most",
+    "region": "andhra"
+  },
+  {
+    "id": 15,
+    "crop": "tomato",
+    "classId": "tomato_spider_mites",
+    "problem": "Tomato Two-Spotted Spider Mites",
+    "type": "pest",
+    "severity": "MODERATE",
+    "certainty": "PROBABLY",
+    "fieldSpread": "some",
+    "region": "other"
+  },
+  {
+    "id": 16,
+    "crop": "tomato",
+    "classId": "tomato_healthy",
+    "problem": "Tomato Healthy Plant",
+    "type": "healthy",
+    "severity": "MILD",
+    "certainty": "SURE",
+    "fieldSpread": "few_plants",
+    "region": "telangana"
+  },
+  {
+    "id": 17,
+    "crop": "maize",
+    "classId": "maize_common_rust",
+    "problem": "Maize Common Rust",
+    "type": "disease",
+    "severity": "MODERATE",
+    "certainty": "PROBABLY",
+    "fieldSpread": "some",
+    "region": "telangana"
+  },
+  {
+    "id": 18,
+    "crop": "maize",
+    "classId": "maize_northern_leaf_blight",
+    "problem": "Maize Northern Leaf Blight",
+    "type": "disease",
+    "severity": "SEVERE",
+    "certainty": "SURE",
+    "fieldSpread": "most",
+    "region": "andhra"
+  },
+  {
+    "id": 19,
+    "crop": "maize",
+    "classId": "maize_fall_armyworm",
+    "problem": "Maize Fall Armyworm",
+    "type": "pest",
+    "severity": "SEVERE",
+    "certainty": "SURE",
+    "fieldSpread": "most",
+    "region": "telangana"
+  },
+  {
+    "id": 20,
+    "crop": "maize",
+    "classId": "unknown",
+    "problem": "Unknown Maize Symptom",
+    "type": "disease",
+    "severity": "MILD",
+    "certainty": "NOT_SURE",
+    "fieldSpread": "few_plants",
+    "region": "other"
+  }
+]

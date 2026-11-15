@@ -1,6 +1,7 @@
 package com.cropdoctor.domain
 
 import com.cropdoctor.R
+import com.cropdoctor.advisor.GuardrailFilter
 import com.cropdoctor.knowledge.KbEntry
 
 object RulesEngine {
@@ -450,9 +451,9 @@ $referralSentence
         }
 
         if (isNotSure) {
-            return """
+            val unsureText = """
 1. What I see:
-The crop symptom could not be diagnosed with certainty. ${kbEntry.explainText.en}
+Your $cropEn crop symptom could not be diagnosed with certainty. ${kbEntry.explainText.en}
 
 2. What to do now:
 • Immediate step: Do not spray chemical pesticides until an accurate identification is confirmed.
@@ -461,6 +462,7 @@ The crop symptom could not be diagnosed with certainty. ${kbEntry.explainText.en
 3. When to get help:
 $referralSentence
             """.trimIndent()
+            return GuardrailFilter.sanitize(unsureText)
         }
 
         val explainEn = kbEntry.explainText.en
@@ -503,7 +505,7 @@ $referralSentence
             }
         }
 
-        return """
+        val adviceText = """
 1. What I see:
 Your $cropEn crop shows ${kbEntry.names.en} ($typeEn) at $severityEn severity. It is currently affecting $spreadEn. $explainEn
 
@@ -515,6 +517,7 @@ $stepsBuilder
 3. When to get help:
 $referralSentence
         """.trimIndent()
+        return GuardrailFilter.sanitize(adviceText)
     }
 
     /**

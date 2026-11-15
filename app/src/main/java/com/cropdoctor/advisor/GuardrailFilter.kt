@@ -14,15 +14,15 @@ data class GuardrailResult(
 
 object GuardrailFilter {
 
-    // Regex detecting unverified dosage numbers and rates (e.g. 50 ml/L, 2 kg per acre, 2.5 g/l, 2.5 ml/L of water)
+    // Regex detecting unverified dosage numbers and rates (e.g. 50 ml/L, 5-10 g/L, 2 kg per acre, 2.5 g/l, 2.5 ml/L of water)
     private val DOSE_PATTERN = Pattern.compile(
-        "\\b\\d+(\\.\\d+)?\\s*(ml|g|gm|mg|l|litre|liter|kg)\\s*(per|/|in)\\s*(\\d*\\s*)?(l|litre|liter|acre|ha|hectare|water)(\\s+of\\s+water)?\\b",
+        "\\(?(?:@\\s*)?\\b\\d+(?:-\\d+)?(?:\\.\\d+)?\\s*(?:ml|g|gm|mg|l|litre|liter|kg)\\s*(?:per|/|in)?\\s*(?:\\d*\\s*)?(?:l|litre|liter|acre|ha|hectare|water)?(?:\\s+of\\s+water)?\\)?",
         Pattern.CASE_INSENSITIVE
     )
 
     // General dose pattern detecting numeric quantities with chemical/spray measurement units
     private val GENERAL_DOSE_PATTERN = Pattern.compile(
-        "\\b\\d+(\\.\\d+)?\\s*(ml|g|gm|mg)\\s*(/|per|in)?\\s*(\\w+)?\\b",
+        "\\b\\d+(?:-\\d+)?(?:\\.\\d+)?\\s*(?:ml|g|gm|mg)\\s*(?:/|per|in)?\\s*(\\w+)?\\b",
         Pattern.CASE_INSENSITIVE
     )
 

@@ -1,6 +1,32 @@
 # Project Progress - Crop Doctor Offline
 
-## Current Status: Tasks G1, G2, G3, G4, V2b, V3, V4, A2, and A1 Complete
+## Current Status: Tasks G1, G2, G3, G4, V2b, V3, V4, A2, A1, and T5b Complete
+
+### Done in Task T5b: Grounding Test for Llama Advisor (Requirement F7 / Rule H4, H5, H6)
+1. **Created 20-Case Grounding Benchmark (`benchmarks/llama_cases.json`):**
+   - 4 cases per crop across 5 crops (Rice, Cotton, Chilli, Tomato, Maize).
+   - Balanced distribution: 12 diseases, 2 pests (`tomato_spider_mites`, `maize_fall_armyworm`), 3 healthy crops (`rice_healthy`, `cotton_healthy`, `tomato_healthy`), and 3 unsure/unknown cases (`unknown` for Cotton, Chilli, Maize).
+   - Spread and certainty mix: 11 Sure, 6 Probably, 3 Not sure; 7 Mild, 7 Moderate, 6 Severe; 7 few plants, 7 some, 6 most.
+2. **Code Checks & Grounding Evaluation (`benchmarks/llama_english_eval.md`, `scripts/evaluate_english_llama.py`):**
+   - Ran all 20 cases through the app's advisory path in English.
+   - 5 automated code checks per output:
+     - Check 1 (Zero Dose Numbers, Rule H4): **20/20 passed (100%)**
+     - Check 2 (Approved KB Products Only, Rule H4): **20/20 passed (100%)**
+     - Check 3 (Mentions Correct Crop & Problem): **20/20 passed (100%)**
+     - Check 4 (Severity Consistency, Rule H5): **20/20 passed (100%)**
+     - Check 5 (Referral Advice Consistency, RulesEngine): **20/20 passed (100%)**
+   - Overall Guardrail Compliance: **20/20 passed (100%)**.
+3. **Hindi Evaluation Policy Verification (`benchmarks/hindi_llama_evaluation.md`):**
+   - Verified logged results: **20/20 passed (100%)**, exceeding the 18/20 acceptance threshold.
+   - Hindi AI text is permitted to display `"AI explanation"`, with dynamic fallback to `"Offline guide"` if memory is low or guardrail triggers.
+4. **Telugu Llama Prohibition Guardrail (Rule H6):**
+   - Confirmed across `PromptBuilder`, `ExecuTorchLlamaAdvisor`, and `OfflineAudioAdvisor` that Telugu is NEVER processed by Llama.
+   - Tested in `CaseSpecificAdvisoryTest.kt` and `TeluguAdvisoryTest.kt`: `PromptBuilder.buildPrompt` throws `IllegalArgumentException` on any attempt to pass Telugu.
+5. **Unit Tests & Build:**
+   - All **104 unit tests pass** (`./gradlew testDebugUnitTest`).
+   - Debug APK built and installed on device (`emulator-5554`).
+
+---
 
 ### Done in Task A1: Fully Offline Audio Output in English, Telugu, and Hindi (Requirement F10)
 1. **Bundled Opus Clips & Audio Generator (`tools/make_audio_clips.py`):**
