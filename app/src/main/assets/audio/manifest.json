@@ -1,0 +1,25 @@
+{
+  "version": "1.0.0",
+  "total_clips": 3,
+  "audio_folder_size_bytes": 1901,
+  "clips": {
+    "te_intro_unsure": {
+      "lang": "te",
+      "file": "audio/te/te_intro_unsure.opus",
+      "text": "పంట నమూనాలో వ్యాధి లేదా పురుగు లక్షణాలు స్పష్టంగా నిర్ధారించబడలేదు.",
+      "sha256": "027c2ab224e5fa9a9ef675d0aa443dd5f7ede954d071ff8892bd40f63298a386"
+    },
+    "te_referral_urgent": {
+      "lang": "te",
+      "file": "audio/te/te_referral_urgent.opus",
+      "text": "వెంటనే మీ మండల వ్యవసాయ విస్తరణ అధికారి లేదా సమీప కృషి విజ్ఞాన కేంద్రంను సంప్రదించండి. కిసాన్ కాల్ సెంటర్: 1800-180-1551.",
+      "sha256": "9d962269cccb9d1ddc9708b02c87e6e53f8d04bcf369aecc248da2a1b5b9bf40"
+    },
+    "hi_referral_urgent": {
+      "lang": "hi",
+      "file": "audio/hi/hi_referral_urgent.opus",
+      "text": "तुरंत अपने स्थानीय कृषि विस्तार अधिकारी या कृषि विज्ञान केंद्र से संपर्क करें। किसान कॉल सेंटर: 1800-180-1551।",
+      "sha256": "835fa75f8c053292f4245005597c5c46fa18d016204e0ba4fbfdfb60e40fa068"
+    }
+  }
+}

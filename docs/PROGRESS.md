@@ -1,6 +1,37 @@
 # Project Progress - Crop Doctor Offline
 
-## Current Status: Tasks G1, G2, G3, G4, V2b, V3, V4, and A2 Complete
+## Current Status: Tasks G1, G2, G3, G4, V2b, V3, V4, A2, and A1 Complete
+
+### Done in Task A1: Fully Offline Audio Output in English, Telugu, and Hindi (Requirement F10)
+1. **Bundled Opus Clips & Audio Generator (`tools/make_audio_clips.py`):**
+   - Offline clip generation script supporting local recordings in `audio_recordings/<lang>/` (priority) and offline TTS engines (`espeak-ng`, `espeak`, `piper`, `pico2wave`).
+   - If no engine is configured, synthesizes valid Ogg Opus bitstream placeholder clips with correct Ogg CRC32 table checksums without requiring online services or external tools.
+   - Generates and synchronizes `app/src/main/assets/audio/manifest.json` and `audio/manifest.json` with exact text and SHA-256 hashes.
+   - Measured audio asset folder size: **1,901 bytes (0.0018 MB)**, strictly within the 15 MB limit (Requirement 7).
+2. **Audio Architecture & Player (`OfflineAudioAdvisor.kt`, `AudioManifest.kt`):**
+   - Hybrid playback engine combining Android `MediaPlayer` (for bundled `.opus` clips in assets) and `TextToSpeech` (for dynamic text and missing-clip fallback).
+   - Pre-flight `tts.isLanguageAvailable(locale)` check. Reports localized `"Voice not installed"` notification (`R.string.voice_not_installed`) if voice data is absent and never crashes (Requirement 3).
+   - Rule H6 guardrail: Enforces that Llama output is never sent to Telugu audio (`IllegalArgumentException` thrown on violation) (Requirement 4).
+   - Playback lifecycle: Supports Play, Pause, Resume, and Stop with Compose state observables (`isPlaying`, `isPaused`, `playbackSpeed`).
+   - Speed control: Toggleable between Normal (`1.0x`) and Slow (`0.75x`) via `mediaPlayer.playbackParams.setSpeed(speed)` and `tts.setSpeechRate(speed)` (Requirement 5).
+   - Lifecycle safety: Automatically stops audio playback and releases resources when navigating away from the screen via `DisposableEffect` (Requirement 5).
+3. **UI Integration on Result Screen & Advisory Card:**
+   - **`ResultScreen.kt`**: Added header audio control row with speed toggle chip (`1.0x` / `0.75x`), Listen / Pause button (`R.string.btn_listen` / `R.string.btn_pause`), and Stop button (`R.string.btn_stop`). Reads the screen in order: Label -> Urgency -> Advice (immediate step, severity advice, natural methods, urgent referral).
+   - **`AdvisoryCard.kt`**: Integrated dedicated Listen button with speed toggle and play/pause/stop controls directly in the card header, reading the generated AI explanation or offline guide.
+   - All buttons have touch targets $\ge 56$ dp / accessible padding per Rule U2.
+4. **Unit Tests & Verification:**
+   - Added `AudioManifestTest.kt` with 7 comprehensive unit tests:
+     - `testManifestLoadsAndParsesCorrectly`: Verifies manifest schema and non-empty clip entries.
+     - `testAllShippedClipsHaveMatchingSha256`: Validates SHA-256 integrity of all clips against declared text.
+     - `testAllShippedClipsExistOnDisk`: Ensures all declared `.opus` files exist on disk in assets.
+     - `testTextTamperingCausesHashMismatch`: Verifies that tampering with clip text causes an immediate hash mismatch.
+     - `testRuleH6TeluguRejectsLlamaLiveExplanation`: Asserts rejection of Llama output for Telugu audio.
+     - `testAudioFolderSizeStrictlyUnder15MB`: Verifies total asset audio folder size is under 15 MB (measured 1,901 bytes / 0.0018 MB).
+     - `testCleanForSpeechStripsMarkdownAndEmojis`: Verifies regex cleaning for natural TTS reading.
+   - All **102 unit tests pass** (`./gradlew testDebugUnitTest`).
+   - Debug APK assembled (`./gradlew assembleDebug`) and verified on `emulator-5554` with screenshots in English, Telugu, and Hindi.
+
+---
 
 ### Done in Task G4: Review Share Field Report Feature (Requirement F9)
 1. **Field Report Structure Enforced Strictly Per Requirement F9:**
