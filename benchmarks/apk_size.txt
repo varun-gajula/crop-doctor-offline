@@ -1,0 +1,7 @@
+Crop Doctor Release APK Binary Size
+====================================
+Binary: app/build/outputs/apk/release/app-release.apk
+Size in Bytes: 57097320
+Size in Megabytes: 54.45 MB (54.4 MB)
+Generated: 2026-11-15
+Verification: Rule H2 (<= 90 MB) PASS (54.4 MB <= 90 MB)

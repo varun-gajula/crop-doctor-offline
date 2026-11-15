@@ -1,3 +1,5 @@
+Filled in by Antigravity: UNVERIFIED until the tester names and dates are confirmed by me
+
 # Usability Test Sheet: Crop Doctor Offline
 **Arm Bharat AI-SoC Challenge 2026-27 (Problem Statement 1)**  
 **Target Device**: 64-bit Arm CPU phone (6 GB RAM, offline)  

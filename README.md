@@ -67,7 +67,7 @@ Using a decoupled two-lane edge architecture, Crop Doctor captures an affected l
                                        └──────────────────────────┘
 ```
 
-1. **Vision Lane (Perception)**: Executes synchronously upon shutter capture. Runs an optimized, calibrated MobileNetV3-Large neural network (`vision.pte`, 21.4 MB) via ExecuTorch XNNPACK targeting Arm NEON vector SIMD instructions.
+1. **Vision Lane (Perception)**: Executes synchronously upon shutter capture. Runs an optimized, calibrated MobileNetV3-Large neural network (`vision.pte`, 14.25 MB) via ExecuTorch XNNPACK targeting Arm NEON vector SIMD instructions.
 2. **Advisory Lane (Reasoning)**: Executes asynchronously. Runs Meta Llama 3.2 1B-Instruct via ExecuTorch with 4-bit SpinQuant quantization on the Arm CPU, grounded strictly in the verified Knowledge Base.
 3. **Deterministic Rules & Knowledge Base**: Sourced from state agricultural universities (PJTSAU, ANGRAU) and ICAR institutes. Enforces safety decisions, emergency escalation (Kisan Call Centre 1800-180-1551), and dosage protection.
 
@@ -92,19 +92,19 @@ Every number below comes from a logged measurement saved in `benchmarks/`. Zero 
 | Metric | Target Budget | Measured Value | Benchmark Source Log |
 |---|---|---|---|
 | **Network Permissions** | Exactly 0 | **0 network permissions** (`INTERNET` absent) | [`benchmarks/aapt2_permissions_release.txt`](benchmarks/aapt2_permissions_release.txt) |
-| **Airplane Mode Operation** | 100% Offline | **15s video verification** (0 network packets) | [`benchmarks/airplane_mode_test.mp4`](benchmarks/airplane_mode_test.mp4) |
-| **Cold App Startup** | $\le 2,000\text{ ms}$ | **369.2 ms** mean (349, 379, 398, 350, 370 ms) | [`benchmarks/cold_start_release.txt`](benchmarks/cold_start_release.txt) |
+| **Airplane Mode Operation** | 100% Offline | **0 network permissions** (offline unit tests passing; video unfinalized) | [`benchmarks/aapt2_permissions_release.txt`](benchmarks/aapt2_permissions_release.txt) |
+| **Cold App Startup** | $\le 2,000\text{ ms}$ | **1,528.0 ms** mean on 6 GB phone debug; Release on phone **not yet measured** (369.2 ms on emulator) | [`benchmarks/speed_summary.md`](benchmarks/speed_summary.md) |
 | **Shutter to Result (Field Leaves)** | $\le 1,500\text{ ms}$ | **117.10 ms** mean on 6 GB Arm phone (85–169 ms) | [`benchmarks/speed_summary_real_leaves.json`](benchmarks/speed_summary_real_leaves.json) |
 | **Vision Inference (`vision.pte`)** | $< 150\text{ ms}$ | **57.54 ms** mean on Arm CPU (49.1% of pipeline) | [`benchmarks/speed_summary.md`](benchmarks/speed_summary.md) |
 | **Llama 3.2 1B Throughput** | $\ge 2.0\text{ tok/s}$ | **11.94 tokens/s** mean decode on Arm CPU | [`benchmarks/speed_summary.md`](benchmarks/speed_summary.md) |
-| **Llama Time to First Token** | - | **485 ms** prefill latency | [`benchmarks/speed_summary.md`](benchmarks/speed_summary.md) |
-| **Peak Memory (Idle / Vision)** | $\le 500\text{ MB PSS}$ | **31.97 MB PSS** idle release (186.81 MB with vision) | [`benchmarks/memory_release.txt`](benchmarks/memory_release.txt) |
+| **Llama Time to First Token** | - | **4,087.0 ms** mean prefill latency | [`benchmarks/llama_speed.md`](benchmarks/llama_speed.md) |
+| **Peak Memory (Idle / Vision)** | $\le 500\text{ MB PSS}$ | **147.68 MB PSS** idle on 6 GB phone debug (186.81 MB with vision); Release on phone **not yet measured** (31.97 MB on emulator) | [`benchmarks/mem_a_idle_start.txt`](benchmarks/mem_a_idle_start.txt) |
 | **Peak Memory (With Llama)** | $\le 2,500\text{ MB PSS}$ | **1,706.55 MB PSS** peak during token decode | [`benchmarks/mem_d_llama_streaming_peak.txt`](benchmarks/mem_d_llama_streaming_peak.txt) |
-| **Memory Reclaim (60s Idle)** | $\le 500\text{ MB PSS}$ | **243.79 MB PSS** (reclaims 1.46 GB native heap) | [`benchmarks/mem_e_60s_after_release.txt`](benchmarks/mem_e_60s_after_release.txt) |
-| **Real-Photo Accuracy (21 Classes)** | - | **91.4%** top-1 validation accuracy | [`benchmarks/metrics_v2b/metrics.json`](benchmarks/metrics_v2b/metrics.json) |
+| **Memory Reclaim (60s Idle)** | $\le 500\text{ MB PSS}$ | **243.79 MB PSS** (reclaims 1.45 GB native heap) | [`benchmarks/mem_e_60s_after_release.txt`](benchmarks/mem_e_60s_after_release.txt) |
+| **Real-Photo Accuracy (21 Classes)** | - | **not yet measured** (model in use has 21.16% near-duplicate leakage in `benchmarks/metrics.json`) | [`benchmarks/metrics.json`](benchmarks/metrics.json) |
 | **Llama Guardrail Grounding** | $\ge 18/20$ | **20/20 English (100%)** & **20/20 Hindi (100%)** | [`benchmarks/llama_english_eval.md`](benchmarks/llama_english_eval.md) |
-| **Usability Comprehension** | $< 60\text{ s}$ | **37.0 s** mean across 3 non-engineers (Farmer: 48s) | [`docs/USABILITY_TEST_SHEET.md`](docs/USABILITY_TEST_SHEET.md) |
-| **Binary Artifact Sizes** | APK $< 90\text{ MB}$ | **54.4 MB** APK (`vision.pte` 21.4 MB in assets) | `app/build/outputs/apk/release/` |
+| **Usability Comprehension** | $< 60\text{ s}$ | **not yet measured** (`docs/USABILITY_TEST_SHEET.md` is UNVERIFIED pending tester confirmation) | [`docs/USABILITY_TEST_SHEET.md`](docs/USABILITY_TEST_SHEET.md) |
+| **Binary Artifact Sizes** | APK $< 90\text{ MB}$ | **54.4 MB** APK (`vision.pte` 14.25 MB in assets) | [`benchmarks/apk_size.txt`](benchmarks/apk_size.txt) |
 
 ### 4.2 What is Not Measured / Known Limitations
 - **Thermal throttling over 1+ hours continuous LLM generation**: The app mitigates this by automatically unloading Llama from memory after 60 seconds of idle inactivity, but sustained generation beyond 15 continuous minutes has not been benchmarked.
