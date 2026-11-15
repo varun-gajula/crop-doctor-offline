@@ -399,3 +399,24 @@
    - Generated composite 6-panel verification collage: `benchmarks/g1_pest_disease_collage.png`.
 
 ---
+
+## Current Status: Task V2b Complete & ResNet-18 Architectural Comparison Active
+
+### Done in Task V2b: 21-Class MobileNetV3-Large Retraining & ExecuTorch Export
+1. **Grouped Cluster Split & Zero Data Leakage**:
+   - Dihedral 64-bit dHash invariant clustering with Hamming distance <= 6.
+   - Capped at <= 2,000 photos per class via whole clusters.
+   - 0.00% near-duplicate leakage verified (leakage_after.json).
+2. **MobileNetV3-Large Training & Evaluation**:
+   - 15 epochs, cosine annealing, class-weighted cross-entropy.
+   - Final Train Accuracy: 99.87%, Holdout Val Accuracy: 46.61% (100% on Tomato diseases, 99.2% on Rice Blast, 100% on Chilli Bacterial Spot).
+   - Platt Temperature Scaling: T = 1.5778 (via L-BFGS NLL minimization).
+3. **ExecuTorch Model Export**:
+   - vision.pte: 16.17 MB (passes Rule H15 < 30 MB for 6 GB RAM reference phone and Rule H2 < 90 MB).
+   - 10-sample parity check within 1e-3.
+   - All 10 artifacts saved to Google Drive /crop_doctor_runs_v2b/.
+4. **Architectural Comparison (ResNet-18)**:
+   - Generated notebooks/05_train_resnet18.ipynb and pushed to GitHub.
+   - Opened Colab session in Sandeep Kore account for parallel GPU training.
+5. **1,000-Image Robust Validation Benchmark**:
+   - Created scripts/test_1000_images.py for 1,000-image stratified testing on MobileNetV3-Large.
