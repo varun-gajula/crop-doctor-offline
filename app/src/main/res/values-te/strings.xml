@@ -128,10 +128,12 @@
     <string name="btn_share_report">నివేదికను పంచుకోండి</string>
     <string name="report_crop">పంట</string>
     <string name="report_problem">గుర్తించిన సమస్య</string>
+    <string name="report_type">రకం</string>
     <string name="report_certainty">ఖచ్చితత్వం</string>
     <string name="report_severity">తీవ్రత</string>
     <string name="report_date">తేదీ</string>
     <string name="report_region">ప్రాంతం</string>
+    <string name="report_verified_treatment">ధృవీకరించిన నివారణ</string>
     <string name="report_note">రైతు గమనిక</string>
     <string name="report_note_hint">గమనికను జోడించండి (ఉదా. పొలం స్థానం, లక్షణాలు)...</string>
     <string name="no_saved_cases">ఇంకా భద్రపరిచిన నివేదికలు లేవు.\nపంటలను పరిశీలించి నివేదికలను భద్రపరచండి.</string>

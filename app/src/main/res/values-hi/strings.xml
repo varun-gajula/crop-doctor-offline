@@ -128,10 +128,12 @@
     <string name="btn_share_report">रिपोर्ट साझा करें</string>
     <string name="report_crop">फसल</string>
     <string name="report_problem">पहचान</string>
+    <string name="report_type">प्रकार</string>
     <string name="report_certainty">निश्चितता</string>
     <string name="report_severity">गंभीरता</string>
     <string name="report_date">तारीख</string>
     <string name="report_region">क्षेत्र</string>
+    <string name="report_verified_treatment">सत्यापित उपचार</string>
     <string name="report_note">किसान नोट</string>
     <string name="report_note_hint">नोट जोड़ें (जैसे खेत का स्थान, लक्षण)...</string>
     <string name="no_saved_cases">अभी तक कोई सहेजी गई केस रिपोर्ट नहीं है।\nफसलों की जांच करें और रिपोर्ट सहेजें।</string>

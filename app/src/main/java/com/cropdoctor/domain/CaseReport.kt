@@ -5,6 +5,7 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Log
+import com.cropdoctor.advisor.GuardrailFilter
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
@@ -15,8 +16,9 @@ import java.util.Locale
 import java.util.UUID
 
 /**
- * Structured Case Report model representing an on-device diagnosis record.
- * R8 & T3: Contains crop, label, severity, certainty (in words), date, region, photo, and farmer note.
+ * Structured Case Report model representing an on-device diagnosis record (Requirement F9).
+ * Contains: crop, finding, type, severity, certainty, region, date, photo and note.
+ * Must NOT contain active ingredients, doses or product names unless dose_verified is true.
  */
 data class CaseReport(
     val id: String = UUID.randomUUID().toString(),
@@ -24,13 +26,18 @@ data class CaseReport(
     val dateString: String,
     val crop: String,
     val problemLabel: String,
-    val certaintyWord: String, // "Sure", "Probably", "Not sure"
-    val severity: String,      // "Mild", "Moderate", "Severe", or "N/A"
+    val type: String = "Disease", // "Disease", "Pest", "Healthy", or "N/A"
+    val certaintyWord: String,    // "Sure", "Probably", "Not sure"
+    val severity: String,         // "Mild", "Moderate", "Severe", or "N/A"
     val region: String,
     val photoPath: String? = null,
     val note: String = "",
     val isUncertain: Boolean = false,
-    val classId: String = ""
+    val classId: String = "",
+    val doseVerified: Boolean = false,
+    val activeIngredient: String? = null,
+    val productExample: String? = null,
+    val verifiedDose: String? = null
 )
 
 /**
@@ -49,13 +56,18 @@ object CaseReportRepository {
         context: Context,
         crop: String,
         problemLabel: String,
+        type: String = "Disease",
         certaintyWord: String,
         severity: String,
         region: String,
         note: String = "",
         bitmap: Bitmap? = null,
         isUncertain: Boolean = false,
-        classId: String = ""
+        classId: String = "",
+        doseVerified: Boolean = false,
+        activeIngredient: String? = null,
+        productExample: String? = null,
+        verifiedDose: String? = null
     ): CaseReport {
         val id = UUID.randomUUID().toString()
         val timestamp = System.currentTimeMillis()
@@ -84,20 +96,24 @@ object CaseReportRepository {
             dateString = dateString,
             crop = crop,
             problemLabel = problemLabel,
+            type = type,
             certaintyWord = certaintyWord,
             severity = severity,
             region = region,
             photoPath = savedPhotoPath,
             note = note.trim(),
             isUncertain = isUncertain,
-            classId = classId
+            classId = classId,
+            doseVerified = doseVerified,
+            activeIngredient = if (doseVerified) activeIngredient else null,
+            productExample = if (doseVerified) productExample else null,
+            verifiedDose = if (doseVerified) verifiedDose else null
         )
 
         val currentList = getAllCaseReports(context).toMutableList()
         currentList.add(0, report) // Newest first
 
         if (currentList.size > MAX_CASES) {
-            // Delete oldest photo if present
             val removed = currentList.removeAt(currentList.size - 1)
             removed.photoPath?.let { File(it).delete() }
         }
@@ -124,13 +140,18 @@ object CaseReportRepository {
                         dateString = obj.optString("dateString", ""),
                         crop = obj.optString("crop", "Crop"),
                         problemLabel = obj.optString("problemLabel", "Problem"),
+                        type = obj.optString("type", "Disease"),
                         certaintyWord = obj.optString("certaintyWord", "Not sure"),
                         severity = obj.optString("severity", "N/A"),
                         region = obj.optString("region", "India"),
                         photoPath = obj.optString("photoPath", "").ifEmpty { null },
                         note = obj.optString("note", ""),
                         isUncertain = obj.optBoolean("isUncertain", false),
-                        classId = obj.optString("classId", "")
+                        classId = obj.optString("classId", ""),
+                        doseVerified = obj.optBoolean("doseVerified", false),
+                        activeIngredient = obj.optString("activeIngredient", "").ifEmpty { null },
+                        productExample = obj.optString("productExample", "").ifEmpty { null },
+                        verifiedDose = obj.optString("verifiedDose", "").ifEmpty { null }
                     )
                 )
             }
@@ -176,6 +197,7 @@ object CaseReportRepository {
                     put("dateString", item.dateString)
                     put("crop", item.crop)
                     put("problemLabel", item.problemLabel)
+                    put("type", item.type)
                     put("certaintyWord", item.certaintyWord)
                     put("severity", item.severity)
                     put("region", item.region)
@@ -183,6 +205,10 @@ object CaseReportRepository {
                     put("note", item.note)
                     put("isUncertain", item.isUncertain)
                     put("classId", item.classId)
+                    put("doseVerified", item.doseVerified)
+                    put("activeIngredient", item.activeIngredient ?: "")
+                    put("productExample", item.productExample ?: "")
+                    put("verifiedDose", item.verifiedDose ?: "")
                 }
                 array.put(obj)
             }
@@ -194,47 +220,54 @@ object CaseReportRepository {
     }
 
     /**
-     * Formats a clean, text-based case report summary suitable for SMS, WhatsApp, or local notes.
-     * Complies with Rule H1 (zero INTERNET permission).
+     * Formats the case report text for sharing via the Android share sheet (Requirement F9).
+     * It may contain crop, finding, type, severity, certainty, region, date, photo and note.
+     * It must NOT contain active ingredients, doses or product names unless dose_verified is true.
+     * All extraneous text not in F9 is strictly excluded.
      */
     fun formatShareText(report: CaseReport): String {
         val sb = StringBuilder()
-        sb.appendLine("🌾 CROP DOCTOR - CASE REPORT")
-        sb.appendLine("📅 Date: ${report.dateString}")
-        sb.appendLine("📍 Region: ${report.region}")
-        sb.appendLine("🌱 Crop: ${report.crop}")
-        sb.appendLine("🔍 Finding: ${report.problemLabel}")
-        sb.appendLine("📊 Certainty: ${report.certaintyWord}")
+        sb.appendLine("CROP DOCTOR - FIELD REPORT")
+        sb.appendLine("Date: ${report.dateString}")
+        sb.appendLine("Region: ${report.region}")
+        sb.appendLine("Crop: ${report.crop}")
+        sb.appendLine("Finding: ${report.problemLabel}")
+        sb.appendLine("Type: ${report.type}")
+        sb.appendLine("Certainty: ${report.certaintyWord}")
         if (!report.isUncertain && report.severity != "N/A" && report.severity.isNotBlank()) {
-            sb.appendLine("⚠️ Severity: ${report.severity}")
+            sb.appendLine("Severity: ${report.severity}")
         }
+        val photoStatus = if (!report.photoPath.isNullOrBlank()) "Attached" else "None"
+        sb.appendLine("Photo: $photoStatus")
         if (report.note.isNotBlank()) {
-            sb.appendLine("📝 Farmer Note: ${report.note}")
+            val cleanNote = if (!report.doseVerified) GuardrailFilter.sanitize(report.note.trim()) else report.note.trim()
+            sb.appendLine("Note: $cleanNote")
         }
-        if (report.isUncertain || report.severity.equals("Severe", ignoreCase = true)) {
-            sb.appendLine("📞 Extension Contact: Kisan Call Centre (1800-180-1551)")
+        // F9 & Rule H4: It must NOT contain active ingredients, doses or product names unless dose_verified is true.
+        if (report.doseVerified && !report.activeIngredient.isNullOrBlank()) {
+            val doseStr = report.verifiedDose?.ifBlank { "follow the product label" } ?: "follow the product label"
+            val prodStr = if (!report.productExample.isNullOrBlank()) " (${report.productExample})" else ""
+            sb.appendLine("Treatment: ${report.activeIngredient}$prodStr - Dose: $doseStr")
         }
-        sb.append("🛡️ 100% Offline AI Diagnosis (ICAR / SAU Grounded)")
-        return sb.toString()
+        return sb.toString().trimEnd()
     }
 
     /**
      * Opens the standard Android system share sheet.
-     * Zero permissions required.
+     * Zero permissions required (Rule H1).
      */
     fun shareCaseReport(context: Context, report: CaseReport) {
         try {
             val text = formatShareText(report)
             val intent = Intent(Intent.ACTION_SEND).apply {
                 type = "text/plain"
-                putExtra(Intent.EXTRA_SUBJECT, "Crop Doctor Case Report - ${report.crop} (${report.problemLabel})")
+                putExtra(Intent.EXTRA_SUBJECT, "Crop Doctor Field Report - ${report.crop} (${report.problemLabel})")
                 putExtra(Intent.EXTRA_TEXT, text)
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             }
-            context.startActivity(Intent.createChooser(intent, "Share Case Report"))
+            context.startActivity(Intent.createChooser(intent, "Share Field Report"))
         } catch (e: Exception) {
             Log.e(TAG, "Failed to launch Android share sheet", e)
         }
     }
 }
-
