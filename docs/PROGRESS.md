@@ -1,6 +1,35 @@
 # Project Progress - Crop Doctor Offline
 
-## Current Status: Tasks G1, G2, G3, V2b, V3, and V4 Complete
+## Current Status: Tasks G1, G2, G3, V2b, V3, V4, and A2 Complete
+
+### Done in Task A2: Case-Specific Advisory by Llama
+1. **Case-Specific Grounded Prompting (`PromptBuilder.kt`):**
+   - Llama prompt includes full case context: crop, problem, type (disease or pest), severity, certainty, field-spread, region, urgency, and approved knowledge-base entry.
+   - Enforces strict system instructions: explain in plain words for smallholder farmer; use only approved KB steps; choose and order relevant to urgency; mention what to watch in coming days; zero dosage numbers; no outside products; never alter severity or referral advice.
+   - Structured output in three short parts:
+     1. What I see:
+     2. What to do now:
+     3. When to get help:
+2. **Deterministic Referral Guardrails (`GuardrailFilter.kt` & `RulesEngine.kt`):**
+   - Referral sentence is generated and checked by code from `RulesEngine` (`getReferralSentence`), never taken from Llama.
+   - `GuardrailFilter` automatically detects and rejects referral contradictions (e.g. advising against extension officer when referral is required, or claiming false emergencies during early warning).
+   - Rejection automatically reverts to verified Knowledge Base text labelled "Offline guide".
+3. **Card Labeling & Offline Guide Fallbacks (`AdvisoryCard.kt`):**
+   - Llama-generated output is labelled "AI explanation" (or "AI explanation · Built with Llama 3.2 1B · ExecuTorch").
+   - Low memory, timeout, guardrail rejection, and Telugu mode strictly display "Offline guide".
+4. **Telugu Code-Driven Advisory (Rule H6 & Requirement 5):**
+   - Telugu NEVER calls Llama (Llama 3.2 does not support Telugu).
+   - Implemented `RulesEngine.buildCaseSpecificAdvisory` in Telugu using reviewed sentence pieces and glossary terms selected by case findings.
+   - Added unit test `TeluguAdvisoryTest.kt` verifying that two different cases produce different Telugu text, and that passing Telugu to `PromptBuilder` throws `IllegalArgumentException`.
+5. **20-Case Benchmark Evaluation (`benchmarks/advisory_case_specific.md`):**
+   - Evaluated 20 diverse cases across 5 crops (Rice, Cotton, Chilli, Tomato, Maize), diseases, pests, and severities.
+   - Results: **20/20 distinct answers (100%)**, **20/20 passed guardrails (100%)**, **20/20 mentioned correct crop and problem (100%)**.
+   - Full 5 target prompt/answer pairs documented in `benchmarks/advisory_case_specific.md`.
+6. **Unit Tests & Build:**
+   - 93/93 unit tests pass (`./gradlew testDebugUnitTest`).
+   - Clean debug APK assembled (`./gradlew assembleDebug`) and installed to emulator (`emulator-5554`).
+
+---
 
 ### Done in Task V4: Remove the Four Dropped Classes
 1. **Completely Dropped 4 Underperforming / Unverified Classes:**

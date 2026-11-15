@@ -53,9 +53,11 @@ fun ResultScreen(
     isGeneratingAdvice: Boolean,
     isFakeAdvisor: Boolean = true,
     isLowMemoryFallback: Boolean = false,
+    isOfflineGuideFallback: Boolean = false,
     capturedBitmap: Bitmap? = null,
     onBackClick: () -> Unit,
     onChangeLanguageClick: (String) -> Unit = {},
+    onFieldSpreadChange: ((RulesEngine.FieldSpread) -> Unit)? = null,
     onViewMoreDetails: () -> Unit,
     onChatbotClick: () -> Unit = {},
     onSaveCaseReport: () -> Unit = {},
@@ -679,7 +681,10 @@ fun ResultScreen(
                                     modifier = Modifier
                                         .weight(1f)
                                         .height(64.dp)
-                                        .clickable { selectedFieldSpread = spread },
+                                        .clickable {
+                                            selectedFieldSpread = spread
+                                            onFieldSpreadChange?.invoke(spread)
+                                        },
                                     shape = RoundedCornerShape(12.dp),
                                     color = if (isSelected) Color(0xFFE8F5E9) else Color(0xFFF5F5F5),
                                     border = androidx.compose.foundation.BorderStroke(
@@ -1135,6 +1140,7 @@ fun ResultScreen(
                 language = language,
                 isFake = isFakeAdvisor,
                 isLowMemoryFallback = isLowMemoryFallback,
+                isOfflineGuideFallback = isOfflineGuideFallback,
                 onCancel = onCancelAdvice
             )
 

@@ -1,5 +1,7 @@
 package com.cropdoctor.advisor
 
+import com.cropdoctor.domain.CertaintyBand
+import com.cropdoctor.domain.RulesEngine
 import com.cropdoctor.domain.SeverityBand
 import com.cropdoctor.knowledge.KbEntry
 import java.util.regex.Pattern
@@ -37,18 +39,11 @@ object GuardrailFilter {
         "deltamethrin", "thiamethoxam", "fipronil", "profenofos", "diafenthiuron"
     )
 
-    /**
-     * Sanitizes Llama output by scrubbing any hallucinated dosage numbers or application rates,
-     * replacing them with official directive to follow the CIB&RC product label.
-     */
     fun sanitize(text: String): String {
         val matcher = DOSE_PATTERN.matcher(text)
         return matcher.replaceAll(REPLACEMENT)
     }
 
-    /**
-     * Checks if the text contains any hallucinated dosage numbers or spray rates.
-     */
     fun hasDose(text: String): Boolean {
         return DOSE_PATTERN.matcher(text).find() || GENERAL_DOSE_PATTERN.matcher(text).find()
     }
@@ -58,12 +53,15 @@ object GuardrailFilter {
      * - Rejects any dose numbers (Rule H4).
      * - Rejects any unknown chemical/pesticide active ingredients not in the official KB entry (Rule H4).
      * - Rejects contradictions with the diagnosed severity band (Rule H5).
-     * If validation fails, caller MUST discard AI output and display the verified KB text alone.
+     * - Rejects contradictions with referral advice from RulesEngine (Task A2 Requirement 3).
+     * If validation fails, caller MUST discard AI output and display the verified KB text alone ("Offline guide").
      */
     fun validateAdvice(
         generatedText: String,
         kbEntry: KbEntry,
-        severityBand: SeverityBand
+        severityBand: SeverityBand,
+        urgencyLevel: RulesEngine.UrgencyLevel? = null,
+        certaintyBand: CertaintyBand = CertaintyBand.SURE
     ): GuardrailResult {
         // 1. Check for dosage numbers
         if (hasDose(generatedText)) {
@@ -134,6 +132,49 @@ object GuardrailFilter {
             }
             SeverityBand.MODERATE -> {
                 // Moderate is balanced
+            }
+        }
+
+        // 4. Check for referral contradiction (Task A2 Requirement 3)
+        val referralRequired = (urgencyLevel == RulesEngine.UrgencyLevel.ACT_NOW) ||
+                (severityBand == SeverityBand.SEVERE) ||
+                (certaintyBand == CertaintyBand.NOT_SURE) ||
+                RulesEngine.shouldReferToKVK(severityBand, kbEntry.referralThreshold)
+
+        if (referralRequired) {
+            val antiReferralPhrases = listOf(
+                "no need to call",
+                "do not call",
+                "do not contact",
+                "no extension officer needed",
+                "no extension worker needed",
+                "no help needed",
+                "do not consult",
+                "harmless condition",
+                "ignore this symptom"
+            )
+            if (antiReferralPhrases.any { lowerText.contains(it) }) {
+                return GuardrailResult(
+                    isValid = false,
+                    sanitizedText = generatedText,
+                    failureReason = "Contradicts referral advice: recommends against contacting extension officer when referral is required"
+                )
+            }
+        } else {
+            val falseEmergencyPhrases = listOf(
+                "severe emergency",
+                "emergency referral required immediately",
+                "call extension officer immediately",
+                "destroy all plants",
+                "catastrophic failure",
+                "destroy the entire field"
+            )
+            if (falseEmergencyPhrases.any { lowerText.contains(it) }) {
+                return GuardrailResult(
+                    isValid = false,
+                    sanitizedText = generatedText,
+                    failureReason = "Contradicts non-emergency advice: claims extreme emergency when routine monitoring is advised"
+                )
             }
         }
 
