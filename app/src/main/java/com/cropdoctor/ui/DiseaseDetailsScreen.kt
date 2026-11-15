@@ -201,9 +201,41 @@ fun DiseaseDetailsScreen(
                                     )
                                 }
                             }
+                            if (kbEntry.earlyWarningSigns.forLanguage(language).isNotBlank()) {
+                                Spacer(modifier = Modifier.height(14.dp))
+                                Text(
+                                    text = when (language) { "te" -> "ముందస్తు హెచ్చరిక సంకేతాలు:"; "hi" -> "शुरुआती चेतावनी संकेत:"; else -> "Early Warning Signs to Watch:" },
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color(0xFFD97706)
+                                )
+                                Spacer(modifier = Modifier.height(6.dp))
+                                Text(
+                                    text = kbEntry.earlyWarningSigns.forLanguage(language),
+                                    fontSize = 15.sp,
+                                    color = Color(0xFF444444),
+                                    lineHeight = 22.sp
+                                )
+                            }
                         }
                         2 -> {
                             // PREVENTION
+                            if (kbEntry.preventionAndFieldPractice.forLanguage(language).isNotBlank()) {
+                                Text(
+                                    text = when (language) { "te" -> "క్షేత్ర యాజమాన్యం (నీరు & ఎరువులు):"; "hi" -> "कृषि प्रबंधन (सिंचाई और पोषण):"; else -> "Field Practices (Irrigation & Nutrients):" },
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = FarmGreenPrimary
+                                )
+                                Spacer(modifier = Modifier.height(6.dp))
+                                Text(
+                                    text = kbEntry.preventionAndFieldPractice.forLanguage(language),
+                                    fontSize = 15.sp,
+                                    color = Color(0xFF444444),
+                                    lineHeight = 22.sp
+                                )
+                                Spacer(modifier = Modifier.height(14.dp))
+                            }
                             Text(
                                 text = when (language) { "te" -> "నివారణ & రక్షణ పద్ధతులు:"; "hi" -> "रोकथाम और सुरक्षा सुझाव:"; else -> "Prevention & Management:" },
                                 fontSize = 17.sp,
@@ -230,6 +262,22 @@ fun DiseaseDetailsScreen(
                                         lineHeight = 22.sp
                                     )
                                 }
+                            }
+                            if (kbEntry.whenToCallExtensionOfficer.forLanguage(language).isNotBlank()) {
+                                Spacer(modifier = Modifier.height(14.dp))
+                                Text(
+                                    text = when (language) { "te" -> "అధికారిని ఎప్పుడు సంప్రదించాలి:"; "hi" -> "कृषि अधिकारी से कब संपर्क करें:"; else -> "When to Contact Extension Officer:" },
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color(0xFFD32F2F)
+                                )
+                                Spacer(modifier = Modifier.height(6.dp))
+                                Text(
+                                    text = kbEntry.whenToCallExtensionOfficer.forLanguage(language),
+                                    fontSize = 15.sp,
+                                    color = Color(0xFF333333),
+                                    lineHeight = 22.sp
+                                )
                             }
                         }
                     }

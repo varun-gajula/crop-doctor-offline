@@ -65,6 +65,9 @@ object PromptBuilder {
 
         val urgentStep = kbEntry.immediateStep.en.ifEmpty { "Isolate infected plants and avoid overhead watering." }
         val sevAdviceText = kbEntry.severityAdvice[severity.uppercase()]?.en ?: kbEntry.explainText.en
+        val earlyWarningText = kbEntry.earlyWarningSigns.en.ifEmpty { "Watch for expanding spots, yellowing, or wilt." }
+        val preventionText = kbEntry.preventionAndFieldPractice.en.ifEmpty { "Follow clean field sanitation and balanced fertilization." }
+        val officerText = kbEntry.whenToCallExtensionOfficer.en.ifEmpty { referralContact }
 
         val regionalAdviceObj = kbEntry.getRegionalAdvice(region)
         val regionalAdviceText = if (regionalAdviceObj.differs && !regionalAdviceObj.text?.en.isNullOrBlank()) {
@@ -126,6 +129,9 @@ Output in three short parts:
 [APPROVED KNOWLEDGE-BASE ENTRY]
 - Immediate Cultural Step: $urgentStep
 - Severity Advice ($severity): $sevAdviceText
+- Early-Warning Signs to Watch: $earlyWarningText
+- Prevention & Field Practice: $preventionText
+- When to Call Extension Officer: $officerText
 - Natural / Cultural Methods:
 $naturalRemedy
 - Chemical Management Options (CIB&RC Registered):
