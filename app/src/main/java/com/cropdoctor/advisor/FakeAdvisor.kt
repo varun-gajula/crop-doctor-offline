@@ -20,6 +20,9 @@ class FakeAdvisor : Advisor {
         certainty: String,
         language: String,
         kbEntry: KbEntry,
+        fieldSpread: String,
+        region: String,
+        urgency: RulesEngine.UrgencyLevel?,
         onToken: (String) -> Unit
     ) {
         val certaintyBand = when (certainty.uppercase()) {
@@ -28,11 +31,24 @@ class FakeAdvisor : Advisor {
             else -> CertaintyBand.NOT_SURE
         }
 
-        // T2c: Grounded advice based strictly on RulesEngine rules
-        val adviceText = RulesEngine.buildAdvisoryText(
+        val spreadEnum = when (fieldSpread.lowercase()) {
+            "few_plants", "a few plants", "few" -> RulesEngine.FieldSpread.FEW_PLANTS
+            "most" -> RulesEngine.FieldSpread.MOST
+            else -> RulesEngine.FieldSpread.SOME
+        }
+
+        val resolvedUrgency = urgency ?: RulesEngine.calculateUrgency(severityBand, spreadEnum)
+
+        val adviceText = RulesEngine.buildCaseSpecificAdvisory(
             classId = classId,
-            certaintyBand = certaintyBand,
+            crop = kbEntry.crop,
+            diseaseName = kbEntry.names.forLanguage(language),
+            type = kbEntry.type,
             severityBand = severityBand,
+            certaintyBand = certaintyBand,
+            fieldSpread = spreadEnum,
+            urgencyLevel = resolvedUrgency,
+            region = region,
             language = language,
             kbEntry = kbEntry
         )
@@ -40,12 +56,12 @@ class FakeAdvisor : Advisor {
         // Clean through GuardrailFilter
         val safeText = GuardrailFilter.sanitize(adviceText)
 
-        // Stream tokens word-by-word with ~40ms delay (simulating ~15-20 tokens/sec on Arm CPU)
+        // Stream tokens word-by-word with ~30ms delay
         val words = safeText.split(" ")
         for (i in words.indices) {
             val token = if (i == words.size - 1) words[i] else words[i] + " "
             onToken(token)
-            delay(40)
+            delay(30)
         }
     }
 
@@ -53,4 +69,3 @@ class FakeAdvisor : Advisor {
         // No-op
     }
 }
-

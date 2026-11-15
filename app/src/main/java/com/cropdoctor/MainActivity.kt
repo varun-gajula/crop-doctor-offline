@@ -119,6 +119,7 @@ class MainActivity : ComponentActivity() {
                     var advisoryText by remember { mutableStateOf("") }
                     var isGeneratingAdvice by remember { mutableStateOf(false) }
                     var capturedLeafBitmap by remember { mutableStateOf<Bitmap?>(null) }
+                    var currentFieldSpread by remember { mutableStateOf<com.cropdoctor.domain.RulesEngine.FieldSpread?>(null) }
 
                     val app = application as CropDoctorApplication
 
@@ -136,6 +137,8 @@ class MainActivity : ComponentActivity() {
                                 result = classifierResult!!,
                                 kbEntry = activeKbEntry!!,
                                 language = newLang,
+                                fieldSpread = currentFieldSpread,
+                                region = selectedRegion,
                                 onUpdate = { advisoryText = it },
                                 onStateChange = { isGeneratingAdvice = it }
                             )
@@ -145,6 +148,18 @@ class MainActivity : ComponentActivity() {
                     fun switchRegion(newRegion: String) {
                         selectedRegion = newRegion
                         userPrefs.selectedRegion = newRegion
+                        if (currentScreen == AppScreen.RESULT && classifierResult != null && activeKbEntry != null) {
+                            triggerAdvisoryStream(
+                                app = app,
+                                result = classifierResult!!,
+                                kbEntry = activeKbEntry!!,
+                                language = selectedLanguage,
+                                fieldSpread = currentFieldSpread,
+                                region = newRegion,
+                                onUpdate = { advisoryText = it },
+                                onStateChange = { isGeneratingAdvice = it }
+                            )
+                        }
                     }
 
                     // Handle system back button smoothly
@@ -512,9 +527,25 @@ class MainActivity : ComponentActivity() {
                                     isGeneratingAdvice = isGeneratingAdvice,
                                     isFakeAdvisor = try { (application as CropDoctorApplication).advisor.isFake } catch (e: Exception) { true },
                                     isLowMemoryFallback = try { (application as CropDoctorApplication).advisor.isLowMemoryFallback } catch (e: Exception) { false },
+                                    isOfflineGuideFallback = try { (application as CropDoctorApplication).advisor.isFallbackToOfflineGuide } catch (e: Exception) { false },
                                     capturedBitmap = capturedLeafBitmap,
                                     onBackClick = { navigateTo(AppScreen.HOME) },
                                     onChangeLanguageClick = { newLang -> switchLanguage(newLang) },
+                                    onFieldSpreadChange = { spread ->
+                                        currentFieldSpread = spread
+                                        if (classifierResult != null && activeKbEntry != null) {
+                                            triggerAdvisoryStream(
+                                                app = app,
+                                                result = classifierResult!!,
+                                                kbEntry = activeKbEntry!!,
+                                                language = selectedLanguage,
+                                                fieldSpread = spread,
+                                                region = selectedRegion,
+                                                onUpdate = { advisoryText = it },
+                                                onStateChange = { isGeneratingAdvice = it }
+                                            )
+                                        }
+                                    },
                                     onViewMoreDetails = {
                                         selectedDetailEntry = activeKbEntry
                                         navigateTo(AppScreen.DISEASE_DETAILS)
@@ -634,12 +665,22 @@ class MainActivity : ComponentActivity() {
         result: ClassifierResult,
         kbEntry: KbEntry,
         language: String,
+        fieldSpread: com.cropdoctor.domain.RulesEngine.FieldSpread? = null,
+        region: String = "telangana",
         onUpdate: (String) -> Unit,
         onStateChange: (Boolean) -> Unit
     ) {
         currentAdviceJob?.cancel()
         onUpdate("")
         onStateChange(true)
+
+        val spreadStr = when (fieldSpread) {
+            com.cropdoctor.domain.RulesEngine.FieldSpread.FEW_PLANTS -> "a few plants"
+            com.cropdoctor.domain.RulesEngine.FieldSpread.MOST -> "most"
+            else -> "some"
+        }
+        val spreadEnum = fieldSpread ?: com.cropdoctor.domain.RulesEngine.FieldSpread.SOME
+        val urgency = com.cropdoctor.domain.RulesEngine.calculateUrgency(result.severityBand, spreadEnum)
 
         currentAdviceJob = lifecycleScope.launch {
             val sb = StringBuilder()
@@ -649,7 +690,10 @@ class MainActivity : ComponentActivity() {
                     severityBand = result.severityBand,
                     certainty = result.certaintyBand.name,
                     language = language,
-                    kbEntry = kbEntry
+                    kbEntry = kbEntry,
+                    fieldSpread = spreadStr,
+                    region = region,
+                    urgency = urgency
                 ) { token ->
                     sb.append(token)
                     onUpdate(sb.toString())
