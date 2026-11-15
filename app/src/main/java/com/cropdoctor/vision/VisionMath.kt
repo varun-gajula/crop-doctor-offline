@@ -19,6 +19,12 @@ data class DiagnosisEvaluation(
 
 object VisionMath {
 
+    const val MODEL_OUTPUT_SIZE = 25
+
+    val DEFAULT_MODEL_CLASS_MAP: List<Int?> = listOf(
+        0, 1, 2, 3, 4, 5, 6, null, null, 7, 8, 9, null, null, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20
+    )
+
     /**
      * Applies temperature scaling to raw logits: z'_i = z_i / T
      */
@@ -195,6 +201,93 @@ object VisionMath {
                 displayName = top1.displayName,
                 confidence = top1.probability,
                 certaintyBand = CertaintyCalculator.calculate(top1.probability),
+                top3 = topK,
+                freeEnergy = freeEnergy,
+                isOutOfDistribution = false,
+                isBelowThreshold = false
+            )
+        }
+    }
+
+    /**
+     * Task V5b: Evaluates model output when bundled vision.pte has 25 outputs
+     * and the app taxonomy has 21 classes mapped via model_class_map.json.
+     *
+     * 1. Softmax over all 25 logits (with temperature).
+     * 2. Takes top-1.
+     * 3. If top-1 is one of the four nulls (original indices 7, 8, 12, 13) -> returns "Can't tell" (unknown).
+     * 4. Otherwise maps to 21-class index and checks free energy and confidence thresholds.
+     */
+    fun evaluateModel25Output(
+        rawLogits: FloatArray,
+        modelClassMap: List<Int?>,
+        labels21: List<String>,
+        temperature: Float,
+        thresholds: Map<String, Float>,
+        defaultThreshold: Float,
+        energyThreshold: Double
+    ): DiagnosisEvaluation {
+        val logits25 = if (rawLogits.size >= MODEL_OUTPUT_SIZE) {
+            rawLogits.copyOfRange(0, MODEL_OUTPUT_SIZE)
+        } else {
+            rawLogits
+        }
+
+        val scaledLogits = applyTemperature(logits25, temperature)
+        val freeEnergy = computeFreeEnergy(scaledLogits, temperature)
+        val isOOD = freeEnergy > energyThreshold
+
+        val probs25 = softmax(scaledLogits)
+        val top1Idx25 = probs25.indices.maxByOrNull { probs25[it] } ?: 0
+        val top1Prob = probs25[top1Idx25]
+        val mapped21Idx = modelClassMap.getOrNull(top1Idx25)
+
+        // Top-3 scored classes among mapped valid classes
+        val topK = probs25.indices
+            .mapNotNull { mIdx ->
+                val appIdx = modelClassMap.getOrNull(mIdx) ?: return@mapNotNull null
+                val cid = labels21.getOrNull(appIdx) ?: return@mapNotNull null
+                ScoredClass(cid, formatDisplayName(cid), probs25[mIdx])
+            }
+            .sortedByDescending { it.probability }
+            .take(3)
+
+        // If top-1 is one of the four nulls, return "Can't tell" (Rule H11 & Task V5b)
+        if (mapped21Idx == null || mapped21Idx !in labels21.indices) {
+            return DiagnosisEvaluation(
+                classId = "unknown",
+                displayName = "Not sure - ask an extension officer",
+                confidence = top1Prob,
+                certaintyBand = CertaintyBand.NOT_SURE,
+                top3 = topK,
+                freeEnergy = freeEnergy,
+                isOutOfDistribution = isOOD,
+                isBelowThreshold = true
+            )
+        }
+
+        val classId = labels21[mapped21Idx]
+        val displayName = formatDisplayName(classId)
+        val requiredThreshold = thresholds[classId] ?: defaultThreshold
+        val isBelowThreshold = top1Prob < requiredThreshold
+
+        return if (isOOD || isBelowThreshold) {
+            DiagnosisEvaluation(
+                classId = "unknown",
+                displayName = "Not sure - ask an extension officer",
+                confidence = top1Prob,
+                certaintyBand = CertaintyBand.NOT_SURE,
+                top3 = topK,
+                freeEnergy = freeEnergy,
+                isOutOfDistribution = isOOD,
+                isBelowThreshold = isBelowThreshold
+            )
+        } else {
+            DiagnosisEvaluation(
+                classId = classId,
+                displayName = displayName,
+                confidence = top1Prob,
+                certaintyBand = CertaintyCalculator.calculate(top1Prob),
                 top3 = topK,
                 freeEnergy = freeEnergy,
                 isOutOfDistribution = false,
