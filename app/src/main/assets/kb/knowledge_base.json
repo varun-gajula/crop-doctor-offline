@@ -87,6 +87,20 @@
             "source_quote": "Registered for bacterial leaf blight in rice."
           }
         ]
+      },
+      "regional": {
+        "telangana": {
+          "source": "PJTSAU",
+          "differs": false
+        },
+        "andhra_pradesh": {
+          "source": "ANGRAU",
+          "differs": false
+        },
+        "other": {
+          "source": "ICAR",
+          "differs": false
+        }
       }
     },
     {
@@ -161,6 +175,20 @@
             "source_quote": "Approved for brown spot in paddy."
           }
         ]
+      },
+      "regional": {
+        "telangana": {
+          "source": "PJTSAU",
+          "differs": false
+        },
+        "andhra_pradesh": {
+          "source": "ANGRAU",
+          "differs": false
+        },
+        "other": {
+          "source": "ICAR",
+          "differs": false
+        }
       }
     },
     {
@@ -235,6 +263,20 @@
             "source_quote": "Tricyclazole registered specifically for paddy blast control in India."
           }
         ]
+      },
+      "regional": {
+        "telangana": {
+          "source": "PJTSAU",
+          "differs": false
+        },
+        "andhra_pradesh": {
+          "source": "ANGRAU",
+          "differs": false
+        },
+        "other": {
+          "source": "ICAR",
+          "differs": false
+        }
       }
     },
     {
@@ -309,6 +351,20 @@
             "source_quote": "Registered for sheath blight in rice crop."
           }
         ]
+      },
+      "regional": {
+        "telangana": {
+          "source": "PJTSAU",
+          "differs": false
+        },
+        "andhra_pradesh": {
+          "source": "ANGRAU",
+          "differs": false
+        },
+        "other": {
+          "source": "ICAR",
+          "differs": false
+        }
       }
     },
     {
@@ -366,6 +422,20 @@
           }
         ],
         "chemical": []
+      },
+      "regional": {
+        "telangana": {
+          "source": "PJTSAU",
+          "differs": false
+        },
+        "andhra_pradesh": {
+          "source": "ANGRAU",
+          "differs": false
+        },
+        "other": {
+          "source": "ICAR",
+          "differs": false
+        }
       }
     },
     {
@@ -440,6 +510,20 @@
             "source_quote": "Approved combination for bacterial blight in cotton."
           }
         ]
+      },
+      "regional": {
+        "telangana": {
+          "source": "PJTSAU",
+          "differs": false
+        },
+        "andhra_pradesh": {
+          "source": "ANGRAU",
+          "differs": false
+        },
+        "other": {
+          "source": "ICAR",
+          "differs": false
+        }
       }
     },
     {
@@ -514,6 +598,20 @@
             "source_quote": "Registered for soil drenching against Fusarium in cotton."
           }
         ]
+      },
+      "regional": {
+        "telangana": {
+          "source": "PJTSAU",
+          "differs": false
+        },
+        "andhra_pradesh": {
+          "source": "ANGRAU",
+          "differs": false
+        },
+        "other": {
+          "source": "ICAR",
+          "differs": false
+        }
       }
     },
     {
@@ -599,6 +697,20 @@
             "source_quote": "Registered for whitefly management in cotton."
           }
         ]
+      },
+      "regional": {
+        "telangana": {
+          "source": "PJTSAU",
+          "differs": false
+        },
+        "andhra_pradesh": {
+          "source": "ANGRAU",
+          "differs": false
+        },
+        "other": {
+          "source": "ICAR",
+          "differs": false
+        }
       }
     },
     {
@@ -673,6 +785,20 @@
             "source_quote": "Approved for Alternaria leaf spot in cotton."
           }
         ]
+      },
+      "regional": {
+        "telangana": {
+          "source": "PJTSAU",
+          "differs": false
+        },
+        "andhra_pradesh": {
+          "source": "ANGRAU",
+          "differs": false
+        },
+        "other": {
+          "source": "ICAR",
+          "differs": false
+        }
       }
     },
     {
@@ -730,6 +856,20 @@
           }
         ],
         "chemical": []
+      },
+      "regional": {
+        "telangana": {
+          "source": "PJTSAU",
+          "differs": false
+        },
+        "andhra_pradesh": {
+          "source": "ANGRAU",
+          "differs": false
+        },
+        "other": {
+          "source": "ICAR",
+          "differs": false
+        }
       }
     },
     {
@@ -804,6 +944,20 @@
             "source_quote": "Registered bactericide combination for chilli bacterial spot."
           }
         ]
+      },
+      "regional": {
+        "telangana": {
+          "source": "PJTSAU",
+          "differs": false
+        },
+        "andhra_pradesh": {
+          "source": "ANGRAU",
+          "differs": false
+        },
+        "other": {
+          "source": "ICAR",
+          "differs": false
+        }
       }
     },
     {
@@ -889,6 +1043,30 @@
             "source_quote": "Registered for sucking pest/vector control in chilli."
           }
         ]
+      },
+      "regional": {
+        "telangana": {
+          "source": "PJTSAU",
+          "differs": true,
+          "text": {
+            "en": "PJTSAU advisory for Telangana: Install 30-40 blue sticky traps per acre. Spray neem oil (10,000 ppm) @ 1 ml/L or NSKE 5% at flowering to check vector build-up in Telangana dry-zone tracts.",
+            "te": "తెలంగాణ కోసం పిజెటిఎస్‌ఎయు (PJTSAU) సలహా: ఎకరానికి 30-40 నీలి రంగు జిగురు అట్టలను అమర్చండి. పూత దశలో 10,000 ppm వేపనూనె 1 మి.లీ/లీ లేదా 5% వేప గింజల కషాయం పిచికారీ చేసి తామర పురుగులను నివారించండి.",
+            "hi": "तेलंगाना के लिए PJTSAU की सलाह: प्रति एकड़ 30-40 नीले चिपचिपे ट्रैप लगाएं। फूल आने पर 10,000 ppm नीम का तेल 1 मिली/लीटर या 5% नीम बीज का अर्क छिड़कें।"
+          }
+        },
+        "andhra_pradesh": {
+          "source": "ANGRAU",
+          "differs": true,
+          "text": {
+            "en": "ANGRAU advisory for Andhra Pradesh: Grow 2-3 rows of barrier crops (maize or jowar) around chilli fields in coastal and Rayalaseema districts to prevent viruliferous vector migration.",
+            "te": "ఆంధ్రప్రదేశ్ కోసం ఆంగ్రా (ANGRAU) సలహా: కోస్తా మరియు రాయలసీమ జిల్లాలలో రసం పీల్చే పురుగుల వ్యాప్తిని అరికట్టడానికి మిరప చేను చుట్టూ 2-3 వరుసల జొన్న లేదా మొక్కజొన్నను సరిహద్దు పంటగా వేయండి.",
+            "hi": "आंध्र प्रदेश के लिए ANGRAU की सलाह: रस चूसक कीटों के प्रसार को रोकने के लिए मिर्च के खेत के चारों ओर 2-3 पंक्तियों में मक्का या ज्वार की अवरोधक फसल लगाएं।"
+          }
+        },
+        "other": {
+          "source": "ICAR",
+          "differs": false
+        }
       }
     },
     {
@@ -963,6 +1141,20 @@
             "source_quote": "Approved for leaf spot in chilli."
           }
         ]
+      },
+      "regional": {
+        "telangana": {
+          "source": "PJTSAU",
+          "differs": false
+        },
+        "andhra_pradesh": {
+          "source": "ANGRAU",
+          "differs": false
+        },
+        "other": {
+          "source": "ICAR",
+          "differs": false
+        }
       }
     },
     {
@@ -1037,6 +1229,20 @@
             "source_quote": "Approved contact fungicide for foliar spots in chilli."
           }
         ]
+      },
+      "regional": {
+        "telangana": {
+          "source": "PJTSAU",
+          "differs": false
+        },
+        "andhra_pradesh": {
+          "source": "ANGRAU",
+          "differs": false
+        },
+        "other": {
+          "source": "ICAR",
+          "differs": false
+        }
       }
     },
     {
@@ -1094,6 +1300,20 @@
           }
         ],
         "chemical": []
+      },
+      "regional": {
+        "telangana": {
+          "source": "PJTSAU",
+          "differs": false
+        },
+        "andhra_pradesh": {
+          "source": "ANGRAU",
+          "differs": false
+        },
+        "other": {
+          "source": "ICAR",
+          "differs": false
+        }
       }
     },
     {
@@ -1179,6 +1399,20 @@
             "source_quote": "Registered for tomato early blight control."
           }
         ]
+      },
+      "regional": {
+        "telangana": {
+          "source": "PJTSAU",
+          "differs": false
+        },
+        "andhra_pradesh": {
+          "source": "ANGRAU",
+          "differs": false
+        },
+        "other": {
+          "source": "ICAR",
+          "differs": false
+        }
       }
     },
     {
@@ -1253,6 +1487,20 @@
             "source_quote": "Approved systemic fungicide for late blight in tomato."
           }
         ]
+      },
+      "regional": {
+        "telangana": {
+          "source": "PJTSAU",
+          "differs": false
+        },
+        "andhra_pradesh": {
+          "source": "ANGRAU",
+          "differs": false
+        },
+        "other": {
+          "source": "ICAR",
+          "differs": false
+        }
       }
     },
     {
@@ -1338,6 +1586,20 @@
             "source_quote": "Registered for whitefly management in tomato."
           }
         ]
+      },
+      "regional": {
+        "telangana": {
+          "source": "PJTSAU",
+          "differs": false
+        },
+        "andhra_pradesh": {
+          "source": "ANGRAU",
+          "differs": false
+        },
+        "other": {
+          "source": "ICAR",
+          "differs": false
+        }
       }
     },
     {
@@ -1434,6 +1696,20 @@
             "source_quote": "Approved miticide for spider mites in tomato."
           }
         ]
+      },
+      "regional": {
+        "telangana": {
+          "source": "PJTSAU",
+          "differs": false
+        },
+        "andhra_pradesh": {
+          "source": "ANGRAU",
+          "differs": false
+        },
+        "other": {
+          "source": "ICAR",
+          "differs": false
+        }
       }
     },
     {
@@ -1491,6 +1767,20 @@
           }
         ],
         "chemical": []
+      },
+      "regional": {
+        "telangana": {
+          "source": "PJTSAU",
+          "differs": false
+        },
+        "andhra_pradesh": {
+          "source": "ANGRAU",
+          "differs": false
+        },
+        "other": {
+          "source": "ICAR",
+          "differs": false
+        }
       }
     },
     {
@@ -1565,6 +1855,20 @@
             "source_quote": "Registered for foliar diseases in maize."
           }
         ]
+      },
+      "regional": {
+        "telangana": {
+          "source": "PJTSAU",
+          "differs": false
+        },
+        "andhra_pradesh": {
+          "source": "ANGRAU",
+          "differs": false
+        },
+        "other": {
+          "source": "ICAR",
+          "differs": false
+        }
       }
     },
     {
@@ -1639,6 +1943,20 @@
             "source_quote": "Approved for rust management in maize."
           }
         ]
+      },
+      "regional": {
+        "telangana": {
+          "source": "PJTSAU",
+          "differs": false
+        },
+        "andhra_pradesh": {
+          "source": "ANGRAU",
+          "differs": false
+        },
+        "other": {
+          "source": "ICAR",
+          "differs": false
+        }
       }
     },
     {
@@ -1713,6 +2031,20 @@
             "source_quote": "Approved for Northern leaf blight in maize."
           }
         ]
+      },
+      "regional": {
+        "telangana": {
+          "source": "PJTSAU",
+          "differs": false
+        },
+        "andhra_pradesh": {
+          "source": "ANGRAU",
+          "differs": false
+        },
+        "other": {
+          "source": "ICAR",
+          "differs": false
+        }
       }
     },
     {
@@ -1809,6 +2141,30 @@
             "source_quote": "Approved specifically for Fall Armyworm management in maize."
           }
         ]
+      },
+      "regional": {
+        "telangana": {
+          "source": "PJTSAU",
+          "differs": true,
+          "text": {
+            "en": "PJTSAU Telangana advisory: Erect 4 pheromone traps per acre at 10-15 days after germination for monitoring. In Kharif/Rabi rainfed areas, apply sand and lime mixture (9:1) or whorl application of fine soil.",
+            "te": "తెలంగాణ కోసం పిజెటిఎస్‌ఎయు (PJTSAU) సలహా: మొలకెత్తిన 10-15 రోజులలో ఎకరానికి 4 లింగాకర్షక బుట్టలను అమర్చండి. సుడిలో ఇసుక మరియు సున్నం మిశ్రమం (9:1) లేదా మెత్తటి మట్టిని వేయండి.",
+            "hi": "तेलंगाना के लिए PJTSAU की सलाह: अंकुरण के 10-15 दिन बाद प्रति एकड़ 4 फेरोमोन ट्रैप लगाएं। तने के भंवर में रेत और चूने का मिश्रण (9:1) डालें।"
+          }
+        },
+        "andhra_pradesh": {
+          "source": "ANGRAU",
+          "differs": true,
+          "text": {
+            "en": "ANGRAU Andhra Pradesh advisory: Apply neem cake @ 100 kg/acre at last ploughing. Intercrop maize with cowpea or redgram (2:1 ratio) in rainfed tracts of Rayalaseema to encourage natural predators.",
+            "te": "ఆంధ్రప్రదేశ్ కోసం ఆంగ్రా (ANGRAU) సలహా: చివరి దుక్కిలో ఎకరానికి 100 కిలోల వేప పిండిని వేయండి. సహజ శత్రువుల వృద్ధికి మొక్కజొన్నతో పాటు అలసంద లేదా కందిని అంతరపంటగా (2:1 నిష్పత్తిలో) వేయండి.",
+            "hi": "आंध्र प्रदेश के लिए ANGRAU की सलाह: अंतिम जुताई के समय 100 किग्रा/एकड़ नीम की खली डालें। प्राकृतिक परभक्षियों को बढ़ावा देने के लिए मक्का के साथ लोबिया या अरहर की अंतर-फसल लगाएं।"
+          }
+        },
+        "other": {
+          "source": "ICAR",
+          "differs": false
+        }
       }
     },
     {
@@ -1866,6 +2222,20 @@
           }
         ],
         "chemical": []
+      },
+      "regional": {
+        "telangana": {
+          "source": "PJTSAU",
+          "differs": false
+        },
+        "andhra_pradesh": {
+          "source": "ANGRAU",
+          "differs": false
+        },
+        "other": {
+          "source": "ICAR",
+          "differs": false
+        }
       }
     }
   ]

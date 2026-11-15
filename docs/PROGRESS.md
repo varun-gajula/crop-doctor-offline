@@ -1,6 +1,46 @@
 # Project Progress - Crop Doctor Offline
 
-## Current Status: Task G1 and Task V2b Complete
+## Current Status: Task G1, Task G2, and Task V2b Complete
+
+### Done in Task G2: Region-Specific Advice (Requirement F6, Rules H4, R11)
+1. **Region Choices Restricted to 3 Target Zones:**
+   - First launch region selection restricted strictly to: `Telangana`, `Andhra Pradesh`, `Other`.
+   - Removed Karnataka and Tamil Nadu from region picker (`FirstLaunchScreen.kt`) and state dialogs because the app strictly supports Telugu, Hindi, and English (Rule R4/F6).
+2. **Knowledge Base `regional` Block on All 25 Classes & Schema Validation:**
+   - Added `regional` map to all 25 classes in `data/kb/knowledge_base.json` and `app/src/main/assets/kb/knowledge_base.json`:
+     - `telangana`: `source`: `"PJTSAU"`, `differs`: boolean.
+     - `andhra_pradesh`: `source`: `"ANGRAU"`, `differs`: boolean.
+     - `other`: `source`: `"ICAR"`, `differs`: boolean.
+   - Sourced official regional differences for key South Indian outbreaks (never invented per Rule H4 & R11):
+     - `chilli_leaf_curl_virus`:
+       - Telangana (PJTSAU): 30–40 blue sticky traps/acre and neem oil 10,000 ppm / NSKE 5% at flowering for vector suppression.
+       - Andhra Pradesh (ANGRAU): 2–3 border rows of barrier crops (maize/jowar) around chilli fields in coastal & Rayalaseema districts.
+     - `maize_fall_armyworm`:
+       - Telangana (PJTSAU): 4 pheromone traps/acre 10–15 days after germination; whorl sand-lime mixture (9:1).
+       - Andhra Pradesh (ANGRAU): Neem cake 100 kg/acre at last ploughing; intercropping maize with cowpea/redgram (2:1).
+     - Remaining 23 classes maintain `differs: false` ("Same advice for all regions") with university/ICAR citations.
+   - Enhanced `scripts/validate_kb.py` to enforce `regional` map presence, correct authority sources (PJTSAU/ANGRAU/ICAR), boolean `differs`, and non-empty localized text if and only if `differs == true`.
+3. **Result Screen Regional Advisory & Advice Source Badges:**
+   - Added persistent `RegionChip` in `ResultScreen.kt` header alongside `LanguageChip` for instant region toggling.
+   - Added `Regional Advisory` card displaying active region pin, university-sourced difference (or italicized `"Same advice for all regions"` / `"అన్ని ప్రాంతాలకు ఒకే సలహా"` / `"सभी क्षेत्रों के लिए समान सलाह"`), and advice source badge (`"🏛️ Advice source: PJTSAU"` / `"ANGRAU"` / `"ICAR"`).
+   - Hooked `selectedRegion` state into Compose runtime in `MainActivity.kt` with `switchRegion(...)` for seamless live recomposition.
+4. **Helpline Verification & Audit (`data/HELPLINES.md`):**
+   - Retained National Kisan Call Centre: `1800-180-1551` (Toll-Free, 22 languages including Telugu and Hindi).
+   - Audited Andhra Pradesh: Verified ANGRAU Farmers Call Centre toll-free number `1800-425-0430` directly on `https://angrau.ac.in/angrau/index.php/extension/farmer-s-call-centre`. (Corrected legacy unverified `1800-425-0433`).
+   - Audited Telangana: Confirmed PJTSAU (`pjtsau.edu.in`) publishes administrative landlines (`040-24015011`) but no live statewide toll-free 1800 number. Following Rule H4, unverified numbers are omitted and Telangana farmers are serviced by the National Kisan Call Centre (`1800-180-1551`).
+   - Fully documented in `data/HELPLINES.md`.
+5. **Unit Tests & Live Verification (78/78 Unit Tests Pass):**
+   - Created `RegionalAdviceTest.kt` verifying all 25 classes have valid `regional` entries, source authority mappings, `differs` integrity, and case-insensitive region key resolution.
+   - Built and installed updated APK on `emulator-5554`.
+   - Captured CHECKPOINT G2 deliverables:
+     - `benchmarks/g2_region_telangana.png` (Telangana: PJTSAU advice + source)
+     - `benchmarks/g2_region_andhra.png` (Andhra Pradesh: ANGRAU advice + source)
+     - `benchmarks/g2_region_other.png` (Other: Same advice for all regions + ICAR source)
+     - `benchmarks/g2_region_telangana_te.png` & `benchmarks/g2_region_andhra_te.png` (Telugu regional displays)
+     - `benchmarks/g2_helplines_andhra.png` & `benchmarks/g2_helplines_telangana.png` (Verified toll-free helplines dialogs)
+     - `benchmarks/g2_regional_sources_collage.png` (3-region comparison collage)
+
+---
 
 ### Done in Task V2b: 21-Class Capped Retraining & Calibration Notebook (Rules H3, H11, H15)
 1. **Created `notebooks/04_v2b_21class_capped.ipynb`:**

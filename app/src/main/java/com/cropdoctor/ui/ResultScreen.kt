@@ -38,6 +38,7 @@ import com.cropdoctor.domain.ScanHistoryRepository
 import com.cropdoctor.domain.SeverityBand
 import com.cropdoctor.knowledge.KbEntry
 import com.cropdoctor.ui.components.LanguageChip
+import com.cropdoctor.ui.components.RegionChip
 import com.cropdoctor.ui.theme.FarmGreenDark
 import com.cropdoctor.ui.theme.FarmGreenPrimary
 
@@ -46,6 +47,8 @@ fun ResultScreen(
     result: ClassifierResult,
     kbEntry: KbEntry,
     language: String,
+    region: String = "Telangana",
+    onRegionChange: ((String) -> Unit)? = null,
     advisoryText: String,
     isGeneratingAdvice: Boolean,
     isFakeAdvisor: Boolean = true,
@@ -60,6 +63,7 @@ fun ResultScreen(
 ) {
     val context = LocalContext.current
     val scrollState = rememberScrollState()
+    var currentRegion by remember(region) { mutableStateOf(region) }
 
     // openTier decision based on RulesEngine (T2)
     val openTier = RulesEngine.determineOpenTier(result.severityBand)
@@ -136,14 +140,21 @@ fun ResultScreen(
         )
     }
 
-    // Regional Helplines & Extension Referral Dialog
+    // Regional Helplines & Extension Referral Dialog (Task G2 / Requirement F6 / Rule H4)
     if (showHelplineDialog) {
-        val helplines = listOf(
-            Triple("National Kisan Call Centre", "1800-180-1551", "All India • Toll Free • 22 Languages"),
-            Triple("Telangana (PJTSAU)", "1800-425-3536", "Professor Jayashankar Telangana State Agricultural Univ."),
-            Triple("Andhra Pradesh (ANGRAU)", "1800-425-0433", "Acharya N.G. Ranga Agricultural University"),
-            Triple("Karnataka (UAS)", "1800-425-1150", "University of Agricultural Sciences"),
-            Triple("Tamil Nadu (TNAU)", "0422-6611300", "Tamil Nadu Agricultural University Agri-Portal")
+        val regKey = currentRegion.lowercase().replace(" ", "_")
+        val helplines = mutableListOf<Triple<String, String, String>>()
+
+        // Official verified ANGRAU Helpline for Andhra Pradesh (https://angrau.ac.in/angrau/index.php/extension/farmer-s-call-centre)
+        if (regKey == "andhra_pradesh" || regKey == "andhra") {
+            helplines.add(
+                Triple("ANGRAU Farmers Call Centre", "1800-425-0430", "Acharya N.G. Ranga Agricultural Univ. • Toll-Free (AP)")
+            )
+        }
+
+        // National Kisan Call Centre is available nationwide for all regions (toll-free in Telugu, Hindi, English)
+        helplines.add(
+            Triple("National Kisan Call Centre", "1800-180-1551", "All India • Toll Free • 22 Languages (Telugu, Hindi, English)")
         )
         AlertDialog(
             onDismissRequest = { showHelplineDialog = false },
@@ -244,13 +255,26 @@ fun ResultScreen(
                     )
                 }
 
-                // Persistent language chip on every screen (T2)
-                LanguageChip(
-                    currentLanguage = language,
-                    onLanguageSelected = { newLang ->
-                        onChangeLanguageClick(newLang)
-                    }
-                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    // Region chip (Telangana / Andhra Pradesh / Other)
+                    RegionChip(
+                        currentRegion = currentRegion,
+                        onRegionSelected = { newReg ->
+                            currentRegion = newReg
+                            onRegionChange?.invoke(newReg)
+                        }
+                    )
+
+                    Spacer(modifier = Modifier.width(6.dp))
+
+                    // Persistent language chip on every screen (T2)
+                    LanguageChip(
+                        currentLanguage = language,
+                        onLanguageSelected = { newLang ->
+                            onChangeLanguageClick(newLang)
+                        }
+                    )
+                }
             }
         }
     ) { paddingValues ->
@@ -635,6 +659,92 @@ fun ResultScreen(
                         color = Color(0xFF424242),
                         lineHeight = 22.sp
                     )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Regional Advisory Section (Requirement F6 / Task G2)
+            val regionalAdvice = kbEntry.getRegionalAdvice(currentRegion)
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(containerColor = Color.White),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = Icons.Default.LocationOn,
+                                contentDescription = null,
+                                tint = FarmGreenPrimary,
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = stringResource(R.string.regional_advisory_title),
+                                fontSize = 17.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF212121)
+                            )
+                        }
+                        val regNameRes = when (currentRegion.lowercase().replace(" ", "_")) {
+                            "telangana" -> R.string.region_telangana
+                            "andhra_pradesh", "andhra" -> R.string.region_andhra
+                            else -> R.string.region_other
+                        }
+                        Surface(
+                            shape = RoundedCornerShape(12.dp),
+                            color = Color(0xFFE8F5E9)
+                        ) {
+                            Text(
+                                text = "📍 " + stringResource(regNameRes),
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = FarmGreenDark,
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    if (regionalAdvice.differs && regionalAdvice.text != null) {
+                        Text(
+                            text = regionalAdvice.text.forLanguage(language),
+                            fontSize = 15.sp,
+                            color = Color(0xFF333333),
+                            lineHeight = 22.sp
+                        )
+                    } else {
+                        Text(
+                            text = stringResource(R.string.same_advice_all_regions),
+                            fontSize = 15.sp,
+                            color = Color(0xFF555555),
+                            fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    // Advice source badge (Requirement 3: "Advice source: ...")
+                    Surface(
+                        shape = RoundedCornerShape(8.dp),
+                        color = Color(0xFFF1F8E9)
+                    ) {
+                        Text(
+                            text = "🏛️ " + stringResource(R.string.advice_source, regionalAdvice.source),
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = FarmGreenDark,
+                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
+                        )
+                    }
                 }
             }
 

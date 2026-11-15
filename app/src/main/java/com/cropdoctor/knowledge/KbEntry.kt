@@ -46,6 +46,13 @@ data class TreatmentPlan(
 )
 
 @Serializable
+data class RegionalAdvice(
+    val source: String,
+    val differs: Boolean = false,
+    val text: LocalizedText? = null
+)
+
+@Serializable
 data class KbEntry(
     @SerialName("class_id") val classId: String,
     val index: Int,
@@ -58,8 +65,25 @@ data class KbEntry(
     @SerialName("severity_advice") val severityAdvice: Map<String, LocalizedText> = emptyMap(),
     @SerialName("immediate_step") val immediateStep: LocalizedText,
     @SerialName("explain_text") val explainText: LocalizedText,
-    val treatment: TreatmentPlan = TreatmentPlan()
-)
+    val treatment: TreatmentPlan = TreatmentPlan(),
+    val regional: Map<String, RegionalAdvice> = emptyMap()
+) {
+    fun getRegionalAdvice(region: String): RegionalAdvice {
+        val key = when (region.lowercase().replace(" ", "_")) {
+            "telangana" -> "telangana"
+            "andhra_pradesh", "andhra" -> "andhra_pradesh"
+            else -> "other"
+        }
+        return regional[key] ?: RegionalAdvice(
+            source = when (key) {
+                "telangana" -> "PJTSAU"
+                "andhra_pradesh" -> "ANGRAU"
+                else -> "ICAR"
+            },
+            differs = false
+        )
+    }
+}
 
 @Serializable
 data class KnowledgeBaseRoot(

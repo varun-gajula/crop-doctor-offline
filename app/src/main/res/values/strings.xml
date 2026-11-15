@@ -141,4 +141,7 @@
     <string name="btn_delete">Delete</string>
     <string name="btn_cancel">Cancel</string>
     <string name="regional_helplines_title">Extension &amp; University Helplines</string>
+    <string name="regional_advisory_title">Regional Advisory</string>
+    <string name="advice_source">Advice source: %1$s</string>
+    <string name="same_advice_all_regions">Same advice for all regions</string>
 </resources>

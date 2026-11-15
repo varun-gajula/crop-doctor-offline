@@ -84,6 +84,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             var selectedLanguage by remember { mutableStateOf(userPrefs.selectedLanguage) }
+            var selectedRegion by remember { mutableStateOf(userPrefs.selectedRegion) }
             val locale = remember(selectedLanguage) { Locale(selectedLanguage) }
             val baseConfig = LocalConfiguration.current
             val configuration = remember(selectedLanguage, baseConfig) {
@@ -139,6 +140,11 @@ class MainActivity : ComponentActivity() {
                                 onStateChange = { isGeneratingAdvice = it }
                             )
                         }
+                    }
+
+                    fun switchRegion(newRegion: String) {
+                        selectedRegion = newRegion
+                        userPrefs.selectedRegion = newRegion
                     }
 
                     // Handle system back button smoothly
@@ -312,6 +318,47 @@ class MainActivity : ComponentActivity() {
                                 "lang_en" -> switchLanguage("en")
                                 "lang_te" -> switchLanguage("te")
                                 "lang_hi" -> switchLanguage("hi")
+                                "region_telangana" -> switchRegion("Telangana")
+                                "region_andhra" -> switchRegion("Andhra Pradesh")
+                                "region_other" -> switchRegion("Other")
+                                "show_chilli" -> {
+                                    KnowledgeBase.initialize(this@MainActivity)
+                                    val kb = KnowledgeBase.getEntry("chilli_leaf_curl_virus")
+                                        ?: KnowledgeBase.getAllEntries().first()
+                                    val result = ClassifierResult(
+                                        classId = "chilli_leaf_curl_virus",
+                                        displayName = kb.names.forLanguage(selectedLanguage),
+                                        confidence = 0.89f,
+                                        severityBand = SeverityBand.MODERATE,
+                                        certaintyBand = CertaintyBand.SURE,
+                                        lesionFraction = 0.20f,
+                                        inferenceTimeMs = 84L,
+                                        memoryUsedMb = 120L,
+                                        isDemoMode = false
+                                    )
+                                    classifierResult = result
+                                    activeKbEntry = kb
+                                    navigateTo(AppScreen.RESULT)
+                                }
+                                "show_severe_chilli" -> {
+                                    KnowledgeBase.initialize(this@MainActivity)
+                                    val kb = KnowledgeBase.getEntry("chilli_leaf_curl_virus")
+                                        ?: KnowledgeBase.getAllEntries().first()
+                                    val result = ClassifierResult(
+                                        classId = "chilli_leaf_curl_virus",
+                                        displayName = kb.names.forLanguage(selectedLanguage),
+                                        confidence = 0.95f,
+                                        severityBand = SeverityBand.SEVERE,
+                                        certaintyBand = CertaintyBand.SURE,
+                                        lesionFraction = 0.55f,
+                                        inferenceTimeMs = 84L,
+                                        memoryUsedMb = 120L,
+                                        isDemoMode = false
+                                    )
+                                    classifierResult = result
+                                    activeKbEntry = kb
+                                    navigateTo(AppScreen.RESULT)
+                                }
                                 "release_llama" -> {
                                     lifecycleScope.launch(Dispatchers.IO) {
                                         (app.advisor as? ExecuTorchLlamaAdvisor)?.forceReleaseForBenchmark()
@@ -386,7 +433,7 @@ class MainActivity : ComponentActivity() {
                                 },
                                 onComplete = { lang, region ->
                                     userPrefs.isFirstLaunch = false
-                                    userPrefs.selectedRegion = region
+                                    switchRegion(region)
                                     switchLanguage(lang)
                                     navigateTo(AppScreen.HOME)
                                 }
@@ -438,6 +485,10 @@ class MainActivity : ComponentActivity() {
                                     result = classifierResult!!,
                                     kbEntry = activeKbEntry!!,
                                     language = selectedLanguage,
+                                    region = selectedRegion,
+                                    onRegionChange = { newRegion ->
+                                        switchRegion(newRegion)
+                                    },
                                     advisoryText = advisoryText,
                                     isGeneratingAdvice = isGeneratingAdvice,
                                     isFakeAdvisor = try { (application as CropDoctorApplication).advisor.isFake } catch (e: Exception) { true },
@@ -472,7 +523,7 @@ class MainActivity : ComponentActivity() {
                                     result = classifierResult!!,
                                     kbEntry = activeKbEntry!!,
                                     language = selectedLanguage,
-                                    region = userPrefs.selectedRegion,
+                                    region = selectedRegion,
                                     capturedBitmap = capturedLeafBitmap,
                                     onBackClick = { navigateTo(AppScreen.RESULT) },
                                     onViewSavedCases = { navigateTo(AppScreen.SCAN_HISTORY) }
