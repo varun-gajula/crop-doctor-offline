@@ -107,7 +107,11 @@
     <string name="btn_more_details">మరిన్ని వివరాలు చూడండి</string>
     <string name="ai_explanation_label">AI వివరణ</string>
     <string name="btn_listen">వినండి</string>
+    <string name="btn_pause">పాజ్</string>
     <string name="btn_stop">ఆపండి</string>
+    <string name="voice_not_installed">వాయిస్ ఇన్‌స్టాల్ చేయబడలేదు</string>
+    <string name="speed_normal">1.0x</string>
+    <string name="speed_slow">0.75x</string>
 
     <!-- Emergency Referral -->
     <string name="btn_kisan_call_centre">వ్యవసాయ విస్తరణ అధికారితో మాట్లాడండి</string>

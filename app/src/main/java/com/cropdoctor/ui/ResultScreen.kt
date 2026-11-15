@@ -1,5 +1,6 @@
 package com.cropdoctor.ui
 
+import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
@@ -30,6 +31,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.cropdoctor.R
+import com.cropdoctor.advisor.AudioPlayItem
+import com.cropdoctor.advisor.OfflineAudioAdvisor
 import com.cropdoctor.advisor.OfflineTtsHelper
 import com.cropdoctor.domain.CertaintyBand
 import com.cropdoctor.domain.ClassifierResult
@@ -96,12 +99,11 @@ fun ResultScreen(
     var showMeasurementDetails by remember { mutableStateOf(false) }
     var showHelplineDialog by remember { mutableStateOf(false) }
 
-    // Offline Text-To-Speech
-    var isSpeaking by remember { mutableStateOf(false) }
-    val ttsHelper = remember { OfflineTtsHelper(context) }
+    // Offline Audio Advisor (Opus clips + TTS fallback + speed control)
+    val audioAdvisor = remember { OfflineAudioAdvisor(context) }
     DisposableEffect(Unit) {
         onDispose {
-            ttsHelper.shutdown()
+            audioAdvisor.shutdown()
         }
     }
 
@@ -422,33 +424,78 @@ fun ResultScreen(
                     }
                 }
 
-                // Speaker Button for Farmers (TTS Voice)
-                FilledTonalButton(
-                    onClick = {
-                        if (isSpeaking) {
-                            ttsHelper.stop()
-                            isSpeaking = false
-                        } else {
-                            val immediateAdvice = if (kbEntry.treatment.natural.isNotEmpty()) {
-                                kbEntry.treatment.natural.first().action.forLanguage(language)
-                            } else ""
-                            val spokenText = "${kbEntry.names.forLanguage(language)}. ${kbEntry.explainText.forLanguage(language)}. $immediateAdvice"
-                            ttsHelper.speak(spokenText, language)
-                            isSpeaking = true
-                        }
-                    },
-                    colors = ButtonDefaults.filledTonalButtonColors(
-                        containerColor = if (isSpeaking) Color(0xFFFFCDD2) else Color(0xFFE8F5E9)
-                    ),
-                    shape = RoundedCornerShape(12.dp),
-                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
+                // Offline Audio Advisory Controls (Requirement F10 / Task A1)
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
-                    Text(
-                        text = if (isSpeaking) stringResource(R.string.btn_stop) + " ⏹️" else stringResource(R.string.btn_listen) + " 🔊",
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = if (isSpeaking) Color(0xFFC62828) else FarmGreenDark
+                    // Speed Control Chip (1.0x / 0.75x)
+                    AssistChip(
+                        onClick = { audioAdvisor.toggleSpeed() },
+                        label = {
+                            Text(
+                                text = if (audioAdvisor.playbackSpeed.value == 1.0f) stringResource(R.string.speed_normal) else stringResource(R.string.speed_slow),
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        },
+                        colors = AssistChipDefaults.assistChipColors(
+                            containerColor = Color(0xFFE8F5E9),
+                            labelColor = FarmGreenDark
+                        ),
+                        shape = RoundedCornerShape(8.dp),
+                        modifier = Modifier.height(36.dp)
                     )
+
+                    // Listen / Pause / Resume Button
+                    FilledTonalButton(
+                        onClick = {
+                            when {
+                                audioAdvisor.isPlaying.value -> audioAdvisor.pause()
+                                audioAdvisor.isPaused.value -> audioAdvisor.resume()
+                                else -> {
+                                    val screenItems = buildScreenAudioItems(
+                                        kbEntry = kbEntry,
+                                        result = result,
+                                        urgency = urgency,
+                                        language = language,
+                                        context = context
+                                    )
+                                    audioAdvisor.playSequence(screenItems)
+                                }
+                            }
+                        },
+                        colors = ButtonDefaults.filledTonalButtonColors(
+                            containerColor = if (audioAdvisor.isPlaying.value) Color(0xFFFFCDD2) else Color(0xFFE8F5E9)
+                        ),
+                        shape = RoundedCornerShape(12.dp),
+                        contentPadding = PaddingValues(horizontal = 10.dp, vertical = 6.dp),
+                        modifier = Modifier.height(38.dp)
+                    ) {
+                        Text(
+                            text = when {
+                                audioAdvisor.isPlaying.value -> stringResource(R.string.btn_pause) + " ⏸️"
+                                audioAdvisor.isPaused.value -> stringResource(R.string.btn_listen) + " ▶️"
+                                else -> stringResource(R.string.btn_listen) + " 🔊"
+                            },
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = if (audioAdvisor.isPlaying.value) Color(0xFFC62828) else FarmGreenDark
+                        )
+                    }
+
+                    // Stop Button (visible when playing or paused)
+                    if (audioAdvisor.isPlaying.value || audioAdvisor.isPaused.value) {
+                        IconButton(
+                            onClick = { audioAdvisor.stop() },
+                            modifier = Modifier.size(36.dp)
+                        ) {
+                            Text(
+                                text = "⏹️",
+                                fontSize = 15.sp
+                            )
+                        }
+                    }
                 }
             }
 
@@ -1144,6 +1191,7 @@ fun ResultScreen(
                 isFake = isFakeAdvisor,
                 isLowMemoryFallback = isLowMemoryFallback,
                 isOfflineGuideFallback = isOfflineGuideFallback,
+                audioAdvisor = audioAdvisor,
                 onCancel = onCancelAdvice
             )
 
@@ -1309,4 +1357,92 @@ fun TypeChip(
             )
         }
     }
+}
+
+/**
+ * Builds the ordered sequence of audio items to read for the current screen (Requirement F10 / Task A1):
+ * 1. Label
+ * 2. Urgency
+ * 3. Advice in the order shown (immediate step, severity advice, cultural/natural steps, referral if urgent).
+ */
+internal fun buildScreenAudioItems(
+    kbEntry: KbEntry,
+    result: ClassifierResult,
+    urgency: RulesEngine.UrgencyLevel,
+    language: String,
+    context: Context
+): List<AudioPlayItem> {
+    val items = mutableListOf<AudioPlayItem>()
+    val isNotSure = result.certaintyBand == CertaintyBand.NOT_SURE || result.classId.equals("unknown", ignoreCase = true)
+
+    if (isNotSure) {
+        val pieceId = if (language.lowercase() == "te") "te_intro_unsure" else null
+        val unsureIntro = when (language.lowercase()) {
+            "te" -> "పంట నమూనాలో వ్యాధి లేదా పురుగు లక్షణాలు స్పష్టంగా నిర్ధారించబడలేదు."
+            "hi" -> "फसल के नमूने में रोग या कीट के लक्षण स्पष्ट नहीं हैं।"
+            else -> "The crop symptom could not be diagnosed with certainty."
+        }
+        items.add(AudioPlayItem(pieceId = pieceId, text = unsureIntro, lang = language))
+        items.add(AudioPlayItem(text = kbEntry.explainText.forLanguage(language), lang = language))
+
+        val referralPieceId = when (language.lowercase()) {
+            "te" -> "te_referral_urgent"
+            "hi" -> "hi_referral_urgent"
+            else -> null
+        }
+        val refText = RulesEngine.getReferralSentence(urgency, result.certaintyBand, language)
+        items.add(AudioPlayItem(pieceId = referralPieceId, text = refText, lang = language))
+        return items
+    }
+
+    // 1. Label
+    val labelText = kbEntry.names.forLanguage(language)
+    items.add(AudioPlayItem(text = labelText, lang = language))
+
+    // 2. Urgency
+    val urgencyName = when (urgency) {
+        RulesEngine.UrgencyLevel.EARLY_WARNING -> context.getString(R.string.urgency_early_warning)
+        RulesEngine.UrgencyLevel.ACT_THIS_WEEK -> context.getString(R.string.urgency_act_this_week)
+        RulesEngine.UrgencyLevel.ACT_NOW -> context.getString(R.string.urgency_act_now)
+    }
+    val urgencyDesc = when (urgency) {
+        RulesEngine.UrgencyLevel.EARLY_WARNING -> context.getString(R.string.urgency_desc_early_warning)
+        RulesEngine.UrgencyLevel.ACT_THIS_WEEK -> context.getString(R.string.urgency_desc_act_this_week)
+        RulesEngine.UrgencyLevel.ACT_NOW -> context.getString(R.string.urgency_desc_act_now)
+    }
+    items.add(AudioPlayItem(text = "$urgencyName. $urgencyDesc", lang = language))
+
+    // 3. Advice in the order shown:
+    // Immediate step
+    val immediateStep = kbEntry.immediateStep.forLanguage(language)
+    if (immediateStep.isNotBlank()) {
+        items.add(AudioPlayItem(text = immediateStep, lang = language))
+    }
+
+    // Severity guidance
+    val sevAdvice = kbEntry.severityAdvice[result.severityBand.name]?.forLanguage(language) ?: ""
+    if (sevAdvice.isNotBlank()) {
+        items.add(AudioPlayItem(text = sevAdvice, lang = language))
+    }
+
+    // Cultural / Natural advice
+    if (kbEntry.treatment.natural.isNotEmpty()) {
+        val naturalAction = kbEntry.treatment.natural.first().action.forLanguage(language)
+        if (naturalAction.isNotBlank()) {
+            items.add(AudioPlayItem(text = naturalAction, lang = language))
+        }
+    }
+
+    // Referral if urgency is high or severe
+    if (RulesEngine.shouldShowExtensionWorker(result.certaintyBand, urgency)) {
+        val referralPieceId = when (language.lowercase()) {
+            "te" -> "te_referral_urgent"
+            "hi" -> "hi_referral_urgent"
+            else -> null
+        }
+        val refText = RulesEngine.getReferralSentence(urgency, result.certaintyBand, language)
+        items.add(AudioPlayItem(pieceId = referralPieceId, text = refText, lang = language))
+    }
+
+    return items
 }

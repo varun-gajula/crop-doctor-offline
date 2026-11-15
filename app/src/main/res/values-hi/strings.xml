@@ -107,7 +107,11 @@
     <string name="btn_more_details">अधिक विवरण देखें</string>
     <string name="ai_explanation_label">AI स्पष्टीकरण</string>
     <string name="btn_listen">सुनें</string>
-    <string name="btn_stop">रोकें</string>
+    <string name="btn_pause">रोकें</string>
+    <string name="btn_stop">बंद करें</string>
+    <string name="voice_not_installed">आवाज इंस्टॉल नहीं है</string>
+    <string name="speed_normal">1.0x</string>
+    <string name="speed_slow">0.75x</string>
 
     <!-- Emergency Referral -->
     <string name="btn_kisan_call_centre">कृषि विस्तार अधिकारी से बात करें</string>

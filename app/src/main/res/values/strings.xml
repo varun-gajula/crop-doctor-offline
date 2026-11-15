@@ -107,7 +107,11 @@
     <string name="btn_more_details">View More Details</string>
     <string name="ai_explanation_label">AI explanation</string>
     <string name="btn_listen">Listen</string>
+    <string name="btn_pause">Pause</string>
     <string name="btn_stop">Stop</string>
+    <string name="voice_not_installed">Voice not installed</string>
+    <string name="speed_normal">1.0x</string>
+    <string name="speed_slow">0.75x</string>
 
     <!-- Emergency Referral (Rule: labelled Kisan Call Centre, NOT KVK) -->
     <string name="btn_kisan_call_centre">Talk to an extension officer</string>
