@@ -813,8 +813,11 @@ fun ResultScreen(
                                 )
                             }
                             Spacer(modifier = Modifier.height(6.dp))
+                            val watchText = kbEntry.earlyWarningSigns.forLanguage(language).ifEmpty {
+                                stringResource(R.string.watch_for_content)
+                            }
                             Text(
-                                text = stringResource(R.string.watch_for_content),
+                                text = watchText,
                                 fontSize = 13.sp,
                                 color = Color(0xFF2E7D32),
                                 lineHeight = 19.sp

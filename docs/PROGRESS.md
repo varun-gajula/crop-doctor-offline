@@ -1,6 +1,36 @@
 # Project Progress - Crop Doctor Offline
 
-## Current Status: Tasks G1, G2, G3, V2b, V3, V4, and A2 Complete
+## Current Status: Knowledge Base Enrichment Complete (All 21 Shipped Classes)
+
+### Done in Knowledge Base Enrichment (Task A2/6):
+1. **Three Mandatory Enriched Blocks across All 21 Classes in `en`, `te`, `hi`:**
+   - `prevention_and_field_practice`: University/ICAR-verified field practices, stage-based irrigation (AWD, shallow layers, drip), and nutrient management (RDF, split nitrogen, potash, avoid urea top-dressing).
+   - `early_warning_signs`: Precise symptoms and diagnostic signs to monitor in coming days (water-soaked margins, concentric target rings, bacterial ooze, webbing, stippling, cigar-shaped spots).
+   - `when_to_call_extension_officer`: Clear escalation thresholds and emergency trigger conditions, explicitly providing the Kisan Call Centre Toll-Free helpline `1800-180-1551` and local KVKs.
+2. **Pest-Management Steps for Pest Classes:**
+   - Both `tomato_spider_mites` and `maize_fall_armyworm` follow integrated pest management (IPM):
+     - Monitoring / scouting protocols (hand lens, pheromone traps).
+     - Economic Threshold Levels (ETL).
+     - Cultural & Biological control first (predatory mites, Trichogramma, NSKE 5%, sand+ash in whorls).
+     - Chemical control last (registered miticides/insecticides only when ETL is exceeded).
+3. **Regional Advisories (`regional` per G2):**
+   - Verified PJTSAU for Telangana, ANGRAU for Andhra Pradesh, ICAR for Other.
+4. **Agrochemical & Dose Safety (Rule H4 Compliance):**
+   - All chemical doses default to "follow the product label".
+   - Documented all omitted agronomic items (fixed-day calendars, blanket micronutrients, off-label tank mixes) in `docs/KB_GAPS.md`.
+5. **Human Review Protocol Generated (`docs/KB_REVIEW_CHECKLIST.md`):**
+   - Created comprehensive 1,125-line review checklist covering all 21 classes with summary count table, bilingual agronomic blocks, and sign-off boxes.
+   - Assigned review to native Telugu speaker, native Hindi speaker, and KVK / Agriculture Officer with deadline **19 Nov 2026**.
+6. **Code & Serialization Integration:**
+   - Extended `KbEntry.kt` with `@SerialName` properties for `preventionAndFieldPractice`, `earlyWarningSigns`, and `whenToCallExtensionOfficer`.
+   - Updated `ResultScreen.kt` and `DiseaseDetailsScreen.kt` to render the enriched blocks.
+   - Updated `PromptBuilder.kt` to feed the enriched blocks to Llama 3.2 1B-Instruct.
+7. **Verification & Testing:**
+   - `python scripts/validate_kb.py` passed with 0 errors.
+   - All 93 unit tests pass (`./gradlew testDebugUnitTest`).
+   - Debug APK assembled (`./gradlew assembleDebug`) and successfully installed to connected device (`emulator-5554`).
+
+---
 
 ### Done in Task A2: Case-Specific Advisory by Llama
 1. **Case-Specific Grounded Prompting (`PromptBuilder.kt`):**

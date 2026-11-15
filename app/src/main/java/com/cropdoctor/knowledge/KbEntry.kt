@@ -65,6 +65,9 @@ data class KbEntry(
     @SerialName("severity_advice") val severityAdvice: Map<String, LocalizedText> = emptyMap(),
     @SerialName("immediate_step") val immediateStep: LocalizedText,
     @SerialName("explain_text") val explainText: LocalizedText,
+    @SerialName("prevention_and_field_practice") val preventionAndFieldPractice: LocalizedText = LocalizedText(),
+    @SerialName("early_warning_signs") val earlyWarningSigns: LocalizedText = LocalizedText(),
+    @SerialName("when_to_call_extension_officer") val whenToCallExtensionOfficer: LocalizedText = LocalizedText(),
     val treatment: TreatmentPlan = TreatmentPlan(),
     val regional: Map<String, RegionalAdvice> = emptyMap()
 ) {

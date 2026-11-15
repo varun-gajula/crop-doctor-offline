@@ -104,6 +104,23 @@ def validate_kb(kb_path):
         # Immediate step & explain text
         check_localized_text(item.get("immediate_step"), f"{cid}.immediate_step", errors)
         check_localized_text(item.get("explain_text"), f"{cid}.explain_text", errors)
+
+        # Three mandatory enriched blocks (prevention, early warning signs, when to call extension officer)
+        check_localized_text(item.get("prevention_and_field_practice"), f"{cid}.prevention_and_field_practice", errors)
+        check_localized_text(item.get("early_warning_signs"), f"{cid}.early_warning_signs", errors)
+        check_localized_text(item.get("when_to_call_extension_officer"), f"{cid}.when_to_call_extension_officer", errors)
+
+        # Check Kisan Call Centre helpline in when_to_call_extension_officer
+        officer_en = item.get("when_to_call_extension_officer", {}).get("en", "")
+        if "1800-180-1551" not in officer_en and "18001801551" not in officer_en:
+            errors.append(f"{cid}.when_to_call_extension_officer: missing Kisan Call Centre helpline (1800-180-1551)")
+
+        # Pest classes must use pest-management steps in prevention_and_field_practice
+        if item_type == "pest":
+            prev_en = item.get("prevention_and_field_practice", {}).get("en", "").lower()
+            for kw in ["monitoring", "threshold", "biological", "chemical"]:
+                if kw not in prev_en:
+                    errors.append(f"{cid}.prevention_and_field_practice: pest class requires pest-management keyword '{kw}'")
         
         # Treatment
         trt = item.get("treatment", {})
