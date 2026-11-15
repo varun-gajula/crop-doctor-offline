@@ -138,18 +138,35 @@ if len(pool) < 1000:
 print(f"Total available evaluation pool: {len(pool)} images")
 assert len(pool) >= 1000, f"Need at least 1,000 images, but found {len(pool)}"
 
+def get_class_idx(rec):
+    val = rec.get('class_id', rec.get('class_idx', rec.get('class_name', '')))
+    if isinstance(val, int):
+        return val
+    if isinstance(val, str):
+        if val.isdigit():
+            return int(val)
+        if val in TARGET_21_CLASSES:
+            return TARGET_21_CLASSES.index(val)
+        val_lower = val.lower()
+        for idx, c in enumerate(TARGET_21_CLASSES):
+            if c in val_lower or val_lower in c:
+                return idx
+    return 0
+
 # Stratified sampling: ~47-48 images per class
 rng = random.Random(42)
 class_buckets = {}
 for s in pool:
-    class_buckets.setdefault(s['class_id'], []).append(s)
+    c_idx = get_class_idx(s)
+    class_buckets.setdefault(c_idx, []).append(s)
 
 selected_1000 = []
 samples_per_class = 1000 // len(TARGET_21_CLASSES)
 for c_idx in range(len(TARGET_21_CLASSES)):
     bucket = class_buckets.get(c_idx, [])
     k = min(len(bucket), samples_per_class)
-    selected_1000.extend(rng.sample(bucket, k))
+    if k > 0:
+        selected_1000.extend(rng.sample(bucket, k))
 
 rem_pool = [s for s in pool if s['path'] not in {x['path'] for x in selected_1000}]
 if len(selected_1000) < 1000 and rem_pool:
@@ -169,7 +186,8 @@ class Test1000Dataset(Dataset):
         rec = self.records[idx]
         with Image.open(rec['path']) as img:
             t = self.transform(img.convert('RGB'))
-        return t, int(rec['class_id']), str(rec['path'])
+        c_idx = get_class_idx(rec)
+        return t, c_idx, str(rec['path'])
 
 test_loader = DataLoader(Test1000Dataset(selected_1000, val_tf), batch_size=32, shuffle=False, num_workers=2)
 
