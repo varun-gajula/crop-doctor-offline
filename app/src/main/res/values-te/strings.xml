@@ -141,4 +141,7 @@
     <string name="btn_delete">తొలగించు</string>
     <string name="btn_cancel">రద్దు చేయి</string>
     <string name="regional_helplines_title">వ్యవసాయ విస్తరణ &amp; యూనివర్సిటీ హెల్ప్‌లైన్లు</string>
+    <string name="regional_advisory_title">ప్రాంతీయ సలహా</string>
+    <string name="advice_source">సలహా మూలం: %1$s</string>
+    <string name="same_advice_all_regions">అన్ని ప్రాంతాలకు ఒకే సలహా</string>
 </resources>

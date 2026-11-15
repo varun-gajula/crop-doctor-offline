@@ -158,8 +158,6 @@ fun FirstLaunchScreen(
             val regions = listOf(
                 "Telangana" to R.string.region_telangana,
                 "Andhra Pradesh" to R.string.region_andhra,
-                "Karnataka" to R.string.region_karnataka,
-                "Tamil Nadu" to R.string.region_tamil_nadu,
                 "Other" to R.string.region_other
             )
 

@@ -144,6 +144,32 @@ def validate_kb(kb_path):
         if "virus" in cid:
             if item.get("referral_threshold") != "MODERATE":
                 errors.append(f"{cid}: virus class referral_threshold must be MODERATE")
+
+        # Regional advisory validation (Requirement F6 / Rule H4 & R11)
+        reg = item.get("regional")
+        if not isinstance(reg, dict):
+            errors.append(f"{cid}: missing or invalid 'regional' block")
+        else:
+            expected_sources = {
+                "telangana": "PJTSAU",
+                "andhra_pradesh": "ANGRAU",
+                "other": "ICAR"
+            }
+            for r_key, exp_source in expected_sources.items():
+                r_obj = reg.get(r_key)
+                if not isinstance(r_obj, dict):
+                    errors.append(f"{cid}.regional.{r_key}: missing or not a dict")
+                    continue
+                if r_obj.get("source") != exp_source:
+                    errors.append(f"{cid}.regional.{r_key}: source must be '{exp_source}', got '{r_obj.get('source')}'")
+                differs = r_obj.get("differs")
+                if not isinstance(differs, bool):
+                    errors.append(f"{cid}.regional.{r_key}: 'differs' must be a boolean")
+                elif differs:
+                    check_localized_text(r_obj.get("text"), f"{cid}.regional.{r_key}.text", errors)
+                else:
+                    if r_obj.get("text"):
+                        errors.append(f"{cid}.regional.{r_key}: text must only be present when 'differs' is True")
     
     # Check all required IDs
     missing = set(REQUIRED_CLASS_IDS) - set(found_ids)
