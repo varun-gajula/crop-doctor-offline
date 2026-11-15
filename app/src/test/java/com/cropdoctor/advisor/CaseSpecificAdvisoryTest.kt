@@ -223,4 +223,119 @@ Call extension officer if needed.
             }
         }
     }
+
+    @kotlinx.serialization.Serializable
+    data class TestCaseItem(
+        val id: Int,
+        val crop: String,
+        val classId: String,
+        val problem: String,
+        val type: String,
+        val severity: String,
+        val certainty: String,
+        val fieldSpread: String,
+        val region: String
+    )
+
+    @Test
+    fun testAll20LlamaCasesPassEnglishGuardrail() {
+        val candidates = listOf(
+            File("benchmarks/llama_cases.json"),
+            File("../benchmarks/llama_cases.json")
+        )
+        val casesFile = candidates.firstOrNull { it.exists() }
+            ?: error("Could not find benchmarks/llama_cases.json")
+        val testCases = json.decodeFromString<List<TestCaseItem>>(casesFile.readText())
+        assertEquals(20, testCases.size)
+
+        for (c in testCases) {
+            val kbEntry = if (c.classId == "unknown") {
+                kbRoot.classes.first { it.crop.equals(c.crop, ignoreCase = true) }
+            } else {
+                kbRoot.classes.first { it.classId == c.classId }
+            }
+
+            val sev = SeverityBand.valueOf(c.severity.uppercase())
+            val cert = CertaintyBand.valueOf(c.certainty.uppercase())
+            val spread = when (c.fieldSpread.lowercase()) {
+                "few_plants" -> RulesEngine.FieldSpread.FEW_PLANTS
+                "most" -> RulesEngine.FieldSpread.MOST
+                else -> RulesEngine.FieldSpread.SOME
+            }
+            val urgency = RulesEngine.calculateUrgency(sev, spread)
+
+            val advice = RulesEngine.buildCaseSpecificAdvisory(
+                classId = c.classId,
+                crop = c.crop,
+                diseaseName = c.problem,
+                type = c.type,
+                severityBand = sev,
+                certaintyBand = cert,
+                fieldSpread = spread,
+                urgencyLevel = urgency,
+                region = c.region,
+                language = "en",
+                kbEntry = kbEntry
+            )
+
+            assertNotNull("Advisory text must not be null for case ${c.id}", advice)
+            assertTrue("Must contain section 1 for case ${c.id}", advice.contains("1. What I see:"))
+            assertTrue("Must contain section 2 for case ${c.id}", advice.contains("2. What to do now:"))
+            assertTrue("Must contain section 3 for case ${c.id}", advice.contains("3. When to get help:"))
+
+            // Check 1: No dose number
+            assertFalse("Must not have dose in case ${c.id}: $advice", GuardrailFilter.hasDose(advice))
+
+            // Check 2: GuardrailFilter validation
+            val validation = GuardrailFilter.validateAdvice(advice, kbEntry, sev, urgency, cert)
+            assertTrue("Guardrail must pass for case ${c.id}: ${validation.failureReason}", validation.isValid)
+
+            // Check 3: Mentions correct crop
+            assertTrue("Must mention crop '${c.crop}' in case ${c.id}", advice.contains(c.crop, ignoreCase = true))
+
+            // Check 4: Mentions problem
+            if (c.classId != "unknown") {
+                val keyword = c.problem.split(" ").last()
+                assertTrue("Must mention problem keyword '$keyword' in case ${c.id}", advice.contains(keyword, ignoreCase = true))
+            }
+
+            // Check 5: Referral consistency
+            if (urgency == RulesEngine.UrgencyLevel.ACT_NOW || cert == CertaintyBand.NOT_SURE) {
+                assertTrue("Must contain extension officer referral in urgent case ${c.id}", advice.contains("1800-180-1551"))
+            }
+        }
+    }
+
+    @Test
+    fun testTeluguLlamaProhibitionOnAll20Cases() {
+        val candidates = listOf(
+            File("benchmarks/llama_cases.json"),
+            File("../benchmarks/llama_cases.json")
+        )
+        val casesFile = candidates.firstOrNull { it.exists() }
+            ?: error("Could not find benchmarks/llama_cases.json")
+        val testCases = json.decodeFromString<List<TestCaseItem>>(casesFile.readText())
+
+        for (c in testCases) {
+            val kbEntry = if (c.classId == "unknown") {
+                kbRoot.classes.first { it.crop.equals(c.crop, ignoreCase = true) }
+            } else {
+                kbRoot.classes.first { it.classId == c.classId }
+            }
+
+            try {
+                PromptBuilder.buildPrompt(
+                    crop = c.crop,
+                    diseaseName = kbEntry.names.te,
+                    severity = c.severity,
+                    certainty = c.certainty,
+                    kbEntry = kbEntry,
+                    language = "te"
+                )
+                fail("Rule H6: PromptBuilder must reject Telugu for case ${c.id}")
+            } catch (e: IllegalArgumentException) {
+                assertTrue(e.message?.contains("Rule H6") == true || e.message?.contains("Telugu") == true)
+            }
+        }
+    }
 }
