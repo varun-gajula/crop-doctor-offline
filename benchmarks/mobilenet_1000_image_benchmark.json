@@ -1,0 +1,53 @@
+{
+  "benchmark_name": "mobilenet_v3_large_1000_image_holdout_test",
+  "hardware": "NVIDIA Tesla T4 GPU",
+  "model": "mobilenet_v3_large_v2b_21class",
+  "model_size_mb": 16.17,
+  "input_size": 320,
+  "temperature_T": 1.5778,
+  "total_test_images": 1000,
+  "overall_top1_accuracy_pct": 52.50,
+  "overall_top3_accuracy_pct": 60.90,
+  "avg_gpu_latency_ms": 0.32,
+  "throughput_imgs_sec": 3087.8,
+  "certainty_breakdown": {
+    "sure_ge_80": {
+      "count": 12,
+      "percentage": 1.2,
+      "accuracy_pct": 100.0
+    },
+    "probably_50_to_80": {
+      "count": 450,
+      "percentage": 45.0,
+      "accuracy_pct": 78.89
+    },
+    "not_sure_lt_50_extension_referral": {
+      "count": 538,
+      "percentage": 53.8,
+      "rule_h11_action": "routed_to_extension_officer"
+    }
+  },
+  "per_class_accuracy": {
+    "rice_leaf_blast": 100.00,
+    "rice_healthy": 100.00,
+    "rice_brown_spot": 98.08,
+    "rice_sheath_blight": 96.15,
+    "rice_bacterial_leaf_blight": 91.84,
+    "chilli_bacterial_spot": 100.00,
+    "chilli_leaf_curl_virus": 86.27,
+    "chilli_healthy": 0.00,
+    "tomato_early_blight": 100.00,
+    "tomato_yellow_leaf_curl_virus": 100.00,
+    "tomato_late_blight": 97.14,
+    "tomato_healthy": 16.00,
+    "tomato_spider_mites": 0.00,
+    "maize_gray_leaf_spot": 51.92,
+    "maize_common_rust": 40.62,
+    "maize_northern_leaf_blight": 10.91,
+    "maize_fall_armyworm": 8.51,
+    "maize_healthy": 4.08,
+    "cotton_healthy": 25.00,
+    "cotton_bacterial_blight": 7.69,
+    "cotton_fusarium_wilt": 0.00
+  }
+}
