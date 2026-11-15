@@ -1,6 +1,37 @@
 # Project Progress - Crop Doctor Offline
 
-## Current Status: Tasks G1, G2, G3, and V2b Complete
+## Current Status: Tasks G1, G2, G3, V2b, V3, and V4 Complete
+
+### Done in Task V4: Remove the Four Dropped Classes
+1. **Completely Dropped 4 Underperforming / Unverified Classes:**
+   - Removed:
+     - `cotton_leaf_curl_virus` (was index 7)
+     - `cotton_alternaria_leaf_spot` (was index 8)
+     - `chilli_cercospora_leaf_spot` (was index 12)
+     - `chilli_white_spot` (was index 13)
+2. **Archived Removed Agronomy & Localized Text:**
+   - Saved full entries with English, Telugu, and Hindi translations into `docs/removed_classes/removed_kb_entries.json`.
+   - Documented reasons for dropping in `docs/removed_classes/README.md`.
+   - Verified no removed text or references are shipped in the production APK assets.
+3. **Renumbered and Unified to 21 Classes (Indices 0..20):**
+   - Synchronized across all project artifacts:
+     - `app/src/main/assets/labels.json`
+     - `app/src/main/assets/kb/knowledge_base.json` & `data/kb/knowledge_base.json`
+     - `app/src/main/assets/supported_classes.json` & `data/supported_classes.json` (all 21 classes `supported: true`)
+     - `app/src/main/assets/thresholds.json` & `ml/thresholds.json`
+     - `data/class_map.yaml`
+4. **Code & Test Suite Updates:**
+   - Cleaned `VisionMath.kt` by removing hardcoded chilli white spot workaround.
+   - Updated parity samples in `ml/parity_samples.json` and `app/src/test/resources/parity_samples.json`.
+   - Updated `VisionParityTest.kt`, `VisionSeverityPipelineTest.kt`, `PestVsDiseaseTest.kt`, `RegionalAdviceTest.kt`, `SeverityCalculatorTest.kt`, and `BlockedClassesHonestyTest.kt`.
+   - All 84 unit tests pass (`./gradlew testDebugUnitTest`).
+   - Knowledge base validation script passes with 0 errors (`python scripts/validate_kb.py`).
+5. **Build & Device Installation:**
+   - Assembled debug APK (`./gradlew assembleDebug`).
+   - Installed onto connected emulator (`emulator-5554`) via `adb install -r`.
+   - Verified Rule H1: No `INTERNET` permission in manifest.
+
+---
 
 ### Done in Task G3: Urgency from Field Spread (Requirements F4, F11, Rules H4, H5)
 1. **One-Tap Field Spread Question (`ResultScreen.kt`):**

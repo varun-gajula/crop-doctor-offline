@@ -50,7 +50,7 @@ class PestVsDiseaseTest {
 
     @Test
     fun testEveryClassHasValidType() {
-        assertEquals("Expected exactly 25 classes in knowledge base", 25, kbRoot.classes.size)
+        assertEquals("Expected exactly 21 classes in knowledge base", 21, kbRoot.classes.size)
         val validTypes = setOf("disease", "pest", "healthy")
 
         for (entry in kbRoot.classes) {
@@ -73,7 +73,7 @@ class PestVsDiseaseTest {
         assertTrue("Expected maize_fall_armyworm in pest classes", pestClasses.contains("maize_fall_armyworm"))
 
         assertEquals("Expected exactly 5 healthy classes", 5, healthyClasses.size)
-        assertEquals("Expected exactly 18 disease classes", 18, diseaseClasses.size)
+        assertEquals("Expected exactly 14 disease classes", 14, diseaseClasses.size)
     }
 
     @Test

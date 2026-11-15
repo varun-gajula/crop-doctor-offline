@@ -62,14 +62,14 @@ def main():
         "expected_top1_prob": round(top_prob_1, 4)
     })
 
-    # Sample 2: Cotton CLCV with Cotton filter
+    # Sample 2: Cotton Bacterial Blight with Cotton filter
     logits_2 = [-2.0] * len(labels)
-    logits_2[labels.index("cotton_leaf_curl_virus")] = 5.0
-    logits_2[labels.index("cotton_bacterial_blight")] = 0.5
+    logits_2[labels.index("cotton_bacterial_blight")] = 5.0
+    logits_2[labels.index("cotton_fusarium_wilt")] = 0.5
     top_label_2, top_prob_2 = mask_and_renormalize_py(labels, logits_2, "cotton", temperature)
     samples.append({
-        "sample_id": "sample_2_cotton_clcv",
-        "description": "High confidence Cotton Leaf Curl Virus with Cotton crop chip",
+        "sample_id": "sample_2_cotton_bb",
+        "description": "High confidence Cotton Bacterial Blight with Cotton crop chip",
         "crop_hint": "cotton",
         "logits": logits_2,
         "temperature": temperature,

@@ -164,10 +164,9 @@ object VisionMath {
         val topK = extractTopK(labels, probabilities, 3)
         val top1 = topK.firstOrNull()
 
-        // Task V2 / data/supported_classes.json:
-        // Classes marked unsupported (e.g. 7, 8, 12, 13) or unverified causes
-        // must never be returned as a confident diagnosis; returns "unknown" ("Can't tell").
-        val isUnsupportedClass = top1 != null && (unsupportedClasses.contains(top1.classId) || top1.classId == "chilli_white_spot")
+        // Task V4: Unsupported or out-of-scope classes must never be returned as a confident diagnosis;
+        // returns "unknown" ("Can't tell").
+        val isUnsupportedClass = top1 != null && unsupportedClasses.contains(top1.classId)
 
         val isOOD = freeEnergy > energyThreshold
         val requiredThreshold = if (top1 != null) {

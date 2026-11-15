@@ -12,10 +12,9 @@ import org.junit.Test
 
 /**
  * Unit tests enforcing Decision D1:
- * 1. The app must use ONLY the 25-class output.
+ * 1. The app must use ONLY the 21-class output.
  * 2. Any learned severity head from the vision model is completely ignored.
  * 3. Severity comes EXCLUSIVELY from LesionAreaEstimator and RulesEngine.
- * 4. Chilli class 13 (White Spot) is UNVERIFIED and must return "Can't tell" (unknown / NOT_SURE).
  */
 class VisionSeverityPipelineTest {
 
@@ -27,13 +26,9 @@ class VisionSeverityPipelineTest {
         "rice_healthy",
         "cotton_bacterial_blight",
         "cotton_fusarium_wilt",
-        "cotton_leaf_curl_virus",
-        "cotton_alternaria_leaf_spot",
         "cotton_healthy",
         "chilli_bacterial_spot",
         "chilli_leaf_curl_virus",
-        "chilli_cercospora_leaf_spot",
-        "chilli_white_spot",
         "chilli_healthy",
         "tomato_early_blight",
         "tomato_late_blight",
@@ -50,8 +45,7 @@ class VisionSeverityPipelineTest {
     private val thresholds = mapOf(
         "rice_bacterial_leaf_blight" to 0.40f,
         "rice_healthy" to 0.50f,
-        "tomato_early_blight" to 0.40f,
-        "chilli_white_spot" to 0.40f
+        "tomato_early_blight" to 0.40f
     )
 
     /**
@@ -143,10 +137,10 @@ class VisionSeverityPipelineTest {
     }
 
     @Test
-    fun testChilliWhiteSpotNeverReturnsConfidentDiagnosis() {
-        // Create probabilities where chilli_white_spot (index 13) has 0.95 probability
-        val probs = FloatArray(25) { 0.002f }
-        probs[13] = 0.95f
+    fun testUnsupportedOrOutOfScopeClassNeverReturnsConfidentDiagnosis() {
+        // Create probabilities where an unsupported class has high probability
+        val probs = FloatArray(21) { 0.002f }
+        probs[0] = 0.95f
 
         val eval = VisionMath.evaluateDiagnosis(
             labels = labels,
@@ -154,13 +148,14 @@ class VisionSeverityPipelineTest {
             thresholds = thresholds,
             defaultThreshold = 0.40f,
             freeEnergy = -5.0, // In-distribution energy
-            energyThreshold = -1.5
+            energyThreshold = -1.5,
+            unsupportedClasses = setOf("rice_bacterial_leaf_blight")
         )
 
-        // Class 13 is UNVERIFIED: MUST be forced to unknown / NOT_SURE
-        assertEquals("Unverified chilli white spot must return 'unknown' classId", "unknown", eval.classId)
-        assertEquals("Unverified chilli white spot must return NOT_SURE certainty", CertaintyBand.NOT_SURE, eval.certaintyBand)
-        assertEquals("Unverified chilli white spot must return extension referral name", "Not sure - ask an extension officer", eval.displayName)
+        // Unsupported class MUST be forced to unknown / NOT_SURE
+        assertEquals("Unsupported class must return 'unknown' classId", "unknown", eval.classId)
+        assertEquals("Unsupported class must return NOT_SURE certainty", CertaintyBand.NOT_SURE, eval.certaintyBand)
+        assertEquals("Unsupported class must return extension referral name", "Not sure - ask an extension officer", eval.displayName)
 
         // And ResultScreen rule: when certainty is NOT_SURE, shouldShowSeverity is false
         assertFalse("Severity must NOT be shown when diagnosis is unverified / Not sure", RulesEngine.shouldShowSeverity(eval.certaintyBand))
