@@ -169,7 +169,7 @@ class Test1000Dataset(Dataset):
         rec = self.records[idx]
         with Image.open(rec['path']) as img:
             t = self.transform(img.convert('RGB'))
-        return t, rec['class_id'], rec['path']
+        return t, int(rec['class_id']), str(rec['path'])
 
 test_loader = DataLoader(Test1000Dataset(selected_1000, val_tf), batch_size=32, shuffle=False, num_workers=2)
 
@@ -190,12 +190,15 @@ with torch.no_grad():
         
         all_preds.extend(preds)
         all_probs.extend(probs_np)
-        all_targets.extend(targets.numpy())
+        if isinstance(targets, torch.Tensor):
+            all_targets.extend(targets.cpu().numpy())
+        else:
+            all_targets.extend(np.array(targets, dtype=np.int64))
         all_paths.extend(paths)
 
-all_preds = np.array(all_preds)
-all_probs = np.array(all_probs)
-all_targets = np.array(all_targets)
+all_preds = np.array(all_preds, dtype=np.int64)
+all_probs = np.array(all_probs, dtype=np.float32)
+all_targets = np.array(all_targets, dtype=np.int64)
 
 # ── 5. Accuracy & Performance Metrics ─────────────────────────────────────────
 top1_correct = (all_preds == all_targets).sum()
