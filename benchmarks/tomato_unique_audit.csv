@@ -1,0 +1,11 @@
+class,files,unique,duplicate_percent,overlap_with_archive2
+Tomato_Bacterial_spot,3164,3093,2.24,136
+Tomato_Early_blight,2963,2955,0.27,206
+Tomato_healthy,3072,2605,15.2,95
+Tomato_Late_blight,3106,3008,3.16,142
+Tomato_Leaf_Mold,2975,2909,2.22,168
+Tomato_Septoria_leaf_spot,3112,3087,0.8,142
+Tomato_Spider_mites_Two_spotted_spider_mite,3104,2919,5.96,222
+Tomato__Target_Spot,3064,3047,0.55,202
+Tomato__Tomato_mosaic_virus,2841,2707,4.72,119
+Tomato__Tomato_YellowLeaf__Curl_Virus,3208,3150,1.81,58

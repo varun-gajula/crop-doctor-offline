@@ -1,6 +1,23 @@
 # Project Progress - Crop Doctor Offline
 
-## Current Status: Task L1 Complete (Severity / Lesion Area Estimate Audit & Refactor)
+## Current Status: Task D4 Complete (Unique-Photo Audit of Tomato Datasets)
+
+### Done in Task D4: Unique-Photo Audit of Tomato Datasets (Rules H3, H14)
+1. **Audited Tomato Datasets via Dihedral Perceptual Hashing (64-bit dHash, 8 orientations)**:
+   - Audited `C:\Users\<USERNAME>\Downloads\tomato siva\augmented_dataset` (30,609 photos across 10 classes) and cross-referenced against `C:\Users\<USERNAME>\Downloads\archive (2)` (2,499 photos across 10 matching classes).
+   - Clustered photos per class at Hamming distance $\le 6$ via connected components to identify unique original photos.
+2. **Key Findings**:
+   - Total files scanned: 30,609.
+   - Unique original photos (clusters): 29,480.
+   - Overall internal duplicate rate: 3.69% (1,129 redundant duplicate copies identified).
+   - High-duplication outliers: `Tomato_healthy` contains 467 duplicate copies (15.20% duplication rate, with a single cluster of 433 photos); `Tomato_Spider_mites` has a cluster of 93 photos (5.96% duplication rate).
+   - Cross-folder overlap: 1,490 unique clusters in `tomato siva` appear in `archive (2)`, proving substantial shared provenance.
+3. **Artifacts Saved & Traceable**:
+   - `benchmarks/tomato_unique_audit.csv` with per-class file counts, unique clusters, duplicate percentages, and overlap with archive2.
+   - `C:\crop-data\final19\tomato_groups.csv` assigning a distinct `group_id` (0..29479) to all 30,609 photos to prevent data leakage in train/validation group splits.
+   - Auditing script preserved at `scripts/audit_tomato_unique.py`.
+
+---
 
 ### Done in Task L1: Severity (Lesion Area) Estimate Audit & Refactor (Rules H11, H12, H15)
 1. **Audited Saturated 95.0% Anomaly**:
