@@ -37,6 +37,7 @@ benchmarks/dummy_realtest/
 !data/class_counts.csv
 !benchmarks/realtest_results.csv
 !benchmarks/lesion_masks/summary.csv
+!benchmarks/tomato_unique_audit.csv
 test_photos/
 
 # Gradle & Android Build Outputs
