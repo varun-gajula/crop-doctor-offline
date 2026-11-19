@@ -1,10 +1,9 @@
 {
-  "train_samples": 2199,
-  "validation_samples": 550,
-  "train_cluster_count": 2199,
-  "validation_cluster_count": 550,
+  "train_samples": 9288,
+  "validation_samples": 1668,
+  "train_cluster_count": 6641,
+  "validation_cluster_count": 1668,
   "overlapping_cluster_count": 0,
   "overlapping_cluster_ids": [],
-  "zero_cluster_leakage": true,
-  "hash_distance_threshold": 12
+  "zero_cluster_leakage": true
 }

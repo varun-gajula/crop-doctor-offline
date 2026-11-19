@@ -225,12 +225,12 @@ def validate_class_lists(base_dir, kb_data):
         try:
             with open(sp_path, "r", encoding="utf-8") as f:
                 sdata = json.load(f).get("classes", {})
-            if len(sdata) != 21:
-                errors.append(f"{sp_rel} expected 21 classes, got {len(sdata)}")
+            if len(sdata) not in [20, 21]:
+                errors.append(f"{sp_rel} expected 20 or 21 classes, got {len(sdata)}")
             for idx_str, sinfo in sdata.items():
                 cid = sinfo.get("class_id")
                 stype = sinfo.get("type")
-                if stype not in ["disease", "pest", "healthy"]:
+                if stype not in ["disease", "pest", "healthy", "deficiency", "non_crop"]:
                     errors.append(f"{sp_rel} class {cid}: invalid or missing type '{stype}'")
                 if cid in kb_classes and stype != kb_classes[cid]:
                     errors.append(f"{sp_rel} class {cid} type '{stype}' does not match KB type '{kb_classes[cid]}'")

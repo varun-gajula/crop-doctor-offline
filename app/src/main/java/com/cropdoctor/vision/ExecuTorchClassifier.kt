@@ -56,7 +56,7 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
     private var inputSize: Int = DEFAULT_INPUT_SIZE
     private var mean: FloatArray = floatArrayOf(0.485f, 0.456f, 0.406f)
     private var std: FloatArray = floatArrayOf(0.229f, 0.224f, 0.225f)
-    var temperature: Float = 1.3302102f
+    var temperature: Float = 1.7817543f
         private set
 
     // thresholds.json is the SINGLE SOURCE OF TRUTH (Task V2 & Task V7).
@@ -279,16 +279,23 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
             }
 
             val modelFile = File(context.filesDir, "vision.pte")
+            val versionFile = File(context.filesDir, "vision_model_version.txt")
+            val currentModelVersion = "20261120_512_v2"
             if (resolvedAsset != null) {
                 try {
-                    // Extract if not present or corrupt/different size (< 15 MB)
-                    if (!modelFile.exists() || modelFile.length() < 15_000_000L) {
+                    val needsExtract = !modelFile.exists() ||
+                            !versionFile.exists() ||
+                            versionFile.readText().trim() != currentModelVersion ||
+                            modelFile.length() != 16_956_752L
+
+                    if (needsExtract) {
                         context.assets.open(resolvedAsset).use { input ->
                             FileOutputStream(modelFile).use { output ->
                                 input.copyTo(output)
                             }
                         }
-                        Log.i(TAG, "Extracted $resolvedAsset to ${modelFile.absolutePath} (${modelFile.length()} bytes)")
+                        versionFile.writeText(currentModelVersion)
+                        Log.i(TAG, "Extracted $resolvedAsset to ${modelFile.absolutePath} (${modelFile.length()} bytes, version=$currentModelVersion)")
                     }
                 } catch (e: Exception) {
                     Log.w(TAG, "Failed to copy $resolvedAsset", e)
