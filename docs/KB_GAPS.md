@@ -140,5 +140,19 @@ In strict accordance with **Rule H4** ("Never invent agronomy. Every knowledge-b
 
 ---
 
-## 3. Human Review Status
-All 21 classes remain flagged with `needs_expert_review: true` in `data/kb/knowledge_base.json` and `app/src/main/assets/kb/knowledge_base.json` until validated by human domain experts via `docs/KB_REVIEW_CHECKLIST.md`.
+## 4. Task V7 (20-Class Final Vision Model) Knowledge Base Gaps
+
+In strict adherence to **Rule H4** ("Never invent agronomy... A treatment appears only if an official source recommends it for that crop and problem; if you find none, leave it out and list it in `docs/KB_GAPS.md`"), the following entries from the 20-class taxonomy currently lack fully sourced, verified SAU/ICAR agronomic recommendations or have unconfirmed field accuracy, and are handled as follows:
+
+| Class ID | Botanical/Pathogen Status | App Behavior | Reason for Gap & Action |
+|---|---|---|---|
+| `tomato_leaf_blight` | Fungal blight complex (*Alternaria solani* / *Phytophthora infestans*) | **Marked Unsupported** ("Can't tell" / `unknown`) | Validation recall was 0 of 18 on grouped split v2. Sourced advice withheld until pathogen identity and classification accuracy are confirmed on independent field photos. |
+| `tomato_septoria_leaf_spot` | Fungal leaf spot (*Septoria lycopersici*) | **Diagnosis displayed + Extension Officer Referral** ("Advice for this problem is not available yet. Ask an extension officer") | No verified SAU/ICAR chemical dose or regional advisory entry is currently compiled in `knowledge_base.json`. Omitted per Rule H4 to avoid invented treatments. |
+| `chilli_nutrition_deficiency` | Abiotic nutrient disorder (N/P/K/micro) | **Diagnosis displayed + Extension Officer Referral** ("Advice for this problem is not available yet. Ask an extension officer") | Nutrient deficiency advice requires Soil Health Card laboratory testing rather than visual guessing. Generic chemical fertilizer recommendations omitted per Rule H4. |
+| `cotton_leaf_curl_virus` | Viral disease (CLCuV / Whitefly vector) | **Diagnosis displayed + Extension Officer Referral** ("Advice for this problem is not available yet. Ask an extension officer") | Awaiting compiled and verified CICR/PJTSAU cultural and vector management protocol in `knowledge_base.json`. Omitted per Rule H4. |
+| `weeds_not_a_crop` | Non-crop weed flora | **Marked Unsupported** ("Can't tell" / `unknown`) | Out-of-scope non-crop flora trained to prevent false disease positives. Always routes to "Can't tell - ask an extension officer". |
+
+---
+
+## 5. Human Review Status
+All knowledge base classes remain flagged with `needs_expert_review: true` in `data/kb/knowledge_base.json` and `app/src/main/assets/kb/knowledge_base.json` until validated by human domain experts via `docs/KB_REVIEW_CHECKLIST.md`.

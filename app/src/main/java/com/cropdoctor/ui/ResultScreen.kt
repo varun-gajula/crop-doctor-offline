@@ -94,7 +94,8 @@ fun ResultScreen(
         )
     }
 
-    val shouldRefer = RulesEngine.shouldShowExtensionWorker(result.certaintyBand, urgency)
+    val hasNoTreatmentAdvice = kbEntry.treatment.natural.isEmpty() && kbEntry.treatment.chemical.isEmpty() && !isHealthy
+    val shouldRefer = RulesEngine.shouldShowExtensionWorker(result.certaintyBand, urgency) || hasNoTreatmentAdvice
     var showJudgeDialog by remember { mutableStateOf(false) }
     var showMeasurementDetails by remember { mutableStateOf(false) }
     var showHelplineDialog by remember { mutableStateOf(false) }
@@ -1130,24 +1131,33 @@ fun ResultScreen(
 
                         // Treatment Steps
                         if (selectedTreatmentTab == "natural") {
-                            kbEntry.treatment.natural.forEach { step ->
-                                Row(
-                                    modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
-                                    verticalAlignment = Alignment.Top
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.CheckCircle,
-                                        contentDescription = null,
-                                        tint = FarmGreenPrimary,
-                                        modifier = Modifier.size(20.dp).padding(top = 2.dp)
-                                    )
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    Text(
-                                        text = step.action.forLanguage(language),
-                                        fontSize = 15.sp,
-                                        color = Color(0xFF333333),
-                                        lineHeight = 22.sp
-                                    )
+                            if (kbEntry.treatment.natural.isEmpty()) {
+                                Text(
+                                    text = kbEntry.immediateStep.forLanguage(language),
+                                    fontSize = 15.sp,
+                                    color = Color(0xFF555555),
+                                    lineHeight = 22.sp
+                                )
+                            } else {
+                                kbEntry.treatment.natural.forEach { step ->
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                                        verticalAlignment = Alignment.Top
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.CheckCircle,
+                                            contentDescription = null,
+                                            tint = FarmGreenPrimary,
+                                            modifier = Modifier.size(20.dp).padding(top = 2.dp)
+                                        )
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                        Text(
+                                            text = step.action.forLanguage(language),
+                                            fontSize = 15.sp,
+                                            color = Color(0xFF333333),
+                                            lineHeight = 22.sp
+                                        )
+                                    }
                                 }
                             }
                         } else {

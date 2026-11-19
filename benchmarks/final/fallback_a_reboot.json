@@ -1,0 +1,18 @@
+{
+  "scenario_id": "a_reboot",
+  "description": "Just after a reboot with nothing else open",
+  "avail_mem_bytes": 2463375360,
+  "avail_mem_mb": 2349.2578125,
+  "total_mem_mb": 5622.5,
+  "threshold_mb": 432,
+  "is_low_memory": false,
+  "decider_should_load": true,
+  "llama_loaded": false,
+  "fallback_ran": false,
+  "advisory_label": "AI explanation",
+  "pss_before_mb": 188.09765625,
+  "peak_pss_mb": 188.09765625,
+  "extra_memory_needed_mb": 0,
+  "tokens_generated": 77,
+  "sample_text": "1. What I see:\nYour Maize crop symptom could not be "
+}

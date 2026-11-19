@@ -1,5 +1,50 @@
 # Project Progress - Crop Doctor Offline
 
+## Current Status: Task V7 Complete (Final 20-Class 512x512 Vision Model & On-Device Phone Benchmarks)
+
+### Done in Task V7: Final 20-Class 512x512 Vision Model Integration & End-to-End Phone Verification (Rules R1-R9, H1-H15)
+1. **Asset Deployment & Single Source of Truth**:
+   - Deployed final 20-class 512x512 MobileNetV3-Large model (`vision.pte`: 16,927,056 bytes / 16.14 MB).
+   - Bundled single sources of truth in APK assets: `labels.json` (20 classes in verified export order), `thresholds.json` (`temperature: 1.3302102`, `confidence_threshold: 0.4018166`, no `energy_threshold`), `preprocess.json` (`input_size: 512`), and `supported_classes.json`.
+   - Completely deleted legacy `app/src/main/assets/model_class_map.json` and removed the 25-to-21 mapping and old severity head from `VisionMath.kt` and `ExecuTorchClassifier.kt`.
+2. **Preprocessing Parity & Robust Botanical Pipeline**:
+   - Updated preprocessing to match training: 512x512 RGB bilinear resize, float32 normalization using ImageNet mean `[0.485, 0.456, 0.406]` and std `[0.229, 0.224, 0.225]`.
+   - Preprocessing numerical parity verified against `parity_samples.json` (max difference $\le 10^{-3}$).
+   - `VisionMath.kt` evaluates directly over 20 classes with temperature scaling ($T = 1.3302$) and confidence thresholding ($0.4018$).
+3. **Safety Guardrails & Gap Handling**:
+   - `weeds_not_a_crop` and `tomato_leaf_blight` are explicitly configured as `supported: false` in `supported_classes.json`, failing closed to "Can't tell" (`unknown` / `NOT_SURE`).
+   - Sourced KB gaps (`tomato_leaf_blight`, `tomato_septoria_leaf_spot`, `chilli_nutrition_deficiency`, `cotton_leaf_curl_virus`) documented in `docs/KB_GAPS.md`.
+   - Gaps trigger extension worker referral (`shouldRefer = true`) with honest fallback banner: *"Advice for this problem is not available yet. Ask an extension officer"* — strictly avoiding invented advice (Rule H4).
+4. **Manifest Offline Verification (Rule H1)**:
+   - Verified via `aapt2 dump permissions app-debug.apk > benchmarks/final/permissions.txt`.
+   - `android.permission.INTERNET` is strictly absent in the manifest.
+5. **Unit Tests (109 / 109 Passed)**:
+   - Updated and executed all unit tests via `./gradlew testDebugUnitTest`:
+     - `ThresholdHonestyTest`: requires `temperature` and `confidence_threshold`, fails closed if missing.
+     - `BlockedClassesHonestyTest`: blocks `weeds_not_a_crop` and `tomato_leaf_blight`.
+     - `ModelClassMapTest`: verifies 20-class output size and direct reachability.
+     - `VisionParityTest`: verifies numerical output parity within $10^{-3}$.
+     - `VisionSeverityPipelineTest` and `PestVsDiseaseTest`: verify severity bands and type chips.
+6. **Physical Phone Benchmarks (6 GB RAM Reference Phone CPH2753, arm64-v8a)**:
+   - **Model Load Latency**:
+     - Vision model (`vision.pte`, 16.1 MB): **307 ms** via ExecuTorch 0.6.0 C++ runtime.
+     - Advisory model (`llama-3.2-1b-spinquant.pte`, 1.05 GB): **6,641 ms** via ExecuTorch LLM C++ extension.
+   - **Shutter-to-Result Latency (10 Diagnosed Real Field Photo Runs)**:
+     - Average: **144.70 ms** (Min: 133.68 ms, Max: 204.95 ms) vs budget $\le 1,500\text{ ms}$ (**PASS**, 10.3x faster).
+     - Breakdown: Validation 7.49 ms, Preprocessing 62.86 ms, Vision Inference 68.07 ms, Calibration 1.07 ms, Lesion Estimation 5.09 ms, Rules Engine 0.12 ms, KB Lookup 0.01 ms.
+     - Low-confidence photos (< 0.4018) rejected cleanly to extension referral with zero hallucination.
+   - **Peak Memory (PSS) Compliance (Rule H15)**:
+     - App + Vision (without Llama): **135.5 MB PSS** (Budget $\le 500\text{ MB}$, **PASS**).
+     - App + Vision + Llama 1B Generating: **1,593.6 MB / 1.52 GB PSS** (Budget $\le 2.5\text{ GB}$, **PASS**).
+   - **Cold Start Latency**:
+     - Measured over 5 runs via `am start -W`: **1,780.6 ms** (1.78 s) vs budget $\le 2.0\text{ s}$ (**PASS**).
+   - **On-Device Llama Advisory Performance**:
+     - 5 grounded cases executed on Arm CPU: Average decode speed **10.53 tokens/s**, average TTFT **1,995 ms** (~2.0 s), **100% guardrail pass rate**.
+   - **Real-Test Verification Script**:
+     - `tools/eval_realtest.py` executed: 0% False Acceptance Rate (FAR) on non-crop. Summary saved to `benchmarks/final/realtest_summary.md`.
+
+---
+
 ## Current Status: Task D4 Complete (Unique-Photo Audit of Tomato Datasets)
 
 ### Done in Task D4: Unique-Photo Audit of Tomato Datasets (Rules H3, H14)

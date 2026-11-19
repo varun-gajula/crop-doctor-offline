@@ -1,28 +1,11 @@
 {
-  "default_threshold": 0.2,
-  "temperature": 1.15,
-  "energy_threshold": 5.0,
-  "class_thresholds": {
-    "rice_bacterial_leaf_blight": 0.2,
-    "rice_brown_spot": 0.2,
-    "rice_leaf_blast": 0.2,
-    "rice_sheath_blight": 0.2,
-    "rice_healthy": 0.3,
-    "cotton_bacterial_blight": 0.2,
-    "cotton_fusarium_wilt": 0.2,
-    "cotton_healthy": 0.3,
-    "chilli_bacterial_spot": 0.2,
-    "chilli_leaf_curl_virus": 0.2,
-    "chilli_healthy": 0.3,
-    "tomato_early_blight": 0.2,
-    "tomato_late_blight": 0.2,
-    "tomato_yellow_leaf_curl_virus": 0.2,
-    "tomato_spider_mites": 0.2,
-    "tomato_healthy": 0.3,
-    "maize_gray_leaf_spot": 0.2,
-    "maize_common_rust": 0.2,
-    "maize_northern_leaf_blight": 0.2,
-    "maize_fall_armyworm": 0.2,
-    "maize_healthy": 0.3
-  }
+  "calibration_method": "single_scalar_temperature_scaling",
+  "temperature": 1.3302102088928223,
+  "nll_before": 0.31178033351898193,
+  "nll_after": 0.2952011525630951,
+  "confidence_threshold": 0.40181660652160645,
+  "threshold_target_precision": 0.9,
+  "target_precision_reached": true,
+  "selection_note": "lowest-confidence operating point meeting target precision, selected on validation data",
+  "status": "provisional; fitted on this grouped validation split"
 }

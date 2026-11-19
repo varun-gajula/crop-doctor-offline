@@ -1,0 +1,222 @@
+{
+  "rice_bacterial_leaf_blight": {
+    "source_valid_512_count": 636,
+    "unique_clusters_after_global_dedup": 206,
+    "selected_unique_images_after_800_cap": 206,
+    "train_count": 165,
+    "validation_count": 41,
+    "same_label_duplicate_files_removed": 27,
+    "conflicting_label_files_excluded": 403,
+    "cap_removed_unique_clusters": 0,
+    "cap": 800
+  },
+  "rice_leaf_blast": {
+    "source_valid_512_count": 634,
+    "unique_clusters_after_global_dedup": 211,
+    "selected_unique_images_after_800_cap": 211,
+    "train_count": 169,
+    "validation_count": 42,
+    "same_label_duplicate_files_removed": 26,
+    "conflicting_label_files_excluded": 397,
+    "cap_removed_unique_clusters": 0,
+    "cap": 800
+  },
+  "rice_sheath_blight": {
+    "source_valid_512_count": 632,
+    "unique_clusters_after_global_dedup": 259,
+    "selected_unique_images_after_800_cap": 259,
+    "train_count": 207,
+    "validation_count": 52,
+    "same_label_duplicate_files_removed": 30,
+    "conflicting_label_files_excluded": 343,
+    "cap_removed_unique_clusters": 0,
+    "cap": 800
+  },
+  "rice_healthy": {
+    "source_valid_512_count": 653,
+    "unique_clusters_after_global_dedup": 282,
+    "selected_unique_images_after_800_cap": 282,
+    "train_count": 226,
+    "validation_count": 56,
+    "same_label_duplicate_files_removed": 20,
+    "conflicting_label_files_excluded": 351,
+    "cap_removed_unique_clusters": 0,
+    "cap": 800
+  },
+  "cotton_bacterial_blight": {
+    "source_valid_512_count": 448,
+    "unique_clusters_after_global_dedup": 14,
+    "selected_unique_images_after_800_cap": 14,
+    "train_count": 11,
+    "validation_count": 3,
+    "same_label_duplicate_files_removed": 98,
+    "conflicting_label_files_excluded": 336,
+    "cap_removed_unique_clusters": 0,
+    "cap": 800
+  },
+  "cotton_fusarium_wilt": {
+    "source_valid_512_count": 419,
+    "unique_clusters_after_global_dedup": 24,
+    "selected_unique_images_after_800_cap": 24,
+    "train_count": 19,
+    "validation_count": 5,
+    "same_label_duplicate_files_removed": 106,
+    "conflicting_label_files_excluded": 289,
+    "cap_removed_unique_clusters": 0,
+    "cap": 800
+  },
+  "cotton_leaf_curl_virus": {
+    "source_valid_512_count": 417,
+    "unique_clusters_after_global_dedup": 29,
+    "selected_unique_images_after_800_cap": 29,
+    "train_count": 23,
+    "validation_count": 6,
+    "same_label_duplicate_files_removed": 71,
+    "conflicting_label_files_excluded": 317,
+    "cap_removed_unique_clusters": 0,
+    "cap": 800
+  },
+  "cotton_healthy": {
+    "source_valid_512_count": 425,
+    "unique_clusters_after_global_dedup": 54,
+    "selected_unique_images_after_800_cap": 54,
+    "train_count": 43,
+    "validation_count": 11,
+    "same_label_duplicate_files_removed": 92,
+    "conflicting_label_files_excluded": 279,
+    "cap_removed_unique_clusters": 0,
+    "cap": 800
+  },
+  "chilli_leaf_curl_virus": {
+    "source_valid_512_count": 423,
+    "unique_clusters_after_global_dedup": 122,
+    "selected_unique_images_after_800_cap": 122,
+    "train_count": 98,
+    "validation_count": 24,
+    "same_label_duplicate_files_removed": 99,
+    "conflicting_label_files_excluded": 202,
+    "cap_removed_unique_clusters": 0,
+    "cap": 800
+  },
+  "chilli_nutrition_deficiency": {
+    "source_valid_512_count": 444,
+    "unique_clusters_after_global_dedup": 51,
+    "selected_unique_images_after_800_cap": 51,
+    "train_count": 41,
+    "validation_count": 10,
+    "same_label_duplicate_files_removed": 30,
+    "conflicting_label_files_excluded": 363,
+    "cap_removed_unique_clusters": 0,
+    "cap": 800
+  },
+  "chilli_healthy": {
+    "source_valid_512_count": 458,
+    "unique_clusters_after_global_dedup": 44,
+    "selected_unique_images_after_800_cap": 44,
+    "train_count": 35,
+    "validation_count": 9,
+    "same_label_duplicate_files_removed": 83,
+    "conflicting_label_files_excluded": 331,
+    "cap_removed_unique_clusters": 0,
+    "cap": 800
+  },
+  "tomato_leaf_blight": {
+    "source_valid_512_count": 800,
+    "unique_clusters_after_global_dedup": 91,
+    "selected_unique_images_after_800_cap": 91,
+    "train_count": 73,
+    "validation_count": 18,
+    "same_label_duplicate_files_removed": 5,
+    "conflicting_label_files_excluded": 704,
+    "cap_removed_unique_clusters": 0,
+    "cap": 800
+  },
+  "tomato_yellow_leaf_curl_virus": {
+    "source_valid_512_count": 800,
+    "unique_clusters_after_global_dedup": 101,
+    "selected_unique_images_after_800_cap": 101,
+    "train_count": 81,
+    "validation_count": 20,
+    "same_label_duplicate_files_removed": 25,
+    "conflicting_label_files_excluded": 674,
+    "cap_removed_unique_clusters": 0,
+    "cap": 800
+  },
+  "tomato_septoria_leaf_spot": {
+    "source_valid_512_count": 800,
+    "unique_clusters_after_global_dedup": 69,
+    "selected_unique_images_after_800_cap": 69,
+    "train_count": 55,
+    "validation_count": 14,
+    "same_label_duplicate_files_removed": 0,
+    "conflicting_label_files_excluded": 731,
+    "cap_removed_unique_clusters": 0,
+    "cap": 800
+  },
+  "tomato_healthy": {
+    "source_valid_512_count": 800,
+    "unique_clusters_after_global_dedup": 61,
+    "selected_unique_images_after_800_cap": 61,
+    "train_count": 49,
+    "validation_count": 12,
+    "same_label_duplicate_files_removed": 4,
+    "conflicting_label_files_excluded": 735,
+    "cap_removed_unique_clusters": 0,
+    "cap": 800
+  },
+  "maize_gray_leaf_spot": {
+    "source_valid_512_count": 500,
+    "unique_clusters_after_global_dedup": 288,
+    "selected_unique_images_after_800_cap": 288,
+    "train_count": 230,
+    "validation_count": 58,
+    "same_label_duplicate_files_removed": 0,
+    "conflicting_label_files_excluded": 212,
+    "cap_removed_unique_clusters": 0,
+    "cap": 800
+  },
+  "maize_common_rust": {
+    "source_valid_512_count": 500,
+    "unique_clusters_after_global_dedup": 148,
+    "selected_unique_images_after_800_cap": 148,
+    "train_count": 118,
+    "validation_count": 30,
+    "same_label_duplicate_files_removed": 7,
+    "conflicting_label_files_excluded": 345,
+    "cap_removed_unique_clusters": 0,
+    "cap": 800
+  },
+  "maize_northern_leaf_blight": {
+    "source_valid_512_count": 500,
+    "unique_clusters_after_global_dedup": 279,
+    "selected_unique_images_after_800_cap": 279,
+    "train_count": 223,
+    "validation_count": 56,
+    "same_label_duplicate_files_removed": 5,
+    "conflicting_label_files_excluded": 216,
+    "cap_removed_unique_clusters": 0,
+    "cap": 800
+  },
+  "maize_healthy": {
+    "source_valid_512_count": 500,
+    "unique_clusters_after_global_dedup": 270,
+    "selected_unique_images_after_800_cap": 270,
+    "train_count": 216,
+    "validation_count": 54,
+    "same_label_duplicate_files_removed": 3,
+    "conflicting_label_files_excluded": 227,
+    "cap_removed_unique_clusters": 0,
+    "cap": 800
+  },
+  "weeds_not_a_crop": {
+    "source_valid_512_count": 800,
+    "unique_clusters_after_global_dedup": 146,
+    "selected_unique_images_after_800_cap": 146,
+    "train_count": 117,
+    "validation_count": 29,
+    "same_label_duplicate_files_removed": 214,
+    "conflicting_label_files_excluded": 440,
+    "cap_removed_unique_clusters": 0,
+    "cap": 800
+  }
+}

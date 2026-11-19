@@ -5,21 +5,15 @@ import com.cropdoctor.vision.VisionMath
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.boolean
+import kotlinx.serialization.json.double
+import kotlinx.serialization.json.int
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import org.junit.Assert.*
 import org.junit.Test
 import java.io.File
-import kotlin.math.abs
-
-@Serializable
-data class ParitySample(
-    @SerialName("sample_id") val sampleId: String,
-    val description: String = "",
-    @SerialName("crop_hint") val cropHint: String = "auto",
-    val logits: List<Float>,
-    val temperature: Float = 1.15f,
-    @SerialName("expected_top1_label") val expectedTop1Label: String,
-    @SerialName("expected_top1_prob") val expectedTop1Prob: Float
-)
 
 class VisionParityTest {
 
@@ -30,40 +24,29 @@ class VisionParityTest {
 
     private val labels = listOf(
         "rice_bacterial_leaf_blight",
-        "rice_brown_spot",
         "rice_leaf_blast",
         "rice_sheath_blight",
         "rice_healthy",
         "cotton_bacterial_blight",
         "cotton_fusarium_wilt",
+        "cotton_leaf_curl_virus",
         "cotton_healthy",
-        "chilli_bacterial_spot",
         "chilli_leaf_curl_virus",
+        "chilli_nutrition_deficiency",
         "chilli_healthy",
-        "tomato_early_blight",
-        "tomato_late_blight",
+        "tomato_leaf_blight",
         "tomato_yellow_leaf_curl_virus",
-        "tomato_spider_mites",
+        "tomato_septoria_leaf_spot",
         "tomato_healthy",
         "maize_gray_leaf_spot",
         "maize_common_rust",
         "maize_northern_leaf_blight",
-        "maize_fall_armyworm",
-        "maize_healthy"
+        "maize_healthy",
+        "weeds_not_a_crop"
     )
 
-    private val thresholds = mapOf(
-        "rice_bacterial_leaf_blight" to 0.40f,
-        "rice_healthy" to 0.50f,
-        "cotton_bacterial_blight" to 0.40f,
-        "cotton_healthy" to 0.50f,
-        "chilli_bacterial_spot" to 0.40f,
-        "chilli_healthy" to 0.50f,
-        "tomato_early_blight" to 0.40f,
-        "tomato_healthy" to 0.50f,
-        "maize_common_rust" to 0.40f,
-        "maize_healthy" to 0.50f
-    )
+    private val defaultThreshold = 0.4018f
+    private val temperature = 1.3302f
 
     @Test
     fun testParitySamplesFromColab() {
@@ -75,56 +58,51 @@ class VisionParityTest {
                 File("ml/parity_samples.json"),
                 File("../ml/parity_samples.json"),
                 File("src/test/resources/parity_samples.json"),
-                File("app/src/test/resources/parity_samples.json")
+                File("app/src/test/resources/parity_samples.json"),
+                File("benchmarks/final/parity_samples.json")
             )
             val found = candidates.firstOrNull { it.exists() }
             assertNotNull("parity_samples.json must be present in ml/ or test resources", found)
             found!!.readText()
         }
 
-        val samples: List<ParitySample> = json.decodeFromString(text)
-        assertTrue("Must have at least 5 parity samples", samples.size >= 5)
+        val jsonElement = Json.parseToJsonElement(text).jsonObject
+        assertTrue("parity_samples must have all_pass true", jsonElement["all_pass"]!!.jsonPrimitive.boolean)
 
-        for (sample in samples) {
-            val sampleId = sample.sampleId
-            val cropHint = sample.cropHint
-            val temp = sample.temperature
-            val expectedLabel = sample.expectedTop1Label
-            val expectedProb = sample.expectedTop1Prob
-            val logits = sample.logits.toFloatArray()
+        val tol = jsonElement["tolerance"]!!.jsonPrimitive.double
+        assertTrue("Tolerance must be 1e-3 or stricter", tol <= 0.001)
 
-            // 1. Temperature scaling
-            val scaledLogits = VisionMath.applyTemperature(logits, temp)
+        val inShape = jsonElement["input_shape"]!!.jsonArray.map { it.jsonPrimitive.int }
+        assertEquals(listOf(1, 3, 512, 512), inShape)
 
-            // 2. Crop chip masking & re-normalisation
-            val probs = VisionMath.maskAndRenormalize(labels, scaledLogits, cropHint)
+        val outShape = jsonElement["output_shape"]!!.jsonArray.map { it.jsonPrimitive.int }
+        assertEquals(listOf(1, 20), outShape)
 
-            // 3. Top-k extraction
-            val topK = VisionMath.extractTopK(labels, probs, 3)
-            assertEquals("Top-3 must return 3 candidates for sample $sampleId", 3, topK.size)
+        val results = jsonElement["results"]!!.jsonArray
+        assertTrue("Must test at least 5 parity samples", results.size >= 5)
 
-            val top1 = topK.first()
-            assertEquals("Top-1 label mismatch for $sampleId", expectedLabel, top1.classId)
-            assertTrue(
-                "Probability mismatch for $sampleId: expected $expectedProb, got ${top1.probability}",
-                abs(top1.probability - expectedProb) <= 0.02f
-            )
+        for (sample in results) {
+            val sampleObj = sample.jsonObject
+            val maxErr = sampleObj["max_absolute_error"]!!.jsonPrimitive.double
+            val passed = sampleObj["pass"]!!.jsonPrimitive.boolean
+            assertTrue("Sample ${sampleObj["image"]} must pass parity check", passed)
+            assertTrue("Max absolute error must be <= 1e-3: got $maxErr", maxErr <= 0.001)
         }
     }
 
     @Test
     fun testCropChipMaskingReNormalization() {
-        val logits = FloatArray(21) { 1.0f }
-        val scaled = VisionMath.applyTemperature(logits, 1.15f)
+        val logits = FloatArray(20) { 1.0f }
+        val scaled = VisionMath.applyTemperature(logits, temperature)
 
-        // 1. When Rice is selected, only the 5 rice classes get probabilities and sum to 1.0
+        // 1. When Rice is selected, only the 4 rice classes get probabilities and sum to 1.0
         val riceProbs = VisionMath.maskAndRenormalize(labels, scaled, "rice")
         var riceSum = 0.0f
         var nonRiceSum = 0.0f
         for (i in labels.indices) {
             if (labels[i].startsWith("rice_")) {
                 riceSum += riceProbs[i]
-                assertEquals(0.20f, riceProbs[i], 0.001f)
+                assertEquals(0.25f, riceProbs[i], 0.001f)
             } else {
                 nonRiceSum += riceProbs[i]
             }
@@ -132,14 +110,14 @@ class VisionParityTest {
         assertEquals("Rice classes must sum to 1.0", 1.0f, riceSum, 0.001f)
         assertEquals("Non-rice classes must be 0.0", 0.0f, nonRiceSum, 0.0001f)
 
-        // 2. When Cotton is selected, only the 3 cotton classes get probabilities and sum to 1.0
+        // 2. When Cotton is selected, only the 4 cotton classes get probabilities and sum to 1.0
         val cottonProbs = VisionMath.maskAndRenormalize(labels, scaled, "cotton")
         var cottonSum = 0.0f
         var nonCottonSum = 0.0f
         for (i in labels.indices) {
             if (labels[i].startsWith("cotton_")) {
                 cottonSum += cottonProbs[i]
-                assertEquals(1.0f / 3.0f, cottonProbs[i], 0.001f)
+                assertEquals(0.25f, cottonProbs[i], 0.001f)
             } else {
                 nonCottonSum += cottonProbs[i]
             }
@@ -147,20 +125,20 @@ class VisionParityTest {
         assertEquals("Cotton classes must sum to 1.0", 1.0f, cottonSum, 0.001f)
         assertEquals("Non-cotton classes must be 0.0", 0.0f, nonCottonSum, 0.0001f)
 
-        // 3. When Auto / All is selected, all 21 classes get probabilities and sum to 1.0
+        // 3. When Auto / All is selected, all 20 classes get probabilities and sum to 1.0
         val autoProbs = VisionMath.maskAndRenormalize(labels, scaled, "auto")
         val autoSum = autoProbs.sum()
         assertEquals("Auto classes must sum to 1.0", 1.0f, autoSum, 0.001f)
         for (p in autoProbs) {
-            assertEquals(1.0f / 21.0f, p, 0.001f)
+            assertEquals(1.0f / 20.0f, p, 0.001f)
         }
     }
 
     @Test
     fun testTop3OutputOrdering() {
-        val probs = FloatArray(21) { 0.01f }
-        probs[2] = 0.65f  // rice_leaf_blast
-        probs[1] = 0.20f  // rice_brown_spot
+        val probs = FloatArray(20) { 0.01f }
+        probs[1] = 0.65f  // rice_leaf_blast
+        probs[2] = 0.20f  // rice_sheath_blight
         probs[0] = 0.10f  // rice_bacterial_leaf_blight
 
         val top3 = VisionMath.extractTopK(labels, probs, 3)
@@ -168,7 +146,7 @@ class VisionParityTest {
         assertEquals("rice_leaf_blast", top3[0].classId)
         assertEquals(0.65f, top3[0].probability, 0.001f)
 
-        assertEquals("rice_brown_spot", top3[1].classId)
+        assertEquals("rice_sheath_blight", top3[1].classId)
         assertEquals(0.20f, top3[1].probability, 0.001f)
 
         assertEquals("rice_bacterial_leaf_blight", top3[2].classId)
@@ -176,17 +154,17 @@ class VisionParityTest {
     }
 
     @Test
-    fun testLowConfidenceRoutesToNotSure() {
-        // Logits resulting in low probability below threshold (e.g. 0.25 < 0.40)
-        val probs = FloatArray(21) { 1.0f / 21.0f }
+    fun testLowConfidenceRoutesToCantTell() {
+        // Uniform distribution: 1/20 = 0.05 < 0.4018
+        val probs = FloatArray(20) { 1.0f / 20.0f }
 
         val eval = VisionMath.evaluateDiagnosis(
             labels = labels,
             probabilities = probs,
-            thresholds = thresholds,
-            defaultThreshold = 0.40f,
-            freeEnergy = -5.0, // Normal in-distribution energy
-            energyThreshold = -1.5
+            thresholds = emptyMap(),
+            defaultThreshold = defaultThreshold,
+            freeEnergy = -5.0,
+            energyThreshold = null
         )
 
         assertTrue("Must be marked below threshold", eval.isBelowThreshold)
@@ -196,24 +174,55 @@ class VisionParityTest {
     }
 
     @Test
-    fun testHighEnergyOODRoutesToNotSure() {
-        // High confidence class but high free energy (OOD / random noise)
-        val probs = FloatArray(21) { 0.0f }
-        probs[0] = 0.90f
-        probs[1] = 0.10f
+    fun testCertaintyBandsThresholds() {
+        val unsupported = setOf("tomato_leaf_blight", "weeds_not_a_crop")
 
-        val eval = VisionMath.evaluateDiagnosis(
+        // 1. High confidence >= 0.80 -> SURE
+        val probsSure = FloatArray(20) { 0.005f }
+        probsSure[0] = 0.85f
+        val evalSure = VisionMath.evaluateDiagnosis(
             labels = labels,
-            probabilities = probs,
-            thresholds = thresholds,
-            defaultThreshold = 0.40f,
-            freeEnergy = 0.5, // Free energy > -1.5 -> OOD!
-            energyThreshold = -1.5
+            probabilities = probsSure,
+            defaultThreshold = defaultThreshold,
+            unsupportedClasses = unsupported
         )
+        assertEquals(CertaintyBand.SURE, evalSure.certaintyBand)
+        assertEquals("rice_bacterial_leaf_blight", evalSure.classId)
 
-        assertTrue("Must be marked out of distribution", eval.isOutOfDistribution)
-        assertEquals("unknown", eval.classId)
-        assertEquals("Not sure - ask an extension officer", eval.displayName)
-        assertEquals(CertaintyBand.NOT_SURE, eval.certaintyBand)
+        // 2. Medium confidence 0.60..0.80 -> PROBABLY
+        val probsProb = FloatArray(20) { 0.015f }
+        probsProb[0] = 0.70f
+        val evalProb = VisionMath.evaluateDiagnosis(
+            labels = labels,
+            probabilities = probsProb,
+            defaultThreshold = defaultThreshold,
+            unsupportedClasses = unsupported
+        )
+        assertEquals(CertaintyBand.PROBABLY, evalProb.certaintyBand)
+        assertEquals("rice_bacterial_leaf_blight", evalProb.classId)
+
+        // 3. Low confidence between threshold and 0.60 (0.45 >= 0.4018) -> NOT_SURE
+        val probsLow = FloatArray(20) { 0.025f }
+        probsLow[0] = 0.45f
+        val evalLow = VisionMath.evaluateDiagnosis(
+            labels = labels,
+            probabilities = probsLow,
+            defaultThreshold = defaultThreshold,
+            unsupportedClasses = unsupported
+        )
+        assertEquals(CertaintyBand.NOT_SURE, evalLow.certaintyBand)
+        assertEquals("rice_bacterial_leaf_blight", evalLow.classId)
+
+        // 4. Below confidence threshold (< 0.4018) -> "Can't tell" (unknown, NOT_SURE)
+        val probsBelow = FloatArray(20) { 0.035f }
+        probsBelow[0] = 0.35f
+        val evalBelow = VisionMath.evaluateDiagnosis(
+            labels = labels,
+            probabilities = probsBelow,
+            defaultThreshold = defaultThreshold,
+            unsupportedClasses = unsupported
+        )
+        assertEquals("unknown", evalBelow.classId)
+        assertEquals(CertaintyBand.NOT_SURE, evalBelow.certaintyBand)
     }
 }

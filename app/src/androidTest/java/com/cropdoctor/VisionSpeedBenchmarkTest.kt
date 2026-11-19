@@ -39,18 +39,22 @@ class VisionSpeedBenchmarkTest {
         val classifier = ExecuTorchClassifier(context)
 
         // Warm up run
-        val warmupBmp = Bitmap.createBitmap(320, 320, Bitmap.Config.ARGB_8888)
+        val warmupBmp = Bitmap.createBitmap(512, 512, Bitmap.Config.ARGB_8888)
         classifier.classify(warmupBmp, null)
 
         val testLeavesDir = File(context.filesDir, "test_leaves")
-        assertTrue("Test leaves dir must exist at ${testLeavesDir.absolutePath}", testLeavesDir.exists())
-
-        val imageFiles = testLeavesDir.listFiles { file ->
+        val classesLeavesDir = File(context.filesDir, "test_leaves_classes")
+        val list1 = testLeavesDir.listFiles { file ->
             val name = file.name.lowercase(Locale.ROOT)
             name.endsWith(".jpg") || name.endsWith(".jpeg") || name.endsWith(".png")
-        }?.sortedBy { it.name } ?: emptyList()
+        }?.toList() ?: emptyList()
+        val list2 = classesLeavesDir.listFiles { file ->
+            val name = file.name.lowercase(Locale.ROOT)
+            name.endsWith(".jpg") || name.endsWith(".jpeg") || name.endsWith(".png")
+        }?.toList() ?: emptyList()
+        val imageFiles = list1 + list2
 
-        Log.i(TAG, "Found ${imageFiles.size} candidate leaf images in ${testLeavesDir.absolutePath}")
+        Log.i(TAG, "Found ${imageFiles.size} candidate leaf images across test_leaves and test_leaves_classes")
         assertTrue("Must have at least 10 candidate images, found: ${imageFiles.size}", imageFiles.size >= 10)
 
         val labelsStream = context.assets.open("labels.json")
@@ -58,8 +62,9 @@ class VisionSpeedBenchmarkTest {
         val labelsArray = JSONArray(labelsJson)
         val labels = (0 until labelsArray.length()).map { labelsArray.getString(it) }
 
-        val defaultThresh = classifier.defaultThreshold ?: 0.40f
-        val energyThresh = classifier.energyThreshold ?: -1.5
+        val temp = classifier.temperature ?: 1.3302f
+        val defaultThresh = classifier.defaultThreshold ?: 0.4018f
+        val energyThresh = classifier.energyThreshold
         val classThresholds = classifier.classThresholds
         val unsupportedClasses = classifier.unsupportedClasses
 
@@ -90,9 +95,9 @@ class VisionSpeedBenchmarkTest {
             val valResult = LeafValidator.validate(originalBitmap)
             val valDurationNanos = SystemClock.elapsedRealtimeNanos() - tValStart
 
-            // 2. Preprocessing (Resize 320x320 + Normalization)
+            // 2. Preprocessing (Resize 512x512 + Normalization)
             val tPrepStart = SystemClock.elapsedRealtimeNanos()
-            val resized = Bitmap.createScaledBitmap(originalBitmap, 320, 320, true)
+            val resized = Bitmap.createScaledBitmap(originalBitmap, 512, 512, true)
             val inputTensor = classifier.preprocessBitmap(resized)
             val prepDurationNanos = SystemClock.elapsedRealtimeNanos() - tPrepStart
 
@@ -105,8 +110,8 @@ class VisionSpeedBenchmarkTest {
 
             // 4. Calibration & Post-processing (Temperature scaling, Free energy, Softmax, OOD check)
             val tCalStart = SystemClock.elapsedRealtimeNanos()
-            val scaledLogits = VisionMath.applyTemperature(rawLogits, 1.0f)
-            val freeEnergy = VisionMath.computeFreeEnergy(scaledLogits, 1.0f)
+            val scaledLogits = VisionMath.applyTemperature(rawLogits, temp)
+            val freeEnergy = VisionMath.computeFreeEnergy(scaledLogits, temp)
             val probabilities = VisionMath.maskAndRenormalize(labels, scaledLogits, null)
             val eval = VisionMath.evaluateDiagnosis(
                 labels = labels,

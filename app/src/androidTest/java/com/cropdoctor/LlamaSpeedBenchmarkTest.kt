@@ -63,7 +63,7 @@ class LlamaSpeedBenchmarkTest {
 
         val testCases = listOf(
             TestCase("maize_common_rust", "maize", "Common Rust", SeverityBand.MODERATE, "Probably", "en"),
-            TestCase("tomato_early_blight", "tomato", "Early Blight", SeverityBand.MILD, "Sure", "en"),
+            TestCase("tomato_yellow_leaf_curl_virus", "tomato", "Yellow Leaf Curl Virus", SeverityBand.MILD, "Sure", "en"),
             TestCase("rice_leaf_blast", "rice", "Leaf Blast", SeverityBand.SEVERE, "Sure", "en"),
             TestCase("cotton_bacterial_blight", "cotton", "Bacterial Blight", SeverityBand.MODERATE, "Probably", "en"),
             TestCase("chilli_leaf_curl_virus", "chilli", "Leaf Curl", SeverityBand.SEVERE, "Sure", "en")

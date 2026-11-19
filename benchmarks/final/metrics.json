@@ -1,0 +1,269 @@
+{
+  "model": "MobileNetV3-Large",
+  "input_shape": [
+    1,
+    3,
+    512,
+    512
+  ],
+  "output_shape": [
+    1,
+    20
+  ],
+  "class_order": [
+    "rice_bacterial_leaf_blight",
+    "rice_leaf_blast",
+    "rice_sheath_blight",
+    "rice_healthy",
+    "cotton_bacterial_blight",
+    "cotton_fusarium_wilt",
+    "cotton_leaf_curl_virus",
+    "cotton_healthy",
+    "chilli_leaf_curl_virus",
+    "chilli_nutrition_deficiency",
+    "chilli_healthy",
+    "tomato_leaf_blight",
+    "tomato_yellow_leaf_curl_virus",
+    "tomato_septoria_leaf_spot",
+    "tomato_healthy",
+    "maize_gray_leaf_spot",
+    "maize_common_rust",
+    "maize_northern_leaf_blight",
+    "maize_healthy",
+    "weeds_not_a_crop"
+  ],
+  "train_images": 2199,
+  "validation_images": 550,
+  "epochs_completed": 15,
+  "overall_accuracy": 0.8963636363636364,
+  "macro_accuracy_balanced_accuracy": 0.8608398386026647,
+  "per_class_grouped_accuracy": {
+    "rice_bacterial_leaf_blight": {
+      "accuracy_recall": 0.926829268292683,
+      "correct": 38,
+      "support": 41,
+      "precision": 0.8260869565217391,
+      "recall": 0.926829268292683,
+      "f1_score": 0.8735632183908046
+    },
+    "rice_leaf_blast": {
+      "accuracy_recall": 0.8333333333333334,
+      "correct": 35,
+      "support": 42,
+      "precision": 0.9210526315789473,
+      "recall": 0.8333333333333334,
+      "f1_score": 0.875
+    },
+    "rice_sheath_blight": {
+      "accuracy_recall": 0.9230769230769231,
+      "correct": 48,
+      "support": 52,
+      "precision": 0.9795918367346939,
+      "recall": 0.9230769230769231,
+      "f1_score": 0.9504950495049505
+    },
+    "rice_healthy": {
+      "accuracy_recall": 1.0,
+      "correct": 56,
+      "support": 56,
+      "precision": 0.9655172413793104,
+      "recall": 1.0,
+      "f1_score": 0.9824561403508771
+    },
+    "cotton_bacterial_blight": {
+      "accuracy_recall": 0.6666666666666666,
+      "correct": 2,
+      "support": 3,
+      "precision": 1.0,
+      "recall": 0.6666666666666666,
+      "f1_score": 0.8
+    },
+    "cotton_fusarium_wilt": {
+      "accuracy_recall": 1.0,
+      "correct": 5,
+      "support": 5,
+      "precision": 0.8333333333333334,
+      "recall": 1.0,
+      "f1_score": 0.9090909090909091
+    },
+    "cotton_leaf_curl_virus": {
+      "accuracy_recall": 0.8333333333333334,
+      "correct": 5,
+      "support": 6,
+      "precision": 0.8333333333333334,
+      "recall": 0.8333333333333334,
+      "f1_score": 0.8333333333333334
+    },
+    "cotton_healthy": {
+      "accuracy_recall": 0.9090909090909091,
+      "correct": 10,
+      "support": 11,
+      "precision": 1.0,
+      "recall": 0.9090909090909091,
+      "f1_score": 0.9523809523809523
+    },
+    "chilli_leaf_curl_virus": {
+      "accuracy_recall": 0.9583333333333334,
+      "correct": 23,
+      "support": 24,
+      "precision": 1.0,
+      "recall": 0.9583333333333334,
+      "f1_score": 0.9787234042553191
+    },
+    "chilli_nutrition_deficiency": {
+      "accuracy_recall": 1.0,
+      "correct": 10,
+      "support": 10,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0
+    },
+    "chilli_healthy": {
+      "accuracy_recall": 1.0,
+      "correct": 9,
+      "support": 9,
+      "precision": 0.9,
+      "recall": 1.0,
+      "f1_score": 0.9473684210526315
+    },
+    "tomato_leaf_blight": {
+      "accuracy_recall": 0.0,
+      "correct": 0,
+      "support": 18,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0
+    },
+    "tomato_yellow_leaf_curl_virus": {
+      "accuracy_recall": 0.7,
+      "correct": 14,
+      "support": 20,
+      "precision": 0.56,
+      "recall": 0.7,
+      "f1_score": 0.6222222222222222
+    },
+    "tomato_septoria_leaf_spot": {
+      "accuracy_recall": 0.6428571428571429,
+      "correct": 9,
+      "support": 14,
+      "precision": 0.4090909090909091,
+      "recall": 0.6428571428571429,
+      "f1_score": 0.5
+    },
+    "tomato_healthy": {
+      "accuracy_recall": 1.0,
+      "correct": 12,
+      "support": 12,
+      "precision": 0.75,
+      "recall": 1.0,
+      "f1_score": 0.8571428571428571
+    },
+    "maize_gray_leaf_spot": {
+      "accuracy_recall": 0.9482758620689655,
+      "correct": 55,
+      "support": 58,
+      "precision": 0.8870967741935484,
+      "recall": 0.9482758620689655,
+      "f1_score": 0.9166666666666666
+    },
+    "maize_common_rust": {
+      "accuracy_recall": 1.0,
+      "correct": 30,
+      "support": 30,
+      "precision": 0.9375,
+      "recall": 1.0,
+      "f1_score": 0.967741935483871
+    },
+    "maize_northern_leaf_blight": {
+      "accuracy_recall": 0.875,
+      "correct": 49,
+      "support": 56,
+      "precision": 0.98,
+      "recall": 0.875,
+      "f1_score": 0.9245283018867925
+    },
+    "maize_healthy": {
+      "accuracy_recall": 1.0,
+      "correct": 54,
+      "support": 54,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0
+    },
+    "weeds_not_a_crop": {
+      "accuracy_recall": 1.0,
+      "correct": 29,
+      "support": 29,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0
+    }
+  },
+  "top_confusions": [
+    {
+      "true_class": "tomato_leaf_blight",
+      "predicted_class": "tomato_septoria_leaf_spot",
+      "count": 9
+    },
+    {
+      "true_class": "tomato_leaf_blight",
+      "predicted_class": "tomato_yellow_leaf_curl_virus",
+      "count": 7
+    },
+    {
+      "true_class": "maize_northern_leaf_blight",
+      "predicted_class": "maize_gray_leaf_spot",
+      "count": 7
+    },
+    {
+      "true_class": "rice_leaf_blast",
+      "predicted_class": "rice_bacterial_leaf_blight",
+      "count": 6
+    },
+    {
+      "true_class": "tomato_yellow_leaf_curl_virus",
+      "predicted_class": "tomato_septoria_leaf_spot",
+      "count": 4
+    },
+    {
+      "true_class": "rice_bacterial_leaf_blight",
+      "predicted_class": "rice_leaf_blast",
+      "count": 3
+    },
+    {
+      "true_class": "tomato_septoria_leaf_spot",
+      "predicted_class": "tomato_yellow_leaf_curl_virus",
+      "count": 3
+    },
+    {
+      "true_class": "rice_sheath_blight",
+      "predicted_class": "rice_bacterial_leaf_blight",
+      "count": 2
+    },
+    {
+      "true_class": "rice_sheath_blight",
+      "predicted_class": "rice_healthy",
+      "count": 2
+    },
+    {
+      "true_class": "tomato_leaf_blight",
+      "predicted_class": "tomato_healthy",
+      "count": 2
+    }
+  ],
+  "calibration_method": "single_scalar_temperature_scaling",
+  "versions": {
+    "python": "3.13.16",
+    "torch": "2.15.0+cu132",
+    "torchvision": "0.29.1+cu130",
+    "executorch": "1.5.1+cu130"
+  },
+  "temperature": 1.3302102088928223,
+  "validation_nll_before_temperature_scaling": 0.31178033351898193,
+  "validation_nll_after_temperature_scaling": 0.2952011525630951,
+  "executorch_backend": "XNNPACK",
+  "pte_size_mb": 16.143,
+  "pte_under_30mb": true,
+  "parity_all_pass_tolerance_1e-3": true,
+  "parity_samples_tested": 10
+}

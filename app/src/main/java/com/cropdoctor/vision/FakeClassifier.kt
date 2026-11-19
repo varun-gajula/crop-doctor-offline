@@ -25,18 +25,18 @@ class FakeClassifier : Classifier {
         val classId = when (cropHint?.lowercase()) {
             "rice" -> "rice_bacterial_leaf_blight"
             "cotton" -> "cotton_bacterial_blight"
-            "chilli" -> "chilli_leaf_curl"
-            "tomato" -> "tomato_early_blight"
-            "maize" -> "maize_fall_armyworm"
+            "chilli" -> "chilli_leaf_curl_virus"
+            "tomato" -> "tomato_yellow_leaf_curl_virus"
+            "maize" -> "maize_common_rust"
             else -> "rice_bacterial_leaf_blight"
         }
 
         val displayName = when (classId) {
             "rice_bacterial_leaf_blight" -> "Rice Bacterial Leaf Blight"
             "cotton_bacterial_blight" -> "Cotton Bacterial Blight"
-            "chilli_leaf_curl" -> "Chilli Leaf Curl"
-            "tomato_early_blight" -> "Tomato Early Blight"
-            "maize_fall_armyworm" -> "Maize Fall Armyworm"
+            "chilli_leaf_curl_virus" -> "Chilli Leaf Curl Virus"
+            "tomato_yellow_leaf_curl_virus" -> "Tomato Yellow Leaf Curl Virus"
+            "maize_common_rust" -> "Maize Common Rust"
             else -> "Rice Bacterial Leaf Blight"
         }
 
@@ -52,20 +52,13 @@ class FakeClassifier : Classifier {
             confidence = 0.88f,
             severityBand = SeverityBand.MODERATE,
             certaintyBand = CertaintyBand.SURE,
-            lesionFraction = 0.22f,
-            inferenceTimeMs = 42L,
-            memoryUsedMb = getProcessMemoryMb(),
+            lesionFraction = 0.15f,
+            inferenceTimeMs = 45L,
+            memoryUsedMb = 60L,
             isDemoMode = true,
             top3 = top3
         )
     }
 
-    private fun getProcessMemoryMb(): Long {
-        val runtime = Runtime.getRuntime()
-        return (runtime.totalMemory() - runtime.freeMemory()) / (1024 * 1024)
-    }
-
-    override fun close() {
-        // No resources to release
-    }
+    override fun close() {}
 }

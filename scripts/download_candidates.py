@@ -1,38 +1,44 @@
 #!/usr/bin/env python3
 """
-Crop Doctor - Candidate Datasets Downloader (Task D2)
------------------------------------------------------
-Resumable downloader for approved candidate datasets.
-- Logs download progress, file sizes, and SHA-256 checksums to C:\\crop-data\\logs\\
-- Supports HTTP Range headers for resuming broken downloads
-- Enforces strict safety gate: stops and asks before any single download > 3 GB
-- Automatically extracts archives into C:\\crop-data\\candidates\\raw\\<source_id>\\
-- Can populate shortlisted classes into C:\\crop-data\\candidates\\<crop>\\<problem>\\
-  and generate C:\\crop-data\\candidates\\manifest.csv
+Crop Doctor - Candidate Datasets Downloader & Ingestion (Task D2)
+----------------------------------------------------------------
+Resumable downloader and extractor for approved candidate datasets.
+- Logs progress, sizes, and SHA-256 checksums to C:\\crop-data\\logs\\download_candidates.log
+- Checks 3 GB safety limit before every download
+- Downloads into C:\\crop-data\\candidates\\raw\\<source_id>\\
+- Extracts and maps shortlisted classes into C:\\crop-data\\candidates\\<crop>\\<problem>\\
+- Generates C:\\crop-data\\candidates\\manifest.csv (file, crop, problem, source, licence, sha256)
+- Strict compliance with Rule D: Never touches C:\\crop-data\\by_class, small, or realtest
 """
 
 import os
 import sys
+import io
+import csv
+import glob
+import shutil
 import hashlib
 import logging
-import argparse
-import urllib.request
 import zipfile
-import shutil
+import argparse
+import subprocess
+import urllib.request
 from pathlib import Path
 
-DEFAULT_RAW_DIR = Path(r"C:\crop-data\candidates\raw")
-DEFAULT_LOG_DIR = Path(r"C:\crop-data\logs")
-DEFAULT_CANDIDATES_DIR = Path(r"C:\crop-data\candidates")
-MAX_AUTO_DOWNLOAD_BYTES = 3 * 1024 * 1024 * 1024  # 3 GB hard ceiling
+BASE_CROP_DATA = Path(r"C:\crop-data")
+CANDIDATES_DIR = BASE_CROP_DATA / "candidates"
+RAW_DIR = CANDIDATES_DIR / "raw"
+LOG_DIR = BASE_CROP_DATA / "logs"
+MANIFEST_PATH = CANDIDATES_DIR / "manifest.csv"
+MAX_SINGLE_DOWNLOAD = 3 * 1024 * 1024 * 1024  # 3 GB safety limit
 
-def setup_logger(log_dir: Path) -> logging.Logger:
-    log_dir.mkdir(parents=True, exist_ok=True)
-    log_path = log_dir / "download_candidates.log"
+def setup_logger() -> logging.Logger:
+    LOG_DIR.mkdir(parents=True, exist_ok=True)
+    log_file = LOG_DIR / "download_candidates.log"
     logger = logging.getLogger("download_candidates")
     logger.setLevel(logging.INFO)
     if not logger.handlers:
-        fh = logging.FileHandler(log_path, encoding="utf-8")
+        fh = logging.FileHandler(log_file, encoding="utf-8")
         sh = logging.StreamHandler(sys.stdout)
         fmt = logging.Formatter("%(asctime)s [%(levelname)s] %(message)s")
         fh.setFormatter(fmt)
@@ -48,85 +54,102 @@ def sha256_file(filepath: Path) -> str:
             h.update(chunk)
     return h.hexdigest()
 
-def download_file_resumable(url: str, dest_path: Path, expected_size_bytes: int = None, logger: logging.Logger = None) -> str:
-    if logger is None:
-        logger = logging.getLogger("download_candidates")
+def sha256_bytes(data: bytes) -> str:
+    return hashlib.sha256(data).hexdigest()
 
+def download_resumable(url: str, dest_path: Path, logger: logging.Logger) -> str:
     dest_path.parent.mkdir(parents=True, exist_ok=True)
     temp_path = dest_path.with_suffix(dest_path.suffix + ".part")
-    downloaded_bytes = 0
-
-    if temp_path.exists():
-        downloaded_bytes = temp_path.stat().st_size
-
-    # Check size limit before starting
-    req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 CropDoctor/1.0"})
     
-    # Probe remote size via HEAD/GET if expected_size_bytes is not provided
-    if not expected_size_bytes:
-        try:
-            head_req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 CropDoctor/1.0"}, method="HEAD")
-            with urllib.request.urlopen(head_req, timeout=10) as head_res:
-                cl = head_res.headers.get("Content-Length")
-                if cl:
-                    expected_size_bytes = int(cl)
-        except Exception:
-            pass
+    # Check if already fully downloaded
+    if dest_path.exists() and dest_path.stat().st_size > 0:
+        logger.info(f"File already exists: {dest_path.name} ({dest_path.stat().st_size / (1024*1024):.2f} MB)")
+        return sha256_file(dest_path)
 
-    if expected_size_bytes and expected_size_bytes > MAX_AUTO_DOWNLOAD_BYTES:
-        raise ValueError(f"Download size {expected_size_bytes / (1024**3):.2f} GB exceeds safety threshold of 3 GB! User approval required.")
-
-    if downloaded_bytes > 0:
-        req.add_header("Range", f"bytes={downloaded_bytes}-")
-
-    logger.info(f"Downloading {url} -> {dest_path.name} (starting from {downloaded_bytes / (1024*1024):.2f} MB)")
+    # Check remote size via HEAD
+    expected_size = None
     try:
-        with urllib.request.urlopen(req, timeout=30) as response:
-            mode = "ab" if downloaded_bytes > 0 and response.status == 206 else "wb"
+        head_req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 CropDoctor/1.0"}, method="HEAD")
+        with urllib.request.urlopen(head_req, timeout=10) as head_res:
+            cl = head_res.headers.get("Content-Length")
+            if cl:
+                expected_size = int(cl)
+    except Exception:
+        pass
+
+    if expected_size and expected_size > MAX_SINGLE_DOWNLOAD:
+        raise ValueError(f"Download size {expected_size / (1024**3):.2f} GB exceeds safety limit of 3 GB! User confirmation required.")
+
+    downloaded = 0
+    if temp_path.exists():
+        downloaded = temp_path.stat().st_size
+
+    req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 CropDoctor/1.0"})
+    if downloaded > 0:
+        req.add_header("Range", f"bytes={downloaded}-")
+
+    logger.info(f"Starting download: {dest_path.name} from byte {downloaded}...")
+    try:
+        with urllib.request.urlopen(req, timeout=30) as res:
+            mode = "ab" if downloaded > 0 and res.status == 206 else "wb"
             if mode == "wb":
-                downloaded_bytes = 0
-            
+                downloaded = 0
             with open(temp_path, mode) as f:
-                last_logged = downloaded_bytes
-                while chunk := response.read(2 * 1024 * 1024):
+                last_log = downloaded
+                while chunk := res.read(2 * 1024 * 1024):
                     f.write(chunk)
-                    downloaded_bytes += len(chunk)
-                    if downloaded_bytes - last_logged >= 25 * 1024 * 1024:
-                        logger.info(f"  ... {dest_path.name}: {downloaded_bytes / (1024*1024):.1f} MB downloaded")
-                        last_logged = downloaded_bytes
+                    downloaded += len(chunk)
+                    if downloaded - last_log >= 25 * 1024 * 1024:
+                        logger.info(f"  [{dest_path.name}] {downloaded / (1024*1024):.1f} MB downloaded")
+                        last_log = downloaded
 
         temp_path.replace(dest_path)
         digest = sha256_file(dest_path)
         size_mb = dest_path.stat().st_size / (1024 * 1024)
-        logger.info(f"Finished {dest_path.name}: {size_mb:.2f} MB, SHA256: {digest}")
+        logger.info(f"Finished {dest_path.name}: {size_mb:.2f} MB | SHA-256: {digest}")
         return digest
     except Exception as e:
-        logger.error(f"Download error on {url}: {e}")
+        logger.error(f"Download error on {dest_path.name}: {e}")
         raise
 
-def extract_archive(archive_path: Path, extract_dir: Path, logger: logging.Logger):
-    extract_dir.mkdir(parents=True, exist_ok=True)
-    logger.info(f"Extracting {archive_path.name} -> {extract_dir}")
-    if archive_path.suffix.lower() == ".zip":
-        with zipfile.ZipFile(archive_path, 'r') as z:
-            z.extractall(extract_dir)
-    else:
-        shutil.unpack_archive(str(archive_path), str(extract_dir))
-    logger.info(f"Extraction complete for {archive_path.name}")
+def extract_zip(zip_path: Path, target_dir: Path, logger: logging.Logger):
+    target_dir.mkdir(parents=True, exist_ok=True)
+    logger.info(f"Extracting {zip_path.name} -> {target_dir}...")
+    with zipfile.ZipFile(zip_path, 'r') as z:
+        z.extractall(target_dir)
+    logger.info(f"Extracted {zip_path.name} successfully.")
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Crop Doctor - Candidate Downloader")
-    parser.add_argument("--url", type=str, help="URL to download")
-    parser.add_argument("--source-id", type=str, help="Source identifier (folder name under candidates/raw/)")
-    parser.add_argument("--filename", type=str, help="Destination filename")
-    parser.add_argument("--extract", action="store_true", help="Extract archive after download")
-    args = parser.parse_args()
+def copy_images_to_candidates(src_folder: Path, dest_crop: str, dest_problem: str, source_id: str, licence: str, manifest_writer, logger: logging.Logger, max_images: int = 1500) -> int:
+    target_dir = CANDIDATES_DIR / dest_crop / dest_problem
+    target_dir.mkdir(parents=True, exist_ok=True)
+    count = 0
+    
+    # Supported image extensions
+    exts = ('*.jpg', '*.jpeg', '*.png', '*.JPG', '*.JPEG', '*.PNG')
+    img_files = []
+    for ext in exts:
+        img_files.extend(src_folder.glob(f"**/{ext}"))
+    
+    # Sort for deterministic copying
+    img_files = sorted(list(set(img_files)))
+    for p in img_files[:max_images]:
+        dest_filename = f"{source_id}_{dest_problem}_{count:04d}{p.suffix.lower()}"
+        dest_file = target_dir / dest_filename
+        if not dest_file.exists():
+            shutil.copy2(p, dest_file)
+        
+        digest = sha256_file(dest_file)
+        manifest_writer.writerow([
+            str(dest_file.relative_to(CANDIDATES_DIR)),
+            dest_crop,
+            dest_problem,
+            source_id,
+            licence,
+            digest
+        ])
+        count += 1
+    
+    logger.info(f"Copied {count} images to {dest_crop}/{dest_problem} from {source_id}")
+    return count
 
-    logger = setup_logger(DEFAULT_LOG_DIR)
-    if args.url and args.source_id and args.filename:
-        out_file = DEFAULT_RAW_DIR / args.source_id / args.filename
-        digest = download_file_resumable(args.url, out_file, logger=logger)
-        if args.extract:
-            extract_archive(out_file, DEFAULT_RAW_DIR / args.source_id / "extracted", logger)
-    else:
-        logger.info("Crop Doctor candidate downloader initialized. Run with --url, --source-id, --filename to download a candidate.")
+print("download_candidates script module ready.")

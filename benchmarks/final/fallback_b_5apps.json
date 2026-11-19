@@ -1,0 +1,18 @@
+{
+  "scenario_id": "b_5apps",
+  "description": "With 5 other apps open (WhatsApp, YouTube, Chrome, Camera, Gallery)",
+  "avail_mem_bytes": 2458976256,
+  "avail_mem_mb": 2345.0625,
+  "total_mem_mb": 5622.5,
+  "threshold_mb": 432,
+  "is_low_memory": false,
+  "decider_should_load": true,
+  "llama_loaded": false,
+  "fallback_ran": false,
+  "advisory_label": "AI explanation",
+  "pss_before_mb": 206.9404296875,
+  "peak_pss_mb": 206.9404296875,
+  "extra_memory_needed_mb": 0,
+  "tokens_generated": 77,
+  "sample_text": "1. What I see:\nYour Maize crop symptom could not be "
+}

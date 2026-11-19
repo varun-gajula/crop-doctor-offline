@@ -1,0 +1,145 @@
+{
+  "purpose": "fixed validation probe images; not used for training",
+  "samples": [
+    {
+      "path": "/content/crop_doctor_512_extracted/rice_bacterial_leaf_blight/000003_Rice_aug_0_1018.jpg",
+      "relative_path": "rice_bacterial_leaf_blight/000003_Rice_aug_0_1018.jpg",
+      "class_name": "rice_bacterial_leaf_blight",
+      "class_index": 0,
+      "cluster_id": "cluster_000002"
+    },
+    {
+      "path": "/content/crop_doctor_512_extracted/rice_leaf_blast/000051_Rice_aug_0_342.jpg",
+      "relative_path": "rice_leaf_blast/000051_Rice_aug_0_342.jpg",
+      "class_name": "rice_leaf_blast",
+      "class_index": 1,
+      "cluster_id": "cluster_000686"
+    },
+    {
+      "path": "/content/crop_doctor_512_extracted/rice_sheath_blight/000019_Rice_aug_0_223.jpg",
+      "relative_path": "rice_sheath_blight/000019_Rice_aug_0_223.jpg",
+      "class_name": "rice_sheath_blight",
+      "class_index": 2,
+      "cluster_id": "cluster_001288"
+    },
+    {
+      "path": "/content/crop_doctor_512_extracted/rice_healthy/000022_Rice_aug_0_1222.jpg",
+      "relative_path": "rice_healthy/000022_Rice_aug_0_1222.jpg",
+      "class_name": "rice_healthy",
+      "class_index": 3,
+      "cluster_id": "cluster_001923"
+    },
+    {
+      "path": "/content/crop_doctor_512_extracted/cotton_bacterial_blight/000070_Cotton_bact165.jpg",
+      "relative_path": "cotton_bacterial_blight/000070_Cotton_bact165.jpg",
+      "class_name": "cotton_bacterial_blight",
+      "class_index": 4,
+      "cluster_id": "cluster_002616"
+    },
+    {
+      "path": "/content/crop_doctor_512_extracted/cotton_fusarium_wilt/000078_Cotton_fus142.jpg",
+      "relative_path": "cotton_fusarium_wilt/000078_Cotton_fus142.jpg",
+      "class_name": "cotton_fusarium_wilt",
+      "class_index": 5,
+      "cluster_id": "cluster_003078"
+    },
+    {
+      "path": "/content/crop_doctor_512_extracted/cotton_leaf_curl_virus/000077_Cotton_curl166.jpg",
+      "relative_path": "cotton_leaf_curl_virus/000077_Cotton_curl166.jpg",
+      "class_name": "cotton_leaf_curl_virus",
+      "class_index": 6,
+      "cluster_id": "cluster_003498"
+    },
+    {
+      "path": "/content/crop_doctor_512_extracted/cotton_healthy/000033_Cotton_h13.jpg",
+      "relative_path": "cotton_healthy/000033_Cotton_h13.jpg",
+      "class_name": "cotton_healthy",
+      "class_index": 7,
+      "cluster_id": "cluster_003871"
+    },
+    {
+      "path": "/content/crop_doctor_512_extracted/chilli_leaf_curl_virus/000015_Curl Virus00015.jpg",
+      "relative_path": "chilli_leaf_curl_virus/000015_Curl Virus00015.jpg",
+      "class_name": "chilli_leaf_curl_virus",
+      "class_index": 8,
+      "cluster_id": "cluster_004275"
+    },
+    {
+      "path": "/content/crop_doctor_512_extracted/chilli_nutrition_deficiency/000031_Nutrition Deficiency00031.jpg",
+      "relative_path": "chilli_nutrition_deficiency/000031_Nutrition Deficiency00031.jpg",
+      "class_name": "chilli_nutrition_deficiency",
+      "class_index": 9,
+      "cluster_id": "cluster_004717"
+    },
+    {
+      "path": "/content/crop_doctor_512_extracted/chilli_healthy/000020_Healthy Leaf00020.jpg",
+      "relative_path": "chilli_healthy/000020_Healthy Leaf00020.jpg",
+      "class_name": "chilli_healthy",
+      "class_index": 10,
+      "cluster_id": "cluster_005150"
+    },
+    {
+      "path": "/content/crop_doctor_512_extracted/tomato_leaf_blight/000031_1184tomato_train_leaf blight.jpg",
+      "relative_path": "tomato_leaf_blight/000031_1184tomato_train_leaf blight.jpg",
+      "class_name": "tomato_leaf_blight",
+      "class_index": 11,
+      "cluster_id": "cluster_005619"
+    },
+    {
+      "path": "/content/crop_doctor_512_extracted/tomato_yellow_leaf_curl_virus/000128_1285tomato_train_leaf curl.jpg",
+      "relative_path": "tomato_yellow_leaf_curl_virus/000128_1285tomato_train_leaf curl.jpg",
+      "class_name": "tomato_yellow_leaf_curl_virus",
+      "class_index": 12,
+      "cluster_id": "cluster_006516"
+    },
+    {
+      "path": "/content/crop_doctor_512_extracted/tomato_septoria_leaf_spot/000044_1305tomato_train_septoria leaf spot.jpg",
+      "relative_path": "tomato_septoria_leaf_spot/000044_1305tomato_train_septoria leaf spot.jpg",
+      "class_name": "tomato_septoria_leaf_spot",
+      "class_index": 13,
+      "cluster_id": "cluster_007232"
+    },
+    {
+      "path": "/content/crop_doctor_512_extracted/tomato_healthy/000058_1153tomato_train_healthy.jpg",
+      "relative_path": "tomato_healthy/000058_1153tomato_train_healthy.jpg",
+      "class_name": "tomato_healthy",
+      "class_index": 14,
+      "cluster_id": "cluster_008046"
+    },
+    {
+      "path": "/content/crop_doctor_512_extracted/maize_gray_leaf_spot/000003_Corn_Corn_Gray_Spot (100).jpg",
+      "relative_path": "maize_gray_leaf_spot/000003_Corn_Corn_Gray_Spot (100).jpg",
+      "class_name": "maize_gray_leaf_spot",
+      "class_index": 15,
+      "cluster_id": "cluster_008791"
+    },
+    {
+      "path": "/content/crop_doctor_512_extracted/maize_common_rust/000028_Corn_Corn_Common_Rust (108).jpg",
+      "relative_path": "maize_common_rust/000028_Corn_Corn_Common_Rust (108).jpg",
+      "class_name": "maize_common_rust",
+      "class_index": 16,
+      "cluster_id": "cluster_009316"
+    },
+    {
+      "path": "/content/crop_doctor_512_extracted/maize_northern_leaf_blight/000010_Corn_Corn_Blight (1010).jpg",
+      "relative_path": "maize_northern_leaf_blight/000010_Corn_Corn_Blight (1010).jpg",
+      "class_name": "maize_northern_leaf_blight",
+      "class_index": 17,
+      "cluster_id": "cluster_009798"
+    },
+    {
+      "path": "/content/crop_doctor_512_extracted/maize_healthy/000012_Corn_Corn_Health (1022).jpg",
+      "relative_path": "maize_healthy/000012_Corn_Corn_Health (1022).jpg",
+      "class_name": "maize_healthy",
+      "class_index": 18,
+      "cluster_id": "cluster_010300"
+    },
+    {
+      "path": "/content/crop_doctor_512_extracted/weeds_not_a_crop/000013_agri_0_110.jpg",
+      "relative_path": "weeds_not_a_crop/000013_agri_0_110.jpg",
+      "class_name": "weeds_not_a_crop",
+      "class_index": 19,
+      "cluster_id": "cluster_010801"
+    }
+  ]
+}

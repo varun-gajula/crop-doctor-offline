@@ -181,30 +181,57 @@ class MainActivity : ComponentActivity() {
                                 val result = app.classifier.classify(bitmap, cropFilter)
 
                                 val kb = KnowledgeBase.getEntry(result.classId)
-                                    ?: KbEntry(
-                                        classId = "unknown",
-                                        index = -1,
-                                        crop = "crop",
-                                        type = "unknown",
-                                        pathogen = "Unknown / Unverified",
-                                        names = LocalizedText(
-                                            en = "Not sure - ask an extension officer",
-                                            te = "ఖచ్చితంగా తెలియదు",
-                                            hi = "अनिश्चित स्थिति"
-                                        ),
-                                        referralThreshold = "MILD",
-                                        immediateStep = LocalizedText(
-                                            en = "Consult an agricultural extension officer.",
-                                            te = "వ్యవసాయ విస్తరణ అధికారిని సంప్రదించండి.",
-                                            hi = "कृषि विस्तार अधिकारी से संपर्क करें।"
-                                        ),
-                                        explainText = LocalizedText(
-                                            en = "The condition could not be identified with certainty. Please ask an agriculture extension officer or visit your nearest Krishi Vigyan Kendra.",
-                                            te = "పరిస్థితిని ఖచ్చితంగా గుర్తించలేకపోయాము. దయచేసి వ్యవసాయ విస్తరణ అధికారిని లేదా కృషి విజ్ఞాన కేంద్రాన్ని సంప్రదించండి.",
-                                            hi = "स्थिति की निश्चित पहचान नहीं हो सकी। कृपया कृषि विस्तार अधिकारी या नजदीकी कृषि विज्ञान केंद्र से संपर्क करें।"
-                                        ),
-                                        treatment = TreatmentPlan()
-                                    )
+                                    ?: if (result.classId != "unknown") {
+                                        KbEntry(
+                                            classId = result.classId,
+                                            index = -1,
+                                            crop = result.classId.substringBefore("_"),
+                                            type = if (result.classId.endsWith("_healthy")) "healthy" else "disease",
+                                            pathogen = "Awaiting expert verification",
+                                            names = LocalizedText(
+                                                en = result.displayName,
+                                                te = result.displayName,
+                                                hi = result.displayName
+                                            ),
+                                            referralThreshold = "MILD",
+                                            immediateStep = LocalizedText(
+                                                en = "Advice for this problem is not available yet. Ask an extension officer",
+                                                te = "ఈ సమస్యకు సలహా ఇంకా అందుబాటులో లేదు. వ్యవసాయ విస్తరణ అధికారిని సంప్రదించండి.",
+                                                hi = "इस समस्या के लिए सलाह अभी उपलब्ध नहीं है। कृषि विस्तार अधिकारी से संपर्क करें।"
+                                            ),
+                                            explainText = LocalizedText(
+                                                en = "Advice for this problem is not available yet. Ask an extension officer or visit your nearest Krishi Vigyan Kendra.",
+                                                te = "ఈ సమస్యకు సలహా ఇంకా అందుబాటులో లేదు. దయచేసి వ్యవసాయ విస్తరణ అధికారిని లేదా కృషి విజ్ఞాన కేంద్రాన్ని సంప్రదించండి.",
+                                                hi = "इस समस्या के लिए सलाह अभी उपलब्ध नहीं है। कृपया कृषि विस्तार अधिकारी या नजदीकी कृषि विज्ञान केंद्र से संपर्क करें।"
+                                            ),
+                                            treatment = TreatmentPlan()
+                                        )
+                                    } else {
+                                        KbEntry(
+                                            classId = "unknown",
+                                            index = -1,
+                                            crop = "crop",
+                                            type = "unknown",
+                                            pathogen = "Unknown / Unverified",
+                                            names = LocalizedText(
+                                                en = "Not sure - ask an extension officer",
+                                                te = "ఖచ్చితంగా తెలియదు",
+                                                hi = "अनिश्चित स्थिति"
+                                            ),
+                                            referralThreshold = "MILD",
+                                            immediateStep = LocalizedText(
+                                                en = "Consult an agricultural extension officer.",
+                                                te = "వ్యవసాయ విస్తరణ అధికారిని సంప్రదించండి.",
+                                                hi = "कृषि विस्तार अधिकारी से संपर्क करें।"
+                                            ),
+                                            explainText = LocalizedText(
+                                                en = "The condition could not be identified with certainty. Please ask an agriculture extension officer or visit your nearest Krishi Vigyan Kendra.",
+                                                te = "పరిస్థితిని ఖచ్చితంగా గుర్తించలేకపోయాము. దయచేసి వ్యవసాయ విస్తరణ అధికారిని లేదా కృషి విజ్ఞాన కేంద్రాన్ని సంప్రదించండి.",
+                                                hi = "स्थिति की निश्चित पहचान नहीं हो सकी। कृपया कृषि विस्तार अधिकारी या नजदीकी कृषि विज्ञान केंद्र से संपर्क करें।"
+                                            ),
+                                            treatment = TreatmentPlan()
+                                        )
+                                    }
 
                                 classifierResult = result
                                 activeKbEntry = kb
@@ -233,9 +260,9 @@ class MainActivity : ComponentActivity() {
                             Log.i("MainActivityBenchmark", "Executing benchmark action: $action")
                             when (action) {
                                 "vision" -> {
-                                    val bmp = Bitmap.createBitmap(320, 320, Bitmap.Config.ARGB_8888)
-                                    for (x in 0 until 320) {
-                                        for (y in 0 until 320) {
+                                    val bmp = Bitmap.createBitmap(512, 512, Bitmap.Config.ARGB_8888)
+                                    for (x in 0 until 512) {
+                                        for (y in 0 until 512) {
                                             bmp.setPixel(x, y, android.graphics.Color.rgb(34, 139, 34))
                                         }
                                     }
@@ -248,11 +275,11 @@ class MainActivity : ComponentActivity() {
                                     }
                                 }
                                 "stream_llama" -> {
-                                    val kb = KnowledgeBase.getEntry("tomato_early_blight")
+                                    val kb = KnowledgeBase.getEntry("tomato_yellow_leaf_curl_virus")
                                         ?: KnowledgeBase.getAllEntries().first()
                                     val result = ClassifierResult(
-                                        classId = "tomato_early_blight",
-                                        displayName = "Tomato Early Blight",
+                                        classId = "tomato_yellow_leaf_curl_virus",
+                                        displayName = "Tomato Yellow Leaf Curl Virus",
                                         confidence = 0.88f,
                                         severityBand = SeverityBand.MODERATE,
                                         certaintyBand = CertaintyBand.SURE,
@@ -275,10 +302,10 @@ class MainActivity : ComponentActivity() {
                                 }
                                 "show_disease" -> {
                                     KnowledgeBase.initialize(this@MainActivity)
-                                    val kb = KnowledgeBase.getEntry("tomato_early_blight")
+                                    val kb = KnowledgeBase.getEntry("tomato_yellow_leaf_curl_virus")
                                         ?: KnowledgeBase.getAllEntries().first { it.type == "disease" }
                                     val result = ClassifierResult(
-                                        classId = "tomato_early_blight",
+                                        classId = "tomato_yellow_leaf_curl_virus",
                                         displayName = kb.names.forLanguage(selectedLanguage),
                                         confidence = 0.88f,
                                         severityBand = SeverityBand.MODERATE,
@@ -294,10 +321,10 @@ class MainActivity : ComponentActivity() {
                                 }
                                 "show_pest" -> {
                                     KnowledgeBase.initialize(this@MainActivity)
-                                    val kb = KnowledgeBase.getEntry("tomato_spider_mites")
-                                        ?: KnowledgeBase.getAllEntries().first { it.type == "pest" }
+                                    val kb = KnowledgeBase.getEntry("maize_common_rust")
+                                        ?: KnowledgeBase.getAllEntries().first()
                                     val result = ClassifierResult(
-                                        classId = "tomato_spider_mites",
+                                        classId = "maize_common_rust",
                                         displayName = kb.names.forLanguage(selectedLanguage),
                                         confidence = 0.91f,
                                         severityBand = SeverityBand.MODERATE,
