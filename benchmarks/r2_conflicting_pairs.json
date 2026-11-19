@@ -1,0 +1,41 @@
+{
+  "hamming_threshold": 2,
+  "total_conflicting_files": 10,
+  "pairs": [
+    {
+      "class1": "maize_gray_leaf_spot",
+      "file1": "000084_Corn_Corn_Gray_Spot (19).jpg",
+      "class2": "maize_northern_leaf_blight",
+      "file2": "000402_Corn_Corn_Blight (77).jpg",
+      "hamming_distance": 0
+    },
+    {
+      "class1": "maize_gray_leaf_spot",
+      "file1": "000154_Corn_Corn_Gray_Spot (26).jpg",
+      "class2": "maize_northern_leaf_blight",
+      "file2": "000165_Corn_Corn_Blight (29).jpg",
+      "hamming_distance": 0
+    },
+    {
+      "class1": "maize_gray_leaf_spot",
+      "file1": "000184_Corn_Corn_Gray_Spot (29).jpg",
+      "class2": "maize_northern_leaf_blight",
+      "file2": "000035_Corn_Corn_Blight (106).jpg",
+      "hamming_distance": 0
+    },
+    {
+      "class1": "tomato_leaf_blight",
+      "file1": "000597_4408tomato_train_leaf blight.jpg",
+      "class2": "tomato_septoria_leaf_spot",
+      "file2": "000575_7131tomato_train_septoria leaf spot.jpg",
+      "hamming_distance": 2
+    },
+    {
+      "class1": "tomato_leaf_blight",
+      "file1": "000448_3542tomato_train_leaf blight.jpg",
+      "class2": "tomato_healthy",
+      "file2": "000664_694tomato_train_healthy.jpg",
+      "hamming_distance": 2
+    }
+  ]
+}
