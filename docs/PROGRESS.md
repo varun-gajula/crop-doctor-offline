@@ -1,6 +1,37 @@
 # Project Progress - Crop Doctor Offline
 
-## Current Status: Task V7 Complete (Final 20-Class 512x512 Vision Model & On-Device Phone Benchmarks)
+## Current Status: Task V8 Complete (Retrained 20-Class 512x512 Vision Model with Zero Leakage & 91.49% Accuracy)
+
+### Done in Task V8: Retrained 20-Class 512x512 Vision Model Deployed to App (Rules R1-R9, H1-H15)
+1. **High-Performance Retraining on Dual Tesla T4 GPUs (Kaggle)**:
+   - Built a complete, balanced dataset of **11,589 verified 512x512 photos** across all 20 classes (each class $\ge 366$ photos, all $\ge 300$).
+   - Within-class clustering via canonical dihedral 64-bit pHash (Hamming distance $\le 8$, Tomato $\le 10$). Cross-class duplicate exclusions enforced at Hamming $\le 2$.
+   - Grouped 80/20 cluster split: 9,288 training images, 1,668 validation images.
+   - **Zero Cluster Leakage Verified**: 6,641 train clusters, 1,668 validation clusters, 0 overlapping clusters (`leakage_after.json`: `zero_cluster_leakage: true`).
+   - Trained MobileNetV3-Large for 15 epochs:
+     - Final Train Loss: `0.0518`, Final Train Accuracy: `97.92%`.
+     - Final Validation Loss: `0.2930` (Best Val Loss: `0.2866`), Final Validation Accuracy: **91.49%**.
+     - Macro / Balanced Accuracy: **92.17%**.
+     - Solved prior dataset shrinkage and `tomato_leaf_blight` deficiency: `tomato_leaf_blight` achieved 72.14% recall and 79.53% precision on 140 validation images.
+     - `weeds_not_a_crop` achieved 100.0% recall (68/68) and 98.55% precision.
+2. **Post-Training Calibration & Thresholds**:
+   - Single scalar temperature scaling: calibrated $T = 1.7818$ (NLL before: `0.2956`, NLL after: `0.2436`).
+   - Operating confidence threshold: `0.3434` (lowest confidence meeting 90% target precision on validation data).
+   - Free Energy OOD threshold: `-9.3050` (95th percentile validation energy; normal crop leaves $\le -14.7$, non-crop noise $> -9.3$).
+3. **ExecuTorch 0.6.0 Export & Asset Integration**:
+   - Exported `vision.pte` with XNNPACK partitioner: file size **16.17 MB** (16,956,752 bytes).
+   - Bundled into `app/src/main/assets/models/vision.pte`.
+   - Updated `app/src/main/assets/thresholds.json` and `app/src/main/assets/preprocess.json` with calibrated $T$ and thresholds.
+   - Hardened `ExecuTorchClassifier.kt` module extraction: added version and byte-count check (`modelFile.length() != 16_956_752L`) to guarantee automatic on-device upgrade over any cached previous model.
+4. **Offline Manifest & Unit Test Verification**:
+   - Manifest verified via `aapt2 dump permissions`: strictly NO `INTERNET` permission (Hard Rule H1).
+   - Unit tests executed via `./gradlew testDebugUnitTest`: **100% passed** (109 / 109 tests).
+   - APK built cleanly via `./gradlew assembleDebug`: output `app/build/outputs/apk/debug/app-debug.apk` (91.1 MB).
+   - Deliverables and benchmark files updated in `benchmarks/final/`: `metrics.json`, `class_counts_v2.json`, `thresholds.json`, `confusion_matrix.png`, `confusion_matrix.csv`, `leakage_after.json`, `split_v2.json`, `training_history.json`, `probe_set.json`, `duplicate_report.json`, `preprocessing_validation.json`, `permissions.txt`.
+
+---
+
+## Prior Status: Task V7 Complete (Final 20-Class 512x512 Vision Model & On-Device Phone Benchmarks)
 
 ### Done in Task V7: Final 20-Class 512x512 Vision Model Integration & End-to-End Phone Verification (Rules R1-R9, H1-H15)
 1. **Asset Deployment & Single Source of Truth**:
