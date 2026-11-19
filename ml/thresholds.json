@@ -3,7 +3,7 @@
   "temperature": 1.3302102088928223,
   "nll_before": 0.31178033351898193,
   "nll_after": 0.2952011525630951,
-  "confidence_threshold": 0.1,
+  "confidence_threshold": 0.2,
   "threshold_target_precision": 0.9,
   "target_precision_reached": true,
   "selection_note": "lowest-confidence operating point meeting target precision, selected on validation data",
