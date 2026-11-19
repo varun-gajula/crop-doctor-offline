@@ -1,0 +1,214 @@
+{
+  "audit_date": "2026-11-19T10:33:50+05:30",
+  "method": "dihedral canonical 64-bit pHash; within-class Hamming <= 8 (tomato <= 10); cross-class conflict Hamming <= 2; 80/20 grouped cluster split (max 640 train, 1 val per cluster)",
+  "total_source_files": 11589,
+  "total_unique_clusters": 8338,
+  "total_removed_same_label_duplicates": 623,
+  "total_conflicting_files_excluded": 10,
+  "total_train_photos": 9288,
+  "total_validation_photos": 1668,
+  "total_kept_photos": 10956,
+  "classes": {
+    "rice_bacterial_leaf_blight": {
+      "source_files": 636,
+      "unique_clusters": 614,
+      "same_label_duplicates_removed": 6,
+      "conflicting_files": 0,
+      "train_photos": 507,
+      "validation_photos": 123,
+      "total_kept": 630,
+      "status": "OK"
+    },
+    "rice_leaf_blast": {
+      "source_files": 634,
+      "unique_clusters": 588,
+      "same_label_duplicates_removed": 7,
+      "conflicting_files": 0,
+      "train_photos": 509,
+      "validation_photos": 118,
+      "total_kept": 627,
+      "status": "OK"
+    },
+    "rice_sheath_blight": {
+      "source_files": 632,
+      "unique_clusters": 593,
+      "same_label_duplicates_removed": 12,
+      "conflicting_files": 0,
+      "train_photos": 501,
+      "validation_photos": 119,
+      "total_kept": 620,
+      "status": "OK"
+    },
+    "rice_healthy": {
+      "source_files": 653,
+      "unique_clusters": 628,
+      "same_label_duplicates_removed": 6,
+      "conflicting_files": 0,
+      "train_photos": 521,
+      "validation_photos": 126,
+      "total_kept": 647,
+      "status": "OK"
+    },
+    "cotton_bacterial_blight": {
+      "source_files": 448,
+      "unique_clusters": 72,
+      "same_label_duplicates_removed": 59,
+      "conflicting_files": 0,
+      "train_photos": 375,
+      "validation_photos": 14,
+      "total_kept": 389,
+      "status": "SMALL"
+    },
+    "cotton_fusarium_wilt": {
+      "source_files": 419,
+      "unique_clusters": 87,
+      "same_label_duplicates_removed": 51,
+      "conflicting_files": 0,
+      "train_photos": 351,
+      "validation_photos": 17,
+      "total_kept": 368,
+      "status": "SMALL"
+    },
+    "cotton_leaf_curl_virus": {
+      "source_files": 417,
+      "unique_clusters": 89,
+      "same_label_duplicates_removed": 51,
+      "conflicting_files": 0,
+      "train_photos": 348,
+      "validation_photos": 18,
+      "total_kept": 366,
+      "status": "SMALL"
+    },
+    "cotton_healthy": {
+      "source_files": 425,
+      "unique_clusters": 136,
+      "same_label_duplicates_removed": 40,
+      "conflicting_files": 0,
+      "train_photos": 358,
+      "validation_photos": 27,
+      "total_kept": 385,
+      "status": "SMALL"
+    },
+    "chilli_leaf_curl_virus": {
+      "source_files": 423,
+      "unique_clusters": 268,
+      "same_label_duplicates_removed": 42,
+      "conflicting_files": 0,
+      "train_photos": 327,
+      "validation_photos": 54,
+      "total_kept": 381,
+      "status": "OK"
+    },
+    "chilli_nutrition_deficiency": {
+      "source_files": 444,
+      "unique_clusters": 297,
+      "same_label_duplicates_removed": 37,
+      "conflicting_files": 0,
+      "train_photos": 348,
+      "validation_photos": 59,
+      "total_kept": 407,
+      "status": "OK"
+    },
+    "chilli_healthy": {
+      "source_files": 458,
+      "unique_clusters": 251,
+      "same_label_duplicates_removed": 44,
+      "conflicting_files": 0,
+      "train_photos": 364,
+      "validation_photos": 50,
+      "total_kept": 414,
+      "status": "OK"
+    },
+    "tomato_leaf_blight": {
+      "source_files": 800,
+      "unique_clusters": 699,
+      "same_label_duplicates_removed": 18,
+      "conflicting_files": 2,
+      "train_photos": 640,
+      "validation_photos": 140,
+      "total_kept": 780,
+      "status": "OK",
+      "source_folder": "C:\\Users\\ec026\\Downloads\\Dataset for Crop Pest and Disease Detection\\Dataset for Crop Pest and Disease Detection\\CCMT Dataset-Augmented\\Tomato\\train_set\\leaf blight (preprocessed from C:\\Users\\ec026\\Downloads\\main set\\tomato_leaf blight)"
+    },
+    "tomato_yellow_leaf_curl_virus": {
+      "source_files": 800,
+      "unique_clusters": 591,
+      "same_label_duplicates_removed": 45,
+      "conflicting_files": 0,
+      "train_photos": 637,
+      "validation_photos": 118,
+      "total_kept": 755,
+      "status": "OK"
+    },
+    "tomato_septoria_leaf_spot": {
+      "source_files": 800,
+      "unique_clusters": 596,
+      "same_label_duplicates_removed": 40,
+      "conflicting_files": 1,
+      "train_photos": 640,
+      "validation_photos": 119,
+      "total_kept": 759,
+      "status": "OK"
+    },
+    "tomato_healthy": {
+      "source_files": 800,
+      "unique_clusters": 498,
+      "same_label_duplicates_removed": 59,
+      "conflicting_files": 1,
+      "train_photos": 640,
+      "validation_photos": 100,
+      "total_kept": 740,
+      "status": "OK"
+    },
+    "maize_gray_leaf_spot": {
+      "source_files": 500,
+      "unique_clusters": 497,
+      "same_label_duplicates_removed": 0,
+      "conflicting_files": 3,
+      "train_photos": 398,
+      "validation_photos": 99,
+      "total_kept": 497,
+      "status": "OK"
+    },
+    "maize_common_rust": {
+      "source_files": 500,
+      "unique_clusters": 500,
+      "same_label_duplicates_removed": 0,
+      "conflicting_files": 0,
+      "train_photos": 400,
+      "validation_photos": 100,
+      "total_kept": 500,
+      "status": "OK"
+    },
+    "maize_northern_leaf_blight": {
+      "source_files": 500,
+      "unique_clusters": 496,
+      "same_label_duplicates_removed": 0,
+      "conflicting_files": 3,
+      "train_photos": 398,
+      "validation_photos": 99,
+      "total_kept": 497,
+      "status": "OK"
+    },
+    "maize_healthy": {
+      "source_files": 500,
+      "unique_clusters": 499,
+      "same_label_duplicates_removed": 0,
+      "conflicting_files": 0,
+      "train_photos": 400,
+      "validation_photos": 100,
+      "total_kept": 500,
+      "status": "OK"
+    },
+    "weeds_not_a_crop": {
+      "source_files": 800,
+      "unique_clusters": 339,
+      "same_label_duplicates_removed": 106,
+      "conflicting_files": 0,
+      "train_photos": 626,
+      "validation_photos": 68,
+      "total_kept": 694,
+      "status": "OK"
+    }
+  }
+}
