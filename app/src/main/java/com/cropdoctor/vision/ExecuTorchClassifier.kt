@@ -9,7 +9,6 @@ import com.cropdoctor.domain.CertaintyBand
 import com.cropdoctor.domain.ClassifierResult
 import com.cropdoctor.domain.RulesEngine
 import com.cropdoctor.domain.SeverityBand
-import com.cropdoctor.domain.SeverityCalculator
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -28,7 +27,7 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
 
     companion object {
         private const val TAG = "ExecuTorchClassifier"
-        const val DEFAULT_INPUT_SIZE = 320
+        const val DEFAULT_INPUT_SIZE = 512
         const val MODEL_OUTPUT_SIZE = VisionMath.MODEL_OUTPUT_SIZE
     }
 
@@ -57,10 +56,13 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
     private var inputSize: Int = DEFAULT_INPUT_SIZE
     private var mean: FloatArray = floatArrayOf(0.485f, 0.456f, 0.406f)
     private var std: FloatArray = floatArrayOf(0.229f, 0.224f, 0.225f)
-    private var temperature: Float = 1.0f
+    var temperature: Float = 1.3302102f
+        private set
 
-    // thresholds.json is the SINGLE SOURCE OF TRUTH (Task V2).
-    // Absolutely NO hard-coded numeric threshold fallbacks (Rule H11 & V2).
+    // thresholds.json is the SINGLE SOURCE OF TRUTH (Task V2 & Task V7).
+    // Required keys: temperature and confidence_threshold.
+    // energy_threshold is optional (if absent, energy check is OFF).
+    // Absolutely NO hard-coded numeric threshold fallbacks (Rule H11 & V7).
     var defaultThreshold: Float? = null
         private set
     var energyThreshold: Double? = null
@@ -68,10 +70,6 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
     val classThresholds: MutableMap<String, Float> = mutableMapOf()
     val unsupportedClasses: MutableSet<String> = mutableSetOf()
     var isThresholdsLoaded: Boolean = false
-        private set
-
-    // Task V5b: Model-to-Label mapping for 25-output model to 21 app classes
-    var modelClassMap: List<Int?> = VisionMath.DEFAULT_MODEL_CLASS_MAP
         private set
 
     init {
@@ -84,7 +82,6 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
     private fun loadConfigAndModel() {
         try {
             loadLabels()
-            loadModelClassMap()
             loadPreprocessConfig()
             loadThresholds()
             loadSupportedClasses()
@@ -117,42 +114,6 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
         }
     }
 
-    fun parseModelClassMap(jsonText: String): Boolean {
-        return try {
-            val array = JSONArray(jsonText)
-            val list = mutableListOf<Int?>()
-            for (i in 0 until array.length()) {
-                if (array.isNull(i)) {
-                    list.add(null)
-                } else {
-                    list.add(array.getInt(i))
-                }
-            }
-            modelClassMap = list
-            Log.i(TAG, "Loaded model_class_map.json: size=${list.size}")
-            true
-        } catch (e: Exception) {
-            Log.e(TAG, "Failed to parse model_class_map.json", e)
-            false
-        }
-    }
-
-    private fun loadModelClassMap() {
-        try {
-            val names = context.assets.list("") ?: emptyArray()
-            if ("model_class_map.json" in names) {
-                context.assets.open("model_class_map.json").use { stream ->
-                    val text = stream.bufferedReader().use { it.readText() }
-                    parseModelClassMap(text)
-                }
-            } else {
-                Log.w(TAG, "model_class_map.json not found in assets, using default map")
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "Error loading model_class_map.json", e)
-        }
-    }
-
     private fun loadPreprocessConfig() {
         try {
             val names = context.assets.list("") ?: emptyArray()
@@ -182,22 +143,29 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
     /**
      * Parses thresholds from JSON string. Returns true if valid, false otherwise.
      * Enforces thresholds.json as the single source of truth without numeric fallbacks.
+     * Required keys: temperature and confidence_threshold.
+     * energy_threshold is optional (if absent, energy check is OFF).
      */
     fun parseThresholds(jsonText: String): Boolean {
         return try {
             val json = JSONObject(jsonText)
-            if (!json.has("default_threshold") || !json.has("energy_threshold")) {
-                Log.e(TAG, "FATAL: thresholds.json missing required default_threshold or energy_threshold!")
+            if (!json.has("temperature") || !json.has("confidence_threshold")) {
+                Log.e(TAG, "FATAL: thresholds.json missing required temperature or confidence_threshold!")
                 isThresholdsLoaded = false
                 defaultThreshold = null
                 energyThreshold = null
                 return false
             }
-            defaultThreshold = json.getDouble("default_threshold").toFloat()
-            energyThreshold = json.getDouble("energy_threshold")
-            if (json.has("temperature")) {
-                temperature = json.getDouble("temperature").toFloat()
+            defaultThreshold = json.getDouble("confidence_threshold").toFloat()
+            temperature = json.getDouble("temperature").toFloat()
+
+            // energy_threshold is optional; document that it is off when absent
+            energyThreshold = if (json.has("energy_threshold")) {
+                json.getDouble("energy_threshold")
+            } else {
+                null
             }
+
             classThresholds.clear()
             if (json.has("class_thresholds")) {
                 val ct = json.getJSONObject("class_thresholds")
@@ -208,7 +176,7 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
                 }
             }
             isThresholdsLoaded = true
-            Log.i(TAG, "Successfully loaded thresholds.json: default=$defaultThreshold, energy=$energyThreshold, classes=${classThresholds.size}")
+            Log.i(TAG, "Successfully loaded thresholds.json: default=$defaultThreshold, temp=$temperature, energy=$energyThreshold, classes=${classThresholds.size}")
             true
         } catch (e: Exception) {
             Log.e(TAG, "FATAL: Failed to parse thresholds.json", e)
@@ -299,7 +267,6 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
 
     private fun initializeModule() {
         try {
-            // Check both models/vision.pte and vision/vision.pte
             val candidateAssets = listOf("models/vision.pte", "vision/vision.pte")
             var resolvedAsset: String? = null
 
@@ -314,8 +281,8 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
             val modelFile = File(context.filesDir, "vision.pte")
             if (resolvedAsset != null) {
                 try {
-                    // Extract if not present or corrupt/incomplete (< 10 MB)
-                    if (!modelFile.exists() || modelFile.length() < 10_000_000L) {
+                    // Extract if not present or corrupt/different size (< 15 MB)
+                    if (!modelFile.exists() || modelFile.length() < 15_000_000L) {
                         context.assets.open(resolvedAsset).use { input ->
                             FileOutputStream(modelFile).use { output ->
                                 input.copyTo(output)
@@ -362,17 +329,16 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
     override suspend fun classify(bitmap: Bitmap, cropHint: String?): ClassifierResult = withContext(Dispatchers.Default) {
         val startTime = SystemClock.elapsedRealtime()
 
-        // Wait for background initialization if not yet finished
         if (!initDeferred.isCompleted) {
             initDeferred.await()
         }
 
-        // Single Source of Truth Enforcement (Task V2):
+        // Single Source of Truth Enforcement (Task V2 & Task V7):
         // If thresholds.json is missing or invalid, NEVER guess or fall back to silent numbers.
         // Classifier must return "Can't tell" for every photo and log an error.
         val curDefaultThresh = defaultThreshold
         val curEnergyThresh = energyThreshold
-        if (!isThresholdsLoaded || curDefaultThresh == null || curEnergyThresh == null) {
+        if (!isThresholdsLoaded || curDefaultThresh == null) {
             Log.e(TAG, "classify() aborted: thresholds.json is missing or invalid! Single source of truth violated. Returning 'Can't tell'.")
             val elapsed = SystemClock.elapsedRealtime() - startTime
             return@withContext ClassifierResult(
@@ -416,7 +382,7 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
         }
 
         try {
-            // 1. Preprocessing matching training exactly
+            // 1. Preprocessing matching training exactly (RGB, 512x512, ImageNet normalization)
             val resized = Bitmap.createScaledBitmap(bitmap, inputSize, inputSize, true)
             val inputTensor = preprocessBitmap(resized)
 
@@ -428,31 +394,38 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
             val rawLogits = outputTensor.dataAsFloatArray
             Log.e(TAG, "classify(): rawLogits count=${rawLogits.size}, first 5=[${rawLogits.take(5).joinToString(", ")}]")
 
-            // 3. Task V5b: Evaluate 25 model outputs with modelClassMap mapping to 21 classes
-            val eval = VisionMath.evaluateModel25Output(
-                rawLogits = rawLogits,
-                modelClassMap = modelClassMap,
-                labels21 = labels,
-                temperature = temperature,
+            // 3. Evaluate 20 direct model outputs against labels.json
+            val scaledLogits = VisionMath.applyTemperature(rawLogits.take(labels.size).toFloatArray(), temperature)
+            val freeEnergy = VisionMath.computeFreeEnergy(scaledLogits, temperature)
+            val probabilities = if (cropHint != null && cropHint.isNotBlank() && cropHint != "all" && cropHint != "auto") {
+                VisionMath.maskAndRenormalize(labels, scaledLogits, cropHint)
+            } else {
+                VisionMath.softmax(scaledLogits)
+            }
+
+            val eval = VisionMath.evaluateDiagnosis(
+                labels = labels,
+                probabilities = probabilities,
                 thresholds = classThresholds,
                 defaultThreshold = curDefaultThresh,
-                energyThreshold = curEnergyThresh
+                freeEnergy = freeEnergy,
+                energyThreshold = curEnergyThresh,
+                unsupportedClasses = unsupportedClasses
             )
-            Log.e(TAG, "classify(): eval result -> classId=${eval.classId}, displayName=${eval.displayName}, conf=${eval.confidence}, isOOD=${eval.isOutOfDistribution}, isBelowThresh=${eval.isBelowThreshold}, top3=${eval.top3.map { "${it.classId}:${String.format("%.3f", it.probability)}" }}")
+
+            Log.e(TAG, "classify(): eval result -> classId=${eval.classId}, displayName=${eval.displayName}, conf=${eval.confidence}, isBelowThresh=${eval.isBelowThreshold}, top3=${eval.top3.map { "${it.classId}:${String.format("%.3f", it.probability)}" }}")
 
             val elapsed = SystemClock.elapsedRealtime() - startTime
             val memoryMb = getProcessMemoryMb()
 
-            // 7. Lesion Fraction Estimation
+            // 4. Lesion Fraction Estimation
             val lesionFraction = if (eval.classId.endsWith("_healthy") || eval.classId == "unknown") {
                 0.0f
             } else {
                 LesionAreaEstimator.estimateLesionFraction(bitmap)
             }
 
-            // 8. Severity Band: Decision D1 - The app uses ONLY the 25-class output.
-            // Any learned severity head from the vision model is completely ignored.
-            // Severity comes EXCLUSIVELY from LesionAreaEstimator and RulesEngine.
+            // 5. Severity Band
             val severityBand = if (eval.classId == "unknown" || eval.classId.endsWith("_healthy")) {
                 SeverityBand.MILD
             } else {

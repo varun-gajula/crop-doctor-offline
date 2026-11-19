@@ -9,11 +9,11 @@ import org.junit.Test
 import java.io.File
 
 /**
- * Task V5b Unit Tests: Model-to-Label Mapping (25 Model Outputs to 21 App Labels)
- * (a) Model output size equals number of entries in model_class_map.json (25).
- * (b) Each of the 21 labels is reachable exactly once.
- * (c) Top-1 in a dropped class (original indices 7, 8, 12, 13) gives "Can't tell" (unknown / NOT_SURE).
- * (d) Known case: original index 21 (maize_common_rust) maps to the label named maize_common_rust.
+ * Task V7 Unit Tests: 20-Class Model Direct Output Mapping & Unsupported Class Handling
+ * (a) Model output size equals number of labels in labels.json (20).
+ * (b) Each of the 20 labels corresponds directly 1-to-1 to the model output index.
+ * (c) Top-1 in an unsupported class (weeds_not_a_crop, tomato_leaf_blight) gives "Can't tell" (unknown / NOT_SURE).
+ * (d) Known cases: index 16 (maize_common_rust) maps to maize_common_rust; index 0 maps to rice_bacterial_leaf_blight.
  */
 class ModelClassMapTest {
 
@@ -30,23 +30,6 @@ class ModelClassMapTest {
         return f!!
     }
 
-    private fun loadClassMap(): List<Int?> {
-        val file = findAsset("model_class_map.json")
-        val jsonArray = Json.parseToJsonElement(file.readText()).jsonArray
-        return jsonArray.map { elem ->
-            val prim = elem.jsonPrimitive
-            if (prim.isString) {
-                null
-            } else {
-                try {
-                    prim.content.toInt()
-                } catch (_: Exception) {
-                    null
-                }
-            }
-        }
-    }
-
     private fun loadLabels(): List<String> {
         val file = findAsset("labels.json")
         val jsonArray = Json.parseToJsonElement(file.readText()).jsonArray
@@ -54,94 +37,133 @@ class ModelClassMapTest {
     }
 
     @Test
-    fun testModelOutputSizeEqualsEntriesInModelClassMap() {
-        val classMap = loadClassMap()
-        // (a) the model output size read from the model or from a constant equals the number of entries in model_class_map.json
+    fun testModelOutputSizeEqualsEntriesInLabelsJson() {
+        val labels = loadLabels()
+        assertEquals("labels.json must have exactly 20 classes", 20, labels.size)
         assertEquals(
-            "Model output size constant must equal number of entries in model_class_map.json",
-            ExecuTorchClassifier.MODEL_OUTPUT_SIZE,
-            classMap.size
+            "Model output size constant must equal 20",
+            20,
+            ExecuTorchClassifier.MODEL_OUTPUT_SIZE
         )
-        assertEquals("model_class_map.json must have exactly 25 entries", 25, classMap.size)
+        assertEquals(
+            "VisionMath MODEL_OUTPUT_SIZE must equal 20",
+            20,
+            VisionMath.MODEL_OUTPUT_SIZE
+        )
     }
 
     @Test
-    fun testEachOf21LabelsReachableExactlyOnce() {
-        val classMap = loadClassMap()
+    fun testEachOf20LabelsDirectlyMapped() {
         val labels = loadLabels()
-        assertEquals("labels.json must have 21 classes", 21, labels.size)
+        assertEquals(20, labels.size)
 
-        // (b) each of the 21 labels is reachable exactly once
-        val nonNullIndices = classMap.filterNotNull()
-        assertEquals("Exactly 21 model outputs must map to valid classes", 21, nonNullIndices.size)
+        val expectedLabels = listOf(
+            "rice_bacterial_leaf_blight",
+            "rice_leaf_blast",
+            "rice_sheath_blight",
+            "rice_healthy",
+            "cotton_bacterial_blight",
+            "cotton_fusarium_wilt",
+            "cotton_leaf_curl_virus",
+            "cotton_healthy",
+            "chilli_leaf_curl_virus",
+            "chilli_nutrition_deficiency",
+            "chilli_healthy",
+            "tomato_leaf_blight",
+            "tomato_yellow_leaf_curl_virus",
+            "tomato_septoria_leaf_spot",
+            "tomato_healthy",
+            "maize_gray_leaf_spot",
+            "maize_common_rust",
+            "maize_northern_leaf_blight",
+            "maize_healthy",
+            "weeds_not_a_crop"
+        )
 
-        val uniqueIndices = nonNullIndices.toSet()
-        assertEquals("Each index must be mapped uniquely", 21, uniqueIndices.size)
-        assertEquals("Mapped indices must be 0..20", (0..20).toSet(), uniqueIndices)
-
-        val reachedLabels = nonNullIndices.map { labels[it] }
-        assertEquals("All 21 labels must be reached exactly once", labels.toSet(), reachedLabels.toSet())
-    }
-
-    @Test
-    fun testTop1InDroppedClassGivesCantTell() {
-        val classMap = loadClassMap()
-        val labels = loadLabels()
-
-        val droppedIndices = listOf(7, 8, 12, 13)
-        for (droppedIdx in droppedIndices) {
-            assertNull("Index $droppedIdx must be null in class map", classMap[droppedIdx])
-
-            // Construct 25 logits where droppedIdx is dominant (top-1)
-            val logits = FloatArray(25) { -5.0f }
-            logits[droppedIdx] = 10.0f // Very high confidence for dropped class
-
-            val eval = VisionMath.evaluateModel25Output(
-                rawLogits = logits,
-                modelClassMap = classMap,
-                labels21 = labels,
-                temperature = 1.15f,
-                thresholds = emptyMap(),
-                defaultThreshold = 0.20f,
-                energyThreshold = 5.0
-            )
-
-            // (c) top-1 in a dropped class gives "Can't tell"
-            assertEquals("Dropped class must yield classId 'unknown'", "unknown", eval.classId)
-            assertEquals("Dropped class must show 'Not sure - ask an extension officer'", "Not sure - ask an extension officer", eval.displayName)
-            assertEquals("Dropped class must have certainty NOT_SURE", CertaintyBand.NOT_SURE, eval.certaintyBand)
-            assertTrue("isBelowThreshold must be true for dropped class", eval.isBelowThreshold)
+        for (i in expectedLabels.indices) {
+            assertEquals("Index $i must match expected label", expectedLabels[i], labels[i])
         }
     }
 
     @Test
-    fun testKnownCaseMaizeCommonRust() {
-        val classMap = loadClassMap()
+    fun testUnsupportedClassesGiveCantTell() {
+        val labels = loadLabels()
+        val unsupported = setOf("weeds_not_a_crop", "tomato_leaf_blight")
+
+        for (unsupportedClass in unsupported) {
+            val idx = labels.indexOf(unsupportedClass)
+            assertTrue("Class $unsupportedClass must be present in labels.json", idx >= 0)
+
+            // Construct 20 logits where unsupportedClass is dominant (top-1)
+            val logits = FloatArray(20) { -5.0f }
+            logits[idx] = 10.0f
+
+            val scaledLogits = VisionMath.applyTemperature(logits, 1.3302f)
+            val probs = VisionMath.softmax(scaledLogits)
+
+            val eval = VisionMath.evaluateDiagnosis(
+                labels = labels,
+                probabilities = probs,
+                thresholds = emptyMap(),
+                defaultThreshold = 0.4018f,
+                freeEnergy = -5.0,
+                energyThreshold = null,
+                unsupportedClasses = unsupported
+            )
+
+            assertEquals("Unsupported class must yield classId 'unknown'", "unknown", eval.classId)
+            assertEquals("Unsupported class must show referral text", "Not sure - ask an extension officer", eval.displayName)
+            assertEquals("Unsupported class must have certainty NOT_SURE", CertaintyBand.NOT_SURE, eval.certaintyBand)
+            assertTrue("isBelowThreshold must be true for unsupported class", eval.isBelowThreshold)
+        }
+    }
+
+    @Test
+    fun testKnownCasesDirectMapping() {
         val labels = loadLabels()
 
-        // (d) a known case: original index 21 (maize_common_rust) maps to the label named maize_common_rust
-        val targetIdx = classMap[21]
-        assertNotNull("Original index 21 must not be null", targetIdx)
-        assertEquals("Original index 21 must map to maize_common_rust", "maize_common_rust", labels[targetIdx!!])
+        // 1. Maize common rust (index 16)
+        val rustIdx = labels.indexOf("maize_common_rust")
+        assertEquals(16, rustIdx)
 
-        // Verify inference simulation with top-1 at index 21
-        val logits = FloatArray(25) { -5.0f }
-        logits[21] = 8.0f // Maize common rust
+        val rustLogits = FloatArray(20) { -5.0f }
+        rustLogits[rustIdx] = 8.0f
 
-        val eval = VisionMath.evaluateModel25Output(
-            rawLogits = logits,
-            modelClassMap = classMap,
-            labels21 = labels,
-            temperature = 1.15f,
-            thresholds = mapOf("maize_common_rust" to 0.20f),
-            defaultThreshold = 0.20f,
-            energyThreshold = 5.0
+        val rustProbs = VisionMath.softmax(VisionMath.applyTemperature(rustLogits, 1.3302f))
+        val evalRust = VisionMath.evaluateDiagnosis(
+            labels = labels,
+            probabilities = rustProbs,
+            thresholds = emptyMap(),
+            defaultThreshold = 0.4018f,
+            freeEnergy = -5.0,
+            energyThreshold = null,
+            unsupportedClasses = setOf("weeds_not_a_crop", "tomato_leaf_blight")
         )
 
-        assertEquals("Diagnosis classId must be maize_common_rust", "maize_common_rust", eval.classId)
-        assertEquals("Display name must be Maize Common Rust", "Maize Common Rust", eval.displayName)
-        assertNotEquals("Certainty must not be NOT_SURE", CertaintyBand.NOT_SURE, eval.certaintyBand)
-        assertFalse("Must not be OOD", eval.isOutOfDistribution)
-        assertFalse("Must not be below threshold", eval.isBelowThreshold)
+        assertEquals("maize_common_rust", evalRust.classId)
+        assertEquals("Maize Common Rust", evalRust.displayName)
+        assertEquals(CertaintyBand.SURE, evalRust.certaintyBand)
+
+        // 2. Rice bacterial leaf blight (index 0)
+        val blbIdx = labels.indexOf("rice_bacterial_leaf_blight")
+        assertEquals(0, blbIdx)
+
+        val blbLogits = FloatArray(20) { -5.0f }
+        blbLogits[blbIdx] = 8.0f
+
+        val blbProbs = VisionMath.softmax(VisionMath.applyTemperature(blbLogits, 1.3302f))
+        val evalBlb = VisionMath.evaluateDiagnosis(
+            labels = labels,
+            probabilities = blbProbs,
+            thresholds = emptyMap(),
+            defaultThreshold = 0.4018f,
+            freeEnergy = -5.0,
+            energyThreshold = null,
+            unsupportedClasses = setOf("weeds_not_a_crop", "tomato_leaf_blight")
+        )
+
+        assertEquals("rice_bacterial_leaf_blight", evalBlb.classId)
+        assertEquals("Rice Bacterial Leaf Blight", evalBlb.displayName)
+        assertEquals(CertaintyBand.SURE, evalBlb.certaintyBand)
     }
 }

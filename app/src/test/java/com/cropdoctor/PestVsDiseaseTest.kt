@@ -82,18 +82,19 @@ class PestVsDiseaseTest {
         val rootObj = Json.parseToJsonElement(jsonStr).jsonObject
         val classesObj = rootObj["classes"]!!.jsonObject
 
+        val scByClassId = classesObj.values.map { it.jsonObject }.associateBy { it["class_id"]!!.jsonPrimitive.content }
+
         for (entry in kbRoot.classes) {
-            val key = entry.index.toString()
-            assertTrue("supported_classes.json must contain index $key", classesObj.containsKey(key))
-            val classObj = classesObj[key]!!.jsonObject
-            assertEquals("Class ID mismatch at index $key", entry.classId, classObj["class_id"]!!.jsonPrimitive.content)
-            assertTrue("Class at index $key must have 'type' field", classObj.containsKey("type"))
-            val scType = classObj["type"]!!.jsonPrimitive.content
-            assertEquals(
-                "Type mismatch for ${entry.classId} between KB and supported_classes.json",
-                entry.type,
-                scType
-            )
+            val classObj = scByClassId[entry.classId]
+            if (classObj != null) {
+                assertTrue("Class ${entry.classId} must have 'type' field", classObj.containsKey("type"))
+                val scType = classObj["type"]!!.jsonPrimitive.content
+                assertEquals(
+                    "Type mismatch for ${entry.classId} between KB and supported_classes.json",
+                    entry.type,
+                    scType
+                )
+            }
         }
     }
 

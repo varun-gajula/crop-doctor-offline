@@ -1,0 +1,18 @@
+{
+  "scenario_id": "fallback_simulated_low_ram",
+  "description": "Simulated low RAM condition (< threshold)",
+  "avail_mem_bytes": 2500333568,
+  "avail_mem_mb": 2384.50390625,
+  "total_mem_mb": 5622.5,
+  "threshold_mb": 432,
+  "is_low_memory": false,
+  "decider_should_load": false,
+  "llama_loaded": false,
+  "fallback_ran": false,
+  "advisory_label": "Offline guide",
+  "pss_before_mb": 207.5908203125,
+  "peak_pss_mb": 207.5908203125,
+  "extra_memory_needed_mb": 0,
+  "tokens_generated": 77,
+  "sample_text": "1. What I see:\nYour Maize crop symptom could not be "
+}

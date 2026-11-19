@@ -1,0 +1,30 @@
+{
+  "image_size": [
+    512,
+    512
+  ],
+  "readable_images": 11589,
+  "invalid": [],
+  "class_counts": {
+    "rice_bacterial_leaf_blight": 636,
+    "rice_leaf_blast": 634,
+    "rice_sheath_blight": 632,
+    "rice_healthy": 653,
+    "cotton_bacterial_blight": 448,
+    "cotton_fusarium_wilt": 419,
+    "cotton_leaf_curl_virus": 417,
+    "cotton_healthy": 425,
+    "chilli_leaf_curl_virus": 423,
+    "chilli_nutrition_deficiency": 444,
+    "chilli_healthy": 458,
+    "tomato_leaf_blight": 800,
+    "tomato_yellow_leaf_curl_virus": 800,
+    "tomato_septoria_leaf_spot": 800,
+    "tomato_healthy": 800,
+    "maize_gray_leaf_spot": 500,
+    "maize_common_rust": 500,
+    "maize_northern_leaf_blight": 500,
+    "maize_healthy": 500,
+    "weeds_not_a_crop": 800
+  }
+}

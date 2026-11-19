@@ -29,7 +29,7 @@ class ShutterToResultReleaseBenchmarkTest {
         val classifier = ExecuTorchClassifier(context)
 
         // Warm-up run
-        val warmupBmp = createSyntheticLeafBitmap(320, 320, 0)
+        val warmupBmp = createSyntheticLeafBitmap(512, 512, 0)
         classifier.classify(warmupBmp, null)
 
         val times = mutableListOf<Long>()

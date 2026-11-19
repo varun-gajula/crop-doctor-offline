@@ -22,10 +22,10 @@ class VisionPhoneSanityTest {
         val context = ApplicationProvider.getApplicationContext<Context>()
         val classifier = ExecuTorchClassifier(context)
 
-        // Create a 320x320 green test bitmap (simulating a leaf)
-        val bitmap = Bitmap.createBitmap(320, 320, Bitmap.Config.ARGB_8888)
-        for (x in 0 until 320) {
-            for (y in 0 until 320) {
+        // Create a 512x512 green test bitmap (simulating a leaf)
+        val bitmap = Bitmap.createBitmap(512, 512, Bitmap.Config.ARGB_8888)
+        for (x in 0 until 512) {
+            for (y in 0 until 512) {
                 bitmap.setPixel(x, y, Color.rgb(34, 139, 34))
             }
         }

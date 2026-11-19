@@ -2,7 +2,6 @@ package com.cropdoctor.vision
 
 import com.cropdoctor.domain.CertaintyBand
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.double
 import kotlinx.serialization.json.float
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
@@ -11,10 +10,12 @@ import org.junit.Test
 import java.io.File
 
 /**
- * Task V2 Unit Tests: Threshold Honesty & Single Source of Truth
+ * Task V7 Unit Tests: Threshold Honesty & Single Source of Truth
  * 1. thresholds.json is the single source of truth.
- * 2. If thresholds.json is missing or invalid, classifier must return "Can't tell" and never silently use other numbers.
- * 3. Asserts that ExecuTorchClassifier.kt source code contains NO numeric threshold literals (e.g. 5.0, 0.25).
+ * 2. Required keys: temperature and confidence_threshold.
+ * 3. energy_threshold is optional; if absent, energy check is OFF.
+ * 4. If thresholds.json or required keys are missing or invalid, classifier must return "Can't tell" and never silently use other numbers.
+ * 5. Asserts that ExecuTorchClassifier.kt source code contains NO numeric threshold literals.
  */
 class ThresholdHonestyTest {
 
@@ -44,10 +45,6 @@ class ThresholdHonestyTest {
             "ExecuTorchClassifier.kt must NOT hard-code energyThreshold assignment literal",
             sourceCode.contains("energyThreshold = -1.5")
         )
-        assertFalse(
-            "ExecuTorchClassifier.kt must NOT hard-code defaultThreshold assignment literal",
-            sourceCode.contains("defaultThreshold = 0.40") || sourceCode.contains("defaultThreshold = 0.4f")
-        )
 
         // 3. Assert single source of truth documentation / enforcement
         assertTrue(
@@ -63,20 +60,18 @@ class ThresholdHonestyTest {
         val isEmptyInvalid = dummyEmptyText.isBlank()
         assertTrue("Empty or missing thresholds text is invalid", isEmptyInvalid)
 
-        // Missing required keys (e.g. only temperature without default_threshold or energy_threshold)
-        val invalidJson = """{"temperature": 1.15}"""
+        // Missing required keys (e.g. only temperature without confidence_threshold)
+        val invalidJson = """{"temperature": 1.33}"""
         val parsedJson = Json.parseToJsonElement(invalidJson).jsonObject
-        val hasRequired = parsedJson.containsKey("default_threshold") && parsedJson.containsKey("energy_threshold")
-        assertFalse("JSON missing required threshold keys must be rejected", hasRequired)
+        val hasRequired = parsedJson.containsKey("temperature") && parsedJson.containsKey("confidence_threshold")
+        assertFalse("JSON missing required confidence_threshold key must be rejected", hasRequired)
 
         // Verify that when threshold state is invalid/missing, diagnosis evaluation routes to "Can't tell"
-        // (unknown / NOT_SURE)
         val labels = listOf("rice_bacterial_leaf_blight", "rice_healthy")
         val probs = floatArrayOf(0.95f, 0.05f)
 
         // If thresholds are missing, any evaluation must strictly fail closed (Can't tell)
         val fallbackDefaultThreshold = Float.MAX_VALUE // Cannot be satisfied
-        val fallbackEnergyThreshold = Double.NEGATIVE_INFINITY // Cannot be satisfied
 
         val eval = VisionMath.evaluateDiagnosis(
             labels = labels,
@@ -84,7 +79,7 @@ class ThresholdHonestyTest {
             thresholds = emptyMap(),
             defaultThreshold = fallbackDefaultThreshold,
             freeEnergy = -5.0,
-            energyThreshold = fallbackEnergyThreshold
+            energyThreshold = null
         )
 
         assertEquals("Missing thresholds must return 'unknown' classId (Can't tell)", "unknown", eval.classId)
@@ -94,17 +89,23 @@ class ThresholdHonestyTest {
 
     @Test
     fun testThresholdsJsonSingleSourceOfTruth() {
-        val thresholdsAsset = File("src/main/assets/thresholds.json")
-        assertTrue("assets/thresholds.json must exist", thresholdsAsset.exists())
+        val candidates = listOf(
+            File("app/src/main/assets/thresholds.json"),
+            File("src/main/assets/thresholds.json")
+        )
+        val thresholdsAsset = candidates.firstOrNull { it.exists() }
+        assertNotNull("assets/thresholds.json must exist", thresholdsAsset)
 
-        val text = thresholdsAsset.readText()
+        val text = thresholdsAsset!!.readText()
         val json = Json.parseToJsonElement(text).jsonObject
 
-        assertTrue("thresholds.json must define default_threshold", json.containsKey("default_threshold"))
-        assertTrue("thresholds.json must define energy_threshold", json.containsKey("energy_threshold"))
-        assertTrue("thresholds.json must define class_thresholds", json.containsKey("class_thresholds"))
+        assertTrue("thresholds.json must define temperature", json.containsKey("temperature"))
+        assertTrue("thresholds.json must define confidence_threshold", json.containsKey("confidence_threshold"))
 
-        assertEquals("Calibrated default threshold is 0.20", 0.20f, json["default_threshold"]!!.jsonPrimitive.float, 0.001f)
-        assertEquals("Calibrated energy threshold is 5.0", 5.0, json["energy_threshold"]!!.jsonPrimitive.double, 0.001)
+        // energy_threshold is absent in the calibrated final thresholds
+        assertFalse("thresholds.json has NO energy_threshold", json.containsKey("energy_threshold"))
+
+        assertEquals("Calibrated temperature is ~1.330", 1.3302f, json["temperature"]!!.jsonPrimitive.float, 0.01f)
+        assertEquals("Calibrated confidence threshold is ~0.4018", 0.4018f, json["confidence_threshold"]!!.jsonPrimitive.float, 0.01f)
     }
 }

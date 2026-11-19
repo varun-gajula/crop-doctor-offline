@@ -20,32 +20,31 @@ class VisionSeverityPipelineTest {
 
     private val labels = listOf(
         "rice_bacterial_leaf_blight",
-        "rice_brown_spot",
         "rice_leaf_blast",
         "rice_sheath_blight",
         "rice_healthy",
         "cotton_bacterial_blight",
         "cotton_fusarium_wilt",
+        "cotton_leaf_curl_virus",
         "cotton_healthy",
-        "chilli_bacterial_spot",
         "chilli_leaf_curl_virus",
+        "chilli_nutrition_deficiency",
         "chilli_healthy",
-        "tomato_early_blight",
-        "tomato_late_blight",
+        "tomato_leaf_blight",
         "tomato_yellow_leaf_curl_virus",
-        "tomato_spider_mites",
+        "tomato_septoria_leaf_spot",
         "tomato_healthy",
         "maize_gray_leaf_spot",
         "maize_common_rust",
         "maize_northern_leaf_blight",
-        "maize_fall_armyworm",
-        "maize_healthy"
+        "maize_healthy",
+        "weeds_not_a_crop"
     )
 
     private val thresholds = mapOf(
-        "rice_bacterial_leaf_blight" to 0.40f,
-        "rice_healthy" to 0.50f,
-        "tomato_early_blight" to 0.40f
+        "rice_bacterial_leaf_blight" to 0.4018f,
+        "rice_healthy" to 0.4018f,
+        "tomato_yellow_leaf_curl_virus" to 0.4018f
     )
 
     /**
@@ -97,7 +96,7 @@ class VisionSeverityPipelineTest {
 
     @Test
     fun testModelSeverityHeadIgnoredWhenModelPredictsMildButLesionIsSevere() {
-        val classId = "tomato_early_blight"
+        val classId = "tomato_yellow_leaf_curl_virus"
         val lesionFraction = 0.45f // > 30% -> RulesEngine mandates SEVERE
 
         // Hypothetical model severity head predicting MILD (index 0 has max logit)
