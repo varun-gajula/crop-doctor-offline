@@ -315,12 +315,18 @@ fun MainCameraScreen(
                                                     image.close()
 
                                                     if (rawBitmap != null) {
-                                                        val finalBitmap = if (rotationDegrees != 0) {
+                                                        val rotated = if (rotationDegrees != 0) {
                                                             val matrix = android.graphics.Matrix().apply { postRotate(rotationDegrees.toFloat()) }
                                                             Bitmap.createBitmap(rawBitmap, 0, 0, rawBitmap.width, rawBitmap.height, matrix, true)
                                                         } else {
                                                             rawBitmap
                                                         }
+                                                        // Crop center square to match viewfinder framing (eliminates surrounding bezel / room clutter)
+                                                        val minDim = minOf(rotated.width, rotated.height)
+                                                        val xOffset = (rotated.width - minDim) / 2
+                                                        val yOffset = (rotated.height - minDim) / 2
+                                                        val finalBitmap = Bitmap.createBitmap(rotated, xOffset, yOffset, minDim, minDim)
+
                                                         ContextCompat.getMainExecutor(context).execute {
                                                             onImageCaptured(finalBitmap, selectedCropFilter)
                                                         }

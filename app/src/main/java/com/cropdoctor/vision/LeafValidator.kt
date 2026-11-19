@@ -64,25 +64,26 @@ object LeafValidator {
             }
 
             // 3. Monochromatic / Neutral background (gray desk, shadow, blackboard)
-            if (sat < 0.10f || value < 0.08f || (value > 0.95f && sat < 0.12f)) {
+            // Allow screen glow by only skipping pure extreme blowouts (value > 0.98, sat < 0.05)
+            if (sat < 0.08f || value < 0.05f || (value > 0.98f && sat < 0.05f)) {
                 neutralCount++
                 continue
             }
 
             val exG = 2 * g - r - b
 
-            // 4. Healthy Green foliage
-            val isGreenPlant = (hue in 55f..180f && (g >= b || exG > -15)) ||
-                    (hue in 40f..55f && g > r - 10 && g > b)
+            // 4. Healthy Green foliage (expanded hue range to accommodate LCD/OLED display gamut shifts)
+            val isGreenPlant = (hue in 45f..190f && (g >= b || exG > -20)) ||
+                    (hue in 35f..55f && g > r - 15 && g > b)
 
             // 5. Chlorotic Yellow plant tissue / Maize cob
-            val isYellowCrop = (hue in 32f..65f && r > 65 && g > 65 && b < 160)
+            val isYellowCrop = (hue in 30f..70f && r > 55 && g > 55 && b < 180)
 
             // 6. Necrotic / Brown diseased leaf tissue or insect body
-            val isBrownCrop = (hue in 14f..38f && r in 40..200 && g in 20..150 && b < 120 && (r - g) <= 60)
+            val isBrownCrop = (hue in 12f..40f && r in 35..220 && g in 15..170 && b < 140 && (r - g) <= 75)
 
             // 7. Red fruits: Tomatoes and Chillies (Hue near 0° or 360°)
-            val isRedFruit = ((hue in 0f..20f) || (hue in 340f..360f)) && (r > 85 && r > g + 15 && r > b + 15)
+            val isRedFruit = ((hue in 0f..25f) || (hue in 335f..360f)) && (r > 75 && r > g + 10 && r > b + 10)
 
             if (isGreenPlant || isYellowCrop || isBrownCrop || isRedFruit) {
                 cropPixelCount++
@@ -92,10 +93,10 @@ object LeafValidator {
         val cropFraction = cropPixelCount.toFloat() / totalPixels
         val skinFraction = skinCount.toFloat() / totalPixels
 
-        // Soft warning triggers only if overwhelmingly skin or almost completely devoid of crop features
+        // Soft warning triggers only if overwhelmingly skin (> 50%) or almost completely devoid of crop features (< 1%)
         val isLikelyCrop = when {
-            skinFraction > 0.40f && cropFraction < 0.08f -> false
-            cropFraction < 0.04f -> false
+            skinFraction > 0.50f && cropFraction < 0.05f -> false
+            cropFraction < 0.01f -> false
             else -> true
         }
 
