@@ -305,9 +305,14 @@ class ExecuTorchLlamaAdvisor(private val context: Context) : Advisor {
         }
 
         try {
-            // Apply 25-second timeout safeguard and total sequence length of 512 (allowing ~350 prompt + 120 generated tokens)
+            // Apply 25-second timeout safeguard and total sequence length of 1024 (allowing up to ~800 prompt + 120 generated tokens)
             val completedInTime = withTimeoutOrNull(25_000L) {
-                llamaModule?.generate(prompt, 512, llamaCallback, false)
+                try {
+                    llamaModule?.generate(prompt, 1024, llamaCallback, false)
+                } catch (t: Throwable) {
+                    Log.e(TAG, "Native Llama generate failed, falling back to offline guide", t)
+                    null
+                }
             }
 
             if (completedInTime == null) {

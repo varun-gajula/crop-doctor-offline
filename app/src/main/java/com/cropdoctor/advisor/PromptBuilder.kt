@@ -37,15 +37,15 @@ object PromptBuilder {
         }
 
         val naturalRemedy = if (kbEntry.treatment.natural.isNotEmpty()) {
-            kbEntry.treatment.natural.joinToString("\n") { "• Step ${it.step}: ${it.action.en}" }
+            kbEntry.treatment.natural.take(2).joinToString("\n") { "• Step ${it.step}: ${it.action.en}" }
         } else {
             "• Field hygiene, crop rotation, and removing infected plant debris."
         }
 
         val chemicalActives = if (kbEntry.treatment.chemical.isNotEmpty()) {
-            kbEntry.treatment.chemical.joinToString("\n") { "• ${it.activeIngredient} (${it.productExample}) [Dose: follow the product label]" }
+            kbEntry.treatment.chemical.take(2).joinToString("\n") { "• ${it.activeIngredient} (${it.productExample}) [Dose: follow the product label]" }
         } else {
-            "• None recommended for current stage. Follow official state agricultural university guidelines."
+            "• None recommended for current stage. Follow official guidelines."
         }
 
         val precautions = if (kbEntry.treatment.chemical.isNotEmpty()) {
