@@ -106,6 +106,6 @@ class ThresholdHonestyTest {
         assertFalse("thresholds.json has NO energy_threshold", json.containsKey("energy_threshold"))
 
         assertEquals("Calibrated temperature is ~1.330", 1.3302f, json["temperature"]!!.jsonPrimitive.float, 0.01f)
-        assertEquals("Operating confidence threshold is 0.10", 0.10f, json["confidence_threshold"]!!.jsonPrimitive.float, 0.01f)
+        assertEquals("Operating confidence threshold is 0.20", 0.20f, json["confidence_threshold"]!!.jsonPrimitive.float, 0.01f)
     }
 }
