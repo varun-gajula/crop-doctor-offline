@@ -1,8 +1,44 @@
 # Project Progress - Crop Doctor Offline
 
-## Current Status: Task P1 Complete (Diagnostic Gate Report: Laptop Screen & Gallery Photos)
+## Current Status: Task P2 Complete (Unified Image Pipeline & Continuous Capture Stability)
 
-### Done in Task P1: Diagnose Laptop Screen & Gallery Image Rejections (Rules R1-R9, H1-H15)
+### Done in Task P2: Unified Image Pipeline & Continuous Capture Stability (Rules R1-R9, H1-H15)
+1. **Aspect Handling & Preprocessing Parity with Training (`docs/PREPROCESSING.md`)**:
+   - Inspected `Crop_Doctor_Kaggle_MaxGPU.ipynb` and `ml/dataset.py`: confirmed training used **anisotropic bilinear squash to 512x512** via `torchvision.transforms.Resize((512, 512))`.
+   - Identified that the legacy camera path center-cropped to square, which discarded leaf context for elongated leaves (rice, maize), while legacy gallery decoded with no rotation or config enforcement.
+   - Unified both camera and gallery paths to match training: anisotropic bilinear squash to 512x512 with ImageNet normalization (`mean=[0.485, 0.456, 0.406]`, `std=[0.229, 0.224, 0.225]`).
+2. **Unified Image Preparation Engine (`ImagePreprocessor.kt`)**:
+   - Single function `ImagePreprocessor.prepare(bytes, reusableBuffer)` prepares every image for the model regardless of whether it originates from camera capture, gallery selection, or file intent:
+     - Calculates dynamic `inSampleSize` to bound peak decode memory.
+     - Detects EXIF orientation (`android.media.ExifInterface`) and applies upright rotation.
+     - Enforces non-hardware `ARGB_8888` and standard `sRGB` color space.
+     - Resizes to 512x512 bilinear squash matching training distribution.
+     - Computes Botanical Leaf Validation (Gate 1).
+     - Normalizes into planar direct `FloatBuffer` of shape `[1, 3, 512, 512]`.
+     - Immediately recycles intermediate bitmaps and reuses direct native buffer across consecutive captures.
+3. **Continuous Capture & Execution State Machine (`MainActivity.kt`, `MainCameraScreen.kt`)**:
+   - Single in-flight analysis guarantee via `AtomicLong(requestId)` and coroutine cancellation (`currentDiagnosisJob?.cancel()`, `currentAdviceJob?.cancel()`).
+   - Disabled shutter button and gallery button during analysis (`isProcessing == true`) with loading spinner and "Analyzing leaf..." / "ఆకును విశ్లేషిస్తోంది..." / "पत्ती का विश्लेषण हो रहा है..." progress banner.
+   - All decoding, preprocessing, and inference run on background dispatcher (`Dispatchers.Default`), never blocking the UI thread.
+   - ImageProxy closed strictly in `finally` blocks; camera executor released cleanly on screen disposal; zero retained history of old bitmaps in memory.
+4. **Unit Tests & Parity Verification (`ImagePreprocessorTest.kt`, `ImagePipelineParityTest.kt`)**:
+   - Added unit test suite verifying `inSampleSize` math, ImageNet mean/std constants, planar channel ordering, and pixel normalization parity.
+   - All 116 unit tests passing (`./gradlew testDebugUnitTest`).
+   - Verified that camera and gallery inputs produce identical tensor outputs ($< 10^{-3}$ max diff) and that EXIF orientation 6 rotates upright properly.
+5. **Physical Device Benchmark on Reference 6 GB Phone (`benchmarks/p2_continuous_capture.md`)**:
+   - Executed on physical POCO 22041219PI (Xiaomi) with 5.5 GB usable RAM (6 GB reference phone, Android 14).
+   - 20 consecutive camera captures followed by 20 consecutive gallery selections (40 total continuous executions):
+     - **Crashes**: **0** (Pass)
+     - **ANRs**: **0** (Pass)
+     - **Camera Latency**: First = 597.7 ms, Average = **396.9 ms**, Max = 597.7 ms (Max/First = 1.00x $\le$ 3.0x, Pass)
+     - **Gallery Latency**: First = 499.4 ms, Average = **451.5 ms**, Max = 816.8 ms (Max/First = 1.64x $\le$ 3.0x, Pass)
+     - **Memory (PSS Growth)**: Initial = 250.93 MB, Final = 241.10 MB (**$\Delta\text{PSS} = -9.83\text{ MB}$**, well under 50 MB threshold, Pass)
+     - **UI Jank**: 278 frames rendered, 44 janky frames (15.83%, Pass)
+     - **Gallery Accuracy**: **20/20 (100%)** gallery test images accepted and accurately diagnosed with high confidence.
+
+---
+
+## Prior Status: Task P1 Complete (Diagnostic Gate Report: Laptop Screen & Gallery Photos)
 1. **CROPDOC_DECISION Diagnostic Gate Logging (`ExecuTorchClassifier.kt`)**:
    - Added formatted, zero-overhead diagnostic logging with tag `CROPDOC_DECISION` for every image processed.
    - Evaluates all gates in strict sequential order:

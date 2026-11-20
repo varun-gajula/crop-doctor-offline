@@ -60,7 +60,8 @@ fun MainCameraScreen(
     onBackClick: () -> Unit,
     onChangeCropClick: () -> Unit = {},
     onChangeLanguageClick: (String) -> Unit = {},
-    onImageCapturedWithMetadata: ((Bitmap, String?, ImageAnalysisMetadata) -> Unit)? = null
+    onImageCapturedWithMetadata: ((Bitmap, String?, ImageAnalysisMetadata) -> Unit)? = null,
+    onImageBytesCaptured: ((ByteArray, String?, String) -> Unit)? = null
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -93,49 +94,39 @@ fun MainCameraScreen(
     val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
-        if (uri != null) {
+        if (uri != null && !isProcessing) {
             try {
-                var exifOrientation = 0
-                try {
-                    context.contentResolver.openInputStream(uri)?.use { stream ->
-                        val exif = android.media.ExifInterface(stream)
-                        exifOrientation = when (exif.getAttributeInt(
-                            android.media.ExifInterface.TAG_ORIENTATION,
-                            android.media.ExifInterface.ORIENTATION_NORMAL
-                        )) {
-                            android.media.ExifInterface.ORIENTATION_ROTATE_90 -> 90
-                            android.media.ExifInterface.ORIENTATION_ROTATE_180 -> 180
-                            android.media.ExifInterface.ORIENTATION_ROTATE_270 -> 270
-                            else -> 0
-                        }
-                    }
-                } catch (e: Exception) {
-                    Log.w("MainCameraScreen", "Could not read EXIF from gallery image", e)
-                }
-
                 context.contentResolver.openInputStream(uri)?.use { stream: InputStream ->
                     val bytes = stream.readBytes()
-                    val options = BitmapFactory.Options().apply { inJustDecodeBounds = true }
-                    BitmapFactory.decodeByteArray(bytes, 0, bytes.size, options)
-                    val origWidth = options.outWidth
-                    val origHeight = options.outHeight
-                    val maxDim = max(options.outWidth, options.outHeight)
-                    options.inSampleSize = if (maxDim > 1024) maxDim / 1024 else 1
-                    options.inJustDecodeBounds = false
-                    val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size, options)
-                    if (bitmap != null) {
+                    if (onImageBytesCaptured != null) {
+                        onImageBytesCaptured(bytes, selectedCropFilter, "gallery")
+                    } else {
+                        val pre = com.cropdoctor.vision.ImagePreprocessor.prepare(bytes)
                         val meta = ImageAnalysisMetadata(
                             source = "gallery",
-                            origWidth = origWidth,
-                            origHeight = origHeight,
-                            exifOrientation = exifOrientation
+                            origWidth = pre.origWidth,
+                            origHeight = pre.origHeight,
+                            exifOrientation = pre.exifRotationDegrees,
+                            leafValidatorPass = pre.leafValidation.isLikelyCrop,
+                            leafValidatorFraction = pre.leafValidation.plantPixelFraction,
+                            leafValidatorReason = pre.leafValidation.reason
                         )
-                        dispatchCapturedImage(bitmap, selectedCropFilter, meta)
+                        dispatchCapturedImage(pre.bitmap512, selectedCropFilter, meta)
                     }
                 }
             } catch (e: Exception) {
                 Log.e("MainCameraScreen", "Failed to decode gallery image", e)
             }
+        }
+    }
+
+    DisposableEffect(lifecycleOwner) {
+        onDispose {
+            try {
+                cameraExecutor.shutdown()
+            } catch (_: Exception) {}
+            cameraControl = null
+            imageCapture = null
         }
     }
 
@@ -322,20 +313,41 @@ fun MainCameraScreen(
                 }
 
                 if (isProcessing) {
-                    CircularProgressIndicator(color = Color.White)
-                } else {
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceAround,
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(16.dp))
+                            .background(Color(0xCC000000))
+                            .padding(horizontal = 16.dp, vertical = 6.dp)
                     ) {
-                        // Gallery Button
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            modifier = Modifier.clickable {
-                                galleryLauncher.launch("image/*")
-                            }
-                        ) {
+                        CircularProgressIndicator(
+                            color = FarmGreenPrimary,
+                            modifier = Modifier.size(18.dp),
+                            strokeWidth = 2.dp
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = stringResource(R.string.analyzing_leaf),
+                            color = Color.White,
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(10.dp))
+                }
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceAround,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // Gallery Button
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.clickable(enabled = !isProcessing) {
+                            galleryLauncher.launch("image/*")
+                        }
+                    ) {
                             Icon(
                                 imageVector = Icons.Default.PhotoLibrary,
                                 contentDescription = stringResource(R.string.btn_gallery),
@@ -350,58 +362,46 @@ fun MainCameraScreen(
                             )
                         }
 
-                        // Shutter Button
+                        // Shutter Button (Disabled during analysis, with spinner and progress)
                         Box(
                             modifier = Modifier
                                 .size(76.dp)
                                 .clip(CircleShape)
-                                .background(FarmGreenPrimary)
-                                .clickable {
+                                .background(if (isProcessing) Color(0xFF6B7280) else FarmGreenPrimary)
+                                .clickable(enabled = !isProcessing) {
+                                    if (isProcessing) return@clickable
                                     val capture = imageCapture
                                     if (capture != null) {
                                         capture.takePicture(
                                             cameraExecutor,
                                             object : ImageCapture.OnImageCapturedCallback() {
                                                 override fun onCaptureSuccess(image: ImageProxy) {
-                                                    val rotationDegrees = image.imageInfo.rotationDegrees
-                                                    val buffer = image.planes[0].buffer
-                                                    val bytes = ByteArray(buffer.remaining())
-                                                    buffer.get(bytes)
-
-                                                    val options = BitmapFactory.Options().apply { inJustDecodeBounds = true }
-                                                    BitmapFactory.decodeByteArray(bytes, 0, bytes.size, options)
-                                                    val origWidth = options.outWidth
-                                                    val origHeight = options.outHeight
-                                                    val maxDim = max(options.outWidth, options.outHeight)
-                                                    options.inSampleSize = if (maxDim > 1024) maxDim / 1024 else 1
-                                                    options.inJustDecodeBounds = false
-
-                                                    val rawBitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size, options)
-                                                    image.close()
-
-                                                    if (rawBitmap != null) {
-                                                        val rotated = if (rotationDegrees != 0) {
-                                                            val matrix = android.graphics.Matrix().apply { postRotate(rotationDegrees.toFloat()) }
-                                                            Bitmap.createBitmap(rawBitmap, 0, 0, rawBitmap.width, rawBitmap.height, matrix, true)
-                                                        } else {
-                                                            rawBitmap
-                                                        }
-                                                        // Crop center square to match viewfinder framing (eliminates surrounding bezel / room clutter)
-                                                        val minDim = minOf(rotated.width, rotated.height)
-                                                        val xOffset = (rotated.width - minDim) / 2
-                                                        val yOffset = (rotated.height - minDim) / 2
-                                                        val finalBitmap = Bitmap.createBitmap(rotated, xOffset, yOffset, minDim, minDim)
-
-                                                        val meta = ImageAnalysisMetadata(
-                                                            source = "camera",
-                                                            origWidth = origWidth,
-                                                            origHeight = origHeight,
-                                                            exifOrientation = rotationDegrees
-                                                        )
+                                                    try {
+                                                        val buffer = image.planes[0].buffer
+                                                        val bytes = ByteArray(buffer.remaining())
+                                                        buffer.get(bytes)
 
                                                         ContextCompat.getMainExecutor(context).execute {
-                                                            dispatchCapturedImage(finalBitmap, selectedCropFilter, meta)
+                                                            if (onImageBytesCaptured != null) {
+                                                                onImageBytesCaptured(bytes, selectedCropFilter, "camera")
+                                                            } else {
+                                                                val pre = com.cropdoctor.vision.ImagePreprocessor.prepare(bytes)
+                                                                val meta = ImageAnalysisMetadata(
+                                                                    source = "camera",
+                                                                    origWidth = pre.origWidth,
+                                                                    origHeight = pre.origHeight,
+                                                                    exifOrientation = pre.exifRotationDegrees,
+                                                                    leafValidatorPass = pre.leafValidation.isLikelyCrop,
+                                                                    leafValidatorFraction = pre.leafValidation.plantPixelFraction,
+                                                                    leafValidatorReason = pre.leafValidation.reason
+                                                                )
+                                                                dispatchCapturedImage(pre.bitmap512, selectedCropFilter, meta)
+                                                            }
                                                         }
+                                                    } catch (e: Exception) {
+                                                        Log.e("MainCameraScreen", "Capture processing error", e)
+                                                    } finally {
+                                                        image.close() // Close ImageProxy in finally block (Rule P2.3)
                                                     }
                                                 }
 
@@ -421,12 +421,20 @@ fun MainCameraScreen(
                                 },
                             contentAlignment = Alignment.Center
                         ) {
-                            Icon(
-                                imageVector = Icons.Default.CameraAlt,
-                                contentDescription = stringResource(R.string.btn_capture),
-                                tint = Color.White,
-                                modifier = Modifier.size(38.dp)
-                            )
+                            if (isProcessing) {
+                                CircularProgressIndicator(
+                                    color = Color.White,
+                                    modifier = Modifier.size(34.dp),
+                                    strokeWidth = 3.dp
+                                )
+                            } else {
+                                Icon(
+                                    imageVector = Icons.Default.CameraAlt,
+                                    contentDescription = stringResource(R.string.btn_capture),
+                                    tint = Color.White,
+                                    modifier = Modifier.size(38.dp)
+                                )
+                            }
                         }
 
                         // Flash Toggle Button
@@ -455,4 +463,3 @@ fun MainCameraScreen(
             }
         }
     }
-}
