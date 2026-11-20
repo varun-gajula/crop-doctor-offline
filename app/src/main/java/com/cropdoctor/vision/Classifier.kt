@@ -17,5 +17,7 @@ interface Classifier {
     suspend fun classify(bitmap: Bitmap): ClassifierResult
     suspend fun classify(bitmap: Bitmap, cropHint: String?): ClassifierResult = classify(bitmap)
     suspend fun classify(bitmap: Bitmap, cropHint: String?, metadata: ImageAnalysisMetadata?): ClassifierResult = classify(bitmap, cropHint)
+    suspend fun classify(preprocessed: ImagePreprocessor.PreprocessedImage, cropHint: String?, metadata: ImageAnalysisMetadata?): ClassifierResult =
+        classify(preprocessed.bitmap512, cropHint, metadata)
     fun close()
 }

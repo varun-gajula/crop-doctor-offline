@@ -330,6 +330,20 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
         }
     }
 
+    private var reusableTensorBuffer: java.nio.FloatBuffer? = null
+
+    @Synchronized
+    fun getReusableBuffer(): java.nio.FloatBuffer {
+        var buf = reusableTensorBuffer
+        if (buf == null) {
+            buf = java.nio.ByteBuffer.allocateDirect(3 * inputSize * inputSize * 4)
+                .order(java.nio.ByteOrder.nativeOrder())
+                .asFloatBuffer()
+            reusableTensorBuffer = buf
+        }
+        return buf
+    }
+
     override suspend fun classify(bitmap: Bitmap): ClassifierResult {
         return classify(bitmap, null, null)
     }
@@ -340,6 +354,19 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
 
     override suspend fun classify(
         bitmap: Bitmap,
+        cropHint: String?,
+        metadata: ImageAnalysisMetadata?
+    ): ClassifierResult = withContext(Dispatchers.Default) {
+        val preprocessed = ImagePreprocessor.prepare(
+            bitmap = bitmap,
+            exifRotationDegrees = metadata?.exifOrientation ?: 0,
+            reusableBuffer = getReusableBuffer()
+        )
+        classify(preprocessed, cropHint, metadata)
+    }
+
+    override suspend fun classify(
+        preprocessed: ImagePreprocessor.PreprocessedImage,
         cropHint: String?,
         metadata: ImageAnalysisMetadata?
     ): ClassifierResult = withContext(Dispatchers.Default) {
@@ -376,10 +403,10 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
         // Rule H8: Emulators cannot run 4-bit/arm64 kernels -> delegate to FakeClassifier with visible demo banner
         if (isEmulator()) {
             Log.e(TAG, "Running on emulator. Delegating to FakeClassifier (Rule H8).")
-            return@withContext fakeClassifier.classify(bitmap, cropHint)
+            return@withContext fakeClassifier.classify(preprocessed.bitmap512, cropHint)
         }
 
-        Log.e(TAG, "classify() called: cropHint=$cropHint, bitmap=${bitmap.width}x${bitmap.height}, moduleNull=${module == null}, labelsCount=${labels.size}")
+        Log.e(TAG, "classify() called: cropHint=$cropHint, bitmap=${preprocessed.bitmap512.width}x${preprocessed.bitmap512.height}, moduleNull=${module == null}, labelsCount=${labels.size}")
 
         // Rule H11 & T1: If model is missing or fails to load, NEVER guess a disease.
         if (module == null || labels.isEmpty()) {
@@ -402,17 +429,15 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
         }
 
         try {
-            // 1. Preprocessing matching training exactly (RGB, 512x512, ImageNet normalization)
-            val resized = Bitmap.createScaledBitmap(bitmap, inputSize, inputSize, true)
-            val inputTensor = preprocessBitmap(resized)
+            // Forward pass reusing native tensor buffer (Rule P2.3)
+            val inputTensor = Tensor.fromBlob(
+                preprocessed.tensorBuffer,
+                longArrayOf(1, 3, inputSize.toLong(), inputSize.toLong())
+            )
 
-            // 2. ExecuTorch Forward Pass
-            Log.e(TAG, "classify(): executing module.forward()...")
             val outputs = module!!.forward(EValue.from(inputTensor))
-            Log.e(TAG, "classify(): forward pass returned ${outputs.size} outputs")
             val outputTensor = outputs[0].toTensor()
             val rawLogits = outputTensor.dataAsFloatArray
-            Log.e(TAG, "classify(): rawLogits count=${rawLogits.size}, first 5=[${rawLogits.take(5).joinToString(", ")}]")
 
             // 3. Evaluate 20 direct model outputs against labels.json
             val scaledLogits = VisionMath.applyTemperature(rawLogits.take(labels.size).toFloatArray(), temperature)
@@ -436,10 +461,10 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
                 unsupportedClasses = unsupportedClasses
             )
 
-            // CROPDOC_DECISION Gate Diagnostic Logging (Task P1 - Report only; change no behaviour)
-            val bitmapConfig = bitmap.config?.name ?: "UNKNOWN"
+            // CROPDOC_DECISION Gate Diagnostic Logging (Task P1)
+            val bitmapConfig = preprocessed.bitmap512.config?.name ?: "UNKNOWN"
             val colorSpaceName = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                bitmap.colorSpace?.name ?: "UNKNOWN"
+                preprocessed.bitmap512.colorSpace?.name ?: "UNKNOWN"
             } else {
                 "sRGB"
             }
@@ -452,7 +477,7 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
                     reason = metadata.leafValidatorReason
                 )
             } else {
-                LeafValidator.validate(bitmap)
+                preprocessed.leafValidation
             }
             val gate1Pass = gate1Validation.isLikelyCrop
 
@@ -509,7 +534,7 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
             val logDecisionLine = buildString {
                 append("CROPDOC_DECISION: ")
                 append("source=${metadata?.source ?: "camera"} ")
-                append("orig=${metadata?.origWidth ?: bitmap.width}x${metadata?.origHeight ?: bitmap.height} ")
+                append("orig=${metadata?.origWidth ?: preprocessed.origWidth}x${metadata?.origHeight ?: preprocessed.origHeight} ")
                 append("exif=${metadata?.exifOrientation ?: 0} ")
                 append("config=$bitmapConfig ")
                 append("colorSpace=$colorSpaceName ")
@@ -531,7 +556,7 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
             val lesionFraction = if (eval.classId.endsWith("_healthy") || eval.classId == "unknown") {
                 0.0f
             } else {
-                LesionAreaEstimator.estimateLesionFraction(bitmap)
+                LesionAreaEstimator.estimateLesionFraction(preprocessed.bitmap512)
             }
 
             // 5. Severity Band
@@ -611,5 +636,6 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
 
     override fun close() {
         module = null
+        reusableTensorBuffer = null
     }
 }

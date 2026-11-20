@@ -38,10 +38,16 @@ import com.cropdoctor.ui.theme.CropDoctorTheme
 import com.cropdoctor.ui.theme.FarmGreenPrimary
 import com.cropdoctor.vision.ImageAnalysisMetadata
 import com.cropdoctor.vision.LeafValidator
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.util.concurrent.atomic.AtomicLong
 import java.util.Locale
+import com.cropdoctor.vision.ImagePreprocessor
+import com.cropdoctor.vision.ExecuTorchClassifier
 
 enum class AppScreen {
     FIRST_LAUNCH,
@@ -62,7 +68,9 @@ enum class AppScreen {
 
 class MainActivity : ComponentActivity() {
 
+    private var currentDiagnosisJob: Job? = null
     private var currentAdviceJob: Job? = null
+    private val currentRequestId = AtomicLong(0L)
     private var onBenchmarkAction: ((String) -> Unit)? = null
     private var onBenchmarkIntent: ((Intent) -> Unit)? = null
 
@@ -132,6 +140,12 @@ class MainActivity : ComponentActivity() {
                     val app = application as CropDoctorApplication
 
                     fun navigateTo(screen: AppScreen) {
+                        if (currentScreen == AppScreen.CAMERA && screen != AppScreen.RESULT) {
+                            currentRequestId.incrementAndGet()
+                            currentDiagnosisJob?.cancel()
+                            currentAdviceJob?.cancel()
+                            isProcessingImage = false
+                        }
                         previousScreen = currentScreen
                         currentScreen = screen
                     }
@@ -187,18 +201,61 @@ class MainActivity : ComponentActivity() {
                         }
                     }
 
-                    fun processDiagnosis(
-                        bitmap: Bitmap,
+                    fun processImageBytes(
+                        bytes: ByteArray,
+                        source: String,
                         cropFilter: String?,
                         autoStartAdvisor: Boolean = true,
-                        metadata: ImageAnalysisMetadata? = null
+                        skipSoftWarning: Boolean = false
                     ) {
+                        val thisRequestId = currentRequestId.incrementAndGet()
+                        currentDiagnosisJob?.cancel()
+                        currentAdviceJob?.cancel()
                         isProcessingImage = true
-                        capturedLeafBitmap = bitmap
-                        lifecycleScope.launch {
+
+                        currentDiagnosisJob = lifecycleScope.launch(Dispatchers.Default) {
                             try {
+                                val reusableBuf = (app.classifier as? ExecuTorchClassifier)?.getReusableBuffer()
+                                val preprocessed = ImagePreprocessor.prepare(bytes, reusableBuf)
+
+                                if (thisRequestId != currentRequestId.get() || !isActive) {
+                                    preprocessed.bitmap512.recycle()
+                                    return@launch
+                                }
+
+                                val meta = ImageAnalysisMetadata(
+                                    source = source,
+                                    origWidth = preprocessed.origWidth,
+                                    origHeight = preprocessed.origHeight,
+                                    exifOrientation = preprocessed.exifRotationDegrees,
+                                    leafValidatorPass = preprocessed.leafValidation.isLikelyCrop,
+                                    leafValidatorFraction = preprocessed.leafValidation.plantPixelFraction,
+                                    leafValidatorReason = preprocessed.leafValidation.reason
+                                )
+
                                 val effectiveCropFilter = cropFilter ?: selectedCrop
-                                val result = app.classifier.classify(bitmap, effectiveCropFilter, metadata)
+
+                                if (!skipSoftWarning && !preprocessed.leafValidation.isLikelyCrop) {
+                                    withContext(Dispatchers.Main) {
+                                        if (thisRequestId != currentRequestId.get()) {
+                                            preprocessed.bitmap512.recycle()
+                                            return@withContext
+                                        }
+                                        pendingCapturedBitmap = preprocessed.bitmap512
+                                        pendingCropFilter = effectiveCropFilter
+                                        pendingMetadata = meta
+                                        showSoftCropWarningDialog = true
+                                        isProcessingImage = false
+                                    }
+                                    return@launch
+                                }
+
+                                val result = app.classifier.classify(preprocessed, effectiveCropFilter, meta)
+
+                                if (thisRequestId != currentRequestId.get() || !isActive) {
+                                    preprocessed.bitmap512.recycle()
+                                    return@launch
+                                }
 
                                 val kb = KnowledgeBase.getEntry(result.classId)
                                     ?: if (result.classId != "unknown") {
@@ -253,25 +310,152 @@ class MainActivity : ComponentActivity() {
                                         )
                                     }
 
-                                classifierResult = result
-                                activeKbEntry = kb
-                                navigateTo(AppScreen.RESULT)
+                                withContext(Dispatchers.Main) {
+                                    if (thisRequestId != currentRequestId.get()) {
+                                        preprocessed.bitmap512.recycle()
+                                        return@withContext
+                                    }
+                                    if (capturedLeafBitmap != null && capturedLeafBitmap != preprocessed.bitmap512 && !capturedLeafBitmap!!.isRecycled) {
+                                        capturedLeafBitmap?.recycle()
+                                    }
+                                    capturedLeafBitmap = preprocessed.bitmap512
+                                    classifierResult = result
+                                    activeKbEntry = kb
+                                    isProcessingImage = false
+                                    navigateTo(AppScreen.RESULT)
 
-                                if (autoStartAdvisor) {
-                                    triggerAdvisoryStream(
-                                        app = app,
-                                        result = result,
-                                        kbEntry = kb,
-                                        language = selectedLanguage,
-                                        crop = result.selectedCrop ?: effectiveCropFilter,
-                                        onUpdate = { advisoryText = it },
-                                        onStateChange = { isGeneratingAdvice = it }
-                                    )
+                                    if (autoStartAdvisor) {
+                                        triggerAdvisoryStream(
+                                            app = app,
+                                            result = result,
+                                            kbEntry = kb,
+                                            language = selectedLanguage,
+                                            crop = result.selectedCrop ?: effectiveCropFilter,
+                                            onUpdate = { advisoryText = it },
+                                            onStateChange = { isGeneratingAdvice = it }
+                                        )
+                                    }
                                 }
                             } catch (e: Exception) {
-                                e.printStackTrace()
+                                if (e !is CancellationException) {
+                                    Log.e("MainActivity", "Diagnosis error", e)
+                                }
                             } finally {
-                                isProcessingImage = false
+                                if (thisRequestId == currentRequestId.get()) {
+                                    withContext(Dispatchers.Main) {
+                                        isProcessingImage = false
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    fun processDiagnosis(
+                        bitmap: Bitmap,
+                        cropFilter: String?,
+                        autoStartAdvisor: Boolean = true,
+                        metadata: ImageAnalysisMetadata? = null
+                    ) {
+                        val thisRequestId = currentRequestId.incrementAndGet()
+                        currentDiagnosisJob?.cancel()
+                        currentAdviceJob?.cancel()
+                        isProcessingImage = true
+
+                        currentDiagnosisJob = lifecycleScope.launch(Dispatchers.Default) {
+                            try {
+                                val effectiveCropFilter = cropFilter ?: selectedCrop
+                                val result = app.classifier.classify(bitmap, effectiveCropFilter, metadata)
+
+                                if (thisRequestId != currentRequestId.get() || !isActive) {
+                                    return@launch
+                                }
+
+                                val kb = KnowledgeBase.getEntry(result.classId)
+                                    ?: if (result.classId != "unknown") {
+                                        KbEntry(
+                                            classId = result.classId,
+                                            index = -1,
+                                            crop = result.classId.substringBefore("_"),
+                                            type = if (result.classId.endsWith("_healthy")) "healthy" else "disease",
+                                            pathogen = "Awaiting expert verification",
+                                            names = LocalizedText(
+                                                en = result.displayName,
+                                                te = result.displayName,
+                                                hi = result.displayName
+                                            ),
+                                            referralThreshold = "MILD",
+                                            immediateStep = LocalizedText(
+                                                en = "Advice for this problem is not available yet. Ask an extension officer",
+                                                te = "ఈ సమస్యకు సలహా ఇంకా అందుబాటులో లేదు. వ్యవసాయ విస్తరణ అధికారిని సంప్రదించండి.",
+                                                hi = "इस समस्या के लिए सलाह अभी उपलब्ध नहीं है। कृषि विस्तार अधिकारी से संपर्क करें।"
+                                            ),
+                                            explainText = LocalizedText(
+                                                en = "Advice for this problem is not available yet. Ask an extension officer or visit your nearest Krishi Vigyan Kendra.",
+                                                te = "ఈ సమస్యకు సలహా ఇంకా అందుబాటులో లేదు. దయచేసి వ్యవసాయ విస్తరణ అధికారిని లేదా కృషి విజ్ఞాన కేంద్రాన్ని సంప్రదించండి.",
+                                                hi = "इस समस्या के लिए सलाह अभी उपलब्ध नहीं है। कृपया कृषि विस्तार अधिकारी या नजदीकी कृषि विज्ञान केंद्र से संपर्क करें।"
+                                            ),
+                                            treatment = TreatmentPlan()
+                                        )
+                                    } else {
+                                        KbEntry(
+                                            classId = "unknown",
+                                            index = -1,
+                                            crop = "crop",
+                                            type = "unknown",
+                                            pathogen = "Unknown / Unverified",
+                                            names = LocalizedText(
+                                                en = "Not sure - ask an extension officer",
+                                                te = "ఖచ్చితంగా తెలియదు",
+                                                hi = "अनिश्चित स्थिति"
+                                            ),
+                                            referralThreshold = "MILD",
+                                            immediateStep = LocalizedText(
+                                                en = "Consult an agricultural extension officer.",
+                                                te = "వ్యవసాయ విస్తరణ అధికారిని సంప్రదించండి.",
+                                                hi = "कृषि विस्तार अधिकारी से संपर्क करें।"
+                                            ),
+                                            explainText = LocalizedText(
+                                                en = "The condition could not be identified with certainty. Please ask an agriculture extension officer or visit your nearest Krishi Vigyan Kendra.",
+                                                te = "పరిస్థితిని ఖచ్చితంగా గుర్తించలేకపోయాము. దయచేసి వ్యవసాయ విస్తరణ అధికారిని లేదా కృషి విజ్ఞాన కేంద్రాన్ని సంప్రదించండి.",
+                                                hi = "स्थिति की निश्चित पहचान नहीं हो सकी। कृपया कृषि विस्तार अधिकारी या नजदीकी कृषि विज्ञान केंद्र से संपर्क करें।"
+                                            ),
+                                            treatment = TreatmentPlan()
+                                        )
+                                    }
+
+                                withContext(Dispatchers.Main) {
+                                    if (thisRequestId != currentRequestId.get()) return@withContext
+                                    if (capturedLeafBitmap != null && capturedLeafBitmap != bitmap && !capturedLeafBitmap!!.isRecycled) {
+                                        capturedLeafBitmap?.recycle()
+                                    }
+                                    capturedLeafBitmap = bitmap
+                                    classifierResult = result
+                                    activeKbEntry = kb
+                                    isProcessingImage = false
+                                    navigateTo(AppScreen.RESULT)
+
+                                    if (autoStartAdvisor) {
+                                        triggerAdvisoryStream(
+                                            app = app,
+                                            result = result,
+                                            kbEntry = kb,
+                                            language = selectedLanguage,
+                                            crop = result.selectedCrop ?: effectiveCropFilter,
+                                            onUpdate = { advisoryText = it },
+                                            onStateChange = { isGeneratingAdvice = it }
+                                        )
+                                    }
+                                }
+                            } catch (e: Exception) {
+                                if (e !is CancellationException) {
+                                    Log.e("MainActivity", "Diagnosis error", e)
+                                }
+                            } finally {
+                                if (thisRequestId == currentRequestId.get()) {
+                                    withContext(Dispatchers.Main) {
+                                        isProcessingImage = false
+                                    }
+                                }
                             }
                         }
                     }
@@ -287,53 +471,8 @@ class MainActivity : ComponentActivity() {
                                     try {
                                         val file = File(filePath)
                                         if (file.exists()) {
-                                            val options = BitmapFactory.Options().apply { inJustDecodeBounds = true }
-                                            BitmapFactory.decodeFile(filePath, options)
-                                            val origWidth = options.outWidth
-                                            val origHeight = options.outHeight
-                                            var exifOrientation = 0
-                                            try {
-                                                val exif = android.media.ExifInterface(filePath)
-                                                exifOrientation = when (exif.getAttributeInt(
-                                                    android.media.ExifInterface.TAG_ORIENTATION,
-                                                    android.media.ExifInterface.ORIENTATION_NORMAL
-                                                )) {
-                                                    android.media.ExifInterface.ORIENTATION_ROTATE_90 -> 90
-                                                    android.media.ExifInterface.ORIENTATION_ROTATE_180 -> 180
-                                                    android.media.ExifInterface.ORIENTATION_ROTATE_270 -> 270
-                                                    else -> 0
-                                                }
-                                            } catch (_: Exception) {}
-
-                                            val maxDim = maxOf(origWidth, origHeight)
-                                            options.inSampleSize = if (maxDim > 1024) maxDim / 1024 else 1
-                                            options.inJustDecodeBounds = false
-                                            val rawBmp = BitmapFactory.decodeFile(filePath, options)
-                                            if (rawBmp != null) {
-                                                val finalBmp = if (source == "camera") {
-                                                    val rotated = if (exifOrientation != 0) {
-                                                        val matrix = android.graphics.Matrix().apply { postRotate(exifOrientation.toFloat()) }
-                                                        Bitmap.createBitmap(rawBmp, 0, 0, rawBmp.width, rawBmp.height, matrix, true)
-                                                    } else rawBmp
-                                                    val minDim = minOf(rotated.width, rotated.height)
-                                                    val xOffset = (rotated.width - minDim) / 2
-                                                    val yOffset = (rotated.height - minDim) / 2
-                                                    Bitmap.createBitmap(rotated, xOffset, yOffset, minDim, minDim)
-                                                } else {
-                                                    rawBmp // Gallery decode behaviour: no rotation, no center-square crop
-                                                }
-                                                val validation = LeafValidator.validate(finalBmp)
-                                                val meta = ImageAnalysisMetadata(
-                                                    source = source,
-                                                    origWidth = origWidth,
-                                                    origHeight = origHeight,
-                                                    exifOrientation = exifOrientation,
-                                                    leafValidatorPass = validation.isLikelyCrop,
-                                                    leafValidatorFraction = validation.plantPixelFraction,
-                                                    leafValidatorReason = validation.reason
-                                                )
-                                                processDiagnosis(finalBmp, cropHint, autoStartAdvisor = false, metadata = meta)
-                                            }
+                                            val bytes = file.readBytes()
+                                            processImageBytes(bytes, source, cropHint, autoStartAdvisor = false, skipSoftWarning = true)
                                         } else {
                                             Log.e("MainActivityBenchmark", "diagnose_file: file not found: $filePath")
                                         }
@@ -641,6 +780,10 @@ class MainActivity : ComponentActivity() {
                                 language = selectedLanguage,
                                 selectedCrop = selectedCrop,
                                 isProcessing = isProcessingImage,
+                                onImageBytesCaptured = { bytes, cropFilter, source ->
+                                    val effectiveCropFilter = cropFilter ?: selectedCrop
+                                    processImageBytes(bytes, source, effectiveCropFilter)
+                                },
                                 onImageCaptured = { bitmap, cropFilter ->
                                     val effectiveCropFilter = cropFilter ?: selectedCrop
                                     val validation = LeafValidator.validate(bitmap)
