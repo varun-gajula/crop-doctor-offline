@@ -31,6 +31,7 @@ data_processed/
 benchmarks/dummy_realtest/
 benchmarks/phone_samples/
 benchmarks/test_inspect/
+benchmarks/p5_staging/
 benchmarks/*.jpg
 *.zip
 *.tar

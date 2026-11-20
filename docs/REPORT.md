@@ -91,12 +91,13 @@ Data preparation utilized stratified train/validation/test splits (70/15/15) iso
 
 ### 3.3 Calibration & Out-of-Distribution Handling
 To prevent overconfident predictions on unfamiliar leaves or non-crop images:
-1. **Temperature Scaling ($T$)**: Post-hoc softmax calibration was fitted on held-out validation logits to align confidence values with empirical error rates.
-2. **Free Energy Out-of-Distribution (OOD) Scoring**: Computes Helmholtz free energy $E(x) = -T \cdot \log \sum_i e^{z_i / T}$. Samples exhibiting an energy score below threshold are rejected as out-of-distribution.
-3. **Certainty Thresholds**:
-   - `SURE`: Calibrated confidence $\ge 0.80$ and low OOD energy.
-   - `PROBABLY`: Calibrated confidence $0.50 - 0.79$.
-   - `NOT_SURE`: Calibrated confidence $< 0.50$ or high OOD energy. Rerouted to *"Can't tell - ask an extension officer"*.
+1. **Temperature Scaling ($T$)**: Post-hoc softmax calibration was fitted with $T = 1.7818$ on validation logits.
+2. **Free Energy Out-of-Distribution (OOD) Scoring**: Computes Helmholtz free energy $E(x) = -T \cdot \log \sum_i e^{z_i / T}$ with calibrated energy threshold $E_{\text{thresh}} = -8.0000$ (`app/src/main/assets/thresholds.json`).
+3. **Crop-Mass Filtering & Ambiguity Margin**: When a crop is selected by the farmer, within-crop softmax probability mass is required to meet $\ge 0.60$ (`crop_mass_threshold`), and top-1 vs top-2 margin must exceed $0.25$ unless free energy is strongly negative ($< -9.0000$).
+4. **Three Clear Outcomes (Decided in Plain Code)**:
+   - `DIAGNOSE`: In-crop disease or healthy class accepted above calibrated threshold.
+   - `CANT_TELL`: High free energy ($E > -8.0$), low confidence, unvalidated leaf photo, weeds, or unverified disease classes. Rerouted to *"Not sure - ask an extension officer"*.
+   - `OUT_OF_CLASS`: Low crop mass ($< 0.60$) or ambiguous borderline margin. Displays *"Out of class - plant does not match"*.
 
 ### 3.4 ExecuTorch Export & Optimization
 The PyTorch model was exported to ExecuTorch 0.6.0 via:
@@ -252,6 +253,29 @@ The usability test sheet (`docs/USABILITY_TEST_SHEET.md`) is marked: *"Filled in
 - **Village Extension Worker (Hindi/Telugu)**: Comprehension time **not yet measured** (test sheet unverified pending tester confirmation).
 - **Citizen Student (English)**: Comprehension time **not yet measured** (test sheet unverified pending tester confirmation).
 - **Average Time to Understand Advice**: **not yet measured** (target $\le 60\text{ s}$; formal field verification pending).
+
+### 7.6 Task P5 End-to-End Phone Benchmark & Robustness Check
+
+A scripted test harness (`tools/run_p5_benchmarks.py`) evaluated 55 test photos and 20 consecutive camera captures live on the connected 6 GB reference physical phone (POCO 22041219PI, 64-bit Arm CPU, Android 14). All values below come directly from the raw device log `benchmarks/p5_phone_report.md` (Rule H3):
+
+| Test Condition / Metric | Target Requirement | Measured Physical Phone Value | Acceptance Status | Source Benchmark Log |
+|---|---|---|:---:|---|
+| **ANR Count (20 Captures)** | Exactly 0 | **0** | **PASS** | `benchmarks/p5_phone_report.md`, `benchmarks/p5_consecutive_captures_raw.json` |
+| **Continuous Memory Stability** | Net PSS growth < 50 MB | **-1.74 MB** (213.65 MB -> 211.91 MB) | **PASS** | `benchmarks/p5_phone_report.md`, `benchmarks/p5_consecutive_captures_raw.json` |
+| **Real Leaves Diagnosis Rate (25 photos)** | $\ge 80.0\%$ | **80.0%** (20 / 25 diagnosed) | **PASS** | `benchmarks/p5_phone_report.md`, `benchmarks/p5_scripted_run_raw.json` |
+| **Non-Crop Rejection (`nocrop`, 10 photos)** | $\ge 80.0\%$ | **100.0%** (10 / 10 rejected: 9 CANT_TELL, 1 OUT_OF_CLASS) | **PASS** | `benchmarks/p5_phone_report.md`, `benchmarks/p5_scripted_run_raw.json` |
+| **Other Crop Rejection (`othercrop`, 10 photos)** | $\ge 60.0\%$ | **90.0%** (9 / 10 rejected: 7 OUT_OF_CLASS, 2 CANT_TELL) | **PASS** | `benchmarks/p5_phone_report.md`, `benchmarks/p5_scripted_run_raw.json` |
+| **Phone Pipeline Shutter-to-Result Latency** | $\le 1,500\text{ ms}$ | **769.5 ms** mean (Min: 621.2 ms, Max: 1759.7 ms) | **PASS** | `benchmarks/p5_phone_report.md`, `benchmarks/p5_scripted_run_raw.json` |
+
+#### Category Breakdown on Physical Phone (55 Images):
+- **Real Rice (5 photos)**: 5 / 5 diagnosed (100.0%), mean latency 938.6 ms.
+- **Real Cotton (5 photos)**: 5 / 5 diagnosed (100.0%), mean latency 740.5 ms.
+- **Real Chilli (5 photos)**: 5 / 5 diagnosed (100.0%), mean latency 817.2 ms.
+- **Real Tomato (5 photos)**: 1 diagnosed, 2 CANT_TELL (high free energy), 2 OUT_OF_CLASS (low crop mass), mean latency 766.2 ms.
+- **Real Maize (5 photos)**: 4 / 5 diagnosed, 1 CANT_TELL (high free energy), mean latency 776.1 ms.
+- **Non-Crop Desk/Wall/Floor/Hand (`nocrop`, 10 photos)**: 0 diagnosed, 9 CANT_TELL, 1 OUT_OF_CLASS, mean latency 758.2 ms.
+- **Other Crops Cashew/Cassava (`othercrop`, 10 photos)**: 1 diagnosed, 2 CANT_TELL, 7 OUT_OF_CLASS, mean latency 734.0 ms.
+- **Laptop Screen Captures (`screen`, 10 photos)**: 6 diagnosed, 4 CANT_TELL, 0 OUT_OF_CLASS, mean latency 720.6 ms.
 
 ---
 

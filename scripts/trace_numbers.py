@@ -105,6 +105,14 @@ def main():
         # Target Hardware Specs
         {"metric": "Target Physical Phone RAM (6 GB)", "val": "6 GB", "context": "Physical RAM specification of reference device", "doc": "REPORT.md & README.md"},
         {"metric": "Helio G96 Physical Cores (8)", "val": "8 cores", "context": "Arm Cortex-A76 + A55 CPU core count", "doc": "REPORT.md"},
+
+        # Task P5 End-to-End Phone Benchmark & Robustness (Physical Reference Phone)
+        {"metric": "Task P5 ANR Count (0)", "val": "0", "context": "ANR count across 20 consecutive camera captures on phone", "doc": "REPORT.md"},
+        {"metric": "Task P5 Memory Stability (-1.74 MB)", "val": "-1.74", "context": "Net PSS memory growth across 20 consecutive captures", "doc": "REPORT.md"},
+        {"metric": "Task P5 Real Leaves Diagnosis Rate (80.0%)", "val": "80.0%", "context": "Share of 25 real crop leaf photos diagnosed on phone", "doc": "REPORT.md"},
+        {"metric": "Task P5 Non-Crop Rejection Rate (100.0%)", "val": "100.0%", "context": "Share of 10 nocrop photos rejected on phone", "doc": "REPORT.md"},
+        {"metric": "Task P5 Other Crop Rejection Rate (90.0%)", "val": "90.0%", "context": "Share of 10 othercrop photos rejected on phone", "doc": "REPORT.md"},
+        {"metric": "Task P5 Mean Pipeline Latency (769.5 ms)", "val": "769.5", "context": "Mean shutter-to-result latency on physical phone across 55 scripted photos", "doc": "REPORT.md"},
     ]
 
     trace_results = []

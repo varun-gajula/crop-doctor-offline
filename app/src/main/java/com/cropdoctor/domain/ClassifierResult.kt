@@ -12,6 +12,15 @@ enum class CertaintyBand {
     NOT_SURE    // confidence < 0.60
 }
 
+/**
+ * Task P4: Three Clear Outcomes decided in plain code with measured thresholds.
+ */
+enum class DiagnosisOutcome {
+    DIAGNOSE,
+    CANT_TELL,
+    OUT_OF_CLASS
+}
+
 data class ScoredClass(
     val classId: String,
     val displayName: String,
@@ -30,5 +39,9 @@ data class ClassifierResult(
     val isDemoMode: Boolean = false,
     val top3: List<ScoredClass> = emptyList(),
     val selectedCrop: String? = null,
-    val cropMass: Float = 1.0f
+    val cropMass: Float = 1.0f,
+    val outcome: DiagnosisOutcome = DiagnosisOutcome.DIAGNOSE,
+    val outcomeReason: String = "",
+    val margin: Float = 0.0f,
+    val freeEnergy: Double = 0.0
 )

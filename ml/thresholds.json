@@ -1,11 +1,17 @@
 {
   "calibration_method": "single_scalar_temperature_scaling",
-  "temperature": 1.3302102088928223,
-  "nll_before": 0.31178033351898193,
-  "nll_after": 0.2952011525630951,
-  "confidence_threshold": 0.2,
+  "temperature": 1.7817542552947998,
+  "confidence_threshold": 0.3434087038040161,
+  "default_threshold": 0.3434087038040161,
+  "energy_threshold": -8.0,
+  "crop_mass_threshold": 0.6,
+  "margin_threshold": 0.25,
+  "borderline_energy": -9.0,
+  "energy_method": "free_energy_probe_set_calibration",
+  "nll_before": 0.29563385248184204,
+  "nll_after": 0.24356000125408173,
   "threshold_target_precision": 0.9,
   "target_precision_reached": true,
-  "selection_note": "lowest-confidence operating point meeting target precision, selected on validation data",
-  "status": "provisional; fitted on this grouped validation split"
+  "selection_note": "Option B selected: energy_threshold=-8.0, crop_mass_threshold=0.60, margin_threshold=0.25, borderline_energy=-9.0",
+  "status": "Task P4 calibrated on realtest probe sets"
 }

@@ -1,6 +1,42 @@
 # Project Progress - Crop Doctor Offline
 
-## Current Status: Task P2 Complete (Unified Image Pipeline & Continuous Capture Stability)
+## Current Status: Task P4 Complete (Three Clear Outcomes: DIAGNOSE, CAN'T TELL, OUT OF CLASS)
+
+### Done in Task P4: Three Clear Outcomes Decided in Plain Code with Measured Thresholds (Option B)
+1. **Measured Thresholds Configured (Option B Applied)**:
+   - Evaluated 610 decision rows across 5 probe sets (298 images under `C:\crop-data\realtest\`) in `benchmarks/p4_decision_table.csv`.
+   - Single source of truth configured in `app/src/main/assets/thresholds.json` and `ml/thresholds.json`:
+     - `temperature`: `1.7818`
+     - `confidence_threshold`: `0.3434`
+     - `energy_threshold`: `-8.0000` (Free Energy OOD gate)
+     - `crop_mass_threshold`: `0.6000` (Option B: minimum 60% probability mass on selected crop)
+     - `margin_threshold`: `0.2500` (Option B: minimum within-crop top-1 minus top-2 probability difference)
+     - `borderline_energy`: `-9.0000` (Option B: borderline energy cutoff)
+2. **Decision Table Targets Verified (from `benchmarks/p4_decision_report.md`)**:
+   - **Supported Crop Leaves (107 images)**: **98.1%** (105 / 107) `DIAGNOSE` (93.5%, 100 images) or `CAN'T TELL` (4.7%, 5 images); only 1.9% (2 images) `OUT OF CLASS`. Target $\ge 90\%$ **PASSED**.
+   - **Non-Crop Objects (`nocrop`, 30 images, 150 evaluations)**: **96.7%** (145 / 150) `CAN'T TELL`. Target $\ge 80\%$ **PASSED**.
+   - **Other Crops (`othercrop`, 48 images, 240 evaluations)**: **92.5%** (222 / 240) `OUT OF CLASS` (172) or `CAN'T TELL` (50). Target $\ge 60\%$ **PASSED**.
+   - **Unsupported Diseases (`unsupported`, 93 images)**: **10.8%** (10 / 93) wrongly diagnosed; **89.2%** (83 / 93) safely intercepted as `OUT OF CLASS` (30 images) or `CAN'T TELL` (53 images).
+   - **Screen Photos (`screen`, 20 photos)**: 40% `DIAGNOSE`, 50% `CAN'T TELL`, 10% `OUT OF CLASS`. Note added: *"cause not established; screen photos have energy between real leaves and non-crop photos"*.
+   - **Supported DIAGNOSE Accuracy**: **95 / 100 (95.0%)** correct against true ground-truth class.
+   - **Probe Set Sources (from `p4_probe_manifest.json`)**: 70 real phone photos (12 supported, 8 unsupported, 20 screen, 30 nocrop), 228 web/dataset images (95 supported, 85 unsupported, 48 othercrop). Explicit note: *"Thresholds were chosen and scored on the same probe set, so the reported rates are optimistic."*
+3. **P2 Wrong-Crop Resolution**:
+   - `camera_real_11` (tomato bacterial spot): $M_C = 0.0093 < 0.60 \rightarrow$ **`OUT OF CLASS`**.
+   - `camera_real_17` (tomato yellow leaf curl virus): $M_C = 0.0828 < 0.60 \rightarrow$ **`OUT OF CLASS`**.
+4. **Three Distinct Outcome UI Layouts (`ResultScreen.kt`)**:
+   - `DIAGNOSE`: Full disease/pest diagnosis with severity, certainty, field spread, treatment tiers (natural & chemical), AI explanation, case reports.
+   - `CAN'T TELL`: Warm orange theme (`HelpOutline`), sourced guidance *"Can't tell. This does not look like a clear leaf. Take a closer photo in daylight or ask an extension officer."*, evaluated leaf photo card, "Take another photo" button, and Kisan Call Centre referral button (1800-180-1551). Strictly NO treatments, medicine doses, severity cards, or AI explanation (Rules H4, H5).
+   - `OUT OF CLASS`: Amber theme (`WarningAmber`), sourced guidance *"Out of class. This does not match <selected crop> or one of the 20 problems we support. Choose the right crop or ask an extension officer."*, evaluated leaf photo card, "Change crop" button, "Take another photo" button, and Kisan Call Centre referral button (1800-180-1551). Strictly NO treatments, medicine doses, severity cards, or AI explanation (Rules H4, H5).
+5. **Localization & Unit Tests**:
+   - All strings localized in English, Telugu, and Hindi across `strings.xml`.
+   - Unit tests added to `CropdocDecisionGateTest.kt` verifying all outcome gates, Option B thresholds, and 3-language string existence.
+   - **127 / 127 unit tests passing** (`./gradlew testDebugUnitTest`).
+   - `./gradlew assembleDebug` passed cleanly.
+   - On-device screenshots captured for all 3 outcomes in English, Telugu, and Hindi: `benchmarks/p4_outcome_diagnose.png`, `p4_outcome_cant_tell.png`, `p4_outcome_out_of_class.png`, `p4_outcome_cant_tell_te.png`, `p4_outcome_out_of_class_te.png`, `p4_outcome_cant_tell_hi.png`, `p4_outcome_out_of_class_hi.png`.
+
+---
+
+## Prior Status: Task P3 Complete (Crop Selection Before Scanning)
 
 ### Done in Task P2: Unified Image Pipeline & Continuous Capture Stability (Rules R1-R9, H1-H15)
 1. **Aspect Handling & Preprocessing Parity with Training (`docs/PREPROCESSING.md`)**:

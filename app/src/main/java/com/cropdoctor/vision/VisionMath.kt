@@ -2,6 +2,7 @@ package com.cropdoctor.vision
 
 import com.cropdoctor.domain.CertaintyBand
 import com.cropdoctor.domain.CertaintyCalculator
+import com.cropdoctor.domain.DiagnosisOutcome
 import com.cropdoctor.domain.ScoredClass
 import kotlin.math.exp
 import kotlin.math.ln
@@ -14,7 +15,10 @@ data class DiagnosisEvaluation(
     val top3: List<ScoredClass>,
     val freeEnergy: Double,
     val isOutOfDistribution: Boolean,
-    val isBelowThreshold: Boolean
+    val isBelowThreshold: Boolean,
+    val outcome: DiagnosisOutcome = DiagnosisOutcome.DIAGNOSE,
+    val outcomeReason: String = "",
+    val margin: Float = 0.0f
 )
 
 object VisionMath {
@@ -181,59 +185,103 @@ object VisionMath {
     }
 
     /**
-     * Evaluates diagnosis with temperature scaling, confidence thresholds, and optional OOD detection.
-     * Blocked / unsupported classes (e.g. weeds_not_a_crop, tomato_leaf_blight) are forced to "unknown" ("Can't tell").
-     * Energy check runs only if energyThreshold is non-null. When energyThreshold is null, energy checking is OFF.
+     * Evaluates diagnosis with temperature scaling, confidence thresholds, crop mass, margin, and OOD detection.
+     * Implements Task P4: Three clear outcomes (DIAGNOSE, CANT_TELL, OUT_OF_CLASS) in plain code.
+     * Enforces fail closed.
      */
     fun evaluateDiagnosis(
         labels: List<String>,
         probabilities: FloatArray,
         thresholds: Map<String, Float> = emptyMap(),
-        defaultThreshold: Float,
+        defaultThreshold: Float = 0.3434087f,
         freeEnergy: Double = 0.0,
         energyThreshold: Double? = null,
-        unsupportedClasses: Set<String> = emptySet()
+        unsupportedClasses: Set<String> = emptySet(),
+        cropMass: Float = 1.0f,
+        cropMassThreshold: Float = 0.60f,
+        marginThreshold: Float = 0.25f,
+        borderlineEnergy: Double = -9.0,
+        gate1Pass: Boolean = true,
+        leafValidatorReason: String = ""
     ): DiagnosisEvaluation {
         val topK = extractTopK(labels, probabilities, 3)
         val top1 = topK.firstOrNull()
+        val top2 = if (topK.size > 1) topK[1] else null
+        val top1Prob = top1?.probability ?: 0.0f
+        val top2Prob = top2?.probability ?: 0.0f
+        val margin = top1Prob - top2Prob
 
-        // Unsupported or out-of-scope classes must never be returned as a confident diagnosis; returns "unknown" ("Can't tell").
+        val isWeeds = top1 != null && top1.classId == "weeds_not_a_crop"
         val isUnsupportedClass = top1 != null && unsupportedClasses.contains(top1.classId)
-
-        // The energy check runs only if energy_threshold is present; otherwise it is OFF.
         val isOOD = if (energyThreshold != null) freeEnergy > energyThreshold else false
-
         val requiredThreshold = if (top1 != null) {
             thresholds[top1.classId] ?: defaultThreshold
         } else {
             defaultThreshold
         }
+        val isBelowThreshold = top1 == null || top1Prob < requiredThreshold
 
-        val isBelowThreshold = top1 == null || top1.probability < requiredThreshold
+        // Task P4 three clear outcomes
+        val (outcome, outcomeReason) = when {
+            !gate1Pass -> DiagnosisOutcome.CANT_TELL to "LEAF_VALIDATOR_FAIL($leafValidatorReason)"
+            isWeeds -> DiagnosisOutcome.CANT_TELL to "GLOBAL_TOP1_WEEDS"
+            isOOD -> DiagnosisOutcome.CANT_TELL to "HIGH_FREE_ENERGY($freeEnergy > $energyThreshold)"
+            isBelowThreshold -> DiagnosisOutcome.CANT_TELL to "LOW_INCROP_CONFIDENCE($top1Prob < $requiredThreshold)"
+            cropMass < cropMassThreshold -> DiagnosisOutcome.OUT_OF_CLASS to "LOW_CROP_MASS($cropMass < $cropMassThreshold)"
+            margin < marginThreshold && freeEnergy >= borderlineEnergy ->
+                DiagnosisOutcome.OUT_OF_CLASS to "BORDERLINE_AMBIGUOUS(margin=$margin < $marginThreshold, E=$freeEnergy >= $borderlineEnergy)"
+            isUnsupportedClass -> DiagnosisOutcome.OUT_OF_CLASS to "UNSUPPORTED_CLASS(${top1?.classId})"
+            else -> DiagnosisOutcome.DIAGNOSE to "ACCEPTED"
+        }
 
-        return if (isOOD || isBelowThreshold || isUnsupportedClass) {
-            val candidateConfidence = top1?.probability ?: 0.0f
-            DiagnosisEvaluation(
-                classId = "unknown",
-                displayName = "Not sure - ask an extension officer",
-                confidence = candidateConfidence,
-                certaintyBand = CertaintyBand.NOT_SURE,
-                top3 = topK,
-                freeEnergy = freeEnergy,
-                isOutOfDistribution = isOOD,
-                isBelowThreshold = isBelowThreshold || isUnsupportedClass
-            )
-        } else {
-            DiagnosisEvaluation(
-                classId = top1.classId,
-                displayName = top1.displayName,
-                confidence = top1.probability,
-                certaintyBand = CertaintyCalculator.calculate(top1.probability),
-                top3 = topK,
-                freeEnergy = freeEnergy,
-                isOutOfDistribution = false,
-                isBelowThreshold = false
-            )
+        return when (outcome) {
+            DiagnosisOutcome.CANT_TELL -> {
+                DiagnosisEvaluation(
+                    classId = "unknown",
+                    displayName = "Not sure - ask an extension officer",
+                    confidence = top1Prob,
+                    certaintyBand = CertaintyBand.NOT_SURE,
+                    top3 = topK,
+                    freeEnergy = freeEnergy,
+                    isOutOfDistribution = isOOD,
+                    isBelowThreshold = true,
+                    outcome = outcome,
+                    outcomeReason = outcomeReason,
+                    margin = margin
+                )
+            }
+            DiagnosisOutcome.OUT_OF_CLASS -> {
+                val resolvedClassId = if (isUnsupportedClass) "unknown" else "out_of_class"
+                val resolvedDisplayName = if (isUnsupportedClass) "Not sure - ask an extension officer" else "Out of class - plant does not match"
+                DiagnosisEvaluation(
+                    classId = resolvedClassId,
+                    displayName = resolvedDisplayName,
+                    confidence = top1Prob,
+                    certaintyBand = CertaintyBand.NOT_SURE,
+                    top3 = topK,
+                    freeEnergy = freeEnergy,
+                    isOutOfDistribution = isOOD,
+                    isBelowThreshold = true,
+                    outcome = outcome,
+                    outcomeReason = outcomeReason,
+                    margin = margin
+                )
+            }
+            DiagnosisOutcome.DIAGNOSE -> {
+                DiagnosisEvaluation(
+                    classId = top1!!.classId,
+                    displayName = top1.displayName,
+                    confidence = top1Prob,
+                    certaintyBand = CertaintyCalculator.calculate(top1Prob),
+                    top3 = topK,
+                    freeEnergy = freeEnergy,
+                    isOutOfDistribution = false,
+                    isBelowThreshold = false,
+                    outcome = outcome,
+                    outcomeReason = outcomeReason,
+                    margin = margin
+                )
+            }
         }
     }
 }
