@@ -42,9 +42,12 @@ import com.cropdoctor.vision.LeafValidator
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeout
 import java.util.concurrent.atomic.AtomicLong
 import java.util.Locale
 import com.cropdoctor.vision.ImagePreprocessor
@@ -212,51 +215,55 @@ class MainActivity : ComponentActivity() {
                         val thisRequestId = currentRequestId.incrementAndGet()
                         currentDiagnosisJob?.cancel()
                         currentAdviceJob?.cancel()
+                        (app.advisor as? ExecuTorchLlamaAdvisor)?.stop()
                         isProcessingImage = true
 
                         currentDiagnosisJob = lifecycleScope.launch(Dispatchers.Default) {
+                            var preprocessedImage: ImagePreprocessor.PreprocessedImage? = null
                             try {
-                                val reusableBuf = (app.classifier as? ExecuTorchClassifier)?.getReusableBuffer()
-                                val preprocessed = ImagePreprocessor.prepare(bytes, reusableBuf)
+                                withTimeout(10_000L) {
+                                    val reusableBuf = (app.classifier as? ExecuTorchClassifier)?.getReusableBuffer()
+                                    val preprocessed = ImagePreprocessor.prepare(bytes, reusableBuf)
+                                    preprocessedImage = preprocessed
 
-                                if (thisRequestId != currentRequestId.get() || !isActive) {
-                                    preprocessed.bitmap512.recycle()
-                                    return@launch
-                                }
-
-                                val meta = ImageAnalysisMetadata(
-                                    source = source,
-                                    origWidth = preprocessed.origWidth,
-                                    origHeight = preprocessed.origHeight,
-                                    exifOrientation = preprocessed.exifRotationDegrees,
-                                    leafValidatorPass = preprocessed.leafValidation.isLikelyCrop,
-                                    leafValidatorFraction = preprocessed.leafValidation.plantPixelFraction,
-                                    leafValidatorReason = preprocessed.leafValidation.reason
-                                )
-
-                                val effectiveCropFilter = cropFilter ?: selectedCrop
-
-                                if (!skipSoftWarning && !preprocessed.leafValidation.isLikelyCrop) {
-                                    withContext(Dispatchers.Main) {
-                                        if (thisRequestId != currentRequestId.get()) {
-                                            preprocessed.bitmap512.recycle()
-                                            return@withContext
-                                        }
-                                        pendingCapturedBitmap = preprocessed.bitmap512
-                                        pendingCropFilter = effectiveCropFilter
-                                        pendingMetadata = meta
-                                        showSoftCropWarningDialog = true
-                                        isProcessingImage = false
+                                    if (thisRequestId != currentRequestId.get() || !isActive) {
+                                        preprocessed.bitmap512.recycle()
+                                        return@withTimeout
                                     }
-                                    return@launch
-                                }
 
-                                val result = app.classifier.classify(preprocessed, effectiveCropFilter, meta)
+                                    val meta = ImageAnalysisMetadata(
+                                        source = source,
+                                        origWidth = preprocessed.origWidth,
+                                        origHeight = preprocessed.origHeight,
+                                        exifOrientation = preprocessed.exifRotationDegrees,
+                                        leafValidatorPass = preprocessed.leafValidation.isLikelyCrop,
+                                        leafValidatorFraction = preprocessed.leafValidation.plantPixelFraction,
+                                        leafValidatorReason = preprocessed.leafValidation.reason
+                                    )
 
-                                if (thisRequestId != currentRequestId.get() || !isActive) {
-                                    preprocessed.bitmap512.recycle()
-                                    return@launch
-                                }
+                                    val effectiveCropFilter = cropFilter ?: selectedCrop
+
+                                    if (!skipSoftWarning && !preprocessed.leafValidation.isLikelyCrop) {
+                                        withContext(NonCancellable + Dispatchers.Main) {
+                                            if (thisRequestId != currentRequestId.get()) {
+                                                preprocessed.bitmap512.recycle()
+                                                return@withContext
+                                            }
+                                            pendingCapturedBitmap = preprocessed.bitmap512
+                                            pendingCropFilter = effectiveCropFilter
+                                            pendingMetadata = meta
+                                            showSoftCropWarningDialog = true
+                                            isProcessingImage = false
+                                        }
+                                        return@withTimeout
+                                    }
+
+                                    val result = app.classifier.classify(preprocessed, effectiveCropFilter, meta)
+
+                                    if (thisRequestId != currentRequestId.get() || !isActive) {
+                                        preprocessed.bitmap512.recycle()
+                                        return@withTimeout
+                                    }
 
                                 val kb = KnowledgeBase.getEntry(result.classId)
                                     ?: if (result.outcome == DiagnosisOutcome.OUT_OF_CLASS || result.classId == "out_of_class") {
@@ -336,7 +343,7 @@ class MainActivity : ComponentActivity() {
                                         )
                                     }
 
-                                withContext(Dispatchers.Main) {
+                                withContext(NonCancellable + Dispatchers.Main) {
                                     if (thisRequestId != currentRequestId.get()) {
                                         preprocessed.bitmap512.recycle()
                                         return@withContext
@@ -362,13 +369,58 @@ class MainActivity : ComponentActivity() {
                                         )
                                     }
                                 }
+                            }
+                            } catch (e: TimeoutCancellationException) {
+                                Log.e("MainActivity", "Diagnosis timed out after 10s", e)
+                                preprocessedImage?.bitmap512?.recycle()
+                                val effectiveCropFilter = cropFilter ?: selectedCrop
+                                val timeoutResult = ClassifierResult(
+                                    classId = "unknown",
+                                    displayName = "Could not read the photo. Please try again.",
+                                    confidence = 0f,
+                                    severityBand = SeverityBand.MILD,
+                                    certaintyBand = CertaintyBand.NOT_SURE,
+                                    lesionFraction = 0f,
+                                    outcome = DiagnosisOutcome.CANT_TELL,
+                                    outcomeReason = "TIMEOUT: Analysis exceeded 10s limit",
+                                    selectedCrop = effectiveCropFilter
+                                )
+                                withContext(NonCancellable + Dispatchers.Main) {
+                                    if (thisRequestId == currentRequestId.get()) {
+                                        classifierResult = timeoutResult
+                                        activeKbEntry = KnowledgeBase.getEntry("unknown") ?: KnowledgeBase.getAllEntries().firstOrNull()
+                                        isProcessingImage = false
+                                        navigateTo(AppScreen.RESULT)
+                                    }
+                                }
                             } catch (e: Exception) {
+                                preprocessedImage?.bitmap512?.recycle()
                                 if (e !is CancellationException) {
                                     Log.e("MainActivity", "Diagnosis error", e)
+                                    val effectiveCropFilter = cropFilter ?: selectedCrop
+                                    val errorResult = ClassifierResult(
+                                        classId = "unknown",
+                                        displayName = "Could not read the photo. Please try again.",
+                                        confidence = 0f,
+                                        severityBand = SeverityBand.MILD,
+                                        certaintyBand = CertaintyBand.NOT_SURE,
+                                        lesionFraction = 0f,
+                                        outcome = DiagnosisOutcome.CANT_TELL,
+                                        outcomeReason = "ERROR: ${e.message ?: "Could not read photo"}",
+                                        selectedCrop = effectiveCropFilter
+                                    )
+                                    withContext(NonCancellable + Dispatchers.Main) {
+                                        if (thisRequestId == currentRequestId.get()) {
+                                            classifierResult = errorResult
+                                            activeKbEntry = KnowledgeBase.getEntry("unknown") ?: KnowledgeBase.getAllEntries().firstOrNull()
+                                            isProcessingImage = false
+                                            navigateTo(AppScreen.RESULT)
+                                        }
+                                    }
                                 }
                             } finally {
-                                if (thisRequestId == currentRequestId.get()) {
-                                    withContext(Dispatchers.Main) {
+                                withContext(NonCancellable + Dispatchers.Main) {
+                                    if (thisRequestId == currentRequestId.get()) {
                                         isProcessingImage = false
                                     }
                                 }
@@ -385,125 +437,170 @@ class MainActivity : ComponentActivity() {
                         val thisRequestId = currentRequestId.incrementAndGet()
                         currentDiagnosisJob?.cancel()
                         currentAdviceJob?.cancel()
+                        (app.advisor as? ExecuTorchLlamaAdvisor)?.stop()
                         isProcessingImage = true
 
                         currentDiagnosisJob = lifecycleScope.launch(Dispatchers.Default) {
                             try {
-                                val effectiveCropFilter = cropFilter ?: selectedCrop
-                                val result = app.classifier.classify(bitmap, effectiveCropFilter, metadata)
+                                withTimeout(10_000L) {
+                                    val effectiveCropFilter = cropFilter ?: selectedCrop
+                                    val result = app.classifier.classify(bitmap, effectiveCropFilter, metadata)
 
-                                if (thisRequestId != currentRequestId.get() || !isActive) {
-                                    return@launch
+                                    if (thisRequestId != currentRequestId.get() || !isActive) {
+                                        return@withTimeout
+                                    }
+
+                                    val kb = KnowledgeBase.getEntry(result.classId)
+                                        ?: if (result.outcome == DiagnosisOutcome.OUT_OF_CLASS || result.classId == "out_of_class") {
+                                            KbEntry(
+                                                classId = "out_of_class",
+                                                index = -1,
+                                                crop = result.selectedCrop ?: effectiveCropFilter ?: "crop",
+                                                type = "out_of_class",
+                                                pathogen = "Unsupported / Out of Class",
+                                                names = LocalizedText(
+                                                    en = "Out of class",
+                                                    te = "గుర్తించిన పంట సమస్య కాదు",
+                                                    hi = "समर्थित वर्ग से बाहर"
+                                                ),
+                                                referralThreshold = "MILD",
+                                                immediateStep = LocalizedText(
+                                                    en = "Choose the right crop or ask an extension officer.",
+                                                    te = "సరైన పంటను ఎంచుకోండి లేదా వ్యవసాయ విస్తరణ అధికారిని సంప్రదించండి.",
+                                                    hi = "सही फसल चुनें या कृषि विस्तार अधिकारी से संपर्क करें।"
+                                                ),
+                                                explainText = LocalizedText(
+                                                    en = "This does not match the selected crop or one of the 20 problems we support. Choose the right crop or ask an extension officer.",
+                                                    te = "ఈ సమస్య మద్దతు ఉన్న జాబితాలో లేదు. ఇది ఎంచుకున్న పంట లేదా మేము గుర్తించే 20 సమస్యలలో దేనికీ సరిపోలడం లేదు. సరైన పంటను ఎంచుకోండి లేదా వ్యవసాయ విస్తరణ అధికారిని సంప్రదించండి.",
+                                                    hi = "समर्थित वर्ग से बाहर। यह चुनी गई फसल या हमारे द्वारा समर्थित 20 समस्याओं में से किसी से मेल नहीं खाता है। सही फसल चुनें या कृषि विस्तार अधिकारी से संपर्क करें।"
+                                                ),
+                                                treatment = TreatmentPlan()
+                                            )
+                                        } else if (result.classId != "unknown") {
+                                            KbEntry(
+                                                classId = result.classId,
+                                                index = -1,
+                                                crop = result.classId.substringBefore("_"),
+                                                type = if (result.classId.endsWith("_healthy")) "healthy" else "disease",
+                                                pathogen = "Awaiting expert verification",
+                                                names = LocalizedText(
+                                                    en = result.displayName,
+                                                    te = result.displayName,
+                                                    hi = result.displayName
+                                                ),
+                                                referralThreshold = "MILD",
+                                                immediateStep = LocalizedText(
+                                                    en = "Advice for this problem is not available yet. Ask an extension officer",
+                                                    te = "ఈ సమస్యకు సలహా ఇంకా అందుబాటులో లేదు. వ్యవసాయ విస్తరణ అధికారిని సంప్రదించండి.",
+                                                    hi = "इस समस्या के लिए सलाह अभी उपलब्ध नहीं है। कृषि विस्तार अधिकारी से संपर्क करें।"
+                                                ),
+                                                explainText = LocalizedText(
+                                                    en = "Advice for this problem is not available yet. Ask an extension officer or visit your nearest Krishi Vigyan Kendra.",
+                                                    te = "ఈ సమస్యకు సలహా ఇంకా అందుబాటులో లేదు. దయచేసి వ్యవసాయ విస్తరణ అధికారిని లేదా కృషి విజ్ఞాన కేంద్రాన్ని సంప్రదించండి.",
+                                                    hi = "इस समस्या के लिए सलाह अभी उपलब्ध नहीं है। कृपया कृषि विस्तार अधिकारी या नजदीकी कृषि विज्ञान केंद्र से संपर्क करें।"
+                                                ),
+                                                treatment = TreatmentPlan()
+                                            )
+                                        } else {
+                                            KbEntry(
+                                                classId = "unknown",
+                                                index = -1,
+                                                crop = "crop",
+                                                type = "unknown",
+                                                pathogen = "Unknown / Unverified",
+                                                names = LocalizedText(
+                                                    en = "Not sure - ask an extension officer",
+                                                    te = "ఖచ్చితంగా తెలియదు",
+                                                    hi = "अनिश्चित स्थिति"
+                                                ),
+                                                referralThreshold = "MILD",
+                                                immediateStep = LocalizedText(
+                                                    en = "Consult an agricultural extension officer.",
+                                                    te = "వ్యవసాయ విస్తరణ అధికారిని సంప్రదించండి.",
+                                                    hi = "कृषि विस्तार अधिकारी से संपर्क करें।"
+                                                ),
+                                                explainText = LocalizedText(
+                                                    en = "The condition could not be identified with certainty. Please ask an agriculture extension officer or visit your nearest Krishi Vigyan Kendra.",
+                                                    te = "పరిస్థితిని ఖచ్చితంగా గుర్తించలేకపోయాము. దయచేసి వ్యవసాయ విస్తరణ అధికారిని లేదా కృషి విజ్ఞాన కేంద్రాన్ని సంప్రదించండి.",
+                                                    hi = "स्थिति की निश्चित पहचान नहीं हो सकी। कृपया कृषि विस्तार अधिकारी या नजदीकी कृषि विज्ञान केंद्र से संपर्क करें।"
+                                                ),
+                                                treatment = TreatmentPlan()
+                                            )
+                                        }
+
+                                    withContext(NonCancellable + Dispatchers.Main) {
+                                        if (thisRequestId != currentRequestId.get()) return@withContext
+                                        if (capturedLeafBitmap != null && capturedLeafBitmap != bitmap && !capturedLeafBitmap!!.isRecycled) {
+                                            capturedLeafBitmap?.recycle()
+                                        }
+                                        capturedLeafBitmap = bitmap
+                                        classifierResult = result
+                                        activeKbEntry = kb
+                                        isProcessingImage = false
+                                        navigateTo(AppScreen.RESULT)
+
+                                        if (autoStartAdvisor && result.outcome == DiagnosisOutcome.DIAGNOSE) {
+                                            triggerAdvisoryStream(
+                                                app = app,
+                                                result = result,
+                                                kbEntry = kb,
+                                                language = selectedLanguage,
+                                                crop = result.selectedCrop ?: effectiveCropFilter,
+                                                onUpdate = { advisoryText = it },
+                                                onStateChange = { isGeneratingAdvice = it }
+                                            )
+                                        }
+                                    }
                                 }
-
-                                val kb = KnowledgeBase.getEntry(result.classId)
-                                    ?: if (result.outcome == DiagnosisOutcome.OUT_OF_CLASS || result.classId == "out_of_class") {
-                                        KbEntry(
-                                            classId = "out_of_class",
-                                            index = -1,
-                                            crop = result.selectedCrop ?: effectiveCropFilter ?: "crop",
-                                            type = "out_of_class",
-                                            pathogen = "Unsupported / Out of Class",
-                                            names = LocalizedText(
-                                                en = "Out of class",
-                                                te = "గుర్తించిన పంట సమస్య కాదు",
-                                                hi = "समर्थित वर्ग से बाहर"
-                                            ),
-                                            referralThreshold = "MILD",
-                                            immediateStep = LocalizedText(
-                                                en = "Choose the right crop or ask an extension officer.",
-                                                te = "సరైన పంటను ఎంచుకోండి లేదా వ్యవసాయ విస్తరణ అధికారిని సంప్రదించండి.",
-                                                hi = "सही फसल चुनें या कृषि विस्तार अधिकारी से संपर्क करें।"
-                                            ),
-                                            explainText = LocalizedText(
-                                                en = "This does not match the selected crop or one of the 20 problems we support. Choose the right crop or ask an extension officer.",
-                                                te = "ఈ సమస్య మద్దతు ఉన్న జాబితాలో లేదు. ఇది ఎంచుకున్న పంట లేదా మేము గుర్తించే 20 సమస్యలలో దేనికీ సరిపోలడం లేదు. సరైన పంటను ఎంచుకోండి లేదా వ్యవసాయ విస్తరణ అధికారిని సంప్రదించండి.",
-                                                hi = "समर्थित वर्ग से बाहर। यह चुनी गई फसल या हमारे द्वारा समर्थित 20 समस्याओं में से किसी से मेल नहीं खाता है। सही फसल चुनें या कृषि विस्तार अधिकारी से संपर्क करें।"
-                                            ),
-                                            treatment = TreatmentPlan()
-                                        )
-                                    } else if (result.classId != "unknown") {
-                                        KbEntry(
-                                            classId = result.classId,
-                                            index = -1,
-                                            crop = result.classId.substringBefore("_"),
-                                            type = if (result.classId.endsWith("_healthy")) "healthy" else "disease",
-                                            pathogen = "Awaiting expert verification",
-                                            names = LocalizedText(
-                                                en = result.displayName,
-                                                te = result.displayName,
-                                                hi = result.displayName
-                                            ),
-                                            referralThreshold = "MILD",
-                                            immediateStep = LocalizedText(
-                                                en = "Advice for this problem is not available yet. Ask an extension officer",
-                                                te = "ఈ సమస్యకు సలహా ఇంకా అందుబాటులో లేదు. వ్యవసాయ విస్తరణ అధికారిని సంప్రదించండి.",
-                                                hi = "इस समस्या के लिए सलाह अभी उपलब्ध नहीं है। कृषि विस्तार अधिकारी से संपर्क करें।"
-                                            ),
-                                            explainText = LocalizedText(
-                                                en = "Advice for this problem is not available yet. Ask an extension officer or visit your nearest Krishi Vigyan Kendra.",
-                                                te = "ఈ సమస్యకు సలహా ఇంకా అందుబాటులో లేదు. దయచేసి వ్యవసాయ విస్తరణ అధికారిని లేదా కృషి విజ్ఞాన కేంద్రాన్ని సంప్రదించండి.",
-                                                hi = "इस समस्या के लिए सलाह अभी उपलब्ध नहीं है। कृपया कृषि विस्तार अधिकारी या नजदीकी कृषि विज्ञान केंद्र से संपर्क करें।"
-                                            ),
-                                            treatment = TreatmentPlan()
-                                        )
-                                    } else {
-                                        KbEntry(
-                                            classId = "unknown",
-                                            index = -1,
-                                            crop = "crop",
-                                            type = "unknown",
-                                            pathogen = "Unknown / Unverified",
-                                            names = LocalizedText(
-                                                en = "Not sure - ask an extension officer",
-                                                te = "ఖచ్చితంగా తెలియదు",
-                                                hi = "अनिश्चित स्थिति"
-                                            ),
-                                            referralThreshold = "MILD",
-                                            immediateStep = LocalizedText(
-                                                en = "Consult an agricultural extension officer.",
-                                                te = "వ్యవసాయ విస్తరణ అధికారిని సంప్రదించండి.",
-                                                hi = "कृषि विस्तार अधिकारी से संपर्क करें।"
-                                            ),
-                                            explainText = LocalizedText(
-                                                en = "The condition could not be identified with certainty. Please ask an agriculture extension officer or visit your nearest Krishi Vigyan Kendra.",
-                                                te = "పరిస్థితిని ఖచ్చితంగా గుర్తించలేకపోయాము. దయచేసి వ్యవసాయ విస్తరణ అధికారిని లేదా కృషి విజ్ఞాన కేంద్రాన్ని సంప్రదించండి.",
-                                                hi = "स्थिति की निश्चित पहचान नहीं हो सकी। कृपया कृषि विस्तार अधिकारी या नजदीकी कृषि विज्ञान केंद्र से संपर्क करें।"
-                                            ),
-                                            treatment = TreatmentPlan()
-                                        )
-                                    }
-
-                                withContext(Dispatchers.Main) {
-                                    if (thisRequestId != currentRequestId.get()) return@withContext
-                                    if (capturedLeafBitmap != null && capturedLeafBitmap != bitmap && !capturedLeafBitmap!!.isRecycled) {
-                                        capturedLeafBitmap?.recycle()
-                                    }
-                                    capturedLeafBitmap = bitmap
-                                    classifierResult = result
-                                    activeKbEntry = kb
-                                    isProcessingImage = false
-                                    navigateTo(AppScreen.RESULT)
-
-                                    if (autoStartAdvisor && result.outcome == DiagnosisOutcome.DIAGNOSE) {
-                                        triggerAdvisoryStream(
-                                            app = app,
-                                            result = result,
-                                            kbEntry = kb,
-                                            language = selectedLanguage,
-                                            crop = result.selectedCrop ?: effectiveCropFilter,
-                                            onUpdate = { advisoryText = it },
-                                            onStateChange = { isGeneratingAdvice = it }
-                                        )
+                            } catch (e: TimeoutCancellationException) {
+                                Log.e("MainActivity", "Diagnosis timed out after 10s", e)
+                                val effectiveCropFilter = cropFilter ?: selectedCrop
+                                val timeoutResult = ClassifierResult(
+                                    classId = "unknown",
+                                    displayName = "Could not read the photo. Please try again.",
+                                    confidence = 0f,
+                                    severityBand = SeverityBand.MILD,
+                                    certaintyBand = CertaintyBand.NOT_SURE,
+                                    lesionFraction = 0f,
+                                    outcome = DiagnosisOutcome.CANT_TELL,
+                                    outcomeReason = "TIMEOUT: Analysis exceeded 10s limit",
+                                    selectedCrop = effectiveCropFilter
+                                )
+                                withContext(NonCancellable + Dispatchers.Main) {
+                                    if (thisRequestId == currentRequestId.get()) {
+                                        classifierResult = timeoutResult
+                                        activeKbEntry = KnowledgeBase.getEntry("unknown") ?: KnowledgeBase.getAllEntries().firstOrNull()
+                                        isProcessingImage = false
+                                        navigateTo(AppScreen.RESULT)
                                     }
                                 }
                             } catch (e: Exception) {
                                 if (e !is CancellationException) {
                                     Log.e("MainActivity", "Diagnosis error", e)
+                                    val effectiveCropFilter = cropFilter ?: selectedCrop
+                                    val errorResult = ClassifierResult(
+                                        classId = "unknown",
+                                        displayName = "Could not read the photo. Please try again.",
+                                        confidence = 0f,
+                                        severityBand = SeverityBand.MILD,
+                                        certaintyBand = CertaintyBand.NOT_SURE,
+                                        lesionFraction = 0f,
+                                        outcome = DiagnosisOutcome.CANT_TELL,
+                                        outcomeReason = "ERROR: ${e.message ?: "Could not read photo"}",
+                                        selectedCrop = effectiveCropFilter
+                                    )
+                                    withContext(NonCancellable + Dispatchers.Main) {
+                                        if (thisRequestId == currentRequestId.get()) {
+                                            classifierResult = errorResult
+                                            activeKbEntry = KnowledgeBase.getEntry("unknown") ?: KnowledgeBase.getAllEntries().firstOrNull()
+                                            isProcessingImage = false
+                                            navigateTo(AppScreen.RESULT)
+                                        }
+                                    }
                                 }
                             } finally {
-                                if (thisRequestId == currentRequestId.get()) {
-                                    withContext(Dispatchers.Main) {
+                                withContext(NonCancellable + Dispatchers.Main) {
+                                    if (thisRequestId == currentRequestId.get()) {
                                         isProcessingImage = false
                                     }
                                 }
@@ -809,6 +906,8 @@ class MainActivity : ComponentActivity() {
                                         Log.i("MainActivityBenchmark", "Llama model released")
                                     }
                                 }
+                                "show_home" -> navigateTo(AppScreen.HOME)
+                                "show_camera" -> navigateTo(AppScreen.CAMERA)
                             }
                         }
                         intent?.let { inIntent ->
