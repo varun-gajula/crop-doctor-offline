@@ -171,4 +171,13 @@
     <string name="urgency_desc_act_now">అత్యవసరం! పంట నష్టాన్ని నివారించడానికి తక్షణమే చర్యలు చేపట్టండి.</string>
     <string name="watch_for_title">రాబోయే రోజుల్లో ఏమి గమనించాలి</string>
     <string name="watch_for_content">ప్రతి 2-3 రోజులకు ఒకసారి ఆకుల అడుగు భాగాన్ని పరిశీలించండి. తెగులు లేదా పురుగులు పక్క మొక్కలకు వ్యాపిస్తున్నాయో లేదో చూడండి. మచ్చలు పెరిగితే వెంటనే తగిన నివారణ చర్యలు చేపట్టండి.</string>
+
+    <!-- Task P4: Three Clear Outcomes -->
+    <string name="outcome_diagnose">రోగ నిర్ధారణ</string>
+    <string name="outcome_cant_tell_title">ఖచ్చితంగా చెప్పలేము</string>
+    <string name="outcome_cant_tell_message">ఖచ్చితంగా చెప్పలేము. ఇది స్పష్టమైన ఆకులా కనిపించడం లేదు. పగటి వెలుతురులో దగ్గరగా ఫోటో తీయండి లేదా వ్యవసాయ విస్తరణ అధికారిని సంప్రదించండి.</string>
+    <string name="outcome_out_of_class_title">గుర్తించిన పంట సమస్య కాదు</string>
+    <string name="outcome_out_of_class_message">ఈ సమస్య మద్దతు ఉన్న జాబితాలో లేదు. ఇది %1$s లేదా మేము గుర్తించే 20 సమస్యలలో దేనికీ సరిపోలడం లేదు. సరైన పంటను ఎంచుకోండి లేదా వ్యవసాయ విస్తరణ అధికారిని సంప్రదించండి.</string>
+    <string name="btn_take_another_photo">మరొక ఫోటో తీయండి</string>
+    <string name="btn_call_kisan_helpline">విస్తరణ అధికారికి కాల్ చేయండి (1800-180-1551)</string>
 </resources>

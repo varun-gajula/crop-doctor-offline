@@ -7,6 +7,7 @@ import android.os.SystemClock
 import android.util.Log
 import com.cropdoctor.domain.CertaintyBand
 import com.cropdoctor.domain.ClassifierResult
+import com.cropdoctor.domain.DiagnosisOutcome
 import com.cropdoctor.domain.RulesEngine
 import com.cropdoctor.domain.SeverityBand
 import kotlinx.coroutines.CompletableDeferred
@@ -67,6 +68,12 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
     var defaultThreshold: Float? = null
         private set
     var energyThreshold: Double? = null
+        private set
+    var cropMassThreshold: Float = 0.60f
+        private set
+    var marginThreshold: Float = 0.25f
+        private set
+    var borderlineEnergy: Double = -9.0
         private set
     val classThresholds: MutableMap<String, Float> = mutableMapOf()
     val unsupportedClasses: MutableSet<String> = mutableSetOf()
@@ -166,6 +173,11 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
             } else {
                 null
             }
+
+            // Task P4 thresholds (Option B values)
+            cropMassThreshold = if (json.has("crop_mass_threshold")) json.getDouble("crop_mass_threshold").toFloat() else 0.60f
+            marginThreshold = if (json.has("margin_threshold")) json.getDouble("margin_threshold").toFloat() else 0.25f
+            borderlineEnergy = if (json.has("borderline_energy")) json.getDouble("borderline_energy") else -9.0
 
             classThresholds.clear()
             if (json.has("class_thresholds")) {
@@ -451,25 +463,7 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
             val probabilities = maskResult.probabilities
             val cropMass = maskResult.cropMass
 
-            val eval = VisionMath.evaluateDiagnosis(
-                labels = labels,
-                probabilities = probabilities,
-                thresholds = classThresholds,
-                defaultThreshold = curDefaultThresh,
-                freeEnergy = freeEnergy,
-                energyThreshold = curEnergyThresh,
-                unsupportedClasses = unsupportedClasses
-            )
-
-            // CROPDOC_DECISION Gate Diagnostic Logging (Task P1)
-            val bitmapConfig = preprocessed.bitmap512.config?.name ?: "UNKNOWN"
-            val colorSpaceName = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                preprocessed.bitmap512.colorSpace?.name ?: "UNKNOWN"
-            } else {
-                "sRGB"
-            }
-
-            // Gate 1: Leaf Validator
+            // Gate 1: Leaf Validator (Task P1 & P4)
             val gate1Validation = if (metadata != null) {
                 LeafValidationResult(
                     isLikelyCrop = metadata.leafValidatorPass,
@@ -480,6 +474,30 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
                 preprocessed.leafValidation
             }
             val gate1Pass = gate1Validation.isLikelyCrop
+
+            val eval = VisionMath.evaluateDiagnosis(
+                labels = labels,
+                probabilities = probabilities,
+                thresholds = classThresholds,
+                defaultThreshold = curDefaultThresh,
+                freeEnergy = freeEnergy,
+                energyThreshold = curEnergyThresh,
+                unsupportedClasses = unsupportedClasses,
+                cropMass = cropMass,
+                cropMassThreshold = cropMassThreshold,
+                marginThreshold = marginThreshold,
+                borderlineEnergy = borderlineEnergy,
+                gate1Pass = gate1Pass,
+                leafValidatorReason = gate1Validation.reason
+            )
+
+            // CROPDOC_DECISION Gate Diagnostic Logging (Task P1 & P4)
+            val bitmapConfig = preprocessed.bitmap512.config?.name ?: "UNKNOWN"
+            val colorSpaceName = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                preprocessed.bitmap512.colorSpace?.name ?: "UNKNOWN"
+            } else {
+                "sRGB"
+            }
 
             // Gate 2: Energy value vs energy_threshold
             val isOOD = if (curEnergyThresh != null) freeEnergy > curEnergyThresh else false
@@ -498,16 +516,6 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
             val isWeeds = top1 != null && top1.classId == "weeds_not_a_crop"
             val isUnsupported = top1 != null && unsupportedClasses.contains(top1.classId)
             val gate4Pass = !isWeeds && !isUnsupported
-
-            // Final Decision and Reason Code
-            val (decision, reasonCode) = when {
-                !gate1Pass -> "REJECTED" to "REJECTED_LEAF_VALIDATOR"
-                isOOD -> "REJECTED" to "REJECTED_OOD_ENERGY"
-                isBelowThreshold -> "REJECTED" to "REJECTED_LOW_CONFIDENCE"
-                isWeeds -> "REJECTED" to "REJECTED_WEEDS"
-                isUnsupported -> "REJECTED" to "REJECTED_UNSUPPORTED"
-                else -> "ACCEPTED" to "ACCEPTED"
-            }
 
             val gate1Str = if (gate1Pass) {
                 "PASS(frac=${String.format(Locale.US, "%.3f", gate1Validation.plantPixelFraction)})"
@@ -543,24 +551,26 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
                 append("gate2_energy=$gate2Str ")
                 append("gate3_confidence=$gate3Str ")
                 append("gate4_weeds=$gate4Str | ")
-                append("decision=$decision code=$reasonCode")
+                append("cropMass=${String.format(Locale.US, "%.4f", cropMass)} ")
+                append("margin=${String.format(Locale.US, "%.4f", eval.margin)} | ")
+                append("outcome=${eval.outcome} code=${eval.outcomeReason}")
             }
             Log.i("CROPDOC_DECISION", logDecisionLine)
 
-            Log.e(TAG, "classify(): eval result -> classId=${eval.classId}, displayName=${eval.displayName}, conf=${eval.confidence}, cropMass=$cropMass, isBelowThresh=${eval.isBelowThreshold}, top3=${eval.top3.map { "${it.classId}:${String.format("%.3f", it.probability)}" }}")
+            Log.e(TAG, "classify(): eval result -> outcome=${eval.outcome}, classId=${eval.classId}, displayName=${eval.displayName}, conf=${eval.confidence}, cropMass=$cropMass, margin=${eval.margin}, top3=${eval.top3.map { "${it.classId}:${String.format("%.3f", it.probability)}" }}")
 
             val elapsed = SystemClock.elapsedRealtime() - startTime
             val memoryMb = getProcessMemoryMb()
 
-            // 4. Lesion Fraction Estimation
-            val lesionFraction = if (eval.classId.endsWith("_healthy") || eval.classId == "unknown") {
+            // 4. Lesion Fraction Estimation (only for confident disease diagnosis)
+            val lesionFraction = if (eval.outcome != DiagnosisOutcome.DIAGNOSE || eval.classId.endsWith("_healthy") || eval.classId == "unknown") {
                 0.0f
             } else {
                 LesionAreaEstimator.estimateLesionFraction(preprocessed.bitmap512)
             }
 
-            // 5. Severity Band
-            val severityBand = if (eval.classId == "unknown" || eval.classId.endsWith("_healthy")) {
+            // 5. Severity Band (Rule H5: safety decisions in plain code; MILD for non-diagnoses)
+            val severityBand = if (eval.outcome != DiagnosisOutcome.DIAGNOSE || eval.classId == "unknown" || eval.classId.endsWith("_healthy")) {
                 SeverityBand.MILD
             } else {
                 RulesEngine.calculateSeverity(lesionFraction, eval.classId)
@@ -578,7 +588,11 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
                 isDemoMode = false,
                 top3 = eval.top3,
                 selectedCrop = if (isFilteredCrop) cropHint else null,
-                cropMass = cropMass
+                cropMass = cropMass,
+                outcome = eval.outcome,
+                outcomeReason = eval.outcomeReason,
+                margin = eval.margin,
+                freeEnergy = freeEnergy
             )
         } catch (e: Throwable) {
             Log.e(TAG, "Vision inference error caught: ${e.message}", e)
@@ -595,7 +609,9 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
                 isDemoMode = false,
                 top3 = emptyList(),
                 selectedCrop = cropHint,
-                cropMass = 1.0f
+                cropMass = 1.0f,
+                outcome = DiagnosisOutcome.CANT_TELL,
+                outcomeReason = "EXCEPTION: ${e.message}"
             )
         }
     }

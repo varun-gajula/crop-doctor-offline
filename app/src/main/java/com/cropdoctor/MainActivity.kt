@@ -27,6 +27,7 @@ import androidx.lifecycle.lifecycleScope
 import com.cropdoctor.advisor.ExecuTorchLlamaAdvisor
 import com.cropdoctor.data.UserPreferences
 import com.cropdoctor.domain.CertaintyBand
+import com.cropdoctor.domain.DiagnosisOutcome
 import com.cropdoctor.domain.ClassifierResult
 import com.cropdoctor.domain.SeverityBand
 import com.cropdoctor.knowledge.KbEntry
@@ -258,7 +259,32 @@ class MainActivity : ComponentActivity() {
                                 }
 
                                 val kb = KnowledgeBase.getEntry(result.classId)
-                                    ?: if (result.classId != "unknown") {
+                                    ?: if (result.outcome == DiagnosisOutcome.OUT_OF_CLASS || result.classId == "out_of_class") {
+                                        KbEntry(
+                                            classId = "out_of_class",
+                                            index = -1,
+                                            crop = result.selectedCrop ?: effectiveCropFilter ?: "crop",
+                                            type = "out_of_class",
+                                            pathogen = "Unsupported / Out of Class",
+                                            names = LocalizedText(
+                                                en = "Out of class",
+                                                te = "గుర్తించిన పంట సమస్య కాదు",
+                                                hi = "समर्थित वर्ग से बाहर"
+                                            ),
+                                            referralThreshold = "MILD",
+                                            immediateStep = LocalizedText(
+                                                en = "Choose the right crop or ask an extension officer.",
+                                                te = "సరైన పంటను ఎంచుకోండి లేదా వ్యవసాయ విస్తరణ అధికారిని సంప్రదించండి.",
+                                                hi = "सही फसल चुनें या कृषि विस्तार अधिकारी से संपर्क करें।"
+                                            ),
+                                            explainText = LocalizedText(
+                                                en = "This does not match the selected crop or one of the 20 problems we support. Choose the right crop or ask an extension officer.",
+                                                te = "ఈ సమస్య మద్దతు ఉన్న జాబితాలో లేదు. ఇది ఎంచుకున్న పంట లేదా మేము గుర్తించే 20 సమస్యలలో దేనికీ సరిపోలడం లేదు. సరైన పంటను ఎంచుకోండి లేదా వ్యవసాయ విస్తరణ అధికారిని సంప్రదించండి.",
+                                                hi = "समर्थित वर्ग से बाहर। यह चुनी गई फसल या हमारे द्वारा समर्थित 20 समस्याओं में से किसी से मेल नहीं खाता है। सही फसल चुनें या कृषि विस्तार अधिकारी से संपर्क करें।"
+                                            ),
+                                            treatment = TreatmentPlan()
+                                        )
+                                    } else if (result.classId != "unknown") {
                                         KbEntry(
                                             classId = result.classId,
                                             index = -1,
@@ -324,7 +350,7 @@ class MainActivity : ComponentActivity() {
                                     isProcessingImage = false
                                     navigateTo(AppScreen.RESULT)
 
-                                    if (autoStartAdvisor) {
+                                    if (autoStartAdvisor && result.outcome == DiagnosisOutcome.DIAGNOSE) {
                                         triggerAdvisoryStream(
                                             app = app,
                                             result = result,
@@ -371,7 +397,32 @@ class MainActivity : ComponentActivity() {
                                 }
 
                                 val kb = KnowledgeBase.getEntry(result.classId)
-                                    ?: if (result.classId != "unknown") {
+                                    ?: if (result.outcome == DiagnosisOutcome.OUT_OF_CLASS || result.classId == "out_of_class") {
+                                        KbEntry(
+                                            classId = "out_of_class",
+                                            index = -1,
+                                            crop = result.selectedCrop ?: effectiveCropFilter ?: "crop",
+                                            type = "out_of_class",
+                                            pathogen = "Unsupported / Out of Class",
+                                            names = LocalizedText(
+                                                en = "Out of class",
+                                                te = "గుర్తించిన పంట సమస్య కాదు",
+                                                hi = "समर्थित वर्ग से बाहर"
+                                            ),
+                                            referralThreshold = "MILD",
+                                            immediateStep = LocalizedText(
+                                                en = "Choose the right crop or ask an extension officer.",
+                                                te = "సరైన పంటను ఎంచుకోండి లేదా వ్యవసాయ విస్తరణ అధికారిని సంప్రదించండి.",
+                                                hi = "सही फसल चुनें या कृषि विस्तार अधिकारी से संपर्क करें।"
+                                            ),
+                                            explainText = LocalizedText(
+                                                en = "This does not match the selected crop or one of the 20 problems we support. Choose the right crop or ask an extension officer.",
+                                                te = "ఈ సమస్య మద్దతు ఉన్న జాబితాలో లేదు. ఇది ఎంచుకున్న పంట లేదా మేము గుర్తించే 20 సమస్యలలో దేనికీ సరిపోలడం లేదు. సరైన పంటను ఎంచుకోండి లేదా వ్యవసాయ విస్తరణ అధికారిని సంప్రదించండి.",
+                                                hi = "समर्थित वर्ग से बाहर। यह चुनी गई फसल या हमारे द्वारा समर्थित 20 समस्याओं में से किसी से मेल नहीं खाता है। सही फसल चुनें या कृषि विस्तार अधिकारी से संपर्क करें।"
+                                            ),
+                                            treatment = TreatmentPlan()
+                                        )
+                                    } else if (result.classId != "unknown") {
                                         KbEntry(
                                             classId = result.classId,
                                             index = -1,
@@ -434,7 +485,7 @@ class MainActivity : ComponentActivity() {
                                     isProcessingImage = false
                                     navigateTo(AppScreen.RESULT)
 
-                                    if (autoStartAdvisor) {
+                                    if (autoStartAdvisor && result.outcome == DiagnosisOutcome.DIAGNOSE) {
                                         triggerAdvisoryStream(
                                             app = app,
                                             result = result,
@@ -599,6 +650,99 @@ class MainActivity : ComponentActivity() {
                                     switchLanguage("hi")
                                     navigateTo(AppScreen.CROP_SELECTION)
                                 }
+                                "show_outcome_diagnose" -> {
+                                    KnowledgeBase.initialize(this@MainActivity)
+                                    val kb = KnowledgeBase.getEntry("chilli_leaf_curl_virus")
+                                        ?: KnowledgeBase.getAllEntries().first()
+                                    val result = ClassifierResult(
+                                        classId = "chilli_leaf_curl_virus",
+                                        displayName = kb.names.forLanguage(selectedLanguage),
+                                        confidence = 0.92f,
+                                        severityBand = SeverityBand.MODERATE,
+                                        certaintyBand = CertaintyBand.SURE,
+                                        lesionFraction = 0.20f,
+                                        inferenceTimeMs = 84L,
+                                        memoryUsedMb = 120L,
+                                        isDemoMode = false,
+                                        selectedCrop = "chilli",
+                                        cropMass = 0.98f,
+                                        outcome = DiagnosisOutcome.DIAGNOSE,
+                                        outcomeReason = "ACCEPTED",
+                                        margin = 0.85f,
+                                        freeEnergy = -16.5
+                                    )
+                                    classifierResult = result
+                                    activeKbEntry = kb
+                                    navigateTo(AppScreen.RESULT)
+                                }
+                                "show_outcome_cant_tell" -> {
+                                    val kb = KbEntry(
+                                        classId = "unknown",
+                                        index = -1,
+                                        crop = "crop",
+                                        type = "unknown",
+                                        pathogen = "Unknown",
+                                        names = LocalizedText("Not sure", "ఖచ్చితంగా తెలియదు", "अनिश्चित स्थिति"),
+                                        referralThreshold = "MILD",
+                                        immediateStep = LocalizedText("", "", ""),
+                                        explainText = LocalizedText("", "", ""),
+                                        treatment = TreatmentPlan()
+                                    )
+                                    val result = ClassifierResult(
+                                        classId = "unknown",
+                                        displayName = "Not sure - ask an extension officer",
+                                        confidence = 0.22f,
+                                        severityBand = SeverityBand.MILD,
+                                        certaintyBand = CertaintyBand.NOT_SURE,
+                                        lesionFraction = 0.0f,
+                                        inferenceTimeMs = 65L,
+                                        memoryUsedMb = 120L,
+                                        isDemoMode = false,
+                                        selectedCrop = selectedCrop,
+                                        cropMass = 0.15f,
+                                        outcome = DiagnosisOutcome.CANT_TELL,
+                                        outcomeReason = "HIGH_FREE_ENERGY(-5.4 > -8.0)",
+                                        margin = 0.05f,
+                                        freeEnergy = -5.4
+                                    )
+                                    classifierResult = result
+                                    activeKbEntry = kb
+                                    navigateTo(AppScreen.RESULT)
+                                }
+                                "show_outcome_out_of_class" -> {
+                                    val kb = KbEntry(
+                                        classId = "out_of_class",
+                                        index = -1,
+                                        crop = selectedCrop,
+                                        type = "out_of_class",
+                                        pathogen = "Unsupported / Out of Class",
+                                        names = LocalizedText("Out of class", "గుర్తించిన పంట సమస్య కాదు", "समर्थित वर्ग से बाहर"),
+                                        referralThreshold = "MILD",
+                                        immediateStep = LocalizedText("", "", ""),
+                                        explainText = LocalizedText("", "", ""),
+                                        treatment = TreatmentPlan()
+                                    )
+                                    val result = ClassifierResult(
+                                        classId = "out_of_class",
+                                        displayName = "Out of class - plant does not match",
+                                        confidence = 0.42f,
+                                        severityBand = SeverityBand.MILD,
+                                        certaintyBand = CertaintyBand.NOT_SURE,
+                                        lesionFraction = 0.0f,
+                                        inferenceTimeMs = 70L,
+                                        memoryUsedMb = 120L,
+                                        isDemoMode = false,
+                                        selectedCrop = selectedCrop,
+                                        cropMass = 0.18f,
+                                        outcome = DiagnosisOutcome.OUT_OF_CLASS,
+                                        outcomeReason = "LOW_CROP_MASS(0.18 < 0.60)",
+                                        margin = 0.10f,
+                                        freeEnergy = -12.3
+                                    )
+                                    classifierResult = result
+                                    activeKbEntry = kb
+                                    navigateTo(AppScreen.RESULT)
+                                }
                                 "region_telangana" -> switchRegion("Telangana")
                                 "region_andhra" -> switchRegion("Andhra Pradesh")
                                 "region_other" -> switchRegion("Other")
@@ -667,11 +811,15 @@ class MainActivity : ComponentActivity() {
                                 }
                             }
                         }
-                        intent?.getStringExtra("benchmark_action")?.let { action ->
-                            onBenchmarkAction?.invoke(action)
+                        intent?.let { inIntent ->
+                            inIntent.getStringExtra("benchmark_action")?.let { action ->
+                                onBenchmarkAction?.invoke(action)
+                            }
+                            onBenchmarkIntent?.invoke(inIntent)
                         }
                         onDispose {
                             onBenchmarkAction = null
+                            onBenchmarkIntent = null
                         }
                     }
 
@@ -875,7 +1023,9 @@ class MainActivity : ComponentActivity() {
                                         currentAdviceJob?.cancel()
                                         (application as? CropDoctorApplication)?.advisor?.stop()
                                         isGeneratingAdvice = false
-                                    }
+                                    },
+                                    onChangeCropClick = { navigateTo(AppScreen.CROP_SELECTION) },
+                                    onTakeAnotherPhoto = { navigateTo(AppScreen.CAMERA) }
                                 )
                             } else {
                                 navigateTo(AppScreen.HOME)

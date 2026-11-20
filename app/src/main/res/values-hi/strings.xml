@@ -171,4 +171,13 @@
     <string name="urgency_desc_act_now">अत्यधिक जरूरी! फसल के नुकसान को रोकने के लिए तुरंत सुधारात्मक कार्रवाई करें।</string>
     <string name="watch_for_title">आने वाले दिनों में क्या देखना है</string>
     <string name="watch_for_content">हर 2-3 दिनों में पत्तियों के निचले हिस्से में धब्बों या कीटों के विस्तार की जांच करें। हवा की दिशा में पड़ोसी पौधों का निरीक्षण करें। यदि लक्षण फैलते हैं, तो तुरंत नियंत्रण शुरू करें।</string>
+
+    <!-- Task P4: Three Clear Outcomes -->
+    <string name="outcome_diagnose">निदान</string>
+    <string name="outcome_cant_tell_title">बता नहीं सकते</string>
+    <string name="outcome_cant_tell_message">बता नहीं सकते। यह स्पष्ट पत्ती जैसा नहीं दिख रहा है। दिन के उजाले में पास से फोटो लें या कृषि विस्तार अधिकारी से संपर्क करें।</string>
+    <string name="outcome_out_of_class_title">समर्थित वर्ग से बाहर</string>
+    <string name="outcome_out_of_class_message">समर्थित वर्ग से बाहर। यह %1$s या हमारे द्वारा समर्थित 20 समस्याओं में से किसी से मेल नहीं खाता है। सही फसल चुनें या कृषि विस्तार अधिकारी से संपर्क करें।</string>
+    <string name="btn_take_another_photo">दूसरी फोटो लें</string>
+    <string name="btn_call_kisan_helpline">कृषि विस्तार अधिकारी को कॉल करें (1800-180-1551)</string>
 </resources>

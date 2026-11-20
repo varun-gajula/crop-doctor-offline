@@ -4,7 +4,9 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import java.io.File
 import java.util.Locale
+import com.cropdoctor.domain.DiagnosisOutcome
 
 class CropdocDecisionGateTest {
 
@@ -150,5 +152,190 @@ class CropdocDecisionGateTest {
         assertTrue(logLine.contains("gate3_confidence=PASS"))
         assertTrue(logLine.contains("gate4_weeds=PASS"))
         assertTrue(logLine.contains("decision=ACCEPTED code=ACCEPTED"))
+    }
+
+    @Test
+    fun testTaskP4ThreeClearOutcomes_CantTell() {
+        val energyThresh = -8.0
+        val cropMassThresh = 0.60f
+        val marginThresh = 0.25f
+        val borderlineEnergy = -9.0
+
+        // 1. Gate 1 fail (not a leaf)
+        val evalGate1Fail = VisionMath.evaluateDiagnosis(
+            labels = labels,
+            probabilities = FloatArray(20) { if (it == 0) 0.95f else 0.002f },
+            gate1Pass = false,
+            leafValidatorReason = "LOW_GREEN_FRACTION",
+            freeEnergy = -16.0,
+            energyThreshold = energyThresh,
+            cropMassThreshold = cropMassThresh,
+            marginThreshold = marginThresh,
+            borderlineEnergy = borderlineEnergy
+        )
+        assertEquals(DiagnosisOutcome.CANT_TELL, evalGate1Fail.outcome)
+        assertTrue(evalGate1Fail.outcomeReason.startsWith("LEAF_VALIDATOR_FAIL"))
+
+        // 2. Global top-1 weeds
+        val probsWeeds = FloatArray(20) { 0.01f }
+        probsWeeds[19] = 0.81f // weeds_not_a_crop
+        val evalWeeds = VisionMath.evaluateDiagnosis(
+            labels = labels,
+            probabilities = probsWeeds,
+            freeEnergy = -15.0,
+            energyThreshold = energyThresh,
+            cropMassThreshold = cropMassThresh,
+            marginThreshold = marginThresh,
+            borderlineEnergy = borderlineEnergy
+        )
+        assertEquals(DiagnosisOutcome.CANT_TELL, evalWeeds.outcome)
+        assertEquals("GLOBAL_TOP1_WEEDS", evalWeeds.outcomeReason)
+
+        // 3. High Free Energy (OOD)
+        val evalHighEnergy = VisionMath.evaluateDiagnosis(
+            labels = labels,
+            probabilities = FloatArray(20) { if (it == 0) 0.90f else 0.005f },
+            freeEnergy = -6.5, // -6.5 > -8.0
+            energyThreshold = energyThresh,
+            cropMassThreshold = cropMassThresh,
+            marginThreshold = marginThresh,
+            borderlineEnergy = borderlineEnergy
+        )
+        assertEquals(DiagnosisOutcome.CANT_TELL, evalHighEnergy.outcome)
+        assertTrue(evalHighEnergy.outcomeReason.startsWith("HIGH_FREE_ENERGY"))
+
+        // 4. Low within-crop confidence
+        val evalLowConf = VisionMath.evaluateDiagnosis(
+            labels = labels,
+            probabilities = FloatArray(20) { 0.02f },
+            defaultThreshold = 0.3434f,
+            freeEnergy = -15.0,
+            energyThreshold = energyThresh,
+            cropMassThreshold = cropMassThresh,
+            marginThreshold = marginThresh,
+            borderlineEnergy = borderlineEnergy
+        )
+        assertEquals(DiagnosisOutcome.CANT_TELL, evalLowConf.outcome)
+        assertTrue(evalLowConf.outcomeReason.startsWith("LOW_INCROP_CONFIDENCE"))
+    }
+
+    @Test
+    fun testTaskP4ThreeClearOutcomes_OutOfClass() {
+        val energyThresh = -8.0
+        val cropMassThresh = 0.60f
+        val marginThresh = 0.25f
+        val borderlineEnergy = -9.0
+
+        // 1. Low Crop Mass (e.g. wrong crop selected: model gave only 8% mass to selected crop)
+        val probsTomatoCurl = FloatArray(20) { 0.01f }
+        probsTomatoCurl[12] = 0.80f // tomato_yellow_leaf_curl_virus
+        val evalLowCropMass = VisionMath.evaluateDiagnosis(
+            labels = labels,
+            probabilities = probsTomatoCurl,
+            freeEnergy = -15.0,
+            energyThreshold = energyThresh,
+            cropMass = 0.08f, // 0.08 < 0.60
+            cropMassThreshold = cropMassThresh,
+            marginThreshold = marginThresh,
+            borderlineEnergy = borderlineEnergy
+        )
+        assertEquals(DiagnosisOutcome.OUT_OF_CLASS, evalLowCropMass.outcome)
+        assertTrue(evalLowCropMass.outcomeReason.startsWith("LOW_CROP_MASS"))
+
+        // 2. Borderline Ambiguous Margin with Borderline Energy
+        // top1=0.45, top2=0.40 -> margin = 0.05 < 0.25, Free Energy = -8.5 >= -9.0
+        val probsAmbiguous = FloatArray(20) { 0.005f }
+        probsAmbiguous[12] = 0.45f
+        probsAmbiguous[13] = 0.40f
+        val evalBorderline = VisionMath.evaluateDiagnosis(
+            labels = labels,
+            probabilities = probsAmbiguous,
+            freeEnergy = -8.5,
+            energyThreshold = energyThresh,
+            cropMass = 0.85f,
+            cropMassThreshold = cropMassThresh,
+            marginThreshold = marginThresh,
+            borderlineEnergy = borderlineEnergy
+        )
+        assertEquals(DiagnosisOutcome.OUT_OF_CLASS, evalBorderline.outcome)
+        assertTrue(evalBorderline.outcomeReason.startsWith("BORDERLINE_AMBIGUOUS"))
+
+        // 3. Unsupported Class
+        val probsUnsupported = FloatArray(20) { 0.01f }
+        probsUnsupported[11] = 0.80f // tomato_leaf_blight
+        val evalUnsupported = VisionMath.evaluateDiagnosis(
+            labels = labels,
+            probabilities = probsUnsupported,
+            freeEnergy = -15.0,
+            energyThreshold = energyThresh,
+            cropMass = 0.90f,
+            cropMassThreshold = cropMassThresh,
+            marginThreshold = marginThresh,
+            borderlineEnergy = borderlineEnergy,
+            unsupportedClasses = setOf("tomato_leaf_blight")
+        )
+        assertEquals(DiagnosisOutcome.OUT_OF_CLASS, evalUnsupported.outcome)
+        assertTrue(evalUnsupported.outcomeReason.startsWith("UNSUPPORTED_CLASS"))
+    }
+
+    @Test
+    fun testTaskP4ThreeClearOutcomes_Diagnose() {
+        val energyThresh = -8.0
+        val cropMassThresh = 0.60f
+        val marginThresh = 0.25f
+        val borderlineEnergy = -9.0
+
+        val probsConfident = FloatArray(20) { 0.005f }
+        probsConfident[0] = 0.90f // rice_bacterial_leaf_blight
+        val evalDiagnose = VisionMath.evaluateDiagnosis(
+            labels = labels,
+            probabilities = probsConfident,
+            freeEnergy = -16.5,
+            energyThreshold = energyThresh,
+            cropMass = 0.95f,
+            cropMassThreshold = cropMassThresh,
+            marginThreshold = marginThresh,
+            borderlineEnergy = borderlineEnergy
+        )
+        assertEquals(DiagnosisOutcome.DIAGNOSE, evalDiagnose.outcome)
+        assertEquals("ACCEPTED", evalDiagnose.outcomeReason)
+        assertEquals("rice_bacterial_leaf_blight", evalDiagnose.classId)
+        assertTrue(evalDiagnose.confidence >= 0.90f)
+    }
+
+    @Test
+    fun testTaskP4OptionBThresholdValuesInAssets() {
+        val assetFile = File("src/main/assets/thresholds.json")
+        assertTrue("thresholds.json must exist in assets", assetFile.exists())
+        val text = assetFile.readText()
+        assertTrue("Option B: energy_threshold must be -8.0", text.contains("\"energy_threshold\": -8.0"))
+        assertTrue("Option B: crop_mass_threshold must be 0.6", text.contains("\"crop_mass_threshold\": 0.6"))
+        assertTrue("Option B: margin_threshold must be 0.25", text.contains("\"margin_threshold\": 0.25"))
+        assertTrue("Option B: borderline_energy must be -9.0", text.contains("\"borderline_energy\": -9.0"))
+    }
+
+    @Test
+    fun testTaskP4StringLocalizationPresentInAllThreeLanguages() {
+        val resDir = File("src/main/res")
+        val enXml = File(resDir, "values/strings.xml").readText()
+        val teXml = File(resDir, "values-te/strings.xml").readText()
+        val hiXml = File(resDir, "values-hi/strings.xml").readText()
+
+        val requiredKeys = listOf(
+            "outcome_diagnose",
+            "outcome_cant_tell_title",
+            "outcome_cant_tell_message",
+            "outcome_out_of_class_title",
+            "outcome_out_of_class_message",
+            "btn_take_another_photo",
+            "btn_call_kisan_helpline",
+            "btn_change_crop"
+        )
+
+        for (key in requiredKeys) {
+            assertTrue("Key $key missing in English", enXml.contains("name=\"$key\""))
+            assertTrue("Key $key missing in Telugu", teXml.contains("name=\"$key\""))
+            assertTrue("Key $key missing in Hindi", hiXml.contains("name=\"$key\""))
+        }
     }
 }

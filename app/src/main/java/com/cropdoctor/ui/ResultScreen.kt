@@ -36,6 +36,7 @@ import com.cropdoctor.advisor.OfflineAudioAdvisor
 import com.cropdoctor.advisor.OfflineTtsHelper
 import com.cropdoctor.domain.CertaintyBand
 import com.cropdoctor.domain.ClassifierResult
+import com.cropdoctor.domain.DiagnosisOutcome
 import com.cropdoctor.domain.RulesEngine
 import com.cropdoctor.domain.ScanHistoryRepository
 import com.cropdoctor.domain.SeverityBand
@@ -64,7 +65,9 @@ fun ResultScreen(
     onViewMoreDetails: () -> Unit,
     onChatbotClick: () -> Unit = {},
     onSaveCaseReport: () -> Unit = {},
-    onCancelAdvice: () -> Unit = {}
+    onCancelAdvice: () -> Unit = {},
+    onChangeCropClick: () -> Unit = {},
+    onTakeAnotherPhoto: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val scrollState = rememberScrollState()
@@ -108,16 +111,18 @@ fun ResultScreen(
         }
     }
 
-    // Auto-save to local Scan History
-    LaunchedEffect(result.classId) {
-        ScanHistoryRepository.saveScan(
-            context = context,
-            crop = kbEntry.crop,
-            classId = result.classId,
-            diseaseName = kbEntry.names.forLanguage(language),
-            confidence = result.confidence,
-            severity = result.severityBand.name
-        )
+    // Auto-save to local Scan History (only for confident DIAGNOSE decisions)
+    LaunchedEffect(result.classId, result.outcome) {
+        if (result.outcome == DiagnosisOutcome.DIAGNOSE) {
+            ScanHistoryRepository.saveScan(
+                context = context,
+                crop = kbEntry.crop,
+                classId = result.classId,
+                diseaseName = kbEntry.names.forLanguage(language),
+                confidence = result.confidence,
+                severity = result.severityBand.name
+            )
+        }
     }
 
     // Hidden Judge Benchmark Panel (long-press on screen title)
@@ -300,8 +305,13 @@ fun ResultScreen(
                         )
                     }
                     Spacer(modifier = Modifier.width(6.dp))
+                    val screenTitleRes = when (result.outcome) {
+                        DiagnosisOutcome.CANT_TELL -> R.string.outcome_cant_tell_title
+                        DiagnosisOutcome.OUT_OF_CLASS -> R.string.outcome_out_of_class_title
+                        DiagnosisOutcome.DIAGNOSE -> R.string.result_title
+                    }
                     Text(
-                        text = stringResource(R.string.result_title),
+                        text = stringResource(screenTitleRes),
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.White,
@@ -367,8 +377,41 @@ fun ResultScreen(
                 }
             }
 
-            // Scanned Leaf Photo Card
-            Card(
+            when (result.outcome) {
+                DiagnosisOutcome.CANT_TELL -> {
+                    CantTellOutcomeContent(
+                        result = result,
+                        capturedBitmap = capturedBitmap,
+                        onTakeAnotherPhoto = onTakeAnotherPhoto,
+                        onCallHelpline = {
+                            try {
+                                val dialIntent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:18001801551"))
+                                context.startActivity(dialIntent)
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                            }
+                        }
+                    )
+                }
+                DiagnosisOutcome.OUT_OF_CLASS -> {
+                    OutOfClassOutcomeContent(
+                        result = result,
+                        capturedBitmap = capturedBitmap,
+                        onChangeCropClick = onChangeCropClick,
+                        onTakeAnotherPhoto = onTakeAnotherPhoto,
+                        onCallHelpline = {
+                            try {
+                                val dialIntent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:18001801551"))
+                                context.startActivity(dialIntent)
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                            }
+                        }
+                    )
+                }
+                DiagnosisOutcome.DIAGNOSE -> {
+                    // Scanned Leaf Photo Card
+                    Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(18.dp),
                 colors = CardDefaults.cardColors(containerColor = Color.White),
@@ -1345,6 +1388,8 @@ fun ResultScreen(
                     color = Color.White
                 )
             }
+                }
+            }
 
             Spacer(modifier = Modifier.height(28.dp))
         }
@@ -1498,4 +1543,341 @@ internal fun buildScreenAudioItems(
     }
 
     return items
+}
+
+/**
+ * Maps selected crop key to its localized display string resource.
+ */
+fun getCropDisplayNameRes(cropKey: String?): Int {
+    return when (cropKey?.lowercase()) {
+        "rice" -> R.string.crop_rice
+        "cotton" -> R.string.crop_cotton
+        "chilli" -> R.string.crop_chilli
+        "tomato" -> R.string.crop_tomato
+        "maize" -> R.string.crop_maize
+        else -> R.string.crop_rice
+    }
+}
+
+/**
+ * Task P4: CAN'T TELL outcome layout.
+ * Shown when photo is not a clear leaf, energy is high, confidence is low, or top class is weeds.
+ * NEVER shows treatment tiers, medicine doses, severity band, field spread, or AI explanation (Rule H4, H5).
+ */
+@Composable
+private fun CantTellOutcomeContent(
+    result: ClassifierResult,
+    capturedBitmap: Bitmap?,
+    onTakeAnotherPhoto: () -> Unit,
+    onCallHelpline: () -> Unit
+) {
+    var showDetails by remember { mutableStateOf(false) }
+
+    // Distinct Outcome Card (Orange / Warning Theme)
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(18.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFFFF3E0)),
+        border = androidx.compose.foundation.BorderStroke(2.dp, Color(0xFFFF9800)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Column(modifier = Modifier.padding(18.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    imageVector = Icons.Default.HelpOutline,
+                    contentDescription = null,
+                    tint = Color(0xFFE65100),
+                    modifier = Modifier.size(36.dp)
+                )
+                Spacer(modifier = Modifier.width(10.dp))
+                Text(
+                    text = stringResource(R.string.outcome_cant_tell_title),
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = Color(0xFFE65100)
+                )
+            }
+            Spacer(modifier = Modifier.height(12.dp))
+            Text(
+                text = stringResource(R.string.outcome_cant_tell_message),
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Medium,
+                color = Color(0xFF3E2723),
+                lineHeight = 24.sp
+            )
+        }
+    }
+
+    Spacer(modifier = Modifier.height(16.dp))
+
+    // Scanned Photo Card (shows evaluated photo)
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(18.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(180.dp)
+                .background(Color(0xFFE8F5E9)),
+            contentAlignment = Alignment.Center
+        ) {
+            if (capturedBitmap != null) {
+                Image(
+                    bitmap = capturedBitmap.asImageBitmap(),
+                    contentDescription = "Scanned Leaf",
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
+            } else {
+                Text(text = "🍃", fontSize = 84.sp)
+            }
+        }
+    }
+
+    Spacer(modifier = Modifier.height(16.dp))
+
+    // Action 1: Take another photo (at least 56dp height)
+    Button(
+        onClick = onTakeAnotherPhoto,
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(56.dp),
+        shape = RoundedCornerShape(14.dp),
+        colors = ButtonDefaults.buttonColors(containerColor = FarmGreenPrimary)
+    ) {
+        Icon(imageVector = Icons.Default.CameraAlt, contentDescription = null, tint = Color.White)
+        Spacer(modifier = Modifier.width(10.dp))
+        Text(
+            text = stringResource(R.string.btn_take_another_photo),
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color.White
+        )
+    }
+
+    Spacer(modifier = Modifier.height(14.dp))
+
+    // Action 2: Call Extension Officer (1800-180-1551) (at least 56dp height)
+    Button(
+        onClick = onCallHelpline,
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(56.dp),
+        shape = RoundedCornerShape(14.dp),
+        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD32F2F))
+    ) {
+        Icon(imageVector = Icons.Default.PhoneInTalk, contentDescription = null, tint = Color.White)
+        Spacer(modifier = Modifier.width(10.dp))
+        Text(
+            text = stringResource(R.string.btn_call_kisan_helpline),
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color.White
+        )
+    }
+
+    Spacer(modifier = Modifier.height(14.dp))
+
+    // Expandable Details (shows plain-code gate decision)
+    TextButton(
+        onClick = { showDetails = !showDetails },
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Text(
+            text = if (showDetails) "▾ " + stringResource(R.string.btn_hide_details) else "▸ " + stringResource(R.string.btn_view_details),
+            fontSize = 14.sp,
+            color = Color(0xFF757575)
+        )
+    }
+
+    if (showDetails) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color(0xFFEEEEEE), RoundedCornerShape(8.dp))
+                .padding(12.dp)
+        ) {
+            Text(text = "Reason: ${result.outcomeReason}", fontSize = 13.sp, color = Color(0xFF333333))
+            Text(text = "Free Energy: ${"%.2f".format(result.freeEnergy)}", fontSize = 13.sp, color = Color(0xFF333333))
+            Text(text = "Confidence: ${(result.confidence * 100).toInt()}%", fontSize = 13.sp, color = Color(0xFF333333))
+            Text(text = "Crop Mass: ${"%.2f".format(result.cropMass)}", fontSize = 13.sp, color = Color(0xFF333333))
+        }
+    }
+}
+
+/**
+ * Task P4: OUT OF CLASS outcome layout.
+ * Shown when crop_mass is low (wrong crop selected) or margin is ambiguous with borderline energy.
+ * NEVER shows treatment tiers, medicine doses, severity band, field spread, or AI explanation (Rule H4, H5).
+ */
+@Composable
+private fun OutOfClassOutcomeContent(
+    result: ClassifierResult,
+    capturedBitmap: Bitmap?,
+    onChangeCropClick: () -> Unit,
+    onTakeAnotherPhoto: () -> Unit,
+    onCallHelpline: () -> Unit
+) {
+    var showDetails by remember { mutableStateOf(false) }
+    val cropDisplayName = stringResource(getCropDisplayNameRes(result.selectedCrop))
+
+    // Distinct Outcome Card (Amber / Warning Theme)
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(18.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFFFF8E1)),
+        border = androidx.compose.foundation.BorderStroke(2.dp, Color(0xFFFFC107)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Column(modifier = Modifier.padding(18.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    imageVector = Icons.Default.WarningAmber,
+                    contentDescription = null,
+                    tint = Color(0xFFF57F17),
+                    modifier = Modifier.size(36.dp)
+                )
+                Spacer(modifier = Modifier.width(10.dp))
+                Text(
+                    text = stringResource(R.string.outcome_out_of_class_title),
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = Color(0xFFF57F17)
+                )
+            }
+            Spacer(modifier = Modifier.height(12.dp))
+            Text(
+                text = stringResource(R.string.outcome_out_of_class_message, cropDisplayName),
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Medium,
+                color = Color(0xFF3E2723),
+                lineHeight = 24.sp
+            )
+        }
+    }
+
+    Spacer(modifier = Modifier.height(16.dp))
+
+    // Scanned Photo Card
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(18.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(180.dp)
+                .background(Color(0xFFE8F5E9)),
+            contentAlignment = Alignment.Center
+        ) {
+            if (capturedBitmap != null) {
+                Image(
+                    bitmap = capturedBitmap.asImageBitmap(),
+                    contentDescription = "Scanned Leaf",
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
+            } else {
+                Text(text = "🍃", fontSize = 84.sp)
+            }
+        }
+    }
+
+    Spacer(modifier = Modifier.height(16.dp))
+
+    // Action 1: Change crop (at least 56dp height)
+    Button(
+        onClick = onChangeCropClick,
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(56.dp),
+        shape = RoundedCornerShape(14.dp),
+        colors = ButtonDefaults.buttonColors(containerColor = FarmGreenPrimary)
+    ) {
+        Icon(imageVector = Icons.Default.SwapHoriz, contentDescription = null, tint = Color.White)
+        Spacer(modifier = Modifier.width(10.dp))
+        Text(
+            text = stringResource(R.string.btn_change_crop),
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color.White
+        )
+    }
+
+    Spacer(modifier = Modifier.height(14.dp))
+
+    // Action 2: Take another photo (at least 56dp height)
+    OutlinedButton(
+        onClick = onTakeAnotherPhoto,
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(56.dp),
+        shape = RoundedCornerShape(14.dp),
+        border = androidx.compose.foundation.BorderStroke(1.5.dp, FarmGreenPrimary),
+        colors = ButtonDefaults.outlinedButtonColors(contentColor = FarmGreenDark)
+    ) {
+        Icon(imageVector = Icons.Default.CameraAlt, contentDescription = null, tint = FarmGreenDark)
+        Spacer(modifier = Modifier.width(10.dp))
+        Text(
+            text = stringResource(R.string.btn_take_another_photo),
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold,
+            color = FarmGreenDark
+        )
+    }
+
+    Spacer(modifier = Modifier.height(14.dp))
+
+    // Action 3: Call Extension Officer (1800-180-1551) (at least 56dp height)
+    Button(
+        onClick = onCallHelpline,
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(56.dp),
+        shape = RoundedCornerShape(14.dp),
+        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD32F2F))
+    ) {
+        Icon(imageVector = Icons.Default.PhoneInTalk, contentDescription = null, tint = Color.White)
+        Spacer(modifier = Modifier.width(10.dp))
+        Text(
+            text = stringResource(R.string.btn_call_kisan_helpline),
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color.White
+        )
+    }
+
+    Spacer(modifier = Modifier.height(14.dp))
+
+    // Expandable Details (shows plain-code gate decision)
+    TextButton(
+        onClick = { showDetails = !showDetails },
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Text(
+            text = if (showDetails) "▾ " + stringResource(R.string.btn_hide_details) else "▸ " + stringResource(R.string.btn_view_details),
+            fontSize = 14.sp,
+            color = Color(0xFF757575)
+        )
+    }
+
+    if (showDetails) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color(0xFFEEEEEE), RoundedCornerShape(8.dp))
+                .padding(12.dp)
+        ) {
+            Text(text = "Reason: ${result.outcomeReason}", fontSize = 13.sp, color = Color(0xFF333333))
+            Text(text = "Selected Crop: ${result.selectedCrop ?: "None"}", fontSize = 13.sp, color = Color(0xFF333333))
+            Text(text = "Crop Mass: ${"%.2f".format(result.cropMass)}", fontSize = 13.sp, color = Color(0xFF333333))
+            Text(text = "Margin: ${"%.2f".format(result.margin)}", fontSize = 13.sp, color = Color(0xFF333333))
+            Text(text = "Free Energy: ${"%.2f".format(result.freeEnergy)}", fontSize = 13.sp, color = Color(0xFF333333))
+        }
+    }
 }
