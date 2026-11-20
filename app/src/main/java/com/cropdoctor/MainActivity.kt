@@ -5,6 +5,8 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import java.io.File
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -62,6 +64,7 @@ class MainActivity : ComponentActivity() {
 
     private var currentAdviceJob: Job? = null
     private var onBenchmarkAction: ((String) -> Unit)? = null
+    private var onBenchmarkIntent: ((Intent) -> Unit)? = null
 
     private val cameraPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -73,6 +76,7 @@ class MainActivity : ComponentActivity() {
         val action = intent.getStringExtra("benchmark_action")
         Log.i("MainActivityBenchmark", "onNewIntent received action: $action")
         action?.let { onBenchmarkAction?.invoke(it) }
+        onBenchmarkIntent?.invoke(intent)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -273,6 +277,73 @@ class MainActivity : ComponentActivity() {
                     }
 
                     DisposableEffect(Unit) {
+                        onBenchmarkIntent = { intent ->
+                            val action = intent.getStringExtra("benchmark_action") ?: ""
+                            if (action == "diagnose_file") {
+                                val filePath = intent.getStringExtra("file_path")
+                                val source = intent.getStringExtra("image_source") ?: "gallery"
+                                val cropHint = intent.getStringExtra("crop_hint") ?: "auto"
+                                if (filePath != null) {
+                                    try {
+                                        val file = File(filePath)
+                                        if (file.exists()) {
+                                            val options = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+                                            BitmapFactory.decodeFile(filePath, options)
+                                            val origWidth = options.outWidth
+                                            val origHeight = options.outHeight
+                                            var exifOrientation = 0
+                                            try {
+                                                val exif = android.media.ExifInterface(filePath)
+                                                exifOrientation = when (exif.getAttributeInt(
+                                                    android.media.ExifInterface.TAG_ORIENTATION,
+                                                    android.media.ExifInterface.ORIENTATION_NORMAL
+                                                )) {
+                                                    android.media.ExifInterface.ORIENTATION_ROTATE_90 -> 90
+                                                    android.media.ExifInterface.ORIENTATION_ROTATE_180 -> 180
+                                                    android.media.ExifInterface.ORIENTATION_ROTATE_270 -> 270
+                                                    else -> 0
+                                                }
+                                            } catch (_: Exception) {}
+
+                                            val maxDim = maxOf(origWidth, origHeight)
+                                            options.inSampleSize = if (maxDim > 1024) maxDim / 1024 else 1
+                                            options.inJustDecodeBounds = false
+                                            val rawBmp = BitmapFactory.decodeFile(filePath, options)
+                                            if (rawBmp != null) {
+                                                val finalBmp = if (source == "camera") {
+                                                    val rotated = if (exifOrientation != 0) {
+                                                        val matrix = android.graphics.Matrix().apply { postRotate(exifOrientation.toFloat()) }
+                                                        Bitmap.createBitmap(rawBmp, 0, 0, rawBmp.width, rawBmp.height, matrix, true)
+                                                    } else rawBmp
+                                                    val minDim = minOf(rotated.width, rotated.height)
+                                                    val xOffset = (rotated.width - minDim) / 2
+                                                    val yOffset = (rotated.height - minDim) / 2
+                                                    Bitmap.createBitmap(rotated, xOffset, yOffset, minDim, minDim)
+                                                } else {
+                                                    rawBmp // Gallery decode behaviour: no rotation, no center-square crop
+                                                }
+                                                val validation = LeafValidator.validate(finalBmp)
+                                                val meta = ImageAnalysisMetadata(
+                                                    source = source,
+                                                    origWidth = origWidth,
+                                                    origHeight = origHeight,
+                                                    exifOrientation = exifOrientation,
+                                                    leafValidatorPass = validation.isLikelyCrop,
+                                                    leafValidatorFraction = validation.plantPixelFraction,
+                                                    leafValidatorReason = validation.reason
+                                                )
+                                                processDiagnosis(finalBmp, cropHint, autoStartAdvisor = false, metadata = meta)
+                                            }
+                                        } else {
+                                            Log.e("MainActivityBenchmark", "diagnose_file: file not found: $filePath")
+                                        }
+                                    } catch (e: Exception) {
+                                        Log.e("MainActivityBenchmark", "diagnose_file error", e)
+                                    }
+                                }
+                            }
+                        }
+
                         onBenchmarkAction = { action ->
                             Log.i("MainActivityBenchmark", "Executing benchmark action: $action")
                             when (action) {

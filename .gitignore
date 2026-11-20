@@ -29,6 +29,9 @@ tokenizer.model
 data_raw/
 data_processed/
 benchmarks/dummy_realtest/
+benchmarks/phone_samples/
+benchmarks/test_inspect/
+benchmarks/*.jpg
 *.zip
 *.tar
 *.tar.gz
