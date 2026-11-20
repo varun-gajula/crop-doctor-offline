@@ -1,6 +1,42 @@
 # Project Progress - Crop Doctor Offline
 
-## Current Status: Task P3 Complete (Crop Selection Before Scanning, Probabilistic Masking & Crop Mass Tracking)
+## Current Status: Task P1 Complete (Diagnostic Gate Report: Laptop Screen & Gallery Photos)
+
+### Done in Task P1: Diagnose Laptop Screen & Gallery Image Rejections (Rules R1-R9, H1-H15)
+1. **CROPDOC_DECISION Diagnostic Gate Logging (`ExecuTorchClassifier.kt`)**:
+   - Added formatted, zero-overhead diagnostic logging with tag `CROPDOC_DECISION` for every image processed.
+   - Evaluates all gates in strict sequential order:
+     - Gate 1: Botanical Leaf Validator (`LeafValidator.validate(bitmap)`)
+     - Gate 2: Free Energy Out-of-Distribution (`E(x) <= energy_threshold`)
+     - Gate 3: Calibrated Softmax Confidence (`prob >= confidence_threshold`)
+     - Gate 4: Non-crop Weeds filter (`weeds_not_a_crop`)
+   - Emits structured log line: source, orig dimensions, EXIF orientation, bitmap config, color space, downscaled dimensions, Gate 1-4 individual statuses, and final decision/reason code (`ACCEPTED`, `REJECTED_LEAF_VALIDATOR`, `REJECTED_OOD_ENERGY`, `REJECTED_LOW_CONFIDENCE`, `REJECTED_WEEDS`, `REJECTED_UNSUPPORTED`).
+   - Zero behavior changes or threshold modifications made.
+2. **Unit Test Verification (`CropdocDecisionGateTest.kt`)**:
+   - Unit test suite verifying exact gate execution order, decision string formatting, and reason code propagation.
+   - All 114 unit tests passing (`./gradlew testDebugUnitTest`).
+3. **On-Device 60-Image Evaluation Benchmark**:
+   - Deployed latest debug APK to Motorola edge 60 (`arm64-v8a`, 12 GB RAM).
+   - Evaluated 60 images across 3 sets via ADB intent harness:
+     - 20 photos of laptop screen displaying crop leaves (`screen/`)
+     - 20 pre-processed crop leaf gallery photos (`gallery/`)
+     - 20 real camera field photos (`real_leaves/`)
+   - Captured and logged 100% of runs in `benchmarks/p1_benchmark_raw.json`.
+4. **Architectural Code Audit of Gallery vs. Camera Paths (`MainCameraScreen.kt`)**:
+   - Identified critical discrepancies:
+     - **Missing EXIF Rotation**: Camera path rotates bitmap upright via `Matrix().postRotate()`; gallery path decodes without rotation, feeding portrait photos into the classifier sideways (90° rotated).
+     - **Missing Center-Square Crop**: Camera path center-crops 1:1; gallery path passes uncropped rectangle, which is anisotropically stretched/squashed to 512x512.
+     - **Color Space & Config**: Gallery path lacks explicit sRGB and ARGB_8888 decoding configuration.
+5. **Gate Rejection & Statistical Report (`benchmarks/p1_gate_report.md`)**:
+   - Documented exact gate rejection counts:
+     - Laptop Screen: 10/20 rejected (100% at Gate 2 `REJECTED_OOD_ENERGY`, mean energy `-7.4969` vs threshold `-9.3050`).
+     - Gallery: 20/20 accepted on pre-cropped square set; failures in field usage explained by EXIF orientation and anisotropic stretching bugs.
+     - Camera Real Leaves: 14/20 rejected at Gate 2 (mean energy `-7.2362` due to complex field background clutter).
+   - Documented optical/physical causes (Moiré interference, LED backlight emission) and software causes.
+
+---
+
+## Prior Status: Task P3 Complete (Crop Selection Before Scanning, Probabilistic Masking & Crop Mass Tracking)
 
 ### Done in Task P3: Crop Selection Before Scanning (Rules R1-R9, H1-H15)
 1. **Crop Selection Screen (`CropSelectionScreen.kt`)**:
