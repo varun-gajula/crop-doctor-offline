@@ -40,6 +40,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.cropdoctor.R
 import com.cropdoctor.ui.components.LanguageChip
 import com.cropdoctor.ui.theme.FarmGreenPrimary
+import com.cropdoctor.vision.ImageAnalysisMetadata
 import java.io.InputStream
 import java.util.concurrent.Executors
 import kotlin.math.max
@@ -58,7 +59,8 @@ fun MainCameraScreen(
     onImageCaptured: (Bitmap, String?) -> Unit,
     onBackClick: () -> Unit,
     onChangeCropClick: () -> Unit = {},
-    onChangeLanguageClick: (String) -> Unit = {}
+    onChangeLanguageClick: (String) -> Unit = {},
+    onImageCapturedWithMetadata: ((Bitmap, String?, ImageAnalysisMetadata) -> Unit)? = null
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -69,6 +71,14 @@ fun MainCameraScreen(
     var isFlashOn by remember { mutableStateOf(false) }
 
     val cameraExecutor = remember { Executors.newSingleThreadExecutor() }
+
+    fun dispatchCapturedImage(bitmap: Bitmap, crop: String?, meta: ImageAnalysisMetadata) {
+        if (onImageCapturedWithMetadata != null) {
+            onImageCapturedWithMetadata(bitmap, crop, meta)
+        } else {
+            onImageCaptured(bitmap, crop)
+        }
+    }
 
     val cropOptions = listOf(
         CropChipItem("all", R.string.crop_auto, R.drawable.ic_crop_auto),
@@ -85,16 +95,42 @@ fun MainCameraScreen(
     ) { uri: Uri? ->
         if (uri != null) {
             try {
+                var exifOrientation = 0
+                try {
+                    context.contentResolver.openInputStream(uri)?.use { stream ->
+                        val exif = android.media.ExifInterface(stream)
+                        exifOrientation = when (exif.getAttributeInt(
+                            android.media.ExifInterface.TAG_ORIENTATION,
+                            android.media.ExifInterface.ORIENTATION_NORMAL
+                        )) {
+                            android.media.ExifInterface.ORIENTATION_ROTATE_90 -> 90
+                            android.media.ExifInterface.ORIENTATION_ROTATE_180 -> 180
+                            android.media.ExifInterface.ORIENTATION_ROTATE_270 -> 270
+                            else -> 0
+                        }
+                    }
+                } catch (e: Exception) {
+                    Log.w("MainCameraScreen", "Could not read EXIF from gallery image", e)
+                }
+
                 context.contentResolver.openInputStream(uri)?.use { stream: InputStream ->
                     val bytes = stream.readBytes()
                     val options = BitmapFactory.Options().apply { inJustDecodeBounds = true }
                     BitmapFactory.decodeByteArray(bytes, 0, bytes.size, options)
+                    val origWidth = options.outWidth
+                    val origHeight = options.outHeight
                     val maxDim = max(options.outWidth, options.outHeight)
                     options.inSampleSize = if (maxDim > 1024) maxDim / 1024 else 1
                     options.inJustDecodeBounds = false
                     val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size, options)
                     if (bitmap != null) {
-                        onImageCaptured(bitmap, selectedCropFilter)
+                        val meta = ImageAnalysisMetadata(
+                            source = "gallery",
+                            origWidth = origWidth,
+                            origHeight = origHeight,
+                            exifOrientation = exifOrientation
+                        )
+                        dispatchCapturedImage(bitmap, selectedCropFilter, meta)
                     }
                 }
             } catch (e: Exception) {
@@ -334,6 +370,8 @@ fun MainCameraScreen(
 
                                                     val options = BitmapFactory.Options().apply { inJustDecodeBounds = true }
                                                     BitmapFactory.decodeByteArray(bytes, 0, bytes.size, options)
+                                                    val origWidth = options.outWidth
+                                                    val origHeight = options.outHeight
                                                     val maxDim = max(options.outWidth, options.outHeight)
                                                     options.inSampleSize = if (maxDim > 1024) maxDim / 1024 else 1
                                                     options.inJustDecodeBounds = false
@@ -354,8 +392,15 @@ fun MainCameraScreen(
                                                         val yOffset = (rotated.height - minDim) / 2
                                                         val finalBitmap = Bitmap.createBitmap(rotated, xOffset, yOffset, minDim, minDim)
 
+                                                        val meta = ImageAnalysisMetadata(
+                                                            source = "camera",
+                                                            origWidth = origWidth,
+                                                            origHeight = origHeight,
+                                                            exifOrientation = rotationDegrees
+                                                        )
+
                                                         ContextCompat.getMainExecutor(context).execute {
-                                                            onImageCaptured(finalBitmap, selectedCropFilter)
+                                                            dispatchCapturedImage(finalBitmap, selectedCropFilter, meta)
                                                         }
                                                     }
                                                 }
