@@ -28,5 +28,7 @@ data class ClassifierResult(
     val inferenceTimeMs: Long = 0L,
     val memoryUsedMb: Long = 0L,
     val isDemoMode: Boolean = false,
-    val top3: List<ScoredClass> = emptyList()
+    val top3: List<ScoredClass> = emptyList(),
+    val selectedCrop: String? = null,
+    val cropMass: Float = 1.0f
 )

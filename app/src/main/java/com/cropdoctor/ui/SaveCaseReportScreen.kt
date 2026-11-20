@@ -54,7 +54,8 @@ fun SaveCaseReportScreen(
     val scrollState = rememberScrollState()
 
     val isUncertain = result.classId == "unknown" || result.certaintyBand == CertaintyBand.NOT_SURE
-    val displayCrop = if (isUncertain) "—" else kbEntry.crop.replaceFirstChar { it.uppercase() }
+    val effectiveCrop = result.selectedCrop ?: (if (isUncertain) "—" else kbEntry.crop)
+    val displayCrop = if (effectiveCrop == "—") "—" else effectiveCrop.replaceFirstChar { it.uppercase() }
     val displayProblem = if (isUncertain) {
         stringResource(R.string.cant_tell_no_disease)
     } else {

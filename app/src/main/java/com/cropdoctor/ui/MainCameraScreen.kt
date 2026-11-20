@@ -29,6 +29,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -51,15 +53,17 @@ data class CropChipItem(
 @Composable
 fun MainCameraScreen(
     language: String,
+    selectedCrop: String = "rice",
     isProcessing: Boolean,
     onImageCaptured: (Bitmap, String?) -> Unit,
     onBackClick: () -> Unit,
+    onChangeCropClick: () -> Unit = {},
     onChangeLanguageClick: (String) -> Unit = {}
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
 
-    var selectedCropFilter by remember { mutableStateOf("all") }
+    var selectedCropFilter by remember(selectedCrop) { mutableStateOf(selectedCrop) }
     var imageCapture: ImageCapture? by remember { mutableStateOf(null) }
     var cameraControl: CameraControl? by remember { mutableStateOf(null) }
     var isFlashOn by remember { mutableStateOf(false) }
@@ -178,43 +182,66 @@ fun MainCameraScreen(
                 }
             )
 
-            // Top Crop Filter Pills
+            // Visible Selected Crop Banner with "Change crop" Chip (Task P3)
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.TopCenter)
-                    .padding(top = 10.dp)
-                    .horizontalScroll(rememberScrollState())
-                    .padding(horizontal = 12.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    .padding(top = 10.dp, start = 16.dp, end = 16.dp),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                cropOptions.forEach { item ->
-                    val isSelected = selectedCropFilter == item.key
-                    Box(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(20.dp))
-                            .background(
-                                if (isSelected) FarmGreenPrimary else Color(0x99000000)
-                            )
-                            .clickable { selectedCropFilter = item.key }
-                            .padding(horizontal = 14.dp, vertical = 8.dp)
+                Surface(
+                    shape = RoundedCornerShape(24.dp),
+                    color = Color(0xCC000000),
+                    border = androidx.compose.foundation.BorderStroke(1.5.dp, Color(0xFF81C784)),
+                    modifier = Modifier
+                        .clickable { onChangeCropClick() }
+                        .semantics { contentDescription = "Change selected crop" }
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 9.dp),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center
+                        val currentCropRes = when (selectedCropFilter.lowercase()) {
+                            "cotton" -> R.string.crop_cotton
+                            "chilli" -> R.string.crop_chilli
+                            "tomato" -> R.string.crop_tomato
+                            "maize" -> R.string.crop_maize
+                            else -> R.string.crop_rice
+                        }
+                        val currentCropIcon = when (selectedCropFilter.lowercase()) {
+                            "cotton" -> R.drawable.ic_crop_cotton
+                            "chilli" -> R.drawable.ic_crop_chilli
+                            "tomato" -> R.drawable.ic_crop_tomato
+                            "maize" -> R.drawable.ic_crop_maize
+                            else -> R.drawable.ic_crop_rice
+                        }
+                        Icon(
+                            painter = painterResource(id = currentCropIcon),
+                            contentDescription = null,
+                            tint = Color(0xFF81C784),
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = stringResource(currentCropRes),
+                            color = Color.White,
+                            fontSize = 17.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(12.dp))
+                                .background(FarmGreenPrimary)
+                                .padding(horizontal = 10.dp, vertical = 4.dp)
                         ) {
-                            Icon(
-                                painter = painterResource(id = item.iconRes),
-                                contentDescription = stringResource(item.nameRes),
-                                tint = Color.White,
-                                modifier = Modifier.size(18.dp)
-                            )
-                            Spacer(modifier = Modifier.width(6.dp))
                             Text(
-                                text = stringResource(item.nameRes),
+                                text = stringResource(R.string.btn_change_crop),
                                 color = Color.White,
-                                fontSize = 14.sp,
-                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.SemiBold
                             )
                         }
                     }

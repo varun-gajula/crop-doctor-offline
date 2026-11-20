@@ -1,0 +1,28 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="96dp"
+    android:height="96dp"
+    android:viewportWidth="96"
+    android:viewportHeight="96">
+    <!-- Green stem base -->
+    <path
+        android:fillColor="#15803D"
+        android:pathData="M44,78 L44,92 L52,92 L52,78 Z" />
+    <!-- Yellow corn cob -->
+    <path
+        android:fillColor="#D97706"
+        android:pathData="M48,10 C38,10 34,26 34,50 C34,68 40,78 48,78 C56,78 62,68 62,50 C62,26 58,10 48,10 Z" />
+    <path
+        android:fillColor="#FBBF24"
+        android:pathData="M48,12 C40,12 36,26 36,50 C36,66 41,76 48,76 C55,76 60,66 60,50 C60,26 56,12 48,12 Z" />
+    <!-- Kernel rows details -->
+    <path
+        android:fillColor="#F59E0B"
+        android:pathData="M44,22 H52 V26 H44 Z M42,30 H54 V34 H42 Z M40,38 H56 V42 H40 Z M40,46 H56 V50 H40 Z M42,54 H54 V58 H42 Z M44,62 H52 V66 H44 Z" />
+    <!-- Green outer husks -->
+    <path
+        android:fillColor="#16A34A"
+        android:pathData="M34,74 C24,66 22,46 26,30 C28,44 32,60 46,74 Z" />
+    <path
+        android:fillColor="#15803D"
+        android:pathData="M62,74 C72,66 74,46 70,30 C68,44 64,60 50,74 Z" />
+</vector>

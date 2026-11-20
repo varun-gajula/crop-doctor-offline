@@ -58,6 +58,9 @@
     <string name="crop_chilli">Chilli</string>
     <string name="crop_tomato">Tomato</string>
     <string name="crop_maize">Maize</string>
+    <string name="select_crop_title">Select Crop</string>
+    <string name="select_crop_sub">Choose your crop before scanning for accurate diagnosis</string>
+    <string name="btn_change_crop">Change crop</string>
 
     <!-- Soft Warning Dialog -->
     <string name="warn_not_crop_title">This may not be a crop photo</string>

@@ -1,0 +1,24 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="96dp"
+    android:height="96dp"
+    android:viewportWidth="96"
+    android:viewportHeight="96">
+    <!-- Red tomato body -->
+    <path
+        android:fillColor="#E11D48"
+        android:pathData="M48,26 C30,26 14,38 14,56 C14,74 30,88 48,88 C66,88 82,74 82,56 C82,38 66,26 48,26 Z" />
+    <path
+        android:fillColor="#EF4444"
+        android:pathData="M46,28 C32,28 18,39 18,55 C18,71 32,84 48,84 C62,84 76,72 78,56 C80,41 68,30 52,28 C50,28 48,28 46,28 Z" />
+    <!-- Tomato shine -->
+    <path
+        android:fillColor="#FDA4AF"
+        android:pathData="M32,40 C28,44 26,50 26,56 C26,57.5 27,57.5 27.5,56 C28,51 30,45 34,42 C35,41 33.5,39 32,40 Z" />
+    <!-- Green calyx star & stem -->
+    <path
+        android:fillColor="#15803D"
+        android:pathData="M48,8 C45,8 44,14 45,22 L51,22 C52,14 51,8 48,8 Z" />
+    <path
+        android:fillColor="#16A34A"
+        android:pathData="M48,24 L38,16 L42,26 L30,28 L40,32 L36,42 L46,34 L48,44 L50,34 L60,42 L56,32 L66,28 L54,26 L58,16 Z" />
+</vector>

@@ -1,0 +1,21 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="96dp"
+    android:height="96dp"
+    android:viewportWidth="96"
+    android:viewportHeight="96">
+    <!-- Green stem -->
+    <path
+        android:fillColor="#16A34A"
+        android:pathData="M60,8 C56,8 50,12 48,18 C46,24 52,26 56,22 C58,20 62,14 66,12 C68,11 64,8 60,8 Z" />
+    <path
+        android:fillColor="#15803D"
+        android:pathData="M42,22 C42,22 46,30 52,30 C58,30 66,26 66,24 C64,22 56,18 50,20 C46,20 42,22 42,22 Z" />
+    <!-- Red chilli body -->
+    <path
+        android:fillColor="#EF4444"
+        android:pathData="M48,24 C36,36 30,52 34,70 C36,78 42,86 46,90 C46.5,91 48,88 47,84 C44,70 42,54 58,40 C66,32 64,25 58,24 C54,23 50,23 48,24 Z" />
+    <!-- Highlight -->
+    <path
+        android:fillColor="#F87171"
+        android:pathData="M48,32 C42,42 38,54 40,66 C40.5,69 41.5,69 41,66 C39.5,55 43,44 50,35 C52,32 50,30 48,32 Z" />
+</vector>

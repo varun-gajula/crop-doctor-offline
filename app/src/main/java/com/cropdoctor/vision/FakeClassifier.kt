@@ -56,7 +56,9 @@ class FakeClassifier : Classifier {
             inferenceTimeMs = 45L,
             memoryUsedMb = 60L,
             isDemoMode = true,
-            top3 = top3
+            top3 = top3,
+            selectedCrop = cropHint,
+            cropMass = 0.96f
         )
     }
 
