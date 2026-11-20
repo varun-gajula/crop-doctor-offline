@@ -358,7 +358,9 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
                 inferenceTimeMs = elapsed,
                 memoryUsedMb = getProcessMemoryMb(),
                 isDemoMode = false,
-                top3 = emptyList()
+                top3 = emptyList(),
+                selectedCrop = cropHint,
+                cropMass = 1.0f
             )
         }
 
@@ -384,7 +386,9 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
                 inferenceTimeMs = elapsed,
                 memoryUsedMb = getProcessMemoryMb(),
                 isDemoMode = false,
-                top3 = emptyList()
+                top3 = emptyList(),
+                selectedCrop = cropHint,
+                cropMass = 1.0f
             )
         }
 
@@ -404,11 +408,14 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
             // 3. Evaluate 20 direct model outputs against labels.json
             val scaledLogits = VisionMath.applyTemperature(rawLogits.take(labels.size).toFloatArray(), temperature)
             val freeEnergy = VisionMath.computeFreeEnergy(scaledLogits, temperature)
-            val probabilities = if (cropHint != null && cropHint.isNotBlank() && cropHint != "all" && cropHint != "auto") {
-                VisionMath.maskAndRenormalize(labels, scaledLogits, cropHint)
+            val isFilteredCrop = cropHint != null && cropHint.isNotBlank() && cropHint != "all" && cropHint != "auto"
+            val maskResult = if (isFilteredCrop) {
+                VisionMath.maskAndRenormalizeWithMass(labels, scaledLogits, cropHint)
             } else {
-                VisionMath.softmax(scaledLogits)
+                VisionMath.CropMaskResult(VisionMath.softmax(scaledLogits), 1.0f)
             }
+            val probabilities = maskResult.probabilities
+            val cropMass = maskResult.cropMass
 
             val eval = VisionMath.evaluateDiagnosis(
                 labels = labels,
@@ -420,7 +427,7 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
                 unsupportedClasses = unsupportedClasses
             )
 
-            Log.e(TAG, "classify(): eval result -> classId=${eval.classId}, displayName=${eval.displayName}, conf=${eval.confidence}, isBelowThresh=${eval.isBelowThreshold}, top3=${eval.top3.map { "${it.classId}:${String.format("%.3f", it.probability)}" }}")
+            Log.e(TAG, "classify(): eval result -> classId=${eval.classId}, displayName=${eval.displayName}, conf=${eval.confidence}, cropMass=$cropMass, isBelowThresh=${eval.isBelowThreshold}, top3=${eval.top3.map { "${it.classId}:${String.format("%.3f", it.probability)}" }}")
 
             val elapsed = SystemClock.elapsedRealtime() - startTime
             val memoryMb = getProcessMemoryMb()
@@ -449,7 +456,9 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
                 inferenceTimeMs = elapsed,
                 memoryUsedMb = memoryMb,
                 isDemoMode = false,
-                top3 = eval.top3
+                top3 = eval.top3,
+                selectedCrop = if (isFilteredCrop) cropHint else null,
+                cropMass = cropMass
             )
         } catch (e: Throwable) {
             Log.e(TAG, "Vision inference error caught: ${e.message}", e)
@@ -464,7 +473,9 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
                 inferenceTimeMs = elapsed,
                 memoryUsedMb = getProcessMemoryMb(),
                 isDemoMode = false,
-                top3 = emptyList()
+                top3 = emptyList(),
+                selectedCrop = cropHint,
+                cropMass = 1.0f
             )
         }
     }

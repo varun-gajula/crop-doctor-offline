@@ -44,6 +44,7 @@ enum class AppScreen {
     FIRST_LAUNCH,
     WELCOME,
     HOME,
+    CROP_SELECTION,
     CAMERA,
     RESULT,
     SAVE_CASE_REPORT,
@@ -107,6 +108,7 @@ class MainActivity : ComponentActivity() {
                     var currentScreen by remember { mutableStateOf(initialScreen) }
                     var previousScreen by remember { mutableStateOf(initialScreen) }
 
+                    var selectedCrop by remember { mutableStateOf("rice") }
                     var classifierResult by remember { mutableStateOf<ClassifierResult?>(null) }
                     var activeKbEntry by remember { mutableStateOf<KbEntry?>(null) }
                     var selectedDetailEntry by remember { mutableStateOf<KbEntry?>(null) }
@@ -139,6 +141,7 @@ class MainActivity : ComponentActivity() {
                                 language = newLang,
                                 fieldSpread = currentFieldSpread,
                                 region = selectedRegion,
+                                crop = classifierResult?.selectedCrop ?: selectedCrop,
                                 onUpdate = { advisoryText = it },
                                 onStateChange = { isGeneratingAdvice = it }
                             )
@@ -156,6 +159,7 @@ class MainActivity : ComponentActivity() {
                                 language = selectedLanguage,
                                 fieldSpread = currentFieldSpread,
                                 region = newRegion,
+                                crop = classifierResult?.selectedCrop ?: selectedCrop,
                                 onUpdate = { advisoryText = it },
                                 onStateChange = { isGeneratingAdvice = it }
                             )
@@ -164,7 +168,11 @@ class MainActivity : ComponentActivity() {
 
                     // Handle system back button smoothly
                     BackHandler(enabled = currentScreen != AppScreen.HOME && currentScreen != AppScreen.FIRST_LAUNCH) {
-                        if (currentScreen == AppScreen.RESULT || currentScreen == AppScreen.CAMERA) {
+                        if (currentScreen == AppScreen.RESULT) {
+                            currentScreen = AppScreen.HOME
+                        } else if (currentScreen == AppScreen.CAMERA) {
+                            currentScreen = AppScreen.CROP_SELECTION
+                        } else if (currentScreen == AppScreen.CROP_SELECTION) {
                             currentScreen = AppScreen.HOME
                         } else if (currentScreen == AppScreen.SAVE_CASE_REPORT) {
                             currentScreen = AppScreen.RESULT
@@ -178,7 +186,8 @@ class MainActivity : ComponentActivity() {
                         capturedLeafBitmap = bitmap
                         lifecycleScope.launch {
                             try {
-                                val result = app.classifier.classify(bitmap, cropFilter)
+                                val effectiveCropFilter = cropFilter ?: selectedCrop
+                                val result = app.classifier.classify(bitmap, effectiveCropFilter)
 
                                 val kb = KnowledgeBase.getEntry(result.classId)
                                     ?: if (result.classId != "unknown") {
@@ -243,6 +252,7 @@ class MainActivity : ComponentActivity() {
                                         result = result,
                                         kbEntry = kb,
                                         language = selectedLanguage,
+                                        crop = result.selectedCrop ?: effectiveCropFilter,
                                         onUpdate = { advisoryText = it },
                                         onStateChange = { isGeneratingAdvice = it }
                                     )
@@ -360,6 +370,18 @@ class MainActivity : ComponentActivity() {
                                 "lang_en" -> switchLanguage("en")
                                 "lang_te" -> switchLanguage("te")
                                 "lang_hi" -> switchLanguage("hi")
+                                "show_crop_selection_en" -> {
+                                    switchLanguage("en")
+                                    navigateTo(AppScreen.CROP_SELECTION)
+                                }
+                                "show_crop_selection_te" -> {
+                                    switchLanguage("te")
+                                    navigateTo(AppScreen.CROP_SELECTION)
+                                }
+                                "show_crop_selection_hi" -> {
+                                    switchLanguage("hi")
+                                    navigateTo(AppScreen.CROP_SELECTION)
+                                }
                                 "region_telangana" -> switchRegion("Telangana")
                                 "region_andhra" -> switchRegion("Andhra Pradesh")
                                 "region_other" -> switchRegion("Other")
@@ -512,7 +534,7 @@ class MainActivity : ComponentActivity() {
                         AppScreen.HOME -> {
                             HomeScreen(
                                 language = selectedLanguage,
-                                onScanClick = { navigateTo(AppScreen.CAMERA) },
+                                onScanClick = { navigateTo(AppScreen.CROP_SELECTION) },
                                 onBrowseDiseasesClick = { navigateTo(AppScreen.KNOWLEDGE_BASE) },
                                 onFarmingTipsClick = { navigateTo(AppScreen.FARMING_TIPS) },
                                 onChangeLanguageClick = { newLang -> switchLanguage(newLang) },
@@ -521,21 +543,36 @@ class MainActivity : ComponentActivity() {
                             )
                         }
 
+                        AppScreen.CROP_SELECTION -> {
+                            CropSelectionScreen(
+                                language = selectedLanguage,
+                                onCropSelected = { crop ->
+                                    selectedCrop = crop
+                                    navigateTo(AppScreen.CAMERA)
+                                },
+                                onBackClick = { navigateTo(AppScreen.HOME) },
+                                onLanguageChange = { newLang -> switchLanguage(newLang) }
+                            )
+                        }
+
                         AppScreen.CAMERA -> {
                             MainCameraScreen(
                                 language = selectedLanguage,
+                                selectedCrop = selectedCrop,
                                 isProcessing = isProcessingImage,
                                 onImageCaptured = { bitmap, cropFilter ->
+                                    val effectiveCropFilter = cropFilter ?: selectedCrop
                                     val validation = LeafValidator.validate(bitmap)
                                     if (!validation.isLikelyCrop) {
                                         pendingCapturedBitmap = bitmap
-                                        pendingCropFilter = cropFilter
+                                        pendingCropFilter = effectiveCropFilter
                                         showSoftCropWarningDialog = true
                                     } else {
-                                        processDiagnosis(bitmap, cropFilter)
+                                        processDiagnosis(bitmap, effectiveCropFilter)
                                     }
                                 },
-                                onBackClick = { navigateTo(AppScreen.HOME) },
+                                onBackClick = { navigateTo(AppScreen.CROP_SELECTION) },
+                                onChangeCropClick = { navigateTo(AppScreen.CROP_SELECTION) },
                                 onChangeLanguageClick = { newLang -> switchLanguage(newLang) }
                             )
                         }
@@ -568,6 +605,7 @@ class MainActivity : ComponentActivity() {
                                                 language = selectedLanguage,
                                                 fieldSpread = spread,
                                                 region = selectedRegion,
+                                                crop = classifierResult!!.selectedCrop ?: selectedCrop,
                                                 onUpdate = { advisoryText = it },
                                                 onStateChange = { isGeneratingAdvice = it }
                                             )
@@ -694,6 +732,7 @@ class MainActivity : ComponentActivity() {
         language: String,
         fieldSpread: com.cropdoctor.domain.RulesEngine.FieldSpread? = null,
         region: String = "telangana",
+        crop: String? = null,
         onUpdate: (String) -> Unit,
         onStateChange: (Boolean) -> Unit
     ) {
@@ -708,6 +747,7 @@ class MainActivity : ComponentActivity() {
         }
         val spreadEnum = fieldSpread ?: com.cropdoctor.domain.RulesEngine.FieldSpread.SOME
         val urgency = com.cropdoctor.domain.RulesEngine.calculateUrgency(result.severityBand, spreadEnum)
+        val effectiveCrop = crop ?: result.selectedCrop ?: kbEntry.crop
 
         currentAdviceJob = lifecycleScope.launch {
             val sb = StringBuilder()
@@ -720,7 +760,8 @@ class MainActivity : ComponentActivity() {
                     kbEntry = kbEntry,
                     fieldSpread = spreadStr,
                     region = region,
-                    urgency = urgency
+                    urgency = urgency,
+                    crop = effectiveCrop
                 ) { token ->
                     sb.append(token)
                     onUpdate(sb.toString())

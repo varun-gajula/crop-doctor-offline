@@ -23,6 +23,7 @@ class FakeAdvisor : Advisor {
         fieldSpread: String,
         region: String,
         urgency: RulesEngine.UrgencyLevel?,
+        crop: String?,
         onToken: (String) -> Unit
     ) {
         val certaintyBand = when (certainty.uppercase()) {
@@ -38,10 +39,11 @@ class FakeAdvisor : Advisor {
         }
 
         val resolvedUrgency = urgency ?: RulesEngine.calculateUrgency(severityBand, spreadEnum)
+        val effectiveCrop = crop ?: kbEntry.crop
 
         val adviceText = RulesEngine.buildCaseSpecificAdvisory(
             classId = classId,
-            crop = kbEntry.crop,
+            crop = effectiveCrop,
             diseaseName = kbEntry.names.forLanguage(language),
             type = kbEntry.type,
             severityBand = severityBand,

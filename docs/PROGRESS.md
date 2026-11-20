@@ -1,6 +1,52 @@
 # Project Progress - Crop Doctor Offline
 
-## Current Status: Task V8 Complete (Retrained 20-Class 512x512 Vision Model with Zero Leakage & 91.49% Accuracy)
+## Current Status: Task P3 Complete (Crop Selection Before Scanning, Probabilistic Masking & Crop Mass Tracking)
+
+### Done in Task P3: Crop Selection Before Scanning (Rules R1-R9, H1-H15)
+1. **Crop Selection Screen (`CropSelectionScreen.kt`)**:
+   - Tapping "Scan leaf" on the home screen immediately navigates to `CropSelectionScreen`.
+   - Five large tiles ($\ge 150\text{dp} \times 140\text{dp}$, exceeding $\ge 96\text{dp}$ requirement):
+     1. **Rice / వరి / धान** (`ic_tile_rice`)
+     2. **Cotton / పత్తి / कपास** (`ic_tile_cotton`)
+     3. **Chilli / మిరప / मिर्च** (`ic_tile_chilli`)
+     4. **Tomato / టమాటా / टमाटर** (`ic_tile_tomato`)
+     5. **Maize / మొక్కజొన్న / मक्का** (`ic_tile_maize`)
+   - Names rendered with typography $\ge 19\text{sp}$ (Telugu $\ge 21\text{sp}$ per Rule U2).
+   - High-detail vector illustrations designed in-app with zero uncredited/unlicensed external assets (Rule H4 / `docs/CREDITS.md`).
+   - Content descriptions configured on all interactive tiles for accessibility (`flutter_a11y_agent` / Android a11y standards).
+   - No typing required; intuitive one-tap selection with persistent language toggle chip and back button.
+2. **Camera Screen Integration**:
+   - `MainCameraScreen.kt` accepts `selectedCrop: String` and `onChangeCropClick: () -> Unit`.
+   - Displays a prominent, high-contrast pill chip at top center with icon, crop name, and "[Change crop]" / "[పంటను మార్చండి]" / "[फसल बदलें]" button to easily return to `CropSelectionScreen`.
+3. **Probabilistic Crop Masking & `crop_mass`**:
+   - `CropMapping.kt` maps class IDs directly from `labels.json` prefixes to one of the 5 valid crops (`rice`, `cotton`, `chilli`, `tomato`, `maize`), returning `null` for `weeds_not_a_crop`.
+   - `VisionMath.maskAndRenormalizeWithMass`:
+     - Global unmasked softmax probabilities sum to 1.0.
+     - `cropMass` retains the total model probability assigned to the selected crop's classes.
+     - Subset logits are renormalized over selected crop classes such that their sum equals 1.0, while non-crop classes receive 0.0.
+   - Updated `ClassifierResult.kt` to store `selectedCrop: String?` and `cropMass: Float`.
+   - `ExecuTorchClassifier.kt` and `FakeClassifier.kt` updated to compute and populate `selectedCrop` and `cropMass`.
+4. **End-to-End Grounded Integration**:
+   - Selected crop flows into `ResultScreen.kt`, `SaveCaseReportScreen.kt` (saved case reports), and into the Case Finding sent to Llama (`- Crop: <crop>`).
+5. **Localization & Rigorous Unit Testing**:
+   - Sourced and localized all strings in English, Telugu, and Hindi across `strings.xml`.
+   - Added `CropMappingTest.kt`:
+     - Verified all 20 classes in `labels.json` map to exactly one valid crop except `weeds_not_a_crop`.
+     - Verified crop class index sets are pairwise disjoint and complete.
+     - Verified `maskAndRenormalizeWithMass` outputs valid normalized probabilities summing to 1.0 and correct `cropMass`.
+     - Verified all required crop strings and selector titles exist and are non-empty in English, Telugu, and Hindi.
+   - **Test Suite Results**: **113 / 113 tests passing** (100% pass rate, 0 failures, 0 errors, 0 skipped).
+   - **Offline Manifest**: Verified strictly NO `INTERNET` permission (Hard Rule H1).
+   - **Build**: `./gradlew assembleDebug` passed cleanly.
+   - **Visual Verification**: Captured on-device screenshots in all 3 languages:
+     - `benchmarks/p3_crop_selection_en.png`
+     - `benchmarks/p3_crop_selection_te.png`
+     - `benchmarks/p3_crop_selection_hi.png`
+     - `benchmarks/p3_camera_crop_chip.png` (camera screen with "Change crop" chip).
+
+---
+
+## Prior Status: Task V8 Complete (Retrained 20-Class 512x512 Vision Model with Zero Leakage & 91.49% Accuracy)
 
 ### Done in Task V8: Retrained 20-Class 512x512 Vision Model Deployed to App (Rules R1-R9, H1-H15)
 1. **High-Performance Retraining on Dual Tesla T4 GPUs (Kaggle)**:

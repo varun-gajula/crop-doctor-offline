@@ -58,6 +58,9 @@
     <string name="crop_chilli">मिर्च</string>
     <string name="crop_tomato">टमाटर</string>
     <string name="crop_maize">मक्का</string>
+    <string name="select_crop_title">फसल चुनें</string>
+    <string name="select_crop_sub">सटीक निदान के लिए स्कैन करने से पहले फसल चुनें</string>
+    <string name="btn_change_crop">फसल बदलें</string>
 
     <!-- Soft Warning Dialog -->
     <string name="warn_not_crop_title">यह फसल की तस्वीर नहीं लग रही है</string>

@@ -76,6 +76,74 @@ object VisionMath {
         return expVals
     }
 
+    data class CropMaskResult(
+        val probabilities: FloatArray,
+        val cropMass: Float
+    )
+
+    /**
+     * Crop chip masking: when a crop is chosen, keep only that crop's classes and re-normalise.
+     * Also returns cropMass: total probability the model gave to the selected crop's classes.
+     * "Auto" / "all" / null uses all classes and has cropMass = 1.0f.
+     */
+    fun maskAndRenormalizeWithMass(
+        labels: List<String>,
+        scaledLogits: FloatArray,
+        cropHint: String?
+    ): CropMaskResult {
+        val n = labels.size
+        val probabilities = FloatArray(n) { 0.0f }
+        if (n == 0 || scaledLogits.isEmpty()) return CropMaskResult(probabilities, 1.0f)
+
+        // Compute global unmasked softmax probabilities to measure model's total mass assigned to crop
+        val globalProbs = softmax(scaledLogits)
+
+        val normalizedHint = cropHint?.lowercase()?.trim()
+        val isAuto = normalizedHint == null || normalizedHint == "all" || normalizedHint == "auto" || normalizedHint.isEmpty()
+
+        if (isAuto) {
+            return CropMaskResult(globalProbs, 1.0f)
+        }
+
+        val prefix = "${normalizedHint}_"
+        val matchingIndices = labels.indices.filter { labels[it].startsWith(prefix) }
+
+        if (matchingIndices.isEmpty()) {
+            return CropMaskResult(globalProbs, 1.0f)
+        }
+
+        var mass = 0.0f
+        for (idx in matchingIndices) {
+            if (idx < globalProbs.size) {
+                mass += globalProbs[idx]
+            }
+        }
+
+        var maxVal = Float.NEGATIVE_INFINITY
+        for (idx in matchingIndices) {
+            if (idx < scaledLogits.size && scaledLogits[idx] > maxVal) {
+                maxVal = scaledLogits[idx]
+            }
+        }
+
+        var sum = 0.0f
+        for (idx in matchingIndices) {
+            if (idx < scaledLogits.size) {
+                val expVal = exp(scaledLogits[idx] - maxVal)
+                probabilities[idx] = expVal
+                sum += expVal
+            }
+        }
+
+        if (sum > 0.0f) {
+            for (idx in matchingIndices) {
+                probabilities[idx] /= sum
+            }
+        }
+
+        return CropMaskResult(probabilities, mass)
+    }
+
     /**
      * Crop chip masking: when a crop is chosen, keep only that crop's classes and re-normalise.
      * "Auto" / "all" / null uses all classes.
@@ -85,45 +153,7 @@ object VisionMath {
         scaledLogits: FloatArray,
         cropHint: String?
     ): FloatArray {
-        val n = labels.size
-        val probabilities = FloatArray(n) { 0.0f }
-        if (n == 0 || scaledLogits.isEmpty()) return probabilities
-
-        val normalizedHint = cropHint?.lowercase()?.trim()
-        val isAuto = normalizedHint == null || normalizedHint == "all" || normalizedHint == "auto" || normalizedHint.isEmpty()
-
-        val matchingIndices = if (isAuto) {
-            labels.indices.toList()
-        } else {
-            val prefix = "${normalizedHint}_"
-            labels.indices.filter { labels[it].startsWith(prefix) }
-        }
-
-        val targetIndices = if (matchingIndices.isNotEmpty()) matchingIndices else labels.indices.toList()
-
-        var maxVal = Float.NEGATIVE_INFINITY
-        for (idx in targetIndices) {
-            if (idx < scaledLogits.size && scaledLogits[idx] > maxVal) {
-                maxVal = scaledLogits[idx]
-            }
-        }
-
-        var sum = 0.0f
-        for (idx in targetIndices) {
-            if (idx < scaledLogits.size) {
-                val expVal = exp(scaledLogits[idx] - maxVal)
-                probabilities[idx] = expVal
-                sum += expVal
-            }
-        }
-
-        if (sum > 0.0f) {
-            for (idx in targetIndices) {
-                probabilities[idx] /= sum
-            }
-        }
-
-        return probabilities
+        return maskAndRenormalizeWithMass(labels, scaledLogits, cropHint).probabilities
     }
 
     /**

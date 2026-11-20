@@ -186,6 +186,7 @@ class ExecuTorchLlamaAdvisor(private val context: Context) : Advisor {
         fieldSpread: String,
         region: String,
         urgency: com.cropdoctor.domain.RulesEngine.UrgencyLevel?,
+        crop: String?,
         onToken: (String) -> Unit
     ) = withContext(Dispatchers.Default) {
         val certaintyBand = when (certainty.uppercase()) {
@@ -203,14 +204,15 @@ class ExecuTorchLlamaAdvisor(private val context: Context) : Advisor {
         val resolvedUrgency = urgency ?: com.cropdoctor.domain.RulesEngine.calculateUrgency(severityBand, spreadEnum)
 
         val isNotSure = certaintyBand == com.cropdoctor.domain.CertaintyBand.NOT_SURE || classId.equals("unknown", ignoreCase = true)
+        val effectiveCrop = crop ?: kbEntry.crop
 
-        Log.e(TAG, "generateAdvice() called: classId=$classId, isNotSure=$isNotSure, severityBand=$severityBand, certainty=$certainty, fieldSpread=$fieldSpread, urgency=$resolvedUrgency, region=$region, language=$language")
+        Log.e(TAG, "generateAdvice() called: classId=$classId, crop=$effectiveCrop, isNotSure=$isNotSure, severityBand=$severityBand, certainty=$certainty, fieldSpread=$fieldSpread, urgency=$resolvedUrgency, region=$region, language=$language")
 
         // RULE H11 & T2c: When certainty is Not sure or disease unknown, NEVER ask Llama to reason about severity.
         if (isNotSure) {
             Log.e(TAG, "generateAdvice(): isNotSure is true -> routing to offline guide fallback")
             _isFallbackToOfflineGuide = true
-            fakeAdvisor.generateAdvice(classId, severityBand, certainty, language, kbEntry, fieldSpread, region, resolvedUrgency, onToken)
+            fakeAdvisor.generateAdvice(classId, severityBand, certainty, language, kbEntry, fieldSpread, region, resolvedUrgency, effectiveCrop, onToken)
             return@withContext
         }
 
@@ -218,14 +220,14 @@ class ExecuTorchLlamaAdvisor(private val context: Context) : Advisor {
         if (language.equals("te", ignoreCase = true)) {
             Log.e(TAG, "generateAdvice(): language is Telugu -> routing to verified KB text in code (Rule H6)")
             _isFallbackToOfflineGuide = true
-            fakeAdvisor.generateAdvice(classId, severityBand, certainty, language, kbEntry, fieldSpread, region, resolvedUrgency, onToken)
+            fakeAdvisor.generateAdvice(classId, severityBand, certainty, language, kbEntry, fieldSpread, region, resolvedUrgency, effectiveCrop, onToken)
             return@withContext
         }
 
         // Check memory budget before attempting model load
         if (!checkMemoryBudget()) {
             _isFallbackToOfflineGuide = true
-            fakeAdvisor.generateAdvice(classId, severityBand, certainty, language, kbEntry, fieldSpread, region, resolvedUrgency, onToken)
+            fakeAdvisor.generateAdvice(classId, severityBand, certainty, language, kbEntry, fieldSpread, region, resolvedUrgency, effectiveCrop, onToken)
             return@withContext
         }
 
@@ -236,7 +238,7 @@ class ExecuTorchLlamaAdvisor(private val context: Context) : Advisor {
         // Emulator check: Emulator cannot run 4-bit Arm kernels -> use FakeAdvisor
         if (isEmulator() || modelFile == null || tokenizerFile == null) {
             Log.e(TAG, "generateAdvice() fallback: isEmulator=${isEmulator()}, modelFileNull=${modelFile == null}, tokFileNull=${tokenizerFile == null}")
-            fakeAdvisor.generateAdvice(classId, severityBand, certainty, language, kbEntry, fieldSpread, region, resolvedUrgency, onToken)
+            fakeAdvisor.generateAdvice(classId, severityBand, certainty, language, kbEntry, fieldSpread, region, resolvedUrgency, effectiveCrop, onToken)
             return@withContext
         }
 
@@ -245,7 +247,7 @@ class ExecuTorchLlamaAdvisor(private val context: Context) : Advisor {
         if (!ready || llamaModule == null) {
             Log.w(TAG, "Real Llama module could not be loaded; falling back to static KB advisory")
             _isFallbackToOfflineGuide = true
-            fakeAdvisor.generateAdvice(classId, severityBand, certainty, language, kbEntry, fieldSpread, region, resolvedUrgency, onToken)
+            fakeAdvisor.generateAdvice(classId, severityBand, certainty, language, kbEntry, fieldSpread, region, resolvedUrgency, effectiveCrop, onToken)
             return@withContext
         }
 
@@ -254,7 +256,7 @@ class ExecuTorchLlamaAdvisor(private val context: Context) : Advisor {
 
         // Build case-specific grounded prompt adhering to Task A2
         val prompt = PromptBuilder.buildPrompt(
-            crop = kbEntry.crop,
+            crop = effectiveCrop,
             diseaseName = kbEntry.names.forLanguage(language),
             severity = severityBand.name,
             certainty = certainty,
@@ -320,7 +322,7 @@ class ExecuTorchLlamaAdvisor(private val context: Context) : Advisor {
                 _isFallbackToOfflineGuide = true
                 val fallbackText = com.cropdoctor.domain.RulesEngine.buildCaseSpecificAdvisory(
                     classId = classId,
-                    crop = kbEntry.crop,
+                    crop = effectiveCrop,
                     diseaseName = kbEntry.names.forLanguage(language),
                     type = kbEntry.type,
                     severityBand = severityBand,
@@ -357,7 +359,7 @@ class ExecuTorchLlamaAdvisor(private val context: Context) : Advisor {
                 _isFallbackToOfflineGuide = true
                 val officialKbText = "\n\n" + com.cropdoctor.domain.RulesEngine.buildCaseSpecificAdvisory(
                     classId = classId,
-                    crop = kbEntry.crop,
+                    crop = effectiveCrop,
                     diseaseName = kbEntry.names.forLanguage(language),
                     type = kbEntry.type,
                     severityBand = severityBand,
@@ -380,7 +382,7 @@ class ExecuTorchLlamaAdvisor(private val context: Context) : Advisor {
                 totalGenTimeMs = totalGenDurationMs,
                 tokenCount = totalTokens,
                 language = language,
-                crop = kbEntry.crop,
+                crop = effectiveCrop,
                 disease = kbEntry.names.en,
                 guardrailPassed = validation.isValid
             )
@@ -388,7 +390,7 @@ class ExecuTorchLlamaAdvisor(private val context: Context) : Advisor {
         } catch (e: Exception) {
             Log.e(TAG, "Error during Llama generation", e)
             _isFallbackToOfflineGuide = true
-            fakeAdvisor.generateAdvice(classId, severityBand, certainty, language, kbEntry, fieldSpread, region, resolvedUrgency, onToken)
+            fakeAdvisor.generateAdvice(classId, severityBand, certainty, language, kbEntry, fieldSpread, region, resolvedUrgency, effectiveCrop, onToken)
         }
     }
 

@@ -58,6 +58,9 @@
     <string name="crop_chilli">మిరప</string>
     <string name="crop_tomato">టమాటా</string>
     <string name="crop_maize">మొక్కజొన్న</string>
+    <string name="select_crop_title">పంటను ఎంచుకోండి</string>
+    <string name="select_crop_sub">ఖచ్చితమైన నిర్ధారణ కోసం స్కాన్ చేయడానికి ముందు పంటను ఎంచుకోండి</string>
+    <string name="btn_change_crop">పంట మార్చండి</string>
 
     <!-- Soft Warning Dialog -->
     <string name="warn_not_crop_title">ఇది పంట ఫోటో కాకపోవచ్చు</string>

@@ -18,6 +18,7 @@ interface Advisor {
         fieldSpread: String = "some",
         region: String = "telangana",
         urgency: RulesEngine.UrgencyLevel? = null,
+        crop: String? = null,
         onToken: (String) -> Unit
     )
 

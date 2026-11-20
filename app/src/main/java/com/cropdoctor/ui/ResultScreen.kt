@@ -449,18 +449,21 @@ fun ResultScreen(
                         color = FarmGreenDark,
                         lineHeight = 30.sp
                     )
-                    if (!isUncertain) {
+                    val cropToShow = (result.selectedCrop ?: if (!isUncertain) kbEntry.crop else null)?.replaceFirstChar { it.uppercase() }
+                    if (cropToShow != null) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.padding(top = 4.dp)
                         ) {
                             Text(
-                                text = "(${kbEntry.crop.replaceFirstChar { it.uppercase() }})",
+                                text = "($cropToShow)",
                                 fontSize = 17.sp,
                                 color = Color(0xFF555555)
                             )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            TypeChip(type = kbEntry.type)
+                            if (!isUncertain) {
+                                Spacer(modifier = Modifier.width(8.dp))
+                                TypeChip(type = kbEntry.type)
+                            }
                         }
                     }
                 }
