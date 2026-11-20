@@ -362,7 +362,7 @@ fun MainCameraScreen(
 
                                                 override fun onError(exception: ImageCaptureException) {
                                                     Log.e("MainCameraScreen", "Capture fallback", exception)
-                                                    val sample = Bitmap.createBitmap(224, 224, Bitmap.Config.ARGB_8888)
+                                                    val sample = Bitmap.createBitmap(512, 512, Bitmap.Config.ARGB_8888)
                                                     ContextCompat.getMainExecutor(context).execute {
                                                         onImageCaptured(sample, selectedCropFilter)
                                                     }
@@ -370,7 +370,7 @@ fun MainCameraScreen(
                                             }
                                         )
                                     } else {
-                                        val sample = Bitmap.createBitmap(224, 224, Bitmap.Config.ARGB_8888)
+                                        val sample = Bitmap.createBitmap(512, 512, Bitmap.Config.ARGB_8888)
                                         onImageCaptured(sample, selectedCropFilter)
                                     }
                                 },
