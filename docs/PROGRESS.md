@@ -1,6 +1,35 @@
 # Project Progress - Crop Doctor Offline
 
-## Current Status: Task P4 Complete (Three Clear Outcomes: DIAGNOSE, CAN'T TELL, OUT OF CLASS)
+## Current Status: Task P5 Complete (End-to-End Phone Benchmark & Robustness Check)
+
+### Done in Task P5: End-to-End Phone Benchmark & Robustness Check (Rules R1-R9, H1-H15)
+1. **Physical Reference Phone Execution (`tools/run_p5_benchmarks.py`)**:
+   - Device: Connected reference 6 GB phone (POCO 22041219PI, 64-bit Arm CPU `arm64-v8a`, Android 14, 5.5 GB usable RAM).
+   - Executed full scripted run of 55 staged test photos across all 8 probe categories:
+     - 5 Real Rice leaves: 5 / 5 diagnosed (100.0%), mean latency 938.6 ms
+     - 5 Real Cotton leaves: 5 / 5 diagnosed (100.0%), mean latency 740.5 ms
+     - 5 Real Chilli leaves: 5 / 5 diagnosed (100.0%), mean latency 817.2 ms
+     - 5 Real Tomato leaves: 1 diagnosed, 2 CANT_TELL, 2 OUT_OF_CLASS (low crop mass), mean latency 766.2 ms
+     - 5 Real Maize leaves: 4 / 5 diagnosed, 1 CANT_TELL, mean latency 776.1 ms
+     - 10 Non-crop objects (`nocrop`): 10 / 10 rejected (100.0%: 9 CANT_TELL, 1 OUT_OF_CLASS), mean latency 758.2 ms
+     - 10 Other crops (`othercrop`, Cashew/Cassava): 9 / 10 rejected (90.0%: 7 OUT_OF_CLASS, 2 CANT_TELL, 1 diagnosed), mean latency 734.0 ms
+     - 10 Laptop Screen captures (`screen`): 6 diagnosed, 4 CANT_TELL, mean latency 720.6 ms
+   - Overall shutter-to-result latency on phone: mean **769.5 ms** (min: 621.2 ms, max: 1759.7 ms), within the 1,500 ms limit.
+2. **20 Consecutive Camera Captures Memory & ANR Check**:
+   - Continuous capture of 20 field camera images on device with real-time memory and ANR tracking.
+   - **ANRs**: Exactly **0** ANRs detected.
+   - **PSS Memory Footprint**: Baseline = 213.65 MB, Final = 211.91 MB (**$\Delta\text{PSS} = -1.74\text{ MB}$**, zero memory leaks).
+   - Saved raw outputs to `benchmarks/p5_scripted_run_raw.json`, `benchmarks/p5_consecutive_captures_raw.json`, and generated `benchmarks/p5_phone_report.md`.
+3. **Reports & Traceability Updated**:
+   - Updated `docs/REPORT.md` Section 3.3 and Section 7.6 with strictly measured numbers from logs.
+   - Reran `scripts/trace_numbers.py`: 100% of 54 quantitative metrics traced to raw files in `benchmarks/` with 0 unverified metrics (`docs/NUMBER_TRACE.md`).
+4. **Build & Unit Test Verification**:
+   - All 127 unit tests passing (`./gradlew testDebugUnitTest`).
+   - Debug APK assembled cleanly (`./gradlew assembleDebug`).
+
+---
+
+## Prior Status: Task P4 Complete (Three Clear Outcomes: DIAGNOSE, CAN'T TELL, OUT OF CLASS)
 
 ### Done in Task P4: Three Clear Outcomes Decided in Plain Code with Measured Thresholds (Option B)
 1. **Measured Thresholds Configured (Option B Applied)**:
