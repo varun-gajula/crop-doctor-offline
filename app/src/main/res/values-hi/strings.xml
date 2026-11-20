@@ -176,6 +176,7 @@
     <string name="outcome_diagnose">निदान</string>
     <string name="outcome_cant_tell_title">बता नहीं सकते</string>
     <string name="outcome_cant_tell_message">बता नहीं सकते। यह स्पष्ट पत्ती जैसा नहीं दिख रहा है। दिन के उजाले में पास से फोटो लें या कृषि विस्तार अधिकारी से संपर्क करें।</string>
+    <string name="error_could_not_read_photo">फ़ोटो को पढ़ा नहीं जा सका। कृपया पुनः प्रयास करें।</string>
     <string name="outcome_out_of_class_title">समर्थित वर्ग से बाहर</string>
     <string name="outcome_out_of_class_message">समर्थित वर्ग से बाहर। यह %1$s या हमारे द्वारा समर्थित 20 समस्याओं में से किसी से मेल नहीं खाता है। सही फसल चुनें या कृषि विस्तार अधिकारी से संपर्क करें।</string>
     <string name="btn_take_another_photo">दूसरी फोटो लें</string>

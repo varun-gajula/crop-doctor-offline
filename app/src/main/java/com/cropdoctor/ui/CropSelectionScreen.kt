@@ -4,7 +4,6 @@ import android.graphics.BitmapFactory
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -73,7 +72,7 @@ fun CropSelectionScreen(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     IconButton(
                         onClick = onBackClick,
-                        modifier = Modifier.semantics { contentDescription = "Back to home" }
+                        modifier = Modifier.semantics { contentDescription = "Back" }
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
@@ -84,7 +83,7 @@ fun CropSelectionScreen(
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
                         text = stringResource(R.string.select_crop_title),
-                        fontSize = 21.sp,
+                        fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.White
                     )
@@ -107,7 +106,7 @@ fun CropSelectionScreen(
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Informational header card
+            // Informational header card (matching old Theme and cards)
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp),
@@ -148,7 +147,7 @@ fun CropSelectionScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(18.dp))
 
             // 5 Crop Tiles Layout (2 rows of 2, 1 centered row of 1)
             // Row 1: Rice & Cotton
@@ -253,9 +252,9 @@ private fun CropTileItem(
             .heightIn(min = 150.dp) // Strictly >= 96dp (Task P3)
             .clickable(onClickLabel = tileContentDesc) { onSelect() }
             .semantics { contentDescription = tileContentDesc },
-        shape = RoundedCornerShape(20.dp),
+        shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 3.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         border = androidx.compose.foundation.BorderStroke(1.5.dp, Color(0xFFC8E6C9))
     ) {
         Column(
@@ -265,7 +264,7 @@ private fun CropTileItem(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // Crop Picture container (>= 72dp)
+            // Crop Picture container
             Box(
                 modifier = Modifier
                     .size(80.dp)
