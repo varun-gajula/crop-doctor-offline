@@ -1,8 +1,50 @@
 # Project Progress - Crop Doctor Offline
 
-## Current Status: Task P5 Complete (End-to-End Phone Benchmark & Robustness Check)
+## Current Status: Tasks UI-RESTORE & BUG-CAPTURE Complete
 
-### Done in Task P5: End-to-End Phone Benchmark & Robustness Check (Rules R1-R9, H1-H15)
+### Done in Task BUG-CAPTURE: Shutter Stability & Crash/Hang Resolution
+1. **Root Cause Analysis & Proving**:
+   - **App Close (Crash)**: Caused by uncaught `RejectedExecutionException` when `cameraExecutor.shutdown()` was called inside `DisposableEffect(lifecycleOwner)` during navigation transitions while the executor was retained in `remember`. Subsequent shutter clicks threw `RejectedExecutionException` on the main UI thread. In addition, rapid shutter taps caused camera HAL buffer starvation.
+   - **Infinite Spinner (Hang State)**: Caused by coroutine cancellation calling suspending `withContext(Dispatchers.Main)` inside `finally` without `NonCancellable`. On cancellation, `CancellationException` was thrown, aborting `isProcessingImage = false` and leaving the spinner permanently active. Additionally, no analysis timeout existed and background Llama generation could interfere with camera preprocessing.
+2. **Six Comprehensive Fixes Implemented**:
+   - `isShutterBusy` lock on shutter button prevents re-entrant hardware capture requests.
+   - Guaranteed flag reset in `finally { withContext(NonCancellable + Dispatchers.Main) { isProcessingImage = false } }`.
+   - `image.close()` and bitmap recycling in strict `finally` blocks.
+   - Hard 10s analysis timeout (`withTimeout(10_000L)`) routing to `CANT_TELL` with `"Could not read the photo. Please try again."` and `"Take another photo"` button.
+   - Caught all decode/preprocessing/inference exceptions gracefully into `CANT_TELL`.
+   - Cancelled active Llama generation immediately on any new capture (`stop()` + `job.cancel()`).
+   - Camera executor lifecycle moved to `DisposableEffect(Unit)` and wrapped `takePicture` in `try-catch`.
+3. **Verification**:
+   - Real shutter stress test: 30 fast taps (300 ms) and 30 slow taps (2000 ms) -> **0 crashes, 0 hangs, 0 ANRs, peak PSS 258.9 MB**.
+   - Added `CaptureSafetyTest.kt` unit test suite (4 tests covering timeout, cancellation, exception handling, and 3-language error strings).
+   - Documented in `benchmarks/bug_capture_fix.md`.
+
+---
+
+### Done in Task UI-RESTORE: Visual Restoration with P2/P3/P4 Behaviors Preserved
+1. **Commit Identification & Branching**:
+   - Created backup branch `backup-before-ui-restore`.
+   - Identified last commit before P3: `f62f143c95e0ed4fa9c18b1d60c73b24800a1180` ("Task V3: Add verification script print_v3_metrics.py and verify benchmarks").
+2. **Restored Files & Styling**:
+   - Restored original theme, colors, typography, card shapes, topbars, and elevation from `f62f143`.
+   - `ResultScreen.kt`: restored clean layout with old card/button styles; integrated DIAGNOSE, CANT_TELL, and OUT_OF_CLASS outcomes.
+   - `MainCameraScreen.kt`: restored original clean camera screen with topbar and overlay controls; kept visible "Change crop" chip.
+   - `CropSelectionScreen.kt`: styled 5-tile crop picker to match original theme and card elevation.
+   - Localized selected crop name in `CropMapping.getCropDisplayName(...)` so `outcome_out_of_class_message` displays the crop name (e.g., "This does not match Rice...").
+3. **Screenshots & Test Count**:
+   - Captured 12 full-screen screenshots across English and Telugu:
+     - Home screen (EN, TE)
+     - Camera screen with Change crop chip (EN, TE)
+     - Crop selection screen (EN, TE)
+     - Result screen - DIAGNOSE (EN, TE)
+     - Result screen - CAN'T TELL (EN, TE)
+     - Result screen - OUT OF CLASS (EN, TE)
+   - Unit tests: **131 passed**, 0 failed.
+   - `assembleDebug`: Clean build.
+
+---
+
+## Prior Status: Task P5 Complete (End-to-End Phone Benchmark & Robustness Check)
 1. **Physical Reference Phone Execution (`tools/run_p5_benchmarks.py`)**:
    - Device: Connected reference 6 GB phone (POCO 22041219PI, 64-bit Arm CPU `arm64-v8a`, Android 14, 5.5 GB usable RAM).
    - Executed full scripted run of 55 staged test photos across all 8 probe categories:
