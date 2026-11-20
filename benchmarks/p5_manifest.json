@@ -1,0 +1,387 @@
+[
+  {
+    "category": "real_rice",
+    "crop_hint": "rice",
+    "orig_file": "val_rice_rice_bacterial_leaf_blight_00_000505_Rice_aug_0_6471.jpg",
+    "staged_file": "real_rice_01.jpg",
+    "expected_type": "supported"
+  },
+  {
+    "category": "real_rice",
+    "crop_hint": "rice",
+    "orig_file": "val_rice_rice_bacterial_leaf_blight_01_000490_Rice_aug_0_6303.jpg",
+    "staged_file": "real_rice_02.jpg",
+    "expected_type": "supported"
+  },
+  {
+    "category": "real_rice",
+    "crop_hint": "rice",
+    "orig_file": "val_rice_rice_bacterial_leaf_blight_02_000251_Rice_aug_0_4116.jpg",
+    "staged_file": "real_rice_03.jpg",
+    "expected_type": "supported"
+  },
+  {
+    "category": "real_rice",
+    "crop_hint": "rice",
+    "orig_file": "val_rice_rice_bacterial_leaf_blight_03_000332_Rice_aug_0_4912.jpg",
+    "staged_file": "real_rice_04.jpg",
+    "expected_type": "supported"
+  },
+  {
+    "category": "real_rice",
+    "crop_hint": "rice",
+    "orig_file": "val_rice_rice_bacterial_leaf_blight_04_000412_Rice_aug_0_5661.jpg",
+    "staged_file": "real_rice_05.jpg",
+    "expected_type": "supported"
+  },
+  {
+    "category": "real_cotton",
+    "crop_hint": "cotton",
+    "orig_file": "val_cotton_cotton_bacterial_blight_00_000074_Cotton_bact17.jpg",
+    "staged_file": "real_cotton_01.jpg",
+    "expected_type": "supported"
+  },
+  {
+    "category": "real_cotton",
+    "crop_hint": "cotton",
+    "orig_file": "val_cotton_cotton_bacterial_blight_01_000231_Cotton_bact310.jpg",
+    "staged_file": "real_cotton_02.jpg",
+    "expected_type": "supported"
+  },
+  {
+    "category": "real_cotton",
+    "crop_hint": "cotton",
+    "orig_file": "val_cotton_cotton_bacterial_blight_02_000400_Cotton_bact60.jpg",
+    "staged_file": "real_cotton_03.jpg",
+    "expected_type": "supported"
+  },
+  {
+    "category": "real_cotton",
+    "crop_hint": "cotton",
+    "orig_file": "val_cotton_cotton_bacterial_blight_03_000068_Cotton_bact163.jpg",
+    "staged_file": "real_cotton_04.jpg",
+    "expected_type": "supported"
+  },
+  {
+    "category": "real_cotton",
+    "crop_hint": "cotton",
+    "orig_file": "val_cotton_cotton_bacterial_blight_04_000032_Cotton_bact130.jpg",
+    "staged_file": "real_cotton_05.jpg",
+    "expected_type": "supported"
+  },
+  {
+    "category": "real_chilli",
+    "crop_hint": "chilli",
+    "orig_file": "val_chilli_chilli_healthy_00_000002_Healthy Leaf00002.jpg",
+    "staged_file": "real_chilli_01.jpg",
+    "expected_type": "supported"
+  },
+  {
+    "category": "real_chilli",
+    "crop_hint": "chilli",
+    "orig_file": "val_chilli_chilli_healthy_01_000003_Healthy Leaf00003.jpg",
+    "staged_file": "real_chilli_02.jpg",
+    "expected_type": "supported"
+  },
+  {
+    "category": "real_chilli",
+    "crop_hint": "chilli",
+    "orig_file": "val_chilli_chilli_healthy_02_000127_Healthy Leaf00127.jpg",
+    "staged_file": "real_chilli_03.jpg",
+    "expected_type": "supported"
+  },
+  {
+    "category": "real_chilli",
+    "crop_hint": "chilli",
+    "orig_file": "val_chilli_chilli_healthy_03_000439_Healthy Leaf00439.jpg",
+    "staged_file": "real_chilli_04.jpg",
+    "expected_type": "supported"
+  },
+  {
+    "category": "real_chilli",
+    "crop_hint": "chilli",
+    "orig_file": "val_chilli_chilli_healthy_04_000081_Healthy Leaf00081.jpg",
+    "staged_file": "real_chilli_05.jpg",
+    "expected_type": "supported"
+  },
+  {
+    "category": "real_tomato",
+    "crop_hint": "tomato",
+    "orig_file": "field_tomato_tomato_healthy_camera_real_09_Tomato_leaf_1684.jpg",
+    "staged_file": "real_tomato_01.jpg",
+    "expected_type": "supported"
+  },
+  {
+    "category": "real_tomato",
+    "crop_hint": "tomato",
+    "orig_file": "field_tomato_tomato_healthy_camera_real_10_Tomato_leaf_2013-08-20-06.jpg",
+    "staged_file": "real_tomato_02.jpg",
+    "expected_type": "supported"
+  },
+  {
+    "category": "real_tomato",
+    "crop_hint": "tomato",
+    "orig_file": "field_tomato_tomato_yellow_leaf_curl_virus_camera_real_17_Tomato_leaf_yellow_virus_11-40580_5.jpg",
+    "staged_file": "real_tomato_03.jpg",
+    "expected_type": "supported"
+  },
+  {
+    "category": "real_tomato",
+    "crop_hint": "tomato",
+    "orig_file": "field_tomato_tomato_yellow_leaf_curl_virus_camera_real_18_Tomato_leaf_yellow_virus_17fc47.jpg",
+    "staged_file": "real_tomato_04.jpg",
+    "expected_type": "supported"
+  },
+  {
+    "category": "real_tomato",
+    "crop_hint": "tomato",
+    "orig_file": "val_tomato_tomato_healthy_00_000243_1570tomato_train_healthy.jpg",
+    "staged_file": "real_tomato_05.jpg",
+    "expected_type": "supported"
+  },
+  {
+    "category": "real_maize",
+    "crop_hint": "maize",
+    "orig_file": "field_maize_maize_common_rust_camera_real_05_Corn_rust_leaf_0796.39maizerust.jpg",
+    "staged_file": "real_maize_01.jpg",
+    "expected_type": "supported"
+  },
+  {
+    "category": "real_maize",
+    "crop_hint": "maize",
+    "orig_file": "field_maize_maize_common_rust_camera_real_06_Corn_rust_leaf_0796.40comrust.jpg",
+    "staged_file": "real_maize_02.jpg",
+    "expected_type": "supported"
+  },
+  {
+    "category": "real_maize",
+    "crop_hint": "maize",
+    "orig_file": "field_maize_maize_gray_leaf_spot_camera_real_01_Corn_Gray_leaf_spot_IMG_42231.jpg",
+    "staged_file": "real_maize_03.jpg",
+    "expected_type": "supported"
+  },
+  {
+    "category": "real_maize",
+    "crop_hint": "maize",
+    "orig_file": "field_maize_maize_gray_leaf_spot_camera_real_02_Corn_Gray_leaf_spot_rsz0803Figure6.jpg",
+    "staged_file": "real_maize_04.jpg",
+    "expected_type": "supported"
+  },
+  {
+    "category": "real_maize",
+    "crop_hint": "maize",
+    "orig_file": "field_maize_maize_northern_leaf_blight_camera_real_03_Corn_leaf_blight_02c.jpg",
+    "staged_file": "real_maize_05.jpg",
+    "expected_type": "supported"
+  },
+  {
+    "category": "nocrop",
+    "crop_hint": "auto",
+    "orig_file": "nocrop_object_00_IMG_20220824_221131.jpg",
+    "staged_file": "nocrop_01.jpg",
+    "expected_type": "nocrop"
+  },
+  {
+    "category": "nocrop",
+    "crop_hint": "auto",
+    "orig_file": "nocrop_object_01_IMG_20221002_220816.jpg",
+    "staged_file": "nocrop_02.jpg",
+    "expected_type": "nocrop"
+  },
+  {
+    "category": "nocrop",
+    "crop_hint": "auto",
+    "orig_file": "nocrop_object_02_IMG_20221003_101723.jpg",
+    "staged_file": "nocrop_03.jpg",
+    "expected_type": "nocrop"
+  },
+  {
+    "category": "nocrop",
+    "crop_hint": "auto",
+    "orig_file": "nocrop_object_03_IMG_20221003_225550.jpg",
+    "staged_file": "nocrop_04.jpg",
+    "expected_type": "nocrop"
+  },
+  {
+    "category": "nocrop",
+    "crop_hint": "auto",
+    "orig_file": "nocrop_object_04_IMG_20221004_084454.jpg",
+    "staged_file": "nocrop_05.jpg",
+    "expected_type": "nocrop"
+  },
+  {
+    "category": "nocrop",
+    "crop_hint": "auto",
+    "orig_file": "nocrop_object_05_IMG_20221005_185233.jpg",
+    "staged_file": "nocrop_06.jpg",
+    "expected_type": "nocrop"
+  },
+  {
+    "category": "nocrop",
+    "crop_hint": "auto",
+    "orig_file": "nocrop_object_06_IMG_20221005_185430.jpg",
+    "staged_file": "nocrop_07.jpg",
+    "expected_type": "nocrop"
+  },
+  {
+    "category": "nocrop",
+    "crop_hint": "auto",
+    "orig_file": "nocrop_object_07_IMG_20221005_185515.jpg",
+    "staged_file": "nocrop_08.jpg",
+    "expected_type": "nocrop"
+  },
+  {
+    "category": "nocrop",
+    "crop_hint": "auto",
+    "orig_file": "nocrop_object_08_IMG_20221005_185654.jpg",
+    "staged_file": "nocrop_09.jpg",
+    "expected_type": "nocrop"
+  },
+  {
+    "category": "nocrop",
+    "crop_hint": "auto",
+    "orig_file": "nocrop_object_09_IMG_20221005_185754.jpg",
+    "staged_file": "nocrop_10.jpg",
+    "expected_type": "nocrop"
+  },
+  {
+    "category": "othercrop",
+    "crop_hint": "rice",
+    "orig_file": "other_cashew_anthracnose_00_anthracnose1000_.jpg",
+    "staged_file": "othercrop_01.jpg",
+    "expected_type": "othercrop"
+  },
+  {
+    "category": "othercrop",
+    "crop_hint": "cotton",
+    "orig_file": "other_cashew_anthracnose_01_anthracnose1001_.jpg",
+    "staged_file": "othercrop_02.jpg",
+    "expected_type": "othercrop"
+  },
+  {
+    "category": "othercrop",
+    "crop_hint": "chilli",
+    "orig_file": "other_cashew_anthracnose_02_anthracnose1002_.jpg",
+    "staged_file": "othercrop_03.jpg",
+    "expected_type": "othercrop"
+  },
+  {
+    "category": "othercrop",
+    "crop_hint": "tomato",
+    "orig_file": "other_cashew_anthracnose_03_anthracnose1003_.jpg",
+    "staged_file": "othercrop_04.jpg",
+    "expected_type": "othercrop"
+  },
+  {
+    "category": "othercrop",
+    "crop_hint": "maize",
+    "orig_file": "other_cashew_anthracnose_04_anthracnose1004_.jpg",
+    "staged_file": "othercrop_05.jpg",
+    "expected_type": "othercrop"
+  },
+  {
+    "category": "othercrop",
+    "crop_hint": "rice",
+    "orig_file": "other_cashew_anthracnose_05_anthracnose1005_.jpg",
+    "staged_file": "othercrop_06.jpg",
+    "expected_type": "othercrop"
+  },
+  {
+    "category": "othercrop",
+    "crop_hint": "cotton",
+    "orig_file": "other_cashew_healthy_00_healthy1000_.jpg",
+    "staged_file": "othercrop_07.jpg",
+    "expected_type": "othercrop"
+  },
+  {
+    "category": "othercrop",
+    "crop_hint": "chilli",
+    "orig_file": "other_cashew_healthy_01_healthy1001_.jpg",
+    "staged_file": "othercrop_08.jpg",
+    "expected_type": "othercrop"
+  },
+  {
+    "category": "othercrop",
+    "crop_hint": "tomato",
+    "orig_file": "other_cashew_healthy_02_healthy1002_.jpg",
+    "staged_file": "othercrop_09.jpg",
+    "expected_type": "othercrop"
+  },
+  {
+    "category": "othercrop",
+    "crop_hint": "maize",
+    "orig_file": "other_cashew_healthy_03_healthy1003_.jpg",
+    "staged_file": "othercrop_10.jpg",
+    "expected_type": "othercrop"
+  },
+  {
+    "category": "screen",
+    "crop_hint": "auto",
+    "orig_file": "screen_01_tomato_septoria_actual_phone.jpg",
+    "staged_file": "screen_01.jpg",
+    "expected_type": "screen"
+  },
+  {
+    "category": "screen",
+    "crop_hint": "auto",
+    "orig_file": "screen_02_rice_sheath_blight_000004_Rice_aug_0_125.jpg",
+    "staged_file": "screen_02.jpg",
+    "expected_type": "screen"
+  },
+  {
+    "category": "screen",
+    "crop_hint": "auto",
+    "orig_file": "screen_03_rice_healthy_000005_Rice_20231006_165518.jpg",
+    "staged_file": "screen_03.jpg",
+    "expected_type": "screen"
+  },
+  {
+    "category": "screen",
+    "crop_hint": "auto",
+    "orig_file": "screen_04_cotton_bacterial_blight_000007_Cotton_bact101.jpg",
+    "staged_file": "screen_04.jpg",
+    "expected_type": "screen"
+  },
+  {
+    "category": "screen",
+    "crop_hint": "auto",
+    "orig_file": "screen_05_cotton_fusarium_wilt_000008_Cotton_done14.jpg",
+    "staged_file": "screen_05.jpg",
+    "expected_type": "screen"
+  },
+  {
+    "category": "screen",
+    "crop_hint": "auto",
+    "orig_file": "screen_06_cotton_leaf_curl_virus_000010_Cotton_curl102.jpg",
+    "staged_file": "screen_06.jpg",
+    "expected_type": "screen"
+  },
+  {
+    "category": "screen",
+    "crop_hint": "auto",
+    "orig_file": "screen_07_cotton_healthy_000011_Cotton_h108.jpg",
+    "staged_file": "screen_07.jpg",
+    "expected_type": "screen"
+  },
+  {
+    "category": "screen",
+    "crop_hint": "auto",
+    "orig_file": "screen_08_chilli_leaf_curl_virus_000013_Curl_Virus00013.jpg",
+    "staged_file": "screen_08.jpg",
+    "expected_type": "screen"
+  },
+  {
+    "category": "screen",
+    "crop_hint": "auto",
+    "orig_file": "screen_09_chilli_nutrition_deficiency_000014_Nutrition_Deficiency00014.jpg",
+    "staged_file": "screen_09.jpg",
+    "expected_type": "screen"
+  },
+  {
+    "category": "screen",
+    "crop_hint": "auto",
+    "orig_file": "screen_10_chilli_healthy_000016_Healthy_Leaf00016.jpg",
+    "staged_file": "screen_10.jpg",
+    "expected_type": "screen"
+  }
+]
