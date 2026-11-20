@@ -22,6 +22,7 @@ import org.pytorch.executorch.Module
 import org.pytorch.executorch.Tensor
 import java.io.File
 import java.io.FileOutputStream
+import java.util.Locale
 
 class ExecuTorchClassifier(private val context: Context) : Classifier {
 
@@ -330,10 +331,18 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
     }
 
     override suspend fun classify(bitmap: Bitmap): ClassifierResult {
-        return classify(bitmap, null)
+        return classify(bitmap, null, null)
     }
 
-    override suspend fun classify(bitmap: Bitmap, cropHint: String?): ClassifierResult = withContext(Dispatchers.Default) {
+    override suspend fun classify(bitmap: Bitmap, cropHint: String?): ClassifierResult {
+        return classify(bitmap, cropHint, null)
+    }
+
+    override suspend fun classify(
+        bitmap: Bitmap,
+        cropHint: String?,
+        metadata: ImageAnalysisMetadata?
+    ): ClassifierResult = withContext(Dispatchers.Default) {
         val startTime = SystemClock.elapsedRealtime()
 
         if (!initDeferred.isCompleted) {
@@ -426,6 +435,92 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
                 energyThreshold = curEnergyThresh,
                 unsupportedClasses = unsupportedClasses
             )
+
+            // CROPDOC_DECISION Gate Diagnostic Logging (Task P1 - Report only; change no behaviour)
+            val bitmapConfig = bitmap.config?.name ?: "UNKNOWN"
+            val colorSpaceName = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                bitmap.colorSpace?.name ?: "UNKNOWN"
+            } else {
+                "sRGB"
+            }
+
+            // Gate 1: Leaf Validator
+            val gate1Validation = if (metadata != null) {
+                LeafValidationResult(
+                    isLikelyCrop = metadata.leafValidatorPass,
+                    plantPixelFraction = metadata.leafValidatorFraction,
+                    reason = metadata.leafValidatorReason
+                )
+            } else {
+                LeafValidator.validate(bitmap)
+            }
+            val gate1Pass = gate1Validation.isLikelyCrop
+
+            // Gate 2: Energy value vs energy_threshold
+            val isOOD = if (curEnergyThresh != null) freeEnergy > curEnergyThresh else false
+
+            // Gate 3: Top-1 class and calibrated probability versus confidence_threshold
+            val topK = eval.top3
+            val top1 = topK.firstOrNull()
+            val requiredThreshold = if (top1 != null) {
+                classThresholds[top1.classId] ?: curDefaultThresh
+            } else {
+                curDefaultThresh
+            }
+            val isBelowThreshold = top1 == null || top1.probability < requiredThreshold
+
+            // Gate 4: Weeds class & unsupported classes
+            val isWeeds = top1 != null && top1.classId == "weeds_not_a_crop"
+            val isUnsupported = top1 != null && unsupportedClasses.contains(top1.classId)
+            val gate4Pass = !isWeeds && !isUnsupported
+
+            // Final Decision and Reason Code
+            val (decision, reasonCode) = when {
+                !gate1Pass -> "REJECTED" to "REJECTED_LEAF_VALIDATOR"
+                isOOD -> "REJECTED" to "REJECTED_OOD_ENERGY"
+                isBelowThreshold -> "REJECTED" to "REJECTED_LOW_CONFIDENCE"
+                isWeeds -> "REJECTED" to "REJECTED_WEEDS"
+                isUnsupported -> "REJECTED" to "REJECTED_UNSUPPORTED"
+                else -> "ACCEPTED" to "ACCEPTED"
+            }
+
+            val gate1Str = if (gate1Pass) {
+                "PASS(frac=${String.format(Locale.US, "%.3f", gate1Validation.plantPixelFraction)})"
+            } else {
+                "FAIL(frac=${String.format(Locale.US, "%.3f", gate1Validation.plantPixelFraction)}, reason=${gate1Validation.reason})"
+            }
+
+            val gate2Str = if (curEnergyThresh == null) {
+                "OFF(energy=${String.format(Locale.US, "%.4f", freeEnergy)} vs null)"
+            } else if (!isOOD) {
+                "PASS(energy=${String.format(Locale.US, "%.4f", freeEnergy)} vs thresh=${String.format(Locale.US, "%.4f", curEnergyThresh)})"
+            } else {
+                "FAIL(energy=${String.format(Locale.US, "%.4f", freeEnergy)} vs thresh=${String.format(Locale.US, "%.4f", curEnergyThresh)})"
+            }
+
+            val gate3Str = if (!isBelowThreshold) {
+                "PASS(class=${top1?.classId ?: "none"}, prob=${String.format(Locale.US, "%.4f", top1?.probability ?: 0f)} vs thresh=${String.format(Locale.US, "%.4f", requiredThreshold)})"
+            } else {
+                "FAIL(class=${top1?.classId ?: "none"}, prob=${String.format(Locale.US, "%.4f", top1?.probability ?: 0f)} vs thresh=${String.format(Locale.US, "%.4f", requiredThreshold)})"
+            }
+
+            val gate4Str = if (gate4Pass) "PASS" else "FAIL(weeds=$isWeeds, unsupported=$isUnsupported)"
+
+            val logDecisionLine = buildString {
+                append("CROPDOC_DECISION: ")
+                append("source=${metadata?.source ?: "camera"} ")
+                append("orig=${metadata?.origWidth ?: bitmap.width}x${metadata?.origHeight ?: bitmap.height} ")
+                append("exif=${metadata?.exifOrientation ?: 0} ")
+                append("config=$bitmapConfig ")
+                append("colorSpace=$colorSpaceName ")
+                append("downscale=${inputSize}x${inputSize} | ")
+                append("gate1_leafValidator=$gate1Str ")
+                append("gate2_energy=$gate2Str ")
+                append("gate3_confidence=$gate3Str ")
+                append("gate4_weeds=$gate4Str | ")
+                append("decision=$decision code=$reasonCode")
+            }
+            Log.i("CROPDOC_DECISION", logDecisionLine)
 
             Log.e(TAG, "classify(): eval result -> classId=${eval.classId}, displayName=${eval.displayName}, conf=${eval.confidence}, cropMass=$cropMass, isBelowThresh=${eval.isBelowThreshold}, top3=${eval.top3.map { "${it.classId}:${String.format("%.3f", it.probability)}" }}")
 

@@ -34,6 +34,7 @@ import com.cropdoctor.knowledge.TreatmentPlan
 import com.cropdoctor.ui.*
 import com.cropdoctor.ui.theme.CropDoctorTheme
 import com.cropdoctor.ui.theme.FarmGreenPrimary
+import com.cropdoctor.vision.ImageAnalysisMetadata
 import com.cropdoctor.vision.LeafValidator
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -117,6 +118,7 @@ class MainActivity : ComponentActivity() {
                     var showSoftCropWarningDialog by remember { mutableStateOf(false) }
                     var pendingCapturedBitmap by remember { mutableStateOf<Bitmap?>(null) }
                     var pendingCropFilter by remember { mutableStateOf<String?>(null) }
+                    var pendingMetadata by remember { mutableStateOf<ImageAnalysisMetadata?>(null) }
 
                     var advisoryText by remember { mutableStateOf("") }
                     var isGeneratingAdvice by remember { mutableStateOf(false) }
@@ -181,13 +183,18 @@ class MainActivity : ComponentActivity() {
                         }
                     }
 
-                    fun processDiagnosis(bitmap: Bitmap, cropFilter: String?, autoStartAdvisor: Boolean = true) {
+                    fun processDiagnosis(
+                        bitmap: Bitmap,
+                        cropFilter: String?,
+                        autoStartAdvisor: Boolean = true,
+                        metadata: ImageAnalysisMetadata? = null
+                    ) {
                         isProcessingImage = true
                         capturedLeafBitmap = bitmap
                         lifecycleScope.launch {
                             try {
                                 val effectiveCropFilter = cropFilter ?: selectedCrop
-                                val result = app.classifier.classify(bitmap, effectiveCropFilter)
+                                val result = app.classifier.classify(bitmap, effectiveCropFilter, metadata)
 
                                 val kb = KnowledgeBase.getEntry(result.classId)
                                     ?: if (result.classId != "unknown") {
@@ -492,9 +499,12 @@ class MainActivity : ComponentActivity() {
                                         showSoftCropWarningDialog = false
                                         val bmp = pendingCapturedBitmap
                                         val cf = pendingCropFilter
+                                        val meta = pendingMetadata
                                         pendingCapturedBitmap = null
+                                        pendingCropFilter = null
+                                        pendingMetadata = null
                                         if (bmp != null) {
-                                            processDiagnosis(bmp, cf)
+                                            processDiagnosis(bmp, cf, metadata = meta)
                                         }
                                     },
                                     colors = ButtonDefaults.buttonColors(
@@ -563,12 +573,38 @@ class MainActivity : ComponentActivity() {
                                 onImageCaptured = { bitmap, cropFilter ->
                                     val effectiveCropFilter = cropFilter ?: selectedCrop
                                     val validation = LeafValidator.validate(bitmap)
+                                    val meta = ImageAnalysisMetadata(
+                                        source = "camera",
+                                        origWidth = bitmap.width,
+                                        origHeight = bitmap.height,
+                                        leafValidatorPass = validation.isLikelyCrop,
+                                        leafValidatorFraction = validation.plantPixelFraction,
+                                        leafValidatorReason = validation.reason
+                                    )
                                     if (!validation.isLikelyCrop) {
                                         pendingCapturedBitmap = bitmap
                                         pendingCropFilter = effectiveCropFilter
+                                        pendingMetadata = meta
                                         showSoftCropWarningDialog = true
                                     } else {
-                                        processDiagnosis(bitmap, effectiveCropFilter)
+                                        processDiagnosis(bitmap, effectiveCropFilter, metadata = meta)
+                                    }
+                                },
+                                onImageCapturedWithMetadata = { bitmap, cropFilter, meta ->
+                                    val effectiveCropFilter = cropFilter ?: selectedCrop
+                                    val validation = LeafValidator.validate(bitmap)
+                                    val enrichedMeta = meta.copy(
+                                        leafValidatorPass = validation.isLikelyCrop,
+                                        leafValidatorFraction = validation.plantPixelFraction,
+                                        leafValidatorReason = validation.reason
+                                    )
+                                    if (!validation.isLikelyCrop) {
+                                        pendingCapturedBitmap = bitmap
+                                        pendingCropFilter = effectiveCropFilter
+                                        pendingMetadata = enrichedMeta
+                                        showSoftCropWarningDialog = true
+                                    } else {
+                                        processDiagnosis(bitmap, effectiveCropFilter, metadata = enrichedMeta)
                                     }
                                 },
                                 onBackClick = { navigateTo(AppScreen.CROP_SELECTION) },
