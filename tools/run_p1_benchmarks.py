@@ -96,34 +96,34 @@ def parse_cropdoc_line(line):
     return data
 
 def run_set(device, set_name, remote_folder, image_source):
-    print(f"\n==========================================")
-    print(f"Running set: {set_name} (source={image_source})")
-    print(f"==========================================")
+    print(f"\n==========================================", flush=True)
+    print(f"Running set: {set_name} (source={image_source})", flush=True)
+    print(f"==========================================", flush=True)
     
-    remote_base = f"/sdcard/Android/data/com.cropdoctor/files/realtest/{remote_folder}"
-    files_out = run_adb(device, ["shell", f"ls '{remote_base}'"])
+    remote_base = f"/data/data/com.cropdoctor/files/realtest/{remote_folder}"
+    files_out = run_adb(device, ["shell", "run-as", "com.cropdoctor", "ls", remote_base])
     remote_files = [f.strip() for f in files_out.splitlines() if f.strip().endswith(".jpg")]
-    print(f"Found {len(remote_files)} files in {remote_base}/")
+    print(f"Found {len(remote_files)} files in {remote_base}/", flush=True)
     
     results = []
     for idx, fname in enumerate(remote_files[:20]):
         remote_path = f"{remote_base}/{fname}"
         clear_logcat(device)
         
-        # Launch diagnose_file intent with quoted path
+        # Launch diagnose_file intent
         run_adb(device, [
             "shell", "am", "start",
             "-n", "com.cropdoctor/.MainActivity",
             "--es", "benchmark_action", "diagnose_file",
-            "--es", "file_path", f"'{remote_path}'",
+            "--es", "file_path", remote_path,
             "--es", "image_source", image_source,
             "--es", "crop_hint", "auto"
         ])
         
         # Poll for CROPDOC_DECISION log line
         log_line = None
-        for _ in range(15):
-            time.sleep(0.3)
+        for _ in range(25):
+            time.sleep(0.2)
             log_line = get_cropdoc_log(device)
             if log_line:
                 break
@@ -133,9 +133,9 @@ def run_set(device, set_name, remote_folder, image_source):
             parsed["file_name"] = fname
             parsed["set_name"] = set_name
             results.append(parsed)
-            print(f"[{idx+1:02d}/20] {fname}: {parsed['decision']} ({parsed['reason_code']}) - Prob: {parsed['gate3_prob']:.4f}, Energy: {parsed['gate2_energy']:.4f}")
+            print(f"[{idx+1:02d}/20] {fname}: {parsed['decision']} ({parsed['reason_code']}) - Prob: {parsed['gate3_prob']:.4f}, Energy: {parsed['gate2_energy']:.4f}", flush=True)
         else:
-            print(f"[{idx+1:02d}/20] {fname}: TIMEOUT / NO LOG")
+            print(f"[{idx+1:02d}/20] {fname}: TIMEOUT / NO LOG", flush=True)
             results.append({
                 "file_name": fname,
                 "set_name": set_name,
