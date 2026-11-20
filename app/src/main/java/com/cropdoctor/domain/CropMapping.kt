@@ -39,4 +39,18 @@ object CropMapping {
         val normalizedCrop = crop.trim().lowercase()
         return getCropForClass(classId) == normalizedCrop
     }
+
+    /**
+     * Resolves localized display name for a crop key from strings.xml.
+     */
+    fun getCropDisplayName(cropKey: String?, context: android.content.Context): String {
+        return when (cropKey?.trim()?.lowercase()) {
+            "rice" -> context.getString(com.cropdoctor.R.string.crop_rice)
+            "cotton" -> context.getString(com.cropdoctor.R.string.crop_cotton)
+            "chilli" -> context.getString(com.cropdoctor.R.string.crop_chilli)
+            "tomato" -> context.getString(com.cropdoctor.R.string.crop_tomato)
+            "maize" -> context.getString(com.cropdoctor.R.string.crop_maize)
+            else -> cropKey?.replaceFirstChar { it.uppercase() } ?: context.getString(com.cropdoctor.R.string.crop_auto)
+        }
+    }
 }

@@ -176,6 +176,7 @@
     <string name="outcome_diagnose">రోగ నిర్ధారణ</string>
     <string name="outcome_cant_tell_title">ఖచ్చితంగా చెప్పలేము</string>
     <string name="outcome_cant_tell_message">ఖచ్చితంగా చెప్పలేము. ఇది స్పష్టమైన ఆకులా కనిపించడం లేదు. పగటి వెలుతురులో దగ్గరగా ఫోటో తీయండి లేదా వ్యవసాయ విస్తరణ అధికారిని సంప్రదించండి.</string>
+    <string name="error_could_not_read_photo">ఫోటోను చదవలేకపోయాము. దయచేసి మళ్ళీ ప్రయత్నించండి.</string>
     <string name="outcome_out_of_class_title">గుర్తించిన పంట సమస్య కాదు</string>
     <string name="outcome_out_of_class_message">ఈ సమస్య మద్దతు ఉన్న జాబితాలో లేదు. ఇది %1$s లేదా మేము గుర్తించే 20 సమస్యలలో దేనికీ సరిపోలడం లేదు. సరైన పంటను ఎంచుకోండి లేదా వ్యవసాయ విస్తరణ అధికారిని సంప్రదించండి.</string>
     <string name="btn_take_another_photo">మరొక ఫోటో తీయండి</string>

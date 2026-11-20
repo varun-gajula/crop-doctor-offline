@@ -18,8 +18,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
-import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -27,7 +25,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -38,6 +35,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.cropdoctor.R
+import com.cropdoctor.domain.CropMapping
 import com.cropdoctor.ui.components.LanguageChip
 import com.cropdoctor.ui.theme.FarmGreenPrimary
 import com.cropdoctor.vision.ImageAnalysisMetadata
@@ -56,20 +54,21 @@ fun MainCameraScreen(
     language: String,
     selectedCrop: String = "rice",
     isProcessing: Boolean,
+    onImageBytesCaptured: ((ByteArray, String?, String) -> Unit)? = null,
     onImageCaptured: (Bitmap, String?) -> Unit,
+    onImageCapturedWithMetadata: ((Bitmap, String?, ImageAnalysisMetadata) -> Unit)? = null,
     onBackClick: () -> Unit,
     onChangeCropClick: () -> Unit = {},
-    onChangeLanguageClick: (String) -> Unit = {},
-    onImageCapturedWithMetadata: ((Bitmap, String?, ImageAnalysisMetadata) -> Unit)? = null,
-    onImageBytesCaptured: ((ByteArray, String?, String) -> Unit)? = null
+    onChangeLanguageClick: (String) -> Unit = {}
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
 
-    var selectedCropFilter by remember(selectedCrop) { mutableStateOf(selectedCrop) }
     var imageCapture: ImageCapture? by remember { mutableStateOf(null) }
     var cameraControl: CameraControl? by remember { mutableStateOf(null) }
     var isFlashOn by remember { mutableStateOf(false) }
+    var isShutterBusy by remember { mutableStateOf(false) }
+    val isBusy = isProcessing || isShutterBusy
 
     val cameraExecutor = remember { Executors.newSingleThreadExecutor() }
 
@@ -81,16 +80,7 @@ fun MainCameraScreen(
         }
     }
 
-    val cropOptions = listOf(
-        CropChipItem("all", R.string.crop_auto, R.drawable.ic_crop_auto),
-        CropChipItem("chilli", R.string.crop_chilli, R.drawable.ic_crop_chilli),
-        CropChipItem("tomato", R.string.crop_tomato, R.drawable.ic_crop_tomato),
-        CropChipItem("cotton", R.string.crop_cotton, R.drawable.ic_crop_cotton),
-        CropChipItem("rice", R.string.crop_rice, R.drawable.ic_crop_rice),
-        CropChipItem("maize", R.string.crop_maize, R.drawable.ic_crop_maize)
-    )
-
-    // Gallery Photo Picker
+    // Gallery Photo Picker (Single Image Pipeline)
     val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
@@ -99,19 +89,17 @@ fun MainCameraScreen(
                 context.contentResolver.openInputStream(uri)?.use { stream: InputStream ->
                     val bytes = stream.readBytes()
                     if (onImageBytesCaptured != null) {
-                        onImageBytesCaptured(bytes, selectedCropFilter, "gallery")
+                        onImageBytesCaptured(bytes, selectedCrop, "gallery")
                     } else {
-                        val pre = com.cropdoctor.vision.ImagePreprocessor.prepare(bytes)
-                        val meta = ImageAnalysisMetadata(
-                            source = "gallery",
-                            origWidth = pre.origWidth,
-                            origHeight = pre.origHeight,
-                            exifOrientation = pre.exifRotationDegrees,
-                            leafValidatorPass = pre.leafValidation.isLikelyCrop,
-                            leafValidatorFraction = pre.leafValidation.plantPixelFraction,
-                            leafValidatorReason = pre.leafValidation.reason
-                        )
-                        dispatchCapturedImage(pre.bitmap512, selectedCropFilter, meta)
+                        val options = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+                        BitmapFactory.decodeByteArray(bytes, 0, bytes.size, options)
+                        val maxDim = max(options.outWidth, options.outHeight)
+                        options.inSampleSize = if (maxDim > 1024) maxDim / 1024 else 1
+                        options.inJustDecodeBounds = false
+                        val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size, options)
+                        if (bitmap != null) {
+                            onImageCaptured(bitmap, selectedCrop)
+                        }
                     }
                 }
             } catch (e: Exception) {
@@ -120,13 +108,11 @@ fun MainCameraScreen(
         }
     }
 
-    DisposableEffect(lifecycleOwner) {
+    DisposableEffect(Unit) {
         onDispose {
             try {
                 cameraExecutor.shutdown()
             } catch (_: Exception) {}
-            cameraControl = null
-            imageCapture = null
         }
     }
 
@@ -209,73 +195,38 @@ fun MainCameraScreen(
                 }
             )
 
-            // Visible Selected Crop Banner with "Change crop" Chip (Task P3)
-            Row(
+            // Selected Crop Chip with "Change crop" action (Task P3)
+            val cropDisplayName = CropMapping.getCropDisplayName(selectedCrop, context)
+            Surface(
                 modifier = Modifier
-                    .fillMaxWidth()
                     .align(Alignment.TopCenter)
-                    .padding(top = 10.dp, start = 16.dp, end = 16.dp),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
+                    .padding(top = 16.dp)
+                    .clip(RoundedCornerShape(20.dp))
+                    .clickable { if (!isProcessing) onChangeCropClick() },
+                color = Color(0x99000000),
+                shape = RoundedCornerShape(20.dp),
+                border = androidx.compose.foundation.BorderStroke(1.dp, Color.White.copy(alpha = 0.6f))
             ) {
-                Surface(
-                    shape = RoundedCornerShape(24.dp),
-                    color = Color(0xCC000000),
-                    border = androidx.compose.foundation.BorderStroke(1.5.dp, Color(0xFF81C784)),
-                    modifier = Modifier
-                        .clickable { onChangeCropClick() }
-                        .semantics { contentDescription = "Change selected crop" }
+                Row(
+                    modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Row(
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 9.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        val currentCropRes = when (selectedCropFilter.lowercase()) {
-                            "cotton" -> R.string.crop_cotton
-                            "chilli" -> R.string.crop_chilli
-                            "tomato" -> R.string.crop_tomato
-                            "maize" -> R.string.crop_maize
-                            else -> R.string.crop_rice
-                        }
-                        val currentCropIcon = when (selectedCropFilter.lowercase()) {
-                            "cotton" -> R.drawable.ic_crop_cotton
-                            "chilli" -> R.drawable.ic_crop_chilli
-                            "tomato" -> R.drawable.ic_crop_tomato
-                            "maize" -> R.drawable.ic_crop_maize
-                            else -> R.drawable.ic_crop_rice
-                        }
-                        Icon(
-                            painter = painterResource(id = currentCropIcon),
-                            contentDescription = null,
-                            tint = Color(0xFF81C784),
-                            modifier = Modifier.size(20.dp)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = stringResource(currentCropRes),
-                            color = Color.White,
-                            fontSize = 17.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Spacer(modifier = Modifier.width(10.dp))
-                        Box(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(12.dp))
-                                .background(FarmGreenPrimary)
-                                .padding(horizontal = 10.dp, vertical = 4.dp)
-                        ) {
-                            Text(
-                                text = stringResource(R.string.btn_change_crop),
-                                color = Color.White,
-                                fontSize = 13.sp,
-                                fontWeight = FontWeight.SemiBold
-                            )
-                        }
-                    }
+                    Text(
+                        text = "🌱 $cropDisplayName • ",
+                        color = Color.White,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+                    Text(
+                        text = stringResource(R.string.btn_change_crop),
+                        color = Color(0xFF81C784),
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold
+                    )
                 }
             }
 
-            // Scanning Viewfinder Overlay
+            // Scanning Viewfinder Overlay (Original 290.dp rounded square)
             Box(
                 modifier = Modifier
                     .size(290.dp)
@@ -283,7 +234,7 @@ fun MainCameraScreen(
                     .border(3.dp, Color.White.copy(alpha = 0.85f), RoundedCornerShape(28.dp))
             )
 
-            // Bottom Control Panel
+            // Bottom Control Panel (Original styling & colors)
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -294,7 +245,9 @@ fun MainCameraScreen(
             ) {
                 // Tip Box
                 Card(
-                    modifier = Modifier.fillMaxWidth().padding(bottom = 18.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 18.dp),
                     shape = RoundedCornerShape(12.dp),
                     colors = CardDefaults.cardColors(containerColor = Color(0xFFFFF9C4))
                 ) {
@@ -305,35 +258,11 @@ fun MainCameraScreen(
                         Text(text = "💡", fontSize = 16.sp)
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = stringResource(R.string.camera_tip),
+                            text = if (isProcessing) stringResource(R.string.analyzing_leaf) else stringResource(R.string.camera_tip),
                             fontSize = 13.sp,
                             color = Color(0xFF333333)
                         )
                     }
-                }
-
-                if (isProcessing) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(16.dp))
-                            .background(Color(0xCC000000))
-                            .padding(horizontal = 16.dp, vertical = 6.dp)
-                    ) {
-                        CircularProgressIndicator(
-                            color = FarmGreenPrimary,
-                            modifier = Modifier.size(18.dp),
-                            strokeWidth = 2.dp
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = stringResource(R.string.analyzing_leaf),
-                            color = Color.White,
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Medium
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(10.dp))
                 }
 
                 Row(
@@ -348,30 +277,32 @@ fun MainCameraScreen(
                             galleryLauncher.launch("image/*")
                         }
                     ) {
-                            Icon(
-                                imageVector = Icons.Default.PhotoLibrary,
-                                contentDescription = stringResource(R.string.btn_gallery),
-                                tint = Color.White,
-                                modifier = Modifier.size(32.dp)
-                            )
-                            Spacer(modifier = Modifier.height(4.dp))
-                            Text(
-                                text = stringResource(R.string.btn_gallery),
-                                color = Color.White,
-                                fontSize = 13.sp
-                            )
-                        }
+                        Icon(
+                            imageVector = Icons.Default.PhotoLibrary,
+                            contentDescription = stringResource(R.string.btn_gallery),
+                            tint = if (isProcessing) Color.Gray else Color.White,
+                            modifier = Modifier.size(32.dp)
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = stringResource(R.string.btn_gallery),
+                            color = if (isProcessing) Color.Gray else Color.White,
+                            fontSize = 13.sp
+                        )
+                    }
 
-                        // Shutter Button (Disabled during analysis, with spinner and progress)
-                        Box(
-                            modifier = Modifier
-                                .size(76.dp)
-                                .clip(CircleShape)
-                                .background(if (isProcessing) Color(0xFF6B7280) else FarmGreenPrimary)
-                                .clickable(enabled = !isProcessing) {
-                                    if (isProcessing) return@clickable
-                                    val capture = imageCapture
-                                    if (capture != null) {
+                    // Shutter Button (76.dp circle, disabled during processing or in-flight capture)
+                    Box(
+                        modifier = Modifier
+                            .size(76.dp)
+                            .clip(CircleShape)
+                            .background(if (isBusy) Color.Gray else FarmGreenPrimary)
+                            .clickable(enabled = !isBusy) {
+                                if (isBusy) return@clickable
+                                val capture = imageCapture
+                                if (capture != null) {
+                                    isShutterBusy = true
+                                    try {
                                         capture.takePicture(
                                             cameraExecutor,
                                             object : ImageCapture.OnImageCapturedCallback() {
@@ -380,86 +311,90 @@ fun MainCameraScreen(
                                                         val buffer = image.planes[0].buffer
                                                         val bytes = ByteArray(buffer.remaining())
                                                         buffer.get(bytes)
-
                                                         ContextCompat.getMainExecutor(context).execute {
+                                                            isShutterBusy = false
                                                             if (onImageBytesCaptured != null) {
-                                                                onImageBytesCaptured(bytes, selectedCropFilter, "camera")
+                                                                onImageBytesCaptured(bytes, selectedCrop, "camera")
                                                             } else {
-                                                                val pre = com.cropdoctor.vision.ImagePreprocessor.prepare(bytes)
-                                                                val meta = ImageAnalysisMetadata(
-                                                                    source = "camera",
-                                                                    origWidth = pre.origWidth,
-                                                                    origHeight = pre.origHeight,
-                                                                    exifOrientation = pre.exifRotationDegrees,
-                                                                    leafValidatorPass = pre.leafValidation.isLikelyCrop,
-                                                                    leafValidatorFraction = pre.leafValidation.plantPixelFraction,
-                                                                    leafValidatorReason = pre.leafValidation.reason
-                                                                )
-                                                                dispatchCapturedImage(pre.bitmap512, selectedCropFilter, meta)
+                                                                val options = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+                                                                BitmapFactory.decodeByteArray(bytes, 0, bytes.size, options)
+                                                                val maxDim = max(options.outWidth, options.outHeight)
+                                                                options.inSampleSize = if (maxDim > 1024) maxDim / 1024 else 1
+                                                                options.inJustDecodeBounds = false
+                                                                val bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.size, options)
+                                                                if (bmp != null) {
+                                                                    onImageCaptured(bmp, selectedCrop)
+                                                                }
                                                             }
                                                         }
                                                     } catch (e: Exception) {
                                                         Log.e("MainCameraScreen", "Capture processing error", e)
+                                                        ContextCompat.getMainExecutor(context).execute {
+                                                            isShutterBusy = false
+                                                        }
                                                     } finally {
-                                                        image.close() // Close ImageProxy in finally block (Rule P2.3)
+                                                        image.close()
                                                     }
                                                 }
 
                                                 override fun onError(exception: ImageCaptureException) {
-                                                    Log.e("MainCameraScreen", "Capture fallback", exception)
-                                                    val sample = Bitmap.createBitmap(512, 512, Bitmap.Config.ARGB_8888)
+                                                    Log.e("MainCameraScreen", "Capture error from CameraX", exception)
                                                     ContextCompat.getMainExecutor(context).execute {
-                                                        onImageCaptured(sample, selectedCropFilter)
+                                                        isShutterBusy = false
                                                     }
                                                 }
                                             }
                                         )
-                                    } else {
-                                        val sample = Bitmap.createBitmap(512, 512, Bitmap.Config.ARGB_8888)
-                                        onImageCaptured(sample, selectedCropFilter)
+                                    } catch (e: Exception) {
+                                        Log.e("MainCameraScreen", "Failed to trigger takePicture", e)
+                                        isShutterBusy = false
                                     }
-                                },
-                            contentAlignment = Alignment.Center
-                        ) {
-                            if (isProcessing) {
-                                CircularProgressIndicator(
-                                    color = Color.White,
-                                    modifier = Modifier.size(34.dp),
-                                    strokeWidth = 3.dp
-                                )
-                            } else {
-                                Icon(
-                                    imageVector = Icons.Default.CameraAlt,
-                                    contentDescription = stringResource(R.string.btn_capture),
-                                    tint = Color.White,
-                                    modifier = Modifier.size(38.dp)
-                                )
-                            }
-                        }
-
-                        // Flash Toggle Button
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            modifier = Modifier.clickable {
-                                isFlashOn = !isFlashOn
-                                cameraControl?.enableTorch(isFlashOn)
-                            }
-                        ) {
-                            Icon(
-                                imageVector = if (isFlashOn) Icons.Default.FlashOn else Icons.Default.FlashOff,
-                                contentDescription = stringResource(R.string.btn_flash),
-                                tint = if (isFlashOn) Color.Yellow else Color.White,
-                                modifier = Modifier.size(32.dp)
-                            )
-                            Spacer(modifier = Modifier.height(4.dp))
-                            Text(
-                                text = stringResource(R.string.btn_flash),
+                                } else {
+                                    Log.w("MainCameraScreen", "imageCapture is null; cannot take photo")
+                                    isShutterBusy = false
+                                }
+                            },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        if (isBusy) {
+                            CircularProgressIndicator(
                                 color = Color.White,
-                                fontSize = 13.sp
+                                modifier = Modifier.size(36.dp),
+                                strokeWidth = 3.dp
+                            )
+                        } else {
+                            Icon(
+                                imageVector = Icons.Default.CameraAlt,
+                                contentDescription = stringResource(R.string.btn_capture),
+                                tint = Color.White,
+                                modifier = Modifier.size(38.dp)
                             )
                         }
+                    }
+
+                    // Flash Toggle Button
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.clickable {
+                            isFlashOn = !isFlashOn
+                            cameraControl?.enableTorch(isFlashOn)
+                        }
+                    ) {
+                        Icon(
+                            imageVector = if (isFlashOn) Icons.Default.FlashOn else Icons.Default.FlashOff,
+                            contentDescription = stringResource(R.string.btn_flash),
+                            tint = if (isFlashOn) Color.Yellow else Color.White,
+                            modifier = Modifier.size(32.dp)
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = stringResource(R.string.btn_flash),
+                            color = Color.White,
+                            fontSize = 13.sp
+                        )
                     }
                 }
             }
         }
     }
+}
