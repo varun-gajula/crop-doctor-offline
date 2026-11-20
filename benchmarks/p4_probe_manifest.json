@@ -1,0 +1,2684 @@
+[
+  {
+    "set": "supported",
+    "filename": "field_maize_maize_gray_leaf_spot_camera_real_01_Corn_Gray_leaf_spot_IMG_42231.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\field_maize_maize_gray_leaf_spot_camera_real_01_Corn_Gray_leaf_spot_IMG_42231.jpg",
+    "true_crop": "maize",
+    "true_class": "maize_gray_leaf_spot",
+    "source": "C:\\crop-data\\realtest\\real_leaves\\camera_real_01_Corn_Gray_leaf_spot_IMG_42231.jpg",
+    "md5": "43ba8a87d9053032195c7c59bc01f1fc"
+  },
+  {
+    "set": "supported",
+    "filename": "field_maize_maize_gray_leaf_spot_camera_real_02_Corn_Gray_leaf_spot_rsz0803Figure6.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\field_maize_maize_gray_leaf_spot_camera_real_02_Corn_Gray_leaf_spot_rsz0803Figure6.jpg",
+    "true_crop": "maize",
+    "true_class": "maize_gray_leaf_spot",
+    "source": "C:\\crop-data\\realtest\\real_leaves\\camera_real_02_Corn_Gray_leaf_spot_rsz0803Figure6.jpg",
+    "md5": "ef7aa4da5f78915b738b4da5d5d82397"
+  },
+  {
+    "set": "supported",
+    "filename": "field_maize_maize_northern_leaf_blight_camera_real_03_Corn_leaf_blight_02c.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\field_maize_maize_northern_leaf_blight_camera_real_03_Corn_leaf_blight_02c.jpg",
+    "true_crop": "maize",
+    "true_class": "maize_northern_leaf_blight",
+    "source": "C:\\crop-data\\realtest\\real_leaves\\camera_real_03_Corn_leaf_blight_02c.jpg",
+    "md5": "2945755faa1e11a5c77e36c36b5dc010"
+  },
+  {
+    "set": "supported",
+    "filename": "field_maize_maize_northern_leaf_blight_camera_real_04_Corn_leaf_blight_0796.20graylssymt.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\field_maize_maize_northern_leaf_blight_camera_real_04_Corn_leaf_blight_0796.20graylssymt.jpg",
+    "true_crop": "maize",
+    "true_class": "maize_northern_leaf_blight",
+    "source": "C:\\crop-data\\realtest\\real_leaves\\camera_real_04_Corn_leaf_blight_0796.20graylssymt.jpg",
+    "md5": "adf7ad0a118e985ae7a44f0f8d5ca4bc"
+  },
+  {
+    "set": "supported",
+    "filename": "field_maize_maize_common_rust_camera_real_05_Corn_rust_leaf_0796.39maizerust.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\field_maize_maize_common_rust_camera_real_05_Corn_rust_leaf_0796.39maizerust.jpg",
+    "true_crop": "maize",
+    "true_class": "maize_common_rust",
+    "source": "C:\\crop-data\\realtest\\real_leaves\\camera_real_05_Corn_rust_leaf_0796.39maizerust.jpg",
+    "md5": "f22e2d59de24f2abfb3029e403b1f645"
+  },
+  {
+    "set": "supported",
+    "filename": "field_maize_maize_common_rust_camera_real_06_Corn_rust_leaf_0796.40comrust.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\field_maize_maize_common_rust_camera_real_06_Corn_rust_leaf_0796.40comrust.jpg",
+    "true_crop": "maize",
+    "true_class": "maize_common_rust",
+    "source": "C:\\crop-data\\realtest\\real_leaves\\camera_real_06_Corn_rust_leaf_0796.40comrust.jpg",
+    "md5": "0a07494681b23950ea38030515fb9a38"
+  },
+  {
+    "set": "supported",
+    "filename": "field_tomato_tomato_leaf_blight_camera_real_07_Tomato_Early_blight_leaf_039b47d574bc4bb8a14259a1cd96a741.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\field_tomato_tomato_leaf_blight_camera_real_07_Tomato_Early_blight_leaf_039b47d574bc4bb8a14259a1cd96a741.jpg",
+    "true_crop": "tomato",
+    "true_class": "tomato_leaf_blight",
+    "source": "C:\\crop-data\\realtest\\real_leaves\\camera_real_07_Tomato_Early_blight_leaf_039b47d574bc4bb8a14259a1cd96a741.jpg",
+    "md5": "fa1a22838e982e0efba0a722731c6b3b"
+  },
+  {
+    "set": "supported",
+    "filename": "field_tomato_tomato_leaf_blight_camera_real_08_Tomato_Early_blight_leaf_100983448.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\field_tomato_tomato_leaf_blight_camera_real_08_Tomato_Early_blight_leaf_100983448.jpg",
+    "true_crop": "tomato",
+    "true_class": "tomato_leaf_blight",
+    "source": "C:\\crop-data\\realtest\\real_leaves\\camera_real_08_Tomato_Early_blight_leaf_100983448.jpg",
+    "md5": "e97d59988b2d3aa3de2afc8c0b716f9d"
+  },
+  {
+    "set": "supported",
+    "filename": "field_tomato_tomato_healthy_camera_real_09_Tomato_leaf_1684.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\field_tomato_tomato_healthy_camera_real_09_Tomato_leaf_1684.jpg",
+    "true_crop": "tomato",
+    "true_class": "tomato_healthy",
+    "source": "C:\\crop-data\\realtest\\real_leaves\\camera_real_09_Tomato_leaf_1684.jpg",
+    "md5": "69ae07dce6d928cbfccd6cf7298520f1"
+  },
+  {
+    "set": "supported",
+    "filename": "field_tomato_tomato_healthy_camera_real_10_Tomato_leaf_2013-08-20-06.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\field_tomato_tomato_healthy_camera_real_10_Tomato_leaf_2013-08-20-06.jpg",
+    "true_crop": "tomato",
+    "true_class": "tomato_healthy",
+    "source": "C:\\crop-data\\realtest\\real_leaves\\camera_real_10_Tomato_leaf_2013-08-20-06.jpg",
+    "md5": "9089db404a4bc69f03bd695b7d78e980"
+  },
+  {
+    "set": "supported",
+    "filename": "field_tomato_tomato_yellow_leaf_curl_virus_camera_real_17_Tomato_leaf_yellow_virus_11-40580_5.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\field_tomato_tomato_yellow_leaf_curl_virus_camera_real_17_Tomato_leaf_yellow_virus_11-40580_5.jpg",
+    "true_crop": "tomato",
+    "true_class": "tomato_yellow_leaf_curl_virus",
+    "source": "C:\\crop-data\\realtest\\real_leaves\\camera_real_17_Tomato_leaf_yellow_virus_11-40580_5.jpg",
+    "md5": "d22d8f0b0ad2a4212d05b869f87c90e9"
+  },
+  {
+    "set": "supported",
+    "filename": "field_tomato_tomato_yellow_leaf_curl_virus_camera_real_18_Tomato_leaf_yellow_virus_17fc47.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\field_tomato_tomato_yellow_leaf_curl_virus_camera_real_18_Tomato_leaf_yellow_virus_17fc47.jpg",
+    "true_crop": "tomato",
+    "true_class": "tomato_yellow_leaf_curl_virus",
+    "source": "C:\\crop-data\\realtest\\real_leaves\\camera_real_18_Tomato_leaf_yellow_virus_17fc47.jpg",
+    "md5": "0c79b0563d44ad16229d8e68acd5658e"
+  },
+  {
+    "set": "supported",
+    "filename": "val_chilli_chilli_healthy_00_000002_Healthy Leaf00002.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_chilli_chilli_healthy_00_000002_Healthy Leaf00002.jpg",
+    "true_crop": "chilli",
+    "true_class": "chilli_healthy",
+    "source": "C:\\crop-data\\crop_doctor_512\\chilli_healthy\\000002_Healthy Leaf00002.jpg",
+    "md5": "cce2399407197de34322b4cfc947e15d"
+  },
+  {
+    "set": "supported",
+    "filename": "val_chilli_chilli_healthy_01_000003_Healthy Leaf00003.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_chilli_chilli_healthy_01_000003_Healthy Leaf00003.jpg",
+    "true_crop": "chilli",
+    "true_class": "chilli_healthy",
+    "source": "C:\\crop-data\\crop_doctor_512\\chilli_healthy\\000003_Healthy Leaf00003.jpg",
+    "md5": "e8d29b4afbb3ace4266eee78fd7a7deb"
+  },
+  {
+    "set": "supported",
+    "filename": "val_chilli_chilli_healthy_02_000127_Healthy Leaf00127.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_chilli_chilli_healthy_02_000127_Healthy Leaf00127.jpg",
+    "true_crop": "chilli",
+    "true_class": "chilli_healthy",
+    "source": "C:\\crop-data\\crop_doctor_512\\chilli_healthy\\000127_Healthy Leaf00127.jpg",
+    "md5": "39952802951d1d5ae470c86119129887"
+  },
+  {
+    "set": "supported",
+    "filename": "val_chilli_chilli_healthy_03_000439_Healthy Leaf00439.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_chilli_chilli_healthy_03_000439_Healthy Leaf00439.jpg",
+    "true_crop": "chilli",
+    "true_class": "chilli_healthy",
+    "source": "C:\\crop-data\\crop_doctor_512\\chilli_healthy\\000439_Healthy Leaf00439.jpg",
+    "md5": "649b4919072b9328d2c4946759d5fb8e"
+  },
+  {
+    "set": "supported",
+    "filename": "val_chilli_chilli_healthy_04_000081_Healthy Leaf00081.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_chilli_chilli_healthy_04_000081_Healthy Leaf00081.jpg",
+    "true_crop": "chilli",
+    "true_class": "chilli_healthy",
+    "source": "C:\\crop-data\\crop_doctor_512\\chilli_healthy\\000081_Healthy Leaf00081.jpg",
+    "md5": "0be1de40d0962db7893ba8f6534f3340"
+  },
+  {
+    "set": "supported",
+    "filename": "val_chilli_chilli_leaf_curl_virus_00_000107_Curl Virus00107.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_chilli_chilli_leaf_curl_virus_00_000107_Curl Virus00107.jpg",
+    "true_crop": "chilli",
+    "true_class": "chilli_leaf_curl_virus",
+    "source": "C:\\crop-data\\crop_doctor_512\\chilli_leaf_curl_virus\\000107_Curl Virus00107.jpg",
+    "md5": "80f0bde6a713b26ff0eb661c2b30abff"
+  },
+  {
+    "set": "supported",
+    "filename": "val_chilli_chilli_leaf_curl_virus_01_000380_Curl Virus00380.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_chilli_chilli_leaf_curl_virus_01_000380_Curl Virus00380.jpg",
+    "true_crop": "chilli",
+    "true_class": "chilli_leaf_curl_virus",
+    "source": "C:\\crop-data\\crop_doctor_512\\chilli_leaf_curl_virus\\000380_Curl Virus00380.jpg",
+    "md5": "cd49a553014f115d61c6bd61fa3e3087"
+  },
+  {
+    "set": "supported",
+    "filename": "val_chilli_chilli_leaf_curl_virus_02_000157_Curl Virus00157.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_chilli_chilli_leaf_curl_virus_02_000157_Curl Virus00157.jpg",
+    "true_crop": "chilli",
+    "true_class": "chilli_leaf_curl_virus",
+    "source": "C:\\crop-data\\crop_doctor_512\\chilli_leaf_curl_virus\\000157_Curl Virus00157.jpg",
+    "md5": "5c68d862532c7650098c104ed00214e0"
+  },
+  {
+    "set": "supported",
+    "filename": "val_chilli_chilli_leaf_curl_virus_03_000264_Curl Virus00264.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_chilli_chilli_leaf_curl_virus_03_000264_Curl Virus00264.jpg",
+    "true_crop": "chilli",
+    "true_class": "chilli_leaf_curl_virus",
+    "source": "C:\\crop-data\\crop_doctor_512\\chilli_leaf_curl_virus\\000264_Curl Virus00264.jpg",
+    "md5": "ea622308e565ed5ec17d46dfbb6ef480"
+  },
+  {
+    "set": "supported",
+    "filename": "val_chilli_chilli_leaf_curl_virus_04_000170_Curl Virus00170.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_chilli_chilli_leaf_curl_virus_04_000170_Curl Virus00170.jpg",
+    "true_crop": "chilli",
+    "true_class": "chilli_leaf_curl_virus",
+    "source": "C:\\crop-data\\crop_doctor_512\\chilli_leaf_curl_virus\\000170_Curl Virus00170.jpg",
+    "md5": "41d1571d7efb6e13c1bb44fcadc30177"
+  },
+  {
+    "set": "supported",
+    "filename": "val_chilli_chilli_nutrition_deficiency_00_000254_Nutrition Deficiency00254.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_chilli_chilli_nutrition_deficiency_00_000254_Nutrition Deficiency00254.jpg",
+    "true_crop": "chilli",
+    "true_class": "chilli_nutrition_deficiency",
+    "source": "C:\\crop-data\\crop_doctor_512\\chilli_nutrition_deficiency\\000254_Nutrition Deficiency00254.jpg",
+    "md5": "0330f932e91ebce771d0a34357b09f76"
+  },
+  {
+    "set": "supported",
+    "filename": "val_chilli_chilli_nutrition_deficiency_01_000094_Nutrition Deficiency00094.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_chilli_chilli_nutrition_deficiency_01_000094_Nutrition Deficiency00094.jpg",
+    "true_crop": "chilli",
+    "true_class": "chilli_nutrition_deficiency",
+    "source": "C:\\crop-data\\crop_doctor_512\\chilli_nutrition_deficiency\\000094_Nutrition Deficiency00094.jpg",
+    "md5": "6051a294d62bbf2c658fdb4877bd7e8b"
+  },
+  {
+    "set": "supported",
+    "filename": "val_chilli_chilli_nutrition_deficiency_02_000058_Nutrition Deficiency00058.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_chilli_chilli_nutrition_deficiency_02_000058_Nutrition Deficiency00058.jpg",
+    "true_crop": "chilli",
+    "true_class": "chilli_nutrition_deficiency",
+    "source": "C:\\crop-data\\crop_doctor_512\\chilli_nutrition_deficiency\\000058_Nutrition Deficiency00058.jpg",
+    "md5": "21b56db1181d1270cd154d0278ae8cfa"
+  },
+  {
+    "set": "supported",
+    "filename": "val_chilli_chilli_nutrition_deficiency_03_000141_Nutrition Deficiency00141.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_chilli_chilli_nutrition_deficiency_03_000141_Nutrition Deficiency00141.jpg",
+    "true_crop": "chilli",
+    "true_class": "chilli_nutrition_deficiency",
+    "source": "C:\\crop-data\\crop_doctor_512\\chilli_nutrition_deficiency\\000141_Nutrition Deficiency00141.jpg",
+    "md5": "772b00ad99c0fe86fee1247c6e759714"
+  },
+  {
+    "set": "supported",
+    "filename": "val_chilli_chilli_nutrition_deficiency_04_000347_Nutrition Deficiency00347.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_chilli_chilli_nutrition_deficiency_04_000347_Nutrition Deficiency00347.jpg",
+    "true_crop": "chilli",
+    "true_class": "chilli_nutrition_deficiency",
+    "source": "C:\\crop-data\\crop_doctor_512\\chilli_nutrition_deficiency\\000347_Nutrition Deficiency00347.jpg",
+    "md5": "d0e0d4f9c519394f049ac4bcaf912eea"
+  },
+  {
+    "set": "supported",
+    "filename": "val_cotton_cotton_bacterial_blight_00_000074_Cotton_bact17.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_cotton_cotton_bacterial_blight_00_000074_Cotton_bact17.jpg",
+    "true_crop": "cotton",
+    "true_class": "cotton_bacterial_blight",
+    "source": "C:\\crop-data\\crop_doctor_512\\cotton_bacterial_blight\\000074_Cotton_bact17.jpg",
+    "md5": "978172788e787081426f7f9b2adbdb82"
+  },
+  {
+    "set": "supported",
+    "filename": "val_cotton_cotton_bacterial_blight_01_000231_Cotton_bact310.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_cotton_cotton_bacterial_blight_01_000231_Cotton_bact310.jpg",
+    "true_crop": "cotton",
+    "true_class": "cotton_bacterial_blight",
+    "source": "C:\\crop-data\\crop_doctor_512\\cotton_bacterial_blight\\000231_Cotton_bact310.jpg",
+    "md5": "28c9303ac9d80a9ae13f1417adfeb4e6"
+  },
+  {
+    "set": "supported",
+    "filename": "val_cotton_cotton_bacterial_blight_02_000400_Cotton_bact60.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_cotton_cotton_bacterial_blight_02_000400_Cotton_bact60.jpg",
+    "true_crop": "cotton",
+    "true_class": "cotton_bacterial_blight",
+    "source": "C:\\crop-data\\crop_doctor_512\\cotton_bacterial_blight\\000400_Cotton_bact60.jpg",
+    "md5": "0fc4e96b7548137ef11dd1e561388610"
+  },
+  {
+    "set": "supported",
+    "filename": "val_cotton_cotton_bacterial_blight_03_000068_Cotton_bact163.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_cotton_cotton_bacterial_blight_03_000068_Cotton_bact163.jpg",
+    "true_crop": "cotton",
+    "true_class": "cotton_bacterial_blight",
+    "source": "C:\\crop-data\\crop_doctor_512\\cotton_bacterial_blight\\000068_Cotton_bact163.jpg",
+    "md5": "d516927549cd4779e15b8b8341fbdb56"
+  },
+  {
+    "set": "supported",
+    "filename": "val_cotton_cotton_bacterial_blight_04_000032_Cotton_bact130.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_cotton_cotton_bacterial_blight_04_000032_Cotton_bact130.jpg",
+    "true_crop": "cotton",
+    "true_class": "cotton_bacterial_blight",
+    "source": "C:\\crop-data\\crop_doctor_512\\cotton_bacterial_blight\\000032_Cotton_bact130.jpg",
+    "md5": "b363c2c56d6f34ab95a8955163608ec5"
+  },
+  {
+    "set": "supported",
+    "filename": "val_cotton_cotton_fusarium_wilt_00_000356_Cotton_fus46.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_cotton_cotton_fusarium_wilt_00_000356_Cotton_fus46.jpg",
+    "true_crop": "cotton",
+    "true_class": "cotton_fusarium_wilt",
+    "source": "C:\\crop-data\\crop_doctor_512\\cotton_fusarium_wilt\\000356_Cotton_fus46.jpg",
+    "md5": "f3b49c5cdf2f86654d3b3101ee200db6"
+  },
+  {
+    "set": "supported",
+    "filename": "val_cotton_cotton_fusarium_wilt_01_000226_Cotton_fus277.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_cotton_cotton_fusarium_wilt_01_000226_Cotton_fus277.jpg",
+    "true_crop": "cotton",
+    "true_class": "cotton_fusarium_wilt",
+    "source": "C:\\crop-data\\crop_doctor_512\\cotton_fusarium_wilt\\000226_Cotton_fus277.jpg",
+    "md5": "fcb93a83d799e9b2612e3382ea433727"
+  },
+  {
+    "set": "supported",
+    "filename": "val_cotton_cotton_fusarium_wilt_02_000392_Cotton_fus79.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_cotton_cotton_fusarium_wilt_02_000392_Cotton_fus79.jpg",
+    "true_crop": "cotton",
+    "true_class": "cotton_fusarium_wilt",
+    "source": "C:\\crop-data\\crop_doctor_512\\cotton_fusarium_wilt\\000392_Cotton_fus79.jpg",
+    "md5": "8caad2f78e27a7f1a07eb12c24dba7cb"
+  },
+  {
+    "set": "supported",
+    "filename": "val_cotton_cotton_fusarium_wilt_03_000283_Cotton_fus328.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_cotton_cotton_fusarium_wilt_03_000283_Cotton_fus328.jpg",
+    "true_crop": "cotton",
+    "true_class": "cotton_fusarium_wilt",
+    "source": "C:\\crop-data\\crop_doctor_512\\cotton_fusarium_wilt\\000283_Cotton_fus328.jpg",
+    "md5": "4c2c28b1bf625e67fe4b08ce3d89a129"
+  },
+  {
+    "set": "supported",
+    "filename": "val_cotton_cotton_fusarium_wilt_04_000294_Cotton_fus338.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_cotton_cotton_fusarium_wilt_04_000294_Cotton_fus338.jpg",
+    "true_crop": "cotton",
+    "true_class": "cotton_fusarium_wilt",
+    "source": "C:\\crop-data\\crop_doctor_512\\cotton_fusarium_wilt\\000294_Cotton_fus338.jpg",
+    "md5": "e487a91149c4e180f9f40ecaafcc8d6f"
+  },
+  {
+    "set": "supported",
+    "filename": "val_cotton_cotton_healthy_00_000024_Cotton_h12.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_cotton_cotton_healthy_00_000024_Cotton_h12.jpg",
+    "true_crop": "cotton",
+    "true_class": "cotton_healthy",
+    "source": "C:\\crop-data\\crop_doctor_512\\cotton_healthy\\000024_Cotton_h12.jpg",
+    "md5": "a65fbec3c3a158bb3343bd86740f480f"
+  },
+  {
+    "set": "supported",
+    "filename": "val_cotton_cotton_healthy_01_000001_Cotton_555.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_cotton_cotton_healthy_01_000001_Cotton_555.jpg",
+    "true_crop": "cotton",
+    "true_class": "cotton_healthy",
+    "source": "C:\\crop-data\\crop_doctor_512\\cotton_healthy\\000001_Cotton_555.jpg",
+    "md5": "ba27fa536f8f69e97cd40df9acef10ce"
+  },
+  {
+    "set": "supported",
+    "filename": "val_cotton_cotton_healthy_02_000405_Cotton_h8.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_cotton_cotton_healthy_02_000405_Cotton_h8.jpg",
+    "true_crop": "cotton",
+    "true_class": "cotton_healthy",
+    "source": "C:\\crop-data\\crop_doctor_512\\cotton_healthy\\000405_Cotton_h8.jpg",
+    "md5": "7748a1a410a6ea73203b90489ed842e3"
+  },
+  {
+    "set": "supported",
+    "filename": "val_cotton_cotton_healthy_03_000174_Cotton_h269.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_cotton_cotton_healthy_03_000174_Cotton_h269.jpg",
+    "true_crop": "cotton",
+    "true_class": "cotton_healthy",
+    "source": "C:\\crop-data\\crop_doctor_512\\cotton_healthy\\000174_Cotton_h269.jpg",
+    "md5": "98d3f6509e8b99665f77ab7292adf89d"
+  },
+  {
+    "set": "supported",
+    "filename": "val_cotton_cotton_healthy_04_000113_Cotton_h208.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_cotton_cotton_healthy_04_000113_Cotton_h208.jpg",
+    "true_crop": "cotton",
+    "true_class": "cotton_healthy",
+    "source": "C:\\crop-data\\crop_doctor_512\\cotton_healthy\\000113_Cotton_h208.jpg",
+    "md5": "b9de5489bd2241bdb6c3ec10bba3b71b"
+  },
+  {
+    "set": "supported",
+    "filename": "val_cotton_cotton_leaf_curl_virus_00_000178_Cotton_curl256.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_cotton_cotton_leaf_curl_virus_00_000178_Cotton_curl256.jpg",
+    "true_crop": "cotton",
+    "true_class": "cotton_leaf_curl_virus",
+    "source": "C:\\crop-data\\crop_doctor_512\\cotton_leaf_curl_virus\\000178_Cotton_curl256.jpg",
+    "md5": "b47abe9ad6a7b83e78d37f8ca5346d56"
+  },
+  {
+    "set": "supported",
+    "filename": "val_cotton_cotton_leaf_curl_virus_01_000077_Cotton_curl166.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_cotton_cotton_leaf_curl_virus_01_000077_Cotton_curl166.jpg",
+    "true_crop": "cotton",
+    "true_class": "cotton_leaf_curl_virus",
+    "source": "C:\\crop-data\\crop_doctor_512\\cotton_leaf_curl_virus\\000077_Cotton_curl166.jpg",
+    "md5": "75b67a800dcbc7e5abff5afe965ab52a"
+  },
+  {
+    "set": "supported",
+    "filename": "val_cotton_cotton_leaf_curl_virus_02_000222_Cotton_curl298.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_cotton_cotton_leaf_curl_virus_02_000222_Cotton_curl298.jpg",
+    "true_crop": "cotton",
+    "true_class": "cotton_leaf_curl_virus",
+    "source": "C:\\crop-data\\crop_doctor_512\\cotton_leaf_curl_virus\\000222_Cotton_curl298.jpg",
+    "md5": "93f2472d0fde7315199ef8bb945003b8"
+  },
+  {
+    "set": "supported",
+    "filename": "val_cotton_cotton_leaf_curl_virus_03_000187_Cotton_curl264.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_cotton_cotton_leaf_curl_virus_03_000187_Cotton_curl264.jpg",
+    "true_crop": "cotton",
+    "true_class": "cotton_leaf_curl_virus",
+    "source": "C:\\crop-data\\crop_doctor_512\\cotton_leaf_curl_virus\\000187_Cotton_curl264.jpg",
+    "md5": "819994c414a75660bf65a529d220008d"
+  },
+  {
+    "set": "supported",
+    "filename": "val_cotton_cotton_leaf_curl_virus_04_000018_Cotton_curl11.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_cotton_cotton_leaf_curl_virus_04_000018_Cotton_curl11.jpg",
+    "true_crop": "cotton",
+    "true_class": "cotton_leaf_curl_virus",
+    "source": "C:\\crop-data\\crop_doctor_512\\cotton_leaf_curl_virus\\000018_Cotton_curl11.jpg",
+    "md5": "812ab0e72aa8d0f0ed7c87db44bea4ec"
+  },
+  {
+    "set": "supported",
+    "filename": "val_maize_maize_common_rust_00_000122_Corn_Corn_Common_Rust (1295).jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_maize_maize_common_rust_00_000122_Corn_Corn_Common_Rust (1295).jpg",
+    "true_crop": "maize",
+    "true_class": "maize_common_rust",
+    "source": "C:\\crop-data\\crop_doctor_512\\maize_common_rust\\000122_Corn_Corn_Common_Rust (1295).jpg",
+    "md5": "d1e6065f844dc0a6a8cdaf93737eb640"
+  },
+  {
+    "set": "supported",
+    "filename": "val_maize_maize_common_rust_01_000043_Corn_Corn_Common_Rust (1109).jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_maize_maize_common_rust_01_000043_Corn_Corn_Common_Rust (1109).jpg",
+    "true_crop": "maize",
+    "true_class": "maize_common_rust",
+    "source": "C:\\crop-data\\crop_doctor_512\\maize_common_rust\\000043_Corn_Corn_Common_Rust (1109).jpg",
+    "md5": "e871aa9c83f3bfa2cdd5fcbb87c4b3ee"
+  },
+  {
+    "set": "supported",
+    "filename": "val_maize_maize_common_rust_02_000463_Corn_Corn_Common_Rust (894).jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_maize_maize_common_rust_02_000463_Corn_Corn_Common_Rust (894).jpg",
+    "true_crop": "maize",
+    "true_class": "maize_common_rust",
+    "source": "C:\\crop-data\\crop_doctor_512\\maize_common_rust\\000463_Corn_Corn_Common_Rust (894).jpg",
+    "md5": "d72920d38342c5c98d129dd9a9ede5bc"
+  },
+  {
+    "set": "supported",
+    "filename": "val_maize_maize_common_rust_03_000369_Corn_Corn_Common_Rust (670).jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_maize_maize_common_rust_03_000369_Corn_Corn_Common_Rust (670).jpg",
+    "true_crop": "maize",
+    "true_class": "maize_common_rust",
+    "source": "C:\\crop-data\\crop_doctor_512\\maize_common_rust\\000369_Corn_Corn_Common_Rust (670).jpg",
+    "md5": "5249a024472dea69f387197df1040c64"
+  },
+  {
+    "set": "supported",
+    "filename": "val_maize_maize_common_rust_04_000426_Corn_Corn_Common_Rust (81).jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_maize_maize_common_rust_04_000426_Corn_Corn_Common_Rust (81).jpg",
+    "true_crop": "maize",
+    "true_class": "maize_common_rust",
+    "source": "C:\\crop-data\\crop_doctor_512\\maize_common_rust\\000426_Corn_Corn_Common_Rust (81).jpg",
+    "md5": "735b6c4303aebd7557e0d406e92a3b7e"
+  },
+  {
+    "set": "supported",
+    "filename": "val_maize_maize_gray_leaf_spot_00_000151_Corn_Corn_Gray_Spot (257).jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_maize_maize_gray_leaf_spot_00_000151_Corn_Corn_Gray_Spot (257).jpg",
+    "true_crop": "maize",
+    "true_class": "maize_gray_leaf_spot",
+    "source": "C:\\crop-data\\crop_doctor_512\\maize_gray_leaf_spot\\000151_Corn_Corn_Gray_Spot (257).jpg",
+    "md5": "72d52c312447cff6bb81ec9ce3d8bdc3"
+  },
+  {
+    "set": "supported",
+    "filename": "val_maize_maize_gray_leaf_spot_01_000140_Corn_Corn_Gray_Spot (247).jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_maize_maize_gray_leaf_spot_01_000140_Corn_Corn_Gray_Spot (247).jpg",
+    "true_crop": "maize",
+    "true_class": "maize_gray_leaf_spot",
+    "source": "C:\\crop-data\\crop_doctor_512\\maize_gray_leaf_spot\\000140_Corn_Corn_Gray_Spot (247).jpg",
+    "md5": "7828f35e420b7517936799b3ffead408"
+  },
+  {
+    "set": "supported",
+    "filename": "val_maize_maize_gray_leaf_spot_02_000064_Corn_Corn_Gray_Spot (168).jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_maize_maize_gray_leaf_spot_02_000064_Corn_Corn_Gray_Spot (168).jpg",
+    "true_crop": "maize",
+    "true_class": "maize_gray_leaf_spot",
+    "source": "C:\\crop-data\\crop_doctor_512\\maize_gray_leaf_spot\\000064_Corn_Corn_Gray_Spot (168).jpg",
+    "md5": "8fe10730c579d3a9465a32ec6c7285ba"
+  },
+  {
+    "set": "supported",
+    "filename": "val_maize_maize_gray_leaf_spot_03_000070_Corn_Corn_Gray_Spot (173).jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_maize_maize_gray_leaf_spot_03_000070_Corn_Corn_Gray_Spot (173).jpg",
+    "true_crop": "maize",
+    "true_class": "maize_gray_leaf_spot",
+    "source": "C:\\crop-data\\crop_doctor_512\\maize_gray_leaf_spot\\000070_Corn_Corn_Gray_Spot (173).jpg",
+    "md5": "ebaced0df3b9e6047c78c6ddd15072bc"
+  },
+  {
+    "set": "supported",
+    "filename": "val_maize_maize_gray_leaf_spot_04_000208_Corn_Corn_Gray_Spot (315).jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_maize_maize_gray_leaf_spot_04_000208_Corn_Corn_Gray_Spot (315).jpg",
+    "true_crop": "maize",
+    "true_class": "maize_gray_leaf_spot",
+    "source": "C:\\crop-data\\crop_doctor_512\\maize_gray_leaf_spot\\000208_Corn_Corn_Gray_Spot (315).jpg",
+    "md5": "5fd73d994cb15d2a343ade703b7aad13"
+  },
+  {
+    "set": "supported",
+    "filename": "val_maize_maize_healthy_00_000450_Corn_Corn_Health (888).jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_maize_maize_healthy_00_000450_Corn_Corn_Health (888).jpg",
+    "true_crop": "maize",
+    "true_class": "maize_healthy",
+    "source": "C:\\crop-data\\crop_doctor_512\\maize_healthy\\000450_Corn_Corn_Health (888).jpg",
+    "md5": "505ac0a56d8fff9bbf2331bf245cf55c"
+  },
+  {
+    "set": "supported",
+    "filename": "val_maize_maize_healthy_01_000486_Corn_Corn_Health (974).jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_maize_maize_healthy_01_000486_Corn_Corn_Health (974).jpg",
+    "true_crop": "maize",
+    "true_class": "maize_healthy",
+    "source": "C:\\crop-data\\crop_doctor_512\\maize_healthy\\000486_Corn_Corn_Health (974).jpg",
+    "md5": "5f16fa04a30c3771b15cde75a64a41d4"
+  },
+  {
+    "set": "supported",
+    "filename": "val_maize_maize_healthy_02_000258_Corn_Corn_Health (497).jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_maize_maize_healthy_02_000258_Corn_Corn_Health (497).jpg",
+    "true_crop": "maize",
+    "true_class": "maize_healthy",
+    "source": "C:\\crop-data\\crop_doctor_512\\maize_healthy\\000258_Corn_Corn_Health (497).jpg",
+    "md5": "c72943fad43f0f740da5b9e9888df89d"
+  },
+  {
+    "set": "supported",
+    "filename": "val_maize_maize_healthy_03_000061_Corn_Corn_Health (1134).jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_maize_maize_healthy_03_000061_Corn_Corn_Health (1134).jpg",
+    "true_crop": "maize",
+    "true_class": "maize_healthy",
+    "source": "C:\\crop-data\\crop_doctor_512\\maize_healthy\\000061_Corn_Corn_Health (1134).jpg",
+    "md5": "4f21e1795eea8e0392421bc423fd69b9"
+  },
+  {
+    "set": "supported",
+    "filename": "val_maize_maize_healthy_04_000242_Corn_Corn_Health (463).jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_maize_maize_healthy_04_000242_Corn_Corn_Health (463).jpg",
+    "true_crop": "maize",
+    "true_class": "maize_healthy",
+    "source": "C:\\crop-data\\crop_doctor_512\\maize_healthy\\000242_Corn_Corn_Health (463).jpg",
+    "md5": "ec0ffaad79db8d5ef674d6e485ece075"
+  },
+  {
+    "set": "supported",
+    "filename": "val_maize_maize_northern_leaf_blight_00_000415_Corn_Corn_Blight (81).jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_maize_maize_northern_leaf_blight_00_000415_Corn_Corn_Blight (81).jpg",
+    "true_crop": "maize",
+    "true_class": "maize_northern_leaf_blight",
+    "source": "C:\\crop-data\\crop_doctor_512\\maize_northern_leaf_blight\\000415_Corn_Corn_Blight (81).jpg",
+    "md5": "752eb8923cffbb3f4012fc64dc83d46f"
+  },
+  {
+    "set": "supported",
+    "filename": "val_maize_maize_northern_leaf_blight_01_000229_Corn_Corn_Blight (414).jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_maize_maize_northern_leaf_blight_01_000229_Corn_Corn_Blight (414).jpg",
+    "true_crop": "maize",
+    "true_class": "maize_northern_leaf_blight",
+    "source": "C:\\crop-data\\crop_doctor_512\\maize_northern_leaf_blight\\000229_Corn_Corn_Blight (414).jpg",
+    "md5": "8f457e43b3fd94224f9729e22a4cfc88"
+  },
+  {
+    "set": "supported",
+    "filename": "val_maize_maize_northern_leaf_blight_02_000042_Corn_Corn_Blight (1075).jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_maize_maize_northern_leaf_blight_02_000042_Corn_Corn_Blight (1075).jpg",
+    "true_crop": "maize",
+    "true_class": "maize_northern_leaf_blight",
+    "source": "C:\\crop-data\\crop_doctor_512\\maize_northern_leaf_blight\\000042_Corn_Corn_Blight (1075).jpg",
+    "md5": "da593eb7dfc2e3208cc2e5cede662de8"
+  },
+  {
+    "set": "supported",
+    "filename": "val_maize_maize_northern_leaf_blight_03_000358_Corn_Corn_Blight (664).jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_maize_maize_northern_leaf_blight_03_000358_Corn_Corn_Blight (664).jpg",
+    "true_crop": "maize",
+    "true_class": "maize_northern_leaf_blight",
+    "source": "C:\\crop-data\\crop_doctor_512\\maize_northern_leaf_blight\\000358_Corn_Corn_Blight (664).jpg",
+    "md5": "6e90363bc6b1de44fe8cfaf7aebb6aea"
+  },
+  {
+    "set": "supported",
+    "filename": "val_maize_maize_northern_leaf_blight_04_000139_Corn_Corn_Blight (227).jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_maize_maize_northern_leaf_blight_04_000139_Corn_Corn_Blight (227).jpg",
+    "true_crop": "maize",
+    "true_class": "maize_northern_leaf_blight",
+    "source": "C:\\crop-data\\crop_doctor_512\\maize_northern_leaf_blight\\000139_Corn_Corn_Blight (227).jpg",
+    "md5": "3c84c8fb643d4a04c51b2c300b00df50"
+  },
+  {
+    "set": "supported",
+    "filename": "val_rice_rice_bacterial_leaf_blight_00_000505_Rice_aug_0_6471.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_rice_rice_bacterial_leaf_blight_00_000505_Rice_aug_0_6471.jpg",
+    "true_crop": "rice",
+    "true_class": "rice_bacterial_leaf_blight",
+    "source": "C:\\crop-data\\crop_doctor_512\\rice_bacterial_leaf_blight\\000505_Rice_aug_0_6471.jpg",
+    "md5": "861ae4385a7a28ab51d0a4d59e06ae39"
+  },
+  {
+    "set": "supported",
+    "filename": "val_rice_rice_bacterial_leaf_blight_01_000490_Rice_aug_0_6303.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_rice_rice_bacterial_leaf_blight_01_000490_Rice_aug_0_6303.jpg",
+    "true_crop": "rice",
+    "true_class": "rice_bacterial_leaf_blight",
+    "source": "C:\\crop-data\\crop_doctor_512\\rice_bacterial_leaf_blight\\000490_Rice_aug_0_6303.jpg",
+    "md5": "065c07c2c19fc8b210fd1d8cafe12ff6"
+  },
+  {
+    "set": "supported",
+    "filename": "val_rice_rice_bacterial_leaf_blight_02_000251_Rice_aug_0_4116.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_rice_rice_bacterial_leaf_blight_02_000251_Rice_aug_0_4116.jpg",
+    "true_crop": "rice",
+    "true_class": "rice_bacterial_leaf_blight",
+    "source": "C:\\crop-data\\crop_doctor_512\\rice_bacterial_leaf_blight\\000251_Rice_aug_0_4116.jpg",
+    "md5": "d17ca1e24370050908039b9d31cbe6e8"
+  },
+  {
+    "set": "supported",
+    "filename": "val_rice_rice_bacterial_leaf_blight_03_000332_Rice_aug_0_4912.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_rice_rice_bacterial_leaf_blight_03_000332_Rice_aug_0_4912.jpg",
+    "true_crop": "rice",
+    "true_class": "rice_bacterial_leaf_blight",
+    "source": "C:\\crop-data\\crop_doctor_512\\rice_bacterial_leaf_blight\\000332_Rice_aug_0_4912.jpg",
+    "md5": "f1b74648f109c3ba844743db3bdd46a6"
+  },
+  {
+    "set": "supported",
+    "filename": "val_rice_rice_bacterial_leaf_blight_04_000412_Rice_aug_0_5661.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_rice_rice_bacterial_leaf_blight_04_000412_Rice_aug_0_5661.jpg",
+    "true_crop": "rice",
+    "true_class": "rice_bacterial_leaf_blight",
+    "source": "C:\\crop-data\\crop_doctor_512\\rice_bacterial_leaf_blight\\000412_Rice_aug_0_5661.jpg",
+    "md5": "3698b195ba94bc15e8de047223870703"
+  },
+  {
+    "set": "supported",
+    "filename": "val_rice_rice_healthy_00_000261_Rice_aug_0_7878.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_rice_rice_healthy_00_000261_Rice_aug_0_7878.jpg",
+    "true_crop": "rice",
+    "true_class": "rice_healthy",
+    "source": "C:\\crop-data\\crop_doctor_512\\rice_healthy\\000261_Rice_aug_0_7878.jpg",
+    "md5": "0d7a019e94a0d9da19b09f71d60ae070"
+  },
+  {
+    "set": "supported",
+    "filename": "val_rice_rice_healthy_01_000388_Rice_aug_0_9286.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_rice_rice_healthy_01_000388_Rice_aug_0_9286.jpg",
+    "true_crop": "rice",
+    "true_class": "rice_healthy",
+    "source": "C:\\crop-data\\crop_doctor_512\\rice_healthy\\000388_Rice_aug_0_9286.jpg",
+    "md5": "e552be9cf3f779c882ade8876bb661cc"
+  },
+  {
+    "set": "supported",
+    "filename": "val_rice_rice_healthy_02_000500_Rice_Healthy_rice_leaf (124).jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_rice_rice_healthy_02_000500_Rice_Healthy_rice_leaf (124).jpg",
+    "true_crop": "rice",
+    "true_class": "rice_healthy",
+    "source": "C:\\crop-data\\crop_doctor_512\\rice_healthy\\000500_Rice_Healthy_rice_leaf (124).jpg",
+    "md5": "5a24d8d26e86b287f86d11f78b761eb7"
+  },
+  {
+    "set": "supported",
+    "filename": "val_rice_rice_healthy_03_000323_Rice_aug_0_8540.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_rice_rice_healthy_03_000323_Rice_aug_0_8540.jpg",
+    "true_crop": "rice",
+    "true_class": "rice_healthy",
+    "source": "C:\\crop-data\\crop_doctor_512\\rice_healthy\\000323_Rice_aug_0_8540.jpg",
+    "md5": "b9e8e28bfe41984b592a50c6b5031e72"
+  },
+  {
+    "set": "supported",
+    "filename": "val_rice_rice_healthy_04_000648_Rice_Healthy_rice_leaf (94).jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_rice_rice_healthy_04_000648_Rice_Healthy_rice_leaf (94).jpg",
+    "true_crop": "rice",
+    "true_class": "rice_healthy",
+    "source": "C:\\crop-data\\crop_doctor_512\\rice_healthy\\000648_Rice_Healthy_rice_leaf (94).jpg",
+    "md5": "db24120e1c6ad4c1297847792f3816b5"
+  },
+  {
+    "set": "supported",
+    "filename": "val_rice_rice_leaf_blast_00_000561_Rice_IMG_20231014_172034_1.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_rice_rice_leaf_blast_00_000561_Rice_IMG_20231014_172034_1.jpg",
+    "true_crop": "rice",
+    "true_class": "rice_leaf_blast",
+    "source": "C:\\crop-data\\crop_doctor_512\\rice_leaf_blast\\000561_Rice_IMG_20231014_172034_1.jpg",
+    "md5": "3cd9eef8ec664863c82161453ef54871"
+  },
+  {
+    "set": "supported",
+    "filename": "val_rice_rice_leaf_blast_01_000596_Rice_IMG_20231018_143201.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_rice_rice_leaf_blast_01_000596_Rice_IMG_20231018_143201.jpg",
+    "true_crop": "rice",
+    "true_class": "rice_leaf_blast",
+    "source": "C:\\crop-data\\crop_doctor_512\\rice_leaf_blast\\000596_Rice_IMG_20231018_143201.jpg",
+    "md5": "746f7bd627fbefb3abae46dc863e75c4"
+  },
+  {
+    "set": "supported",
+    "filename": "val_rice_rice_leaf_blast_02_000469_Rice_aug_0_9606.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_rice_rice_leaf_blast_02_000469_Rice_aug_0_9606.jpg",
+    "true_crop": "rice",
+    "true_class": "rice_leaf_blast",
+    "source": "C:\\crop-data\\crop_doctor_512\\rice_leaf_blast\\000469_Rice_aug_0_9606.jpg",
+    "md5": "39ce7e18990bdc6d03654f6506cbace4"
+  },
+  {
+    "set": "supported",
+    "filename": "val_rice_rice_leaf_blast_03_000389_Rice_aug_0_9133.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_rice_rice_leaf_blast_03_000389_Rice_aug_0_9133.jpg",
+    "true_crop": "rice",
+    "true_class": "rice_leaf_blast",
+    "source": "C:\\crop-data\\crop_doctor_512\\rice_leaf_blast\\000389_Rice_aug_0_9133.jpg",
+    "md5": "4e2f1fdcb72ae2a427bb8424fe75c3d0"
+  },
+  {
+    "set": "supported",
+    "filename": "val_rice_rice_leaf_blast_04_000208_Rice_aug_0_7865.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_rice_rice_leaf_blast_04_000208_Rice_aug_0_7865.jpg",
+    "true_crop": "rice",
+    "true_class": "rice_leaf_blast",
+    "source": "C:\\crop-data\\crop_doctor_512\\rice_leaf_blast\\000208_Rice_aug_0_7865.jpg",
+    "md5": "02501239deac3232f8843135664626ae"
+  },
+  {
+    "set": "supported",
+    "filename": "val_rice_rice_sheath_blight_00_000357_Rice_IMG_20231014_170947.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_rice_rice_sheath_blight_00_000357_Rice_IMG_20231014_170947.jpg",
+    "true_crop": "rice",
+    "true_class": "rice_sheath_blight",
+    "source": "C:\\crop-data\\crop_doctor_512\\rice_sheath_blight\\000357_Rice_IMG_20231014_170947.jpg",
+    "md5": "10ceb5dbe6d7569683a655ad4940086e"
+  },
+  {
+    "set": "supported",
+    "filename": "val_rice_rice_sheath_blight_01_000094_Rice_aug_0_7966.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_rice_rice_sheath_blight_01_000094_Rice_aug_0_7966.jpg",
+    "true_crop": "rice",
+    "true_class": "rice_sheath_blight",
+    "source": "C:\\crop-data\\crop_doctor_512\\rice_sheath_blight\\000094_Rice_aug_0_7966.jpg",
+    "md5": "abdce01908b213d32e0d512a5e71e2a0"
+  },
+  {
+    "set": "supported",
+    "filename": "val_rice_rice_sheath_blight_02_000559_Rice_Sheath_Blight (32).jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_rice_rice_sheath_blight_02_000559_Rice_Sheath_Blight (32).jpg",
+    "true_crop": "rice",
+    "true_class": "rice_sheath_blight",
+    "source": "C:\\crop-data\\crop_doctor_512\\rice_sheath_blight\\000559_Rice_Sheath_Blight (32).jpg",
+    "md5": "4685d643e091b8e284d3701603293593"
+  },
+  {
+    "set": "supported",
+    "filename": "val_rice_rice_sheath_blight_03_000528_Rice_Sheath_Blight (137).jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_rice_rice_sheath_blight_03_000528_Rice_Sheath_Blight (137).jpg",
+    "true_crop": "rice",
+    "true_class": "rice_sheath_blight",
+    "source": "C:\\crop-data\\crop_doctor_512\\rice_sheath_blight\\000528_Rice_Sheath_Blight (137).jpg",
+    "md5": "533f4c77f8b8cb392feac8c6d3cda60f"
+  },
+  {
+    "set": "supported",
+    "filename": "val_rice_rice_sheath_blight_04_000534_Rice_Sheath_Blight (142).jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_rice_rice_sheath_blight_04_000534_Rice_Sheath_Blight (142).jpg",
+    "true_crop": "rice",
+    "true_class": "rice_sheath_blight",
+    "source": "C:\\crop-data\\crop_doctor_512\\rice_sheath_blight\\000534_Rice_Sheath_Blight (142).jpg",
+    "md5": "18f42a487b05e6368bcfcb1dcbb71ced"
+  },
+  {
+    "set": "supported",
+    "filename": "val_tomato_tomato_healthy_00_000243_1570tomato_train_healthy.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_tomato_tomato_healthy_00_000243_1570tomato_train_healthy.jpg",
+    "true_crop": "tomato",
+    "true_class": "tomato_healthy",
+    "source": "C:\\crop-data\\crop_doctor_512\\tomato_healthy\\000243_1570tomato_train_healthy.jpg",
+    "md5": "1fb4d31a19fa16e64f63da75b265792a"
+  },
+  {
+    "set": "supported",
+    "filename": "val_tomato_tomato_healthy_01_000061_1160tomato_train_healthy.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_tomato_tomato_healthy_01_000061_1160tomato_train_healthy.jpg",
+    "true_crop": "tomato",
+    "true_class": "tomato_healthy",
+    "source": "C:\\crop-data\\crop_doctor_512\\tomato_healthy\\000061_1160tomato_train_healthy.jpg",
+    "md5": "cac66350b6a2143e99e1db338297cd4d"
+  },
+  {
+    "set": "supported",
+    "filename": "val_tomato_tomato_healthy_02_000250_1586tomato_train_healthy.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_tomato_tomato_healthy_02_000250_1586tomato_train_healthy.jpg",
+    "true_crop": "tomato",
+    "true_class": "tomato_healthy",
+    "source": "C:\\crop-data\\crop_doctor_512\\tomato_healthy\\000250_1586tomato_train_healthy.jpg",
+    "md5": "6dced8f376cb18b3170b6459d0207a57"
+  },
+  {
+    "set": "supported",
+    "filename": "val_tomato_tomato_healthy_03_000267_1620tomato_train_healthy.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_tomato_tomato_healthy_03_000267_1620tomato_train_healthy.jpg",
+    "true_crop": "tomato",
+    "true_class": "tomato_healthy",
+    "source": "C:\\crop-data\\crop_doctor_512\\tomato_healthy\\000267_1620tomato_train_healthy.jpg",
+    "md5": "f52ffc74c22627270b83873d46d0404a"
+  },
+  {
+    "set": "supported",
+    "filename": "val_tomato_tomato_healthy_04_000324_1755tomato_train_healthy.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_tomato_tomato_healthy_04_000324_1755tomato_train_healthy.jpg",
+    "true_crop": "tomato",
+    "true_class": "tomato_healthy",
+    "source": "C:\\crop-data\\crop_doctor_512\\tomato_healthy\\000324_1755tomato_train_healthy.jpg",
+    "md5": "65941b3da564c4633e83839722369c20"
+  },
+  {
+    "set": "supported",
+    "filename": "val_tomato_tomato_leaf_blight_00_000342_2909tomato_train_leaf blight.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_tomato_tomato_leaf_blight_00_000342_2909tomato_train_leaf blight.jpg",
+    "true_crop": "tomato",
+    "true_class": "tomato_leaf_blight",
+    "source": "C:\\crop-data\\crop_doctor_512\\tomato_leaf_blight\\000342_2909tomato_train_leaf blight.jpg",
+    "md5": "f12f2a1af8de26f927554aeeab7577fc"
+  },
+  {
+    "set": "supported",
+    "filename": "val_tomato_tomato_leaf_blight_01_000352_2968tomato_train_leaf blight.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_tomato_tomato_leaf_blight_01_000352_2968tomato_train_leaf blight.jpg",
+    "true_crop": "tomato",
+    "true_class": "tomato_leaf_blight",
+    "source": "C:\\crop-data\\crop_doctor_512\\tomato_leaf_blight\\000352_2968tomato_train_leaf blight.jpg",
+    "md5": "064416da49ca2f3a5cfa83cb45ee49e8"
+  },
+  {
+    "set": "supported",
+    "filename": "val_tomato_tomato_leaf_blight_02_000123_1653tomato_train_leaf blight.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_tomato_tomato_leaf_blight_02_000123_1653tomato_train_leaf blight.jpg",
+    "true_crop": "tomato",
+    "true_class": "tomato_leaf_blight",
+    "source": "C:\\crop-data\\crop_doctor_512\\tomato_leaf_blight\\000123_1653tomato_train_leaf blight.jpg",
+    "md5": "e5003702ef7f9e640b5d0152d7935eb5"
+  },
+  {
+    "set": "supported",
+    "filename": "val_tomato_tomato_leaf_blight_03_000450_3573tomato_train_leaf blight.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_tomato_tomato_leaf_blight_03_000450_3573tomato_train_leaf blight.jpg",
+    "true_crop": "tomato",
+    "true_class": "tomato_leaf_blight",
+    "source": "C:\\crop-data\\crop_doctor_512\\tomato_leaf_blight\\000450_3573tomato_train_leaf blight.jpg",
+    "md5": "f7cf262663bc3b5e8ef779334e5c8d29"
+  },
+  {
+    "set": "supported",
+    "filename": "val_tomato_tomato_leaf_blight_04_000704_5082tomato_train_leaf blight.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_tomato_tomato_leaf_blight_04_000704_5082tomato_train_leaf blight.jpg",
+    "true_crop": "tomato",
+    "true_class": "tomato_leaf_blight",
+    "source": "C:\\crop-data\\crop_doctor_512\\tomato_leaf_blight\\000704_5082tomato_train_leaf blight.jpg",
+    "md5": "fe51083cf89ec1f85822defa7943ea4f"
+  },
+  {
+    "set": "supported",
+    "filename": "val_tomato_tomato_septoria_leaf_spot_00_000580_7253tomato_train_septoria leaf spot.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_tomato_tomato_septoria_leaf_spot_00_000580_7253tomato_train_septoria leaf spot.jpg",
+    "true_crop": "tomato",
+    "true_class": "tomato_septoria_leaf_spot",
+    "source": "C:\\crop-data\\crop_doctor_512\\tomato_septoria_leaf_spot\\000580_7253tomato_train_septoria leaf spot.jpg",
+    "md5": "935df0eb4dfd70e295cb152c67aa51bc"
+  },
+  {
+    "set": "supported",
+    "filename": "val_tomato_tomato_septoria_leaf_spot_01_000284_4057tomato_train_septoria leaf spot.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_tomato_tomato_septoria_leaf_spot_01_000284_4057tomato_train_septoria leaf spot.jpg",
+    "true_crop": "tomato",
+    "true_class": "tomato_septoria_leaf_spot",
+    "source": "C:\\crop-data\\crop_doctor_512\\tomato_septoria_leaf_spot\\000284_4057tomato_train_septoria leaf spot.jpg",
+    "md5": "acde9bdb4ff6d99167b9a28410e0b055"
+  },
+  {
+    "set": "supported",
+    "filename": "val_tomato_tomato_septoria_leaf_spot_02_000512_6415tomato_train_septoria leaf spot.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_tomato_tomato_septoria_leaf_spot_02_000512_6415tomato_train_septoria leaf spot.jpg",
+    "true_crop": "tomato",
+    "true_class": "tomato_septoria_leaf_spot",
+    "source": "C:\\crop-data\\crop_doctor_512\\tomato_septoria_leaf_spot\\000512_6415tomato_train_septoria leaf spot.jpg",
+    "md5": "8fa382db75d6d968dff51e6bb33d9a19"
+  },
+  {
+    "set": "supported",
+    "filename": "val_tomato_tomato_septoria_leaf_spot_03_000080_1724tomato_train_septoria leaf spot.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_tomato_tomato_septoria_leaf_spot_03_000080_1724tomato_train_septoria leaf spot.jpg",
+    "true_crop": "tomato",
+    "true_class": "tomato_septoria_leaf_spot",
+    "source": "C:\\crop-data\\crop_doctor_512\\tomato_septoria_leaf_spot\\000080_1724tomato_train_septoria leaf spot.jpg",
+    "md5": "094750f808164895acd51f44e8c22dac"
+  },
+  {
+    "set": "supported",
+    "filename": "val_tomato_tomato_septoria_leaf_spot_04_000735_8642tomato_train_septoria leaf spot.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_tomato_tomato_septoria_leaf_spot_04_000735_8642tomato_train_septoria leaf spot.jpg",
+    "true_crop": "tomato",
+    "true_class": "tomato_septoria_leaf_spot",
+    "source": "C:\\crop-data\\crop_doctor_512\\tomato_septoria_leaf_spot\\000735_8642tomato_train_septoria leaf spot.jpg",
+    "md5": "ea9e5ab33fcdc345f0ef72a83c969b46"
+  },
+  {
+    "set": "supported",
+    "filename": "val_tomato_tomato_yellow_leaf_curl_virus_00_000764_916tomato_train_leaf curl.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_tomato_tomato_yellow_leaf_curl_virus_00_000764_916tomato_train_leaf curl.jpg",
+    "true_crop": "tomato",
+    "true_class": "tomato_yellow_leaf_curl_virus",
+    "source": "C:\\crop-data\\crop_doctor_512\\tomato_yellow_leaf_curl_virus\\000764_916tomato_train_leaf curl.jpg",
+    "md5": "a3da8d9fbafe39aff84be227a365a189"
+  },
+  {
+    "set": "supported",
+    "filename": "val_tomato_tomato_yellow_leaf_curl_virus_01_000521_367tomato_train_leaf curl.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_tomato_tomato_yellow_leaf_curl_virus_01_000521_367tomato_train_leaf curl.jpg",
+    "true_crop": "tomato",
+    "true_class": "tomato_yellow_leaf_curl_virus",
+    "source": "C:\\crop-data\\crop_doctor_512\\tomato_yellow_leaf_curl_virus\\000521_367tomato_train_leaf curl.jpg",
+    "md5": "fcf688bc7ac36b8c50449f9e94f65ad7"
+  },
+  {
+    "set": "supported",
+    "filename": "val_tomato_tomato_yellow_leaf_curl_virus_02_000638_628tomato_train_leaf curl.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_tomato_tomato_yellow_leaf_curl_virus_02_000638_628tomato_train_leaf curl.jpg",
+    "true_crop": "tomato",
+    "true_class": "tomato_yellow_leaf_curl_virus",
+    "source": "C:\\crop-data\\crop_doctor_512\\tomato_yellow_leaf_curl_virus\\000638_628tomato_train_leaf curl.jpg",
+    "md5": "015e3bb54d8f1ae91d83b04e97f26660"
+  },
+  {
+    "set": "supported",
+    "filename": "val_tomato_tomato_yellow_leaf_curl_virus_03_000292_1668tomato_train_leaf curl.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_tomato_tomato_yellow_leaf_curl_virus_03_000292_1668tomato_train_leaf curl.jpg",
+    "true_crop": "tomato",
+    "true_class": "tomato_yellow_leaf_curl_virus",
+    "source": "C:\\crop-data\\crop_doctor_512\\tomato_yellow_leaf_curl_virus\\000292_1668tomato_train_leaf curl.jpg",
+    "md5": "8f6498b5065048480060cfac2619184d"
+  },
+  {
+    "set": "supported",
+    "filename": "val_tomato_tomato_yellow_leaf_curl_virus_04_000412_1973tomato_train_leaf curl.jpg",
+    "path": "C:\\crop-data\\realtest\\supported\\val_tomato_tomato_yellow_leaf_curl_virus_04_000412_1973tomato_train_leaf curl.jpg",
+    "true_crop": "tomato",
+    "true_class": "tomato_yellow_leaf_curl_virus",
+    "source": "C:\\crop-data\\crop_doctor_512\\tomato_yellow_leaf_curl_virus\\000412_1973tomato_train_leaf curl.jpg",
+    "md5": "d66af5f98e305f4ed6ba35e7ad200b19"
+  },
+  {
+    "set": "unsupported",
+    "filename": "field_tomato_tomato_bacterial_spot_camera_real_11_Tomato_leaf_bacterial_spot__2320_Bacterial_Spot_and_Speck.jpg",
+    "path": "C:\\crop-data\\realtest\\unsupported\\field_tomato_tomato_bacterial_spot_camera_real_11_Tomato_leaf_bacterial_spot__2320_Bacterial_Spot_and_Speck.jpg",
+    "true_crop": "tomato",
+    "true_class": "tomato_bacterial_spot",
+    "source": "C:\\crop-data\\realtest\\real_leaves\\camera_real_11_Tomato_leaf_bacterial_spot__2320_Bacterial_Spot_and_Speck.jpg",
+    "md5": "f3b92dadcc0b2272223af4dfc4496d66"
+  },
+  {
+    "set": "unsupported",
+    "filename": "field_tomato_tomato_bacterial_spot_camera_real_12_Tomato_leaf_bacterial_spot_07.17.18-Common_Tomato_Diseases_Canker-258x300.jpg",
+    "path": "C:\\crop-data\\realtest\\unsupported\\field_tomato_tomato_bacterial_spot_camera_real_12_Tomato_leaf_bacterial_spot_07.17.18-Common_Tomato_Diseases_Canker-258x300.jpg",
+    "true_crop": "tomato",
+    "true_class": "tomato_bacterial_spot",
+    "source": "C:\\crop-data\\realtest\\real_leaves\\camera_real_12_Tomato_leaf_bacterial_spot_07.17.18-Common_Tomato_Diseases_Canker-258x300.jpg",
+    "md5": "03471392f4ed6981b8c1ee9635859489"
+  },
+  {
+    "set": "unsupported",
+    "filename": "field_tomato_tomato_late_blight_camera_real_13_Tomato_leaf_late_blight_110822-206-Tomato-blight.jpg",
+    "path": "C:\\crop-data\\realtest\\unsupported\\field_tomato_tomato_late_blight_camera_real_13_Tomato_leaf_late_blight_110822-206-Tomato-blight.jpg",
+    "true_crop": "tomato",
+    "true_class": "tomato_late_blight",
+    "source": "C:\\crop-data\\realtest\\real_leaves\\camera_real_13_Tomato_leaf_late_blight_110822-206-Tomato-blight.jpg",
+    "md5": "607b5aa33f274e54f7b72ae46eba0887"
+  },
+  {
+    "set": "unsupported",
+    "filename": "field_tomato_tomato_late_blight_camera_real_14_Tomato_leaf_late_blight_18c.jpg",
+    "path": "C:\\crop-data\\realtest\\unsupported\\field_tomato_tomato_late_blight_camera_real_14_Tomato_leaf_late_blight_18c.jpg",
+    "true_crop": "tomato",
+    "true_class": "tomato_late_blight",
+    "source": "C:\\crop-data\\realtest\\real_leaves\\camera_real_14_Tomato_leaf_late_blight_18c.jpg",
+    "md5": "71bb3f82647e48b5e1884e41566508e3"
+  },
+  {
+    "set": "unsupported",
+    "filename": "field_tomato_tomato_mosaic_virus_camera_real_15_Tomato_leaf_mosaic_virus_9511.img.jpg",
+    "path": "C:\\crop-data\\realtest\\unsupported\\field_tomato_tomato_mosaic_virus_camera_real_15_Tomato_leaf_mosaic_virus_9511.img.jpg",
+    "true_crop": "tomato",
+    "true_class": "tomato_mosaic_virus",
+    "source": "C:\\crop-data\\realtest\\real_leaves\\camera_real_15_Tomato_leaf_mosaic_virus_9511.img.jpg",
+    "md5": "95f0203d40fa96ed214211d2f0f5c72f"
+  },
+  {
+    "set": "unsupported",
+    "filename": "field_tomato_tomato_mosaic_virus_camera_real_16_Tomato_leaf_mosaic_virus_D_29AlfMov.jpg",
+    "path": "C:\\crop-data\\realtest\\unsupported\\field_tomato_tomato_mosaic_virus_camera_real_16_Tomato_leaf_mosaic_virus_D_29AlfMov.jpg",
+    "true_crop": "tomato",
+    "true_class": "tomato_mosaic_virus",
+    "source": "C:\\crop-data\\realtest\\real_leaves\\camera_real_16_Tomato_leaf_mosaic_virus_D_29AlfMov.jpg",
+    "md5": "0279e1dec15bba9c6e0504e0e9c5c902"
+  },
+  {
+    "set": "unsupported",
+    "filename": "field_tomato_tomato_leaf_mold_camera_real_19_Tomato_mold_leaf_49_20Leafmold_20Bottom.jpg",
+    "path": "C:\\crop-data\\realtest\\unsupported\\field_tomato_tomato_leaf_mold_camera_real_19_Tomato_mold_leaf_49_20Leafmold_20Bottom.jpg",
+    "true_crop": "tomato",
+    "true_class": "tomato_leaf_mold",
+    "source": "C:\\crop-data\\realtest\\real_leaves\\camera_real_19_Tomato_mold_leaf_49_20Leafmold_20Bottom.jpg",
+    "md5": "40d2477dd857a2effea9cb3d386964f9"
+  },
+  {
+    "set": "unsupported",
+    "filename": "field_tomato_tomato_leaf_mold_camera_real_20_Tomato_mold_leaf_50_20Leafmold_20Top.jpg",
+    "path": "C:\\crop-data\\realtest\\unsupported\\field_tomato_tomato_leaf_mold_camera_real_20_Tomato_mold_leaf_50_20Leafmold_20Top.jpg",
+    "true_crop": "tomato",
+    "true_class": "tomato_leaf_mold",
+    "source": "C:\\crop-data\\realtest\\real_leaves\\camera_real_20_Tomato_mold_leaf_50_20Leafmold_20Top.jpg",
+    "md5": "d946f18b4b98acc20594e159f18b1a07"
+  },
+  {
+    "set": "unsupported",
+    "filename": "plantdoc_tomato_tomato_bacterial_spot_00_05-069f1.jpg",
+    "path": "C:\\crop-data\\realtest\\unsupported\\plantdoc_tomato_tomato_bacterial_spot_00_05-069f1.jpg",
+    "true_crop": "tomato",
+    "true_class": "tomato_bacterial_spot",
+    "source": "C:\\crop-data\\candidates\\raw\\plantdoc\\train\\Tomato leaf bacterial spot\\05-069f1.jpg",
+    "md5": "1d98ce45d160304481da12724d363bcf"
+  },
+  {
+    "set": "unsupported",
+    "filename": "plantdoc_tomato_tomato_bacterial_spot_01_05-069f12.jpg",
+    "path": "C:\\crop-data\\realtest\\unsupported\\plantdoc_tomato_tomato_bacterial_spot_01_05-069f12.jpg",
+    "true_crop": "tomato",
+    "true_class": "tomato_bacterial_spot",
+    "source": "C:\\crop-data\\candidates\\raw\\plantdoc\\train\\Tomato leaf bacterial spot\\05-069f12.jpg",
+    "md5": "b740c73e39b68024b508afaad35de34a"
+  },
+  {
+    "set": "unsupported",
+    "filename": "plantdoc_tomato_tomato_bacterial_spot_02_05-069f9.jpg",
+    "path": "C:\\crop-data\\realtest\\unsupported\\plantdoc_tomato_tomato_bacterial_spot_02_05-069f9.jpg",
+    "true_crop": "tomato",
+    "true_class": "tomato_bacterial_spot",
+    "source": "C:\\crop-data\\candidates\\raw\\plantdoc\\train\\Tomato leaf bacterial spot\\05-069f9.jpg",
+    "md5": "14611750f3a418ff9ad9583f817ee226"
+  },
+  {
+    "set": "unsupported",
+    "filename": "plantdoc_tomato_tomato_bacterial_spot_03_10-3-bacterial-speck-on-tomato-RON.jpg",
+    "path": "C:\\crop-data\\realtest\\unsupported\\plantdoc_tomato_tomato_bacterial_spot_03_10-3-bacterial-speck-on-tomato-RON.jpg",
+    "true_crop": "tomato",
+    "true_class": "tomato_bacterial_spot",
+    "source": "C:\\crop-data\\candidates\\raw\\plantdoc\\train\\Tomato leaf bacterial spot\\10-3-bacterial-speck-on-tomato-RON.jpg",
+    "md5": "391a51d7f3e797ac53dbc527542537ef"
+  },
+  {
+    "set": "unsupported",
+    "filename": "plantdoc_tomato_tomato_bacterial_spot_04_110608-01-8356c-lg.jpg",
+    "path": "C:\\crop-data\\realtest\\unsupported\\plantdoc_tomato_tomato_bacterial_spot_04_110608-01-8356c-lg.jpg",
+    "true_crop": "tomato",
+    "true_class": "tomato_bacterial_spot",
+    "source": "C:\\crop-data\\candidates\\raw\\plantdoc\\train\\Tomato leaf bacterial spot\\110608-01-8356c-lg.jpg",
+    "md5": "8f426608c6fce525368ea3c25f1a5108"
+  },
+  {
+    "set": "unsupported",
+    "filename": "plantdoc_tomato_tomato_bacterial_spot_05_13582051_f520.jpg",
+    "path": "C:\\crop-data\\realtest\\unsupported\\plantdoc_tomato_tomato_bacterial_spot_05_13582051_f520.jpg",
+    "true_crop": "tomato",
+    "true_class": "tomato_bacterial_spot",
+    "source": "C:\\crop-data\\candidates\\raw\\plantdoc\\train\\Tomato leaf bacterial spot\\13582051_f520.jpg",
+    "md5": "3e5034098820c7066aaa5da7ea7cb3ac"
+  },
+  {
+    "set": "unsupported",
+    "filename": "plantdoc_tomato_tomato_bacterial_spot_06_266914753eb19d87b80567baed1a0f66.jpg",
+    "path": "C:\\crop-data\\realtest\\unsupported\\plantdoc_tomato_tomato_bacterial_spot_06_266914753eb19d87b80567baed1a0f66.jpg",
+    "true_crop": "tomato",
+    "true_class": "tomato_bacterial_spot",
+    "source": "C:\\crop-data\\candidates\\raw\\plantdoc\\train\\Tomato leaf bacterial spot\\266914753eb19d87b80567baed1a0f66.jpg",
+    "md5": "1415a7dc8a7e09e5968821073af10639"
+  },
+  {
+    "set": "unsupported",
+    "filename": "plantdoc_tomato_tomato_bacterial_spot_07_30290.jpg",
+    "path": "C:\\crop-data\\realtest\\unsupported\\plantdoc_tomato_tomato_bacterial_spot_07_30290.jpg",
+    "true_crop": "tomato",
+    "true_class": "tomato_bacterial_spot",
+    "source": "C:\\crop-data\\candidates\\raw\\plantdoc\\train\\Tomato leaf bacterial spot\\30290.jpg",
+    "md5": "d8a0abddaff3b263d07abfaad7864361"
+  },
+  {
+    "set": "unsupported",
+    "filename": "plantdoc_tomato_tomato_bacterial_spot_08_3182.jpg",
+    "path": "C:\\crop-data\\realtest\\unsupported\\plantdoc_tomato_tomato_bacterial_spot_08_3182.jpg",
+    "true_crop": "tomato",
+    "true_class": "tomato_bacterial_spot",
+    "source": "C:\\crop-data\\candidates\\raw\\plantdoc\\train\\Tomato leaf bacterial spot\\3182.jpg",
+    "md5": "a48764e641cf133212568962f7730bb2"
+  },
+  {
+    "set": "unsupported",
+    "filename": "plantdoc_tomato_tomato_bacterial_spot_09_38849847120_7ae02bd6c3_b.jpg",
+    "path": "C:\\crop-data\\realtest\\unsupported\\plantdoc_tomato_tomato_bacterial_spot_09_38849847120_7ae02bd6c3_b.jpg",
+    "true_crop": "tomato",
+    "true_class": "tomato_bacterial_spot",
+    "source": "C:\\crop-data\\candidates\\raw\\plantdoc\\train\\Tomato leaf bacterial spot\\38849847120_7ae02bd6c3_b.jpg",
+    "md5": "71834a03ec74620d0fef6896bd3a88b7"
+  },
+  {
+    "set": "unsupported",
+    "filename": "plantdoc_tomato_tomato_late_blight_00_118A_Tom_Late.jpg",
+    "path": "C:\\crop-data\\realtest\\unsupported\\plantdoc_tomato_tomato_late_blight_00_118A_Tom_Late.jpg",
+    "true_crop": "tomato",
+    "true_class": "tomato_late_blight",
+    "source": "C:\\crop-data\\candidates\\raw\\plantdoc\\train\\Tomato leaf late blight\\118A_Tom_Late.jpg",
+    "md5": "d8b86960d2820fbd2715967ed575acf0"
+  },
+  {
+    "set": "unsupported",
+    "filename": "plantdoc_tomato_tomato_late_blight_01_20150619d.jpg",
+    "path": "C:\\crop-data\\realtest\\unsupported\\plantdoc_tomato_tomato_late_blight_01_20150619d.jpg",
+    "true_crop": "tomato",
+    "true_class": "tomato_late_blight",
+    "source": "C:\\crop-data\\candidates\\raw\\plantdoc\\train\\Tomato leaf late blight\\20150619d.jpg",
+    "md5": "964714b0a9634931bd704577d75c26c3"
+  },
+  {
+    "set": "unsupported",
+    "filename": "plantdoc_tomato_tomato_late_blight_02_2017-08-27%2B-%2BLate%2BBlight%2Bon%2BGypsy%2B1.jpg",
+    "path": "C:\\crop-data\\realtest\\unsupported\\plantdoc_tomato_tomato_late_blight_02_2017-08-27%2B-%2BLate%2BBlight%2Bon%2BGypsy%2B1.jpg",
+    "true_crop": "tomato",
+    "true_class": "tomato_late_blight",
+    "source": "C:\\crop-data\\candidates\\raw\\plantdoc\\train\\Tomato leaf late blight\\2017-08-27%2B-%2BLate%2BBlight%2Bon%2BGypsy%2B1.jpg",
+    "md5": "55996f3c1e28af109ae0d8271f964dfb"
+  },
+  {
+    "set": "unsupported",
+    "filename": "plantdoc_tomato_tomato_late_blight_03_5816170621_e1cce08736_z.jpg",
+    "path": "C:\\crop-data\\realtest\\unsupported\\plantdoc_tomato_tomato_late_blight_03_5816170621_e1cce08736_z.jpg",
+    "true_crop": "tomato",
+    "true_class": "tomato_late_blight",
+    "source": "C:\\crop-data\\candidates\\raw\\plantdoc\\train\\Tomato leaf late blight\\5816170621_e1cce08736_z.jpg",
+    "md5": "be598f4c7d181d918f9ec673e3a9e64c"
+  },
+  {
+    "set": "unsupported",
+    "filename": "plantdoc_tomato_tomato_late_blight_04_600.jpg",
+    "path": "C:\\crop-data\\realtest\\unsupported\\plantdoc_tomato_tomato_late_blight_04_600.jpg",
+    "true_crop": "tomato",
+    "true_class": "tomato_late_blight",
+    "source": "C:\\crop-data\\candidates\\raw\\plantdoc\\train\\Tomato leaf late blight\\600.jpg",
+    "md5": "184f3d3fe7b506b346cd1b1093c9de2b"
+  },
+  {
+    "set": "unsupported",
+    "filename": "plantdoc_tomato_tomato_late_blight_05_7262-drought.jpg",
+    "path": "C:\\crop-data\\realtest\\unsupported\\plantdoc_tomato_tomato_late_blight_05_7262-drought.jpg",
+    "true_crop": "tomato",
+    "true_class": "tomato_late_blight",
+    "source": "C:\\crop-data\\candidates\\raw\\plantdoc\\train\\Tomato leaf late blight\\7262-drought.jpg",
+    "md5": "b3a380e6edb322b32c3d16d8c9a356f0"
+  },
+  {
+    "set": "unsupported",
+    "filename": "plantdoc_tomato_tomato_late_blight_06_924977LateBlightLeaf.jpg",
+    "path": "C:\\crop-data\\realtest\\unsupported\\plantdoc_tomato_tomato_late_blight_06_924977LateBlightLeaf.jpg",
+    "true_crop": "tomato",
+    "true_class": "tomato_late_blight",
+    "source": "C:\\crop-data\\candidates\\raw\\plantdoc\\train\\Tomato leaf late blight\\924977LateBlightLeaf.jpg",
+    "md5": "fb0239a637aa1529978ebd23336b53a9"
+  },
+  {
+    "set": "unsupported",
+    "filename": "plantdoc_tomato_tomato_late_blight_07_a7710b5901ba1f8e9759ef7576cd9f09.jpg",
+    "path": "C:\\crop-data\\realtest\\unsupported\\plantdoc_tomato_tomato_late_blight_07_a7710b5901ba1f8e9759ef7576cd9f09.jpg",
+    "true_crop": "tomato",
+    "true_class": "tomato_late_blight",
+    "source": "C:\\crop-data\\candidates\\raw\\plantdoc\\train\\Tomato leaf late blight\\a7710b5901ba1f8e9759ef7576cd9f09.jpg",
+    "md5": "c01bd552f8df1930fcbdabb97a369e2f"
+  },
+  {
+    "set": "unsupported",
+    "filename": "plantdoc_tomato_tomato_late_blight_08_August-17-2012-Supplemental-6.jpg",
+    "path": "C:\\crop-data\\realtest\\unsupported\\plantdoc_tomato_tomato_late_blight_08_August-17-2012-Supplemental-6.jpg",
+    "true_crop": "tomato",
+    "true_class": "tomato_late_blight",
+    "source": "C:\\crop-data\\candidates\\raw\\plantdoc\\train\\Tomato leaf late blight\\August-17-2012-Supplemental-6.jpg",
+    "md5": "7bd490e5fafdeaab75322b68a4e34d17"
+  },
+  {
+    "set": "unsupported",
+    "filename": "plantdoc_tomato_tomato_late_blight_09_dsc_4621c.jpg",
+    "path": "C:\\crop-data\\realtest\\unsupported\\plantdoc_tomato_tomato_late_blight_09_dsc_4621c.jpg",
+    "true_crop": "tomato",
+    "true_class": "tomato_late_blight",
+    "source": "C:\\crop-data\\candidates\\raw\\plantdoc\\train\\Tomato leaf late blight\\dsc_4621c.jpg",
+    "md5": "ae800ff7573bf29acd191a1541a2d59c"
+  },
+  {
+    "set": "unsupported",
+    "filename": "plantdoc_tomato_tomato_mosaic_virus_00_1422_0.jpeg.jpg",
+    "path": "C:\\crop-data\\realtest\\unsupported\\plantdoc_tomato_tomato_mosaic_virus_00_1422_0.jpeg.jpg",
+    "true_crop": "tomato",
+    "true_class": "tomato_mosaic_virus",
+    "source": "C:\\crop-data\\candidates\\raw\\plantdoc\\train\\Tomato leaf mosaic virus\\1422_0.jpeg.jpg",
+    "md5": "6286b57b67995251113d9e6e9c4fce72"
+  },
+  {
+    "set": "unsupported",
+    "filename": "plantdoc_tomato_tomato_mosaic_virus_01_3-tomato-mosaic-virus_web.jpg",
+    "path": "C:\\crop-data\\realtest\\unsupported\\plantdoc_tomato_tomato_mosaic_virus_01_3-tomato-mosaic-virus_web.jpg",
+    "true_crop": "tomato",
+    "true_class": "tomato_mosaic_virus",
+    "source": "C:\\crop-data\\candidates\\raw\\plantdoc\\train\\Tomato leaf mosaic virus\\3-tomato-mosaic-virus_web.jpg",
+    "md5": "f46eedcc5ad2cde9a524a55d3ff66f84"
+  },
+  {
+    "set": "unsupported",
+    "filename": "plantdoc_tomato_tomato_mosaic_virus_02_4b0bfd_df5a85f728c74cecbe908a24feadab02.jpg",
+    "path": "C:\\crop-data\\realtest\\unsupported\\plantdoc_tomato_tomato_mosaic_virus_02_4b0bfd_df5a85f728c74cecbe908a24feadab02.jpg",
+    "true_crop": "tomato",
+    "true_class": "tomato_mosaic_virus",
+    "source": "C:\\crop-data\\candidates\\raw\\plantdoc\\train\\Tomato leaf mosaic virus\\4b0bfd_df5a85f728c74cecbe908a24feadab02.jpg",
+    "md5": "f77db8faed2610b32a556722e504d575"
+  },
+  {
+    "set": "unsupported",
+    "filename": "plantdoc_tomato_tomato_mosaic_virus_03_51196-004-61703A1B.jpg",
+    "path": "C:\\crop-data\\realtest\\unsupported\\plantdoc_tomato_tomato_mosaic_virus_03_51196-004-61703A1B.jpg",
+    "true_crop": "tomato",
+    "true_class": "tomato_mosaic_virus",
+    "source": "C:\\crop-data\\candidates\\raw\\plantdoc\\train\\Tomato leaf mosaic virus\\51196-004-61703A1B.jpg",
+    "md5": "6120aadf3ec843374a15b811b76ef6f5"
+  },
+  {
+    "set": "unsupported",
+    "filename": "plantdoc_tomato_tomato_mosaic_virus_04_5Tomato+Mosaic+Virus.jpg",
+    "path": "C:\\crop-data\\realtest\\unsupported\\plantdoc_tomato_tomato_mosaic_virus_04_5Tomato+Mosaic+Virus.jpg",
+    "true_crop": "tomato",
+    "true_class": "tomato_mosaic_virus",
+    "source": "C:\\crop-data\\candidates\\raw\\plantdoc\\train\\Tomato leaf mosaic virus\\5Tomato+Mosaic+Virus.jpg",
+    "md5": "ed815fd0d20376f48a1058826cf7e634"
+  },
+  {
+    "set": "unsupported",
+    "filename": "plantdoc_tomato_tomato_mosaic_virus_05_ab40cce958c60d8b6e0ec2e4fdb8f526.jpg",
+    "path": "C:\\crop-data\\realtest\\unsupported\\plantdoc_tomato_tomato_mosaic_virus_05_ab40cce958c60d8b6e0ec2e4fdb8f526.jpg",
+    "true_crop": "tomato",
+    "true_class": "tomato_mosaic_virus",
+    "source": "C:\\crop-data\\candidates\\raw\\plantdoc\\train\\Tomato leaf mosaic virus\\ab40cce958c60d8b6e0ec2e4fdb8f526.jpg",
+    "md5": "58ec2f2b3d753ba6d747b15bb43e1c6d"
+  },
+  {
+    "set": "unsupported",
+    "filename": "plantdoc_tomato_tomato_mosaic_virus_06_d41c86a650e49b8066d6b347d8e9d3ad.jpg",
+    "path": "C:\\crop-data\\realtest\\unsupported\\plantdoc_tomato_tomato_mosaic_virus_06_d41c86a650e49b8066d6b347d8e9d3ad.jpg",
+    "true_crop": "tomato",
+    "true_class": "tomato_mosaic_virus",
+    "source": "C:\\crop-data\\candidates\\raw\\plantdoc\\train\\Tomato leaf mosaic virus\\d41c86a650e49b8066d6b347d8e9d3ad.jpg",
+    "md5": "9ae583c460385d1f07a8bb91ac6b1a5e"
+  },
+  {
+    "set": "unsupported",
+    "filename": "plantdoc_tomato_tomato_mosaic_virus_07_dahliaviralsymptoms2lowresjpg.jpg",
+    "path": "C:\\crop-data\\realtest\\unsupported\\plantdoc_tomato_tomato_mosaic_virus_07_dahliaviralsymptoms2lowresjpg.jpg",
+    "true_crop": "tomato",
+    "true_class": "tomato_mosaic_virus",
+    "source": "C:\\crop-data\\candidates\\raw\\plantdoc\\train\\Tomato leaf mosaic virus\\dahliaviralsymptoms2lowresjpg.jpg",
+    "md5": "93fa178f94f8117fb98ee82770948cd6"
+  },
+  {
+    "set": "unsupported",
+    "filename": "plantdoc_tomato_tomato_mosaic_virus_08_DSC02246.JPG.jpg",
+    "path": "C:\\crop-data\\realtest\\unsupported\\plantdoc_tomato_tomato_mosaic_virus_08_DSC02246.JPG.jpg",
+    "true_crop": "tomato",
+    "true_class": "tomato_mosaic_virus",
+    "source": "C:\\crop-data\\candidates\\raw\\plantdoc\\train\\Tomato leaf mosaic virus\\DSC02246.JPG.jpg",
+    "md5": "e773d2a356a16a1ce1eeeb2bb6ea2dae"
+  },
+  {
+    "set": "unsupported",
+    "filename": "plantdoc_tomato_tomato_mosaic_virus_09_dummen-tmv.jpg",
+    "path": "C:\\crop-data\\realtest\\unsupported\\plantdoc_tomato_tomato_mosaic_virus_09_dummen-tmv.jpg",
+    "true_crop": "tomato",
+    "true_class": "tomato_mosaic_virus",
+    "source": "C:\\crop-data\\candidates\\raw\\plantdoc\\train\\Tomato leaf mosaic virus\\dummen-tmv.jpg",
+    "md5": "121f45b894c2ddbd69164edcc285b299"
+  },
+  {
+    "set": "unsupported",
+    "filename": "plantdoc_tomato_tomato_leaf_mold_00_100_4542.jpg",
+    "path": "C:\\crop-data\\realtest\\unsupported\\plantdoc_tomato_tomato_leaf_mold_00_100_4542.jpg",
+    "true_crop": "tomato",
+    "true_class": "tomato_leaf_mold",
+    "source": "C:\\crop-data\\candidates\\raw\\plantdoc\\train\\Tomato mold leaf\\100_4542.jpg",
+    "md5": "4c01105bda13d458422614b4cbfa7629"
+  },
+  {
+    "set": "unsupported",
+    "filename": "plantdoc_tomato_tomato_leaf_mold_01_119B_Tom_Mold.jpg",
+    "path": "C:\\crop-data\\realtest\\unsupported\\plantdoc_tomato_tomato_leaf_mold_01_119B_Tom_Mold.jpg",
+    "true_crop": "tomato",
+    "true_class": "tomato_leaf_mold",
+    "source": "C:\\crop-data\\candidates\\raw\\plantdoc\\train\\Tomato mold leaf\\119B_Tom_Mold.jpg",
+    "md5": "d351d9401e493762a9eafcd204135b4f"
+  },
+  {
+    "set": "unsupported",
+    "filename": "plantdoc_tomato_tomato_leaf_mold_02_2195890.jpg",
+    "path": "C:\\crop-data\\realtest\\unsupported\\plantdoc_tomato_tomato_leaf_mold_02_2195890.jpg",
+    "true_crop": "tomato",
+    "true_class": "tomato_leaf_mold",
+    "source": "C:\\crop-data\\candidates\\raw\\plantdoc\\train\\Tomato mold leaf\\2195890.jpg",
+    "md5": "4d8c8dbb450544dcf9d16abc6f51aee3"
+  },
+  {
+    "set": "unsupported",
+    "filename": "plantdoc_tomato_tomato_leaf_mold_03_23600077_1572609202782510_2145699867_o.jpg",
+    "path": "C:\\crop-data\\realtest\\unsupported\\plantdoc_tomato_tomato_leaf_mold_03_23600077_1572609202782510_2145699867_o.jpg",
+    "true_crop": "tomato",
+    "true_class": "tomato_leaf_mold",
+    "source": "C:\\crop-data\\candidates\\raw\\plantdoc\\train\\Tomato mold leaf\\23600077_1572609202782510_2145699867_o.jpg",
+    "md5": "55bd63672aba863ec5ee9ebd452c13a8"
+  },
+  {
+    "set": "unsupported",
+    "filename": "plantdoc_tomato_tomato_leaf_mold_04_23601051_1572608349449262_2029169498_o.jpg",
+    "path": "C:\\crop-data\\realtest\\unsupported\\plantdoc_tomato_tomato_leaf_mold_04_23601051_1572608349449262_2029169498_o.jpg",
+    "true_crop": "tomato",
+    "true_class": "tomato_leaf_mold",
+    "source": "C:\\crop-data\\candidates\\raw\\plantdoc\\train\\Tomato mold leaf\\23601051_1572608349449262_2029169498_o.jpg",
+    "md5": "c0997ab48f97bff4bbce6194700ec0d3"
+  },
+  {
+    "set": "unsupported",
+    "filename": "plantdoc_tomato_tomato_leaf_mold_05_23633262_1572609386115825_1396180255_o.jpg",
+    "path": "C:\\crop-data\\realtest\\unsupported\\plantdoc_tomato_tomato_leaf_mold_05_23633262_1572609386115825_1396180255_o.jpg",
+    "true_crop": "tomato",
+    "true_class": "tomato_leaf_mold",
+    "source": "C:\\crop-data\\candidates\\raw\\plantdoc\\train\\Tomato mold leaf\\23633262_1572609386115825_1396180255_o.jpg",
+    "md5": "c484aaaee817fcf02125fd5d07fecf09"
+  },
+  {
+    "set": "unsupported",
+    "filename": "plantdoc_tomato_tomato_leaf_mold_06_4118c92ffde66d327ee14e4023320bf7.jpg",
+    "path": "C:\\crop-data\\realtest\\unsupported\\plantdoc_tomato_tomato_leaf_mold_06_4118c92ffde66d327ee14e4023320bf7.jpg",
+    "true_crop": "tomato",
+    "true_class": "tomato_leaf_mold",
+    "source": "C:\\crop-data\\candidates\\raw\\plantdoc\\train\\Tomato mold leaf\\4118c92ffde66d327ee14e4023320bf7.jpg",
+    "md5": "22f56dbb5fc25b1f337239f21c60f815"
+  },
+  {
+    "set": "unsupported",
+    "filename": "plantdoc_tomato_tomato_leaf_mold_07_5830204360_757cd7fdfc_z.jpg",
+    "path": "C:\\crop-data\\realtest\\unsupported\\plantdoc_tomato_tomato_leaf_mold_07_5830204360_757cd7fdfc_z.jpg",
+    "true_crop": "tomato",
+    "true_class": "tomato_leaf_mold",
+    "source": "C:\\crop-data\\candidates\\raw\\plantdoc\\train\\Tomato mold leaf\\5830204360_757cd7fdfc_z.jpg",
+    "md5": "fcb41691da6adec718ab1f95ab8afd37"
+  },
+  {
+    "set": "unsupported",
+    "filename": "plantdoc_tomato_tomato_leaf_mold_08_603-116-0.jpg",
+    "path": "C:\\crop-data\\realtest\\unsupported\\plantdoc_tomato_tomato_leaf_mold_08_603-116-0.jpg",
+    "true_crop": "tomato",
+    "true_class": "tomato_leaf_mold",
+    "source": "C:\\crop-data\\candidates\\raw\\plantdoc\\train\\Tomato mold leaf\\603-116-0.jpg",
+    "md5": "faa5f0b7c519980f2e521f6a6ae1958d"
+  },
+  {
+    "set": "unsupported",
+    "filename": "plantdoc_tomato_tomato_leaf_mold_09_6032331.JPG.jpg",
+    "path": "C:\\crop-data\\realtest\\unsupported\\plantdoc_tomato_tomato_leaf_mold_09_6032331.JPG.jpg",
+    "true_crop": "tomato",
+    "true_class": "tomato_leaf_mold",
+    "source": "C:\\crop-data\\candidates\\raw\\plantdoc\\train\\Tomato mold leaf\\6032331.JPG.jpg",
+    "md5": "ed7d621ee1fb53273334c389e109e4bf"
+  },
+  {
+    "set": "unsupported",
+    "filename": "chilli_chilli_chilli_bacterial_spot_00_Bacterial Spot00001.JPG",
+    "path": "C:\\crop-data\\realtest\\unsupported\\chilli_chilli_chilli_bacterial_spot_00_Bacterial Spot00001.JPG",
+    "true_crop": "chilli",
+    "true_class": "chilli_bacterial_spot",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\Chili Leaf Disease Original Dataset\\Chili Leaf Disease Original Dataset\\Bacterial Spot\\Bacterial Spot00001.JPG",
+    "md5": "93b74395f4c4056d7b08f3c4f35fe0c6"
+  },
+  {
+    "set": "unsupported",
+    "filename": "chilli_chilli_chilli_bacterial_spot_01_Bacterial Spot00002.JPG",
+    "path": "C:\\crop-data\\realtest\\unsupported\\chilli_chilli_chilli_bacterial_spot_01_Bacterial Spot00002.JPG",
+    "true_crop": "chilli",
+    "true_class": "chilli_bacterial_spot",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\Chili Leaf Disease Original Dataset\\Chili Leaf Disease Original Dataset\\Bacterial Spot\\Bacterial Spot00002.JPG",
+    "md5": "c24b6b807021f1ed00a8de7d4c66b8ae"
+  },
+  {
+    "set": "unsupported",
+    "filename": "chilli_chilli_chilli_bacterial_spot_02_Bacterial Spot00003.JPG",
+    "path": "C:\\crop-data\\realtest\\unsupported\\chilli_chilli_chilli_bacterial_spot_02_Bacterial Spot00003.JPG",
+    "true_crop": "chilli",
+    "true_class": "chilli_bacterial_spot",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\Chili Leaf Disease Original Dataset\\Chili Leaf Disease Original Dataset\\Bacterial Spot\\Bacterial Spot00003.JPG",
+    "md5": "e5dda17d5561edd45a71a00ed7c6dfbd"
+  },
+  {
+    "set": "unsupported",
+    "filename": "chilli_chilli_chilli_bacterial_spot_03_Bacterial Spot00004.JPG",
+    "path": "C:\\crop-data\\realtest\\unsupported\\chilli_chilli_chilli_bacterial_spot_03_Bacterial Spot00004.JPG",
+    "true_crop": "chilli",
+    "true_class": "chilli_bacterial_spot",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\Chili Leaf Disease Original Dataset\\Chili Leaf Disease Original Dataset\\Bacterial Spot\\Bacterial Spot00004.JPG",
+    "md5": "8ad18203ec810848877da79397218ead"
+  },
+  {
+    "set": "unsupported",
+    "filename": "chilli_chilli_chilli_bacterial_spot_04_Bacterial Spot00005.JPG",
+    "path": "C:\\crop-data\\realtest\\unsupported\\chilli_chilli_chilli_bacterial_spot_04_Bacterial Spot00005.JPG",
+    "true_crop": "chilli",
+    "true_class": "chilli_bacterial_spot",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\Chili Leaf Disease Original Dataset\\Chili Leaf Disease Original Dataset\\Bacterial Spot\\Bacterial Spot00005.JPG",
+    "md5": "edfe4b21903b63e394fee756793b655d"
+  },
+  {
+    "set": "unsupported",
+    "filename": "chilli_chilli_chilli_bacterial_spot_05_Bacterial Spot00006.JPG",
+    "path": "C:\\crop-data\\realtest\\unsupported\\chilli_chilli_chilli_bacterial_spot_05_Bacterial Spot00006.JPG",
+    "true_crop": "chilli",
+    "true_class": "chilli_bacterial_spot",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\Chili Leaf Disease Original Dataset\\Chili Leaf Disease Original Dataset\\Bacterial Spot\\Bacterial Spot00006.JPG",
+    "md5": "54d9a3a9776aec855851faa6c7f59155"
+  },
+  {
+    "set": "unsupported",
+    "filename": "chilli_chilli_chilli_bacterial_spot_06_Bacterial Spot00007.JPG",
+    "path": "C:\\crop-data\\realtest\\unsupported\\chilli_chilli_chilli_bacterial_spot_06_Bacterial Spot00007.JPG",
+    "true_crop": "chilli",
+    "true_class": "chilli_bacterial_spot",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\Chili Leaf Disease Original Dataset\\Chili Leaf Disease Original Dataset\\Bacterial Spot\\Bacterial Spot00007.JPG",
+    "md5": "9be0e280df20f882f67772fc5ffbfe49"
+  },
+  {
+    "set": "unsupported",
+    "filename": "chilli_chilli_chilli_bacterial_spot_07_Bacterial Spot00008.JPG",
+    "path": "C:\\crop-data\\realtest\\unsupported\\chilli_chilli_chilli_bacterial_spot_07_Bacterial Spot00008.JPG",
+    "true_crop": "chilli",
+    "true_class": "chilli_bacterial_spot",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\Chili Leaf Disease Original Dataset\\Chili Leaf Disease Original Dataset\\Bacterial Spot\\Bacterial Spot00008.JPG",
+    "md5": "56e158c87f9f79632146425aba861980"
+  },
+  {
+    "set": "unsupported",
+    "filename": "chilli_chilli_chilli_bacterial_spot_08_Bacterial Spot00009.JPG",
+    "path": "C:\\crop-data\\realtest\\unsupported\\chilli_chilli_chilli_bacterial_spot_08_Bacterial Spot00009.JPG",
+    "true_crop": "chilli",
+    "true_class": "chilli_bacterial_spot",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\Chili Leaf Disease Original Dataset\\Chili Leaf Disease Original Dataset\\Bacterial Spot\\Bacterial Spot00009.JPG",
+    "md5": "abafd1959207606a6924c6b6ee627727"
+  },
+  {
+    "set": "unsupported",
+    "filename": "chilli_chilli_chilli_bacterial_spot_09_Bacterial Spot00010.JPG",
+    "path": "C:\\crop-data\\realtest\\unsupported\\chilli_chilli_chilli_bacterial_spot_09_Bacterial Spot00010.JPG",
+    "true_crop": "chilli",
+    "true_class": "chilli_bacterial_spot",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\Chili Leaf Disease Original Dataset\\Chili Leaf Disease Original Dataset\\Bacterial Spot\\Bacterial Spot00010.JPG",
+    "md5": "b0596860bb8cd0c4e4ea95efedccc094"
+  },
+  {
+    "set": "unsupported",
+    "filename": "chilli_chilli_chilli_cercospora_leaf_spot_00_Cercospora Leaf Spot00001.JPG",
+    "path": "C:\\crop-data\\realtest\\unsupported\\chilli_chilli_chilli_cercospora_leaf_spot_00_Cercospora Leaf Spot00001.JPG",
+    "true_crop": "chilli",
+    "true_class": "chilli_cercospora_leaf_spot",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\Chili Leaf Disease Original Dataset\\Chili Leaf Disease Original Dataset\\Cercospora Leaf Spot\\Cercospora Leaf Spot00001.JPG",
+    "md5": "d52a2daf659896866d59aeda94171218"
+  },
+  {
+    "set": "unsupported",
+    "filename": "chilli_chilli_chilli_cercospora_leaf_spot_01_Cercospora Leaf Spot00002.JPG",
+    "path": "C:\\crop-data\\realtest\\unsupported\\chilli_chilli_chilli_cercospora_leaf_spot_01_Cercospora Leaf Spot00002.JPG",
+    "true_crop": "chilli",
+    "true_class": "chilli_cercospora_leaf_spot",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\Chili Leaf Disease Original Dataset\\Chili Leaf Disease Original Dataset\\Cercospora Leaf Spot\\Cercospora Leaf Spot00002.JPG",
+    "md5": "ba8d790940579efa5f8d703e90b744bf"
+  },
+  {
+    "set": "unsupported",
+    "filename": "chilli_chilli_chilli_cercospora_leaf_spot_02_Cercospora Leaf Spot00003.JPG",
+    "path": "C:\\crop-data\\realtest\\unsupported\\chilli_chilli_chilli_cercospora_leaf_spot_02_Cercospora Leaf Spot00003.JPG",
+    "true_crop": "chilli",
+    "true_class": "chilli_cercospora_leaf_spot",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\Chili Leaf Disease Original Dataset\\Chili Leaf Disease Original Dataset\\Cercospora Leaf Spot\\Cercospora Leaf Spot00003.JPG",
+    "md5": "82c65f40b1620c9e6a924e387794c47a"
+  },
+  {
+    "set": "unsupported",
+    "filename": "chilli_chilli_chilli_cercospora_leaf_spot_03_Cercospora Leaf Spot00004.JPG",
+    "path": "C:\\crop-data\\realtest\\unsupported\\chilli_chilli_chilli_cercospora_leaf_spot_03_Cercospora Leaf Spot00004.JPG",
+    "true_crop": "chilli",
+    "true_class": "chilli_cercospora_leaf_spot",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\Chili Leaf Disease Original Dataset\\Chili Leaf Disease Original Dataset\\Cercospora Leaf Spot\\Cercospora Leaf Spot00004.JPG",
+    "md5": "682a66352df25d30ad1c50adbf8290a3"
+  },
+  {
+    "set": "unsupported",
+    "filename": "chilli_chilli_chilli_cercospora_leaf_spot_04_Cercospora Leaf Spot00005.JPG",
+    "path": "C:\\crop-data\\realtest\\unsupported\\chilli_chilli_chilli_cercospora_leaf_spot_04_Cercospora Leaf Spot00005.JPG",
+    "true_crop": "chilli",
+    "true_class": "chilli_cercospora_leaf_spot",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\Chili Leaf Disease Original Dataset\\Chili Leaf Disease Original Dataset\\Cercospora Leaf Spot\\Cercospora Leaf Spot00005.JPG",
+    "md5": "909df2ccb2232248a472ef5eeb3f9f1a"
+  },
+  {
+    "set": "unsupported",
+    "filename": "chilli_chilli_chilli_cercospora_leaf_spot_05_Cercospora Leaf Spot00006.JPG",
+    "path": "C:\\crop-data\\realtest\\unsupported\\chilli_chilli_chilli_cercospora_leaf_spot_05_Cercospora Leaf Spot00006.JPG",
+    "true_crop": "chilli",
+    "true_class": "chilli_cercospora_leaf_spot",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\Chili Leaf Disease Original Dataset\\Chili Leaf Disease Original Dataset\\Cercospora Leaf Spot\\Cercospora Leaf Spot00006.JPG",
+    "md5": "bc874c3ddef358be21a70916a25ba626"
+  },
+  {
+    "set": "unsupported",
+    "filename": "chilli_chilli_chilli_cercospora_leaf_spot_06_Cercospora Leaf Spot00007.JPG",
+    "path": "C:\\crop-data\\realtest\\unsupported\\chilli_chilli_chilli_cercospora_leaf_spot_06_Cercospora Leaf Spot00007.JPG",
+    "true_crop": "chilli",
+    "true_class": "chilli_cercospora_leaf_spot",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\Chili Leaf Disease Original Dataset\\Chili Leaf Disease Original Dataset\\Cercospora Leaf Spot\\Cercospora Leaf Spot00007.JPG",
+    "md5": "bd14b08ec88cc0af14a182543f27d346"
+  },
+  {
+    "set": "unsupported",
+    "filename": "chilli_chilli_chilli_cercospora_leaf_spot_07_Cercospora Leaf Spot00008.JPG",
+    "path": "C:\\crop-data\\realtest\\unsupported\\chilli_chilli_chilli_cercospora_leaf_spot_07_Cercospora Leaf Spot00008.JPG",
+    "true_crop": "chilli",
+    "true_class": "chilli_cercospora_leaf_spot",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\Chili Leaf Disease Original Dataset\\Chili Leaf Disease Original Dataset\\Cercospora Leaf Spot\\Cercospora Leaf Spot00008.JPG",
+    "md5": "8f8128be3952e1fba275e27dc104b919"
+  },
+  {
+    "set": "unsupported",
+    "filename": "chilli_chilli_chilli_cercospora_leaf_spot_08_Cercospora Leaf Spot00009.JPG",
+    "path": "C:\\crop-data\\realtest\\unsupported\\chilli_chilli_chilli_cercospora_leaf_spot_08_Cercospora Leaf Spot00009.JPG",
+    "true_crop": "chilli",
+    "true_class": "chilli_cercospora_leaf_spot",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\Chili Leaf Disease Original Dataset\\Chili Leaf Disease Original Dataset\\Cercospora Leaf Spot\\Cercospora Leaf Spot00009.JPG",
+    "md5": "5ab53b72cde9f507aaaaab1574cb73a8"
+  },
+  {
+    "set": "unsupported",
+    "filename": "chilli_chilli_chilli_cercospora_leaf_spot_09_Cercospora Leaf Spot00010.JPG",
+    "path": "C:\\crop-data\\realtest\\unsupported\\chilli_chilli_chilli_cercospora_leaf_spot_09_Cercospora Leaf Spot00010.JPG",
+    "true_crop": "chilli",
+    "true_class": "chilli_cercospora_leaf_spot",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\Chili Leaf Disease Original Dataset\\Chili Leaf Disease Original Dataset\\Cercospora Leaf Spot\\Cercospora Leaf Spot00010.JPG",
+    "md5": "8bce0972c4bd10e5b1b0b17708034312"
+  },
+  {
+    "set": "unsupported",
+    "filename": "rice_leaf_scald_00_aug_0_0.jpg",
+    "path": "C:\\crop-data\\realtest\\unsupported\\rice_leaf_scald_00_aug_0_0.jpg",
+    "true_crop": "rice",
+    "true_class": "rice_leaf_scald",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\rice shiva\\Rice_Leaf_AUG\\Leaf scald\\aug_0_0.jpg",
+    "md5": "a0020fd7137a946ecb3e90d5bd128cdc"
+  },
+  {
+    "set": "unsupported",
+    "filename": "rice_leaf_scald_01_aug_0_1012.jpg",
+    "path": "C:\\crop-data\\realtest\\unsupported\\rice_leaf_scald_01_aug_0_1012.jpg",
+    "true_crop": "rice",
+    "true_class": "rice_leaf_scald",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\rice shiva\\Rice_Leaf_AUG\\Leaf scald\\aug_0_1012.jpg",
+    "md5": "1476d8ecb64f470f0dd6aa9cc9916ba4"
+  },
+  {
+    "set": "unsupported",
+    "filename": "rice_leaf_scald_02_aug_0_1018.jpg",
+    "path": "C:\\crop-data\\realtest\\unsupported\\rice_leaf_scald_02_aug_0_1018.jpg",
+    "true_crop": "rice",
+    "true_class": "rice_leaf_scald",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\rice shiva\\Rice_Leaf_AUG\\Leaf scald\\aug_0_1018.jpg",
+    "md5": "37e2fefdd25f3719b4fc1a9e9da9a7dd"
+  },
+  {
+    "set": "unsupported",
+    "filename": "rice_leaf_scald_03_aug_0_1034.jpg",
+    "path": "C:\\crop-data\\realtest\\unsupported\\rice_leaf_scald_03_aug_0_1034.jpg",
+    "true_crop": "rice",
+    "true_class": "rice_leaf_scald",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\rice shiva\\Rice_Leaf_AUG\\Leaf scald\\aug_0_1034.jpg",
+    "md5": "f4ca763b4508e627ca83e8dda67e767a"
+  },
+  {
+    "set": "unsupported",
+    "filename": "rice_leaf_scald_04_aug_0_1040.jpg",
+    "path": "C:\\crop-data\\realtest\\unsupported\\rice_leaf_scald_04_aug_0_1040.jpg",
+    "true_crop": "rice",
+    "true_class": "rice_leaf_scald",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\rice shiva\\Rice_Leaf_AUG\\Leaf scald\\aug_0_1040.jpg",
+    "md5": "c86ee81e39b4e34969afd2c302fa08f4"
+  },
+  {
+    "set": "unsupported",
+    "filename": "rice_leaf_scald_05_aug_0_1055.jpg",
+    "path": "C:\\crop-data\\realtest\\unsupported\\rice_leaf_scald_05_aug_0_1055.jpg",
+    "true_crop": "rice",
+    "true_class": "rice_leaf_scald",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\rice shiva\\Rice_Leaf_AUG\\Leaf scald\\aug_0_1055.jpg",
+    "md5": "b1c7b73ed192941a44c555f6a2767906"
+  },
+  {
+    "set": "unsupported",
+    "filename": "rice_leaf_scald_06_aug_0_1060.jpg",
+    "path": "C:\\crop-data\\realtest\\unsupported\\rice_leaf_scald_06_aug_0_1060.jpg",
+    "true_crop": "rice",
+    "true_class": "rice_leaf_scald",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\rice shiva\\Rice_Leaf_AUG\\Leaf scald\\aug_0_1060.jpg",
+    "md5": "0b34ee527a650c1aaca73f368e353254"
+  },
+  {
+    "set": "unsupported",
+    "filename": "rice_leaf_scald_07_aug_0_1071.jpg",
+    "path": "C:\\crop-data\\realtest\\unsupported\\rice_leaf_scald_07_aug_0_1071.jpg",
+    "true_crop": "rice",
+    "true_class": "rice_leaf_scald",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\rice shiva\\Rice_Leaf_AUG\\Leaf scald\\aug_0_1071.jpg",
+    "md5": "932a2b44d19ff562df0365c6b8d150d9"
+  },
+  {
+    "set": "unsupported",
+    "filename": "rice_leaf_scald_08_aug_0_1094.jpg",
+    "path": "C:\\crop-data\\realtest\\unsupported\\rice_leaf_scald_08_aug_0_1094.jpg",
+    "true_crop": "rice",
+    "true_class": "rice_leaf_scald",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\rice shiva\\Rice_Leaf_AUG\\Leaf scald\\aug_0_1094.jpg",
+    "md5": "8689016bf39f7b6a3e5d998df86bf73c"
+  },
+  {
+    "set": "unsupported",
+    "filename": "rice_leaf_scald_09_aug_0_1100.jpg",
+    "path": "C:\\crop-data\\realtest\\unsupported\\rice_leaf_scald_09_aug_0_1100.jpg",
+    "true_crop": "rice",
+    "true_class": "rice_leaf_scald",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\rice shiva\\Rice_Leaf_AUG\\Leaf scald\\aug_0_1100.jpg",
+    "md5": "7dfa54821a3bd6b568b1998267a37e1f"
+  },
+  {
+    "set": "unsupported",
+    "filename": "cotton_cotton_jassids_00_LHJ00001.jpg",
+    "path": "C:\\crop-data\\realtest\\unsupported\\cotton_cotton_jassids_00_LHJ00001.jpg",
+    "true_crop": "cotton",
+    "true_class": "cotton_jassids",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\cotton\\Original Dataset\\Leaf Hopper Jassids\\LHJ00001.jpg",
+    "md5": "9351fc5c6e0167dcff36326d10342ee0"
+  },
+  {
+    "set": "unsupported",
+    "filename": "cotton_cotton_jassids_01_LHJ00002.jpg",
+    "path": "C:\\crop-data\\realtest\\unsupported\\cotton_cotton_jassids_01_LHJ00002.jpg",
+    "true_crop": "cotton",
+    "true_class": "cotton_jassids",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\cotton\\Original Dataset\\Leaf Hopper Jassids\\LHJ00002.jpg",
+    "md5": "eaa02748d79393b84753c9b76c6b8561"
+  },
+  {
+    "set": "unsupported",
+    "filename": "cotton_cotton_jassids_02_LHJ00003.jpg",
+    "path": "C:\\crop-data\\realtest\\unsupported\\cotton_cotton_jassids_02_LHJ00003.jpg",
+    "true_crop": "cotton",
+    "true_class": "cotton_jassids",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\cotton\\Original Dataset\\Leaf Hopper Jassids\\LHJ00003.jpg",
+    "md5": "f5cbbb6c727b267fd40f001c51caba69"
+  },
+  {
+    "set": "unsupported",
+    "filename": "cotton_cotton_jassids_03_LHJ00004.jpg",
+    "path": "C:\\crop-data\\realtest\\unsupported\\cotton_cotton_jassids_03_LHJ00004.jpg",
+    "true_crop": "cotton",
+    "true_class": "cotton_jassids",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\cotton\\Original Dataset\\Leaf Hopper Jassids\\LHJ00004.jpg",
+    "md5": "0706554dab72b95cb020cdaf7ffc9101"
+  },
+  {
+    "set": "unsupported",
+    "filename": "cotton_cotton_jassids_04_LHJ00005.jpg",
+    "path": "C:\\crop-data\\realtest\\unsupported\\cotton_cotton_jassids_04_LHJ00005.jpg",
+    "true_crop": "cotton",
+    "true_class": "cotton_jassids",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\cotton\\Original Dataset\\Leaf Hopper Jassids\\LHJ00005.jpg",
+    "md5": "4e2738bb619960e18b06db40381fab5e"
+  },
+  {
+    "set": "unsupported",
+    "filename": "cotton_cotton_leaf_redding_00_LR00001.jpg",
+    "path": "C:\\crop-data\\realtest\\unsupported\\cotton_cotton_leaf_redding_00_LR00001.jpg",
+    "true_crop": "cotton",
+    "true_class": "cotton_leaf_redding",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\cotton\\Original Dataset\\Leaf Redding\\LR00001.jpg",
+    "md5": "ebe8c72ab7508f4f0ad0425a96a806fb"
+  },
+  {
+    "set": "unsupported",
+    "filename": "cotton_cotton_leaf_redding_01_LR00002.jpg",
+    "path": "C:\\crop-data\\realtest\\unsupported\\cotton_cotton_leaf_redding_01_LR00002.jpg",
+    "true_crop": "cotton",
+    "true_class": "cotton_leaf_redding",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\cotton\\Original Dataset\\Leaf Redding\\LR00002.jpg",
+    "md5": "fe5b17f68ae763d723123436ae5a076e"
+  },
+  {
+    "set": "unsupported",
+    "filename": "cotton_cotton_leaf_redding_02_LR00003.jpg",
+    "path": "C:\\crop-data\\realtest\\unsupported\\cotton_cotton_leaf_redding_02_LR00003.jpg",
+    "true_crop": "cotton",
+    "true_class": "cotton_leaf_redding",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\cotton\\Original Dataset\\Leaf Redding\\LR00003.jpg",
+    "md5": "64c7d0ce0b0b44ad9183f1ef854148e2"
+  },
+  {
+    "set": "unsupported",
+    "filename": "cotton_cotton_leaf_redding_03_LR00004.jpg",
+    "path": "C:\\crop-data\\realtest\\unsupported\\cotton_cotton_leaf_redding_03_LR00004.jpg",
+    "true_crop": "cotton",
+    "true_class": "cotton_leaf_redding",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\cotton\\Original Dataset\\Leaf Redding\\LR00004.jpg",
+    "md5": "8a394916503557cd98a84adf39e75986"
+  },
+  {
+    "set": "unsupported",
+    "filename": "cotton_cotton_leaf_redding_04_LR00005.jpg",
+    "path": "C:\\crop-data\\realtest\\unsupported\\cotton_cotton_leaf_redding_04_LR00005.jpg",
+    "true_crop": "cotton",
+    "true_class": "cotton_leaf_redding",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\cotton\\Original Dataset\\Leaf Redding\\LR00005.jpg",
+    "md5": "85bd3c2b20cdd6ed68d70a56d70c7d66"
+  },
+  {
+    "set": "unsupported",
+    "filename": "cotton_cotton_herbicide_damage_00_HGD00001.jpg",
+    "path": "C:\\crop-data\\realtest\\unsupported\\cotton_cotton_herbicide_damage_00_HGD00001.jpg",
+    "true_crop": "cotton",
+    "true_class": "cotton_herbicide_damage",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\cotton\\Original Dataset\\Herbicide Growth Damage\\HGD00001.jpg",
+    "md5": "fb5e13be3350811eb310d6c93d96e7e3"
+  },
+  {
+    "set": "unsupported",
+    "filename": "cotton_cotton_herbicide_damage_01_HGD00002.jpg",
+    "path": "C:\\crop-data\\realtest\\unsupported\\cotton_cotton_herbicide_damage_01_HGD00002.jpg",
+    "true_crop": "cotton",
+    "true_class": "cotton_herbicide_damage",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\cotton\\Original Dataset\\Herbicide Growth Damage\\HGD00002.jpg",
+    "md5": "13732d539fcecc1481430c983c7d71b3"
+  },
+  {
+    "set": "unsupported",
+    "filename": "cotton_cotton_herbicide_damage_02_HGD00003.jpg",
+    "path": "C:\\crop-data\\realtest\\unsupported\\cotton_cotton_herbicide_damage_02_HGD00003.jpg",
+    "true_crop": "cotton",
+    "true_class": "cotton_herbicide_damage",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\cotton\\Original Dataset\\Herbicide Growth Damage\\HGD00003.jpg",
+    "md5": "f0adafd7b8ebd0ee6eeb0213ec0651e1"
+  },
+  {
+    "set": "unsupported",
+    "filename": "cotton_cotton_herbicide_damage_03_HGD00004.jpg",
+    "path": "C:\\crop-data\\realtest\\unsupported\\cotton_cotton_herbicide_damage_03_HGD00004.jpg",
+    "true_crop": "cotton",
+    "true_class": "cotton_herbicide_damage",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\cotton\\Original Dataset\\Herbicide Growth Damage\\HGD00004.jpg",
+    "md5": "5f70cccb29e6aae1d0fb0d473ef1c0c5"
+  },
+  {
+    "set": "unsupported",
+    "filename": "cotton_cotton_herbicide_damage_04_HGD00005.jpg",
+    "path": "C:\\crop-data\\realtest\\unsupported\\cotton_cotton_herbicide_damage_04_HGD00005.jpg",
+    "true_crop": "cotton",
+    "true_class": "cotton_herbicide_damage",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\cotton\\Original Dataset\\Herbicide Growth Damage\\HGD00005.jpg",
+    "md5": "896673de0aa488d46f7feae8fe1cc25c"
+  },
+  {
+    "set": "othercrop",
+    "filename": "other_cashew_anthracnose_00_anthracnose1000_.jpg",
+    "path": "C:\\crop-data\\realtest\\othercrop\\other_cashew_anthracnose_00_anthracnose1000_.jpg",
+    "true_crop": "cashew",
+    "true_class": "cashew_anthracnose",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\Dataset for Crop Pest and Disease Detection\\Dataset for Crop Pest and Disease Detection\\Raw Data\\CCMT Dataset\\Cashew\\anthracnose\\anthracnose1000_.jpg",
+    "md5": "4e0bcd2916049b4a53fe705c04aeb415"
+  },
+  {
+    "set": "othercrop",
+    "filename": "other_cashew_anthracnose_01_anthracnose1001_.jpg",
+    "path": "C:\\crop-data\\realtest\\othercrop\\other_cashew_anthracnose_01_anthracnose1001_.jpg",
+    "true_crop": "cashew",
+    "true_class": "cashew_anthracnose",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\Dataset for Crop Pest and Disease Detection\\Dataset for Crop Pest and Disease Detection\\Raw Data\\CCMT Dataset\\Cashew\\anthracnose\\anthracnose1001_.jpg",
+    "md5": "4678d9590aca5f771a87d0593b24979b"
+  },
+  {
+    "set": "othercrop",
+    "filename": "other_cashew_anthracnose_02_anthracnose1002_.jpg",
+    "path": "C:\\crop-data\\realtest\\othercrop\\other_cashew_anthracnose_02_anthracnose1002_.jpg",
+    "true_crop": "cashew",
+    "true_class": "cashew_anthracnose",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\Dataset for Crop Pest and Disease Detection\\Dataset for Crop Pest and Disease Detection\\Raw Data\\CCMT Dataset\\Cashew\\anthracnose\\anthracnose1002_.jpg",
+    "md5": "8ced1f53b728b33774b7c9250b0c2456"
+  },
+  {
+    "set": "othercrop",
+    "filename": "other_cashew_anthracnose_03_anthracnose1003_.jpg",
+    "path": "C:\\crop-data\\realtest\\othercrop\\other_cashew_anthracnose_03_anthracnose1003_.jpg",
+    "true_crop": "cashew",
+    "true_class": "cashew_anthracnose",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\Dataset for Crop Pest and Disease Detection\\Dataset for Crop Pest and Disease Detection\\Raw Data\\CCMT Dataset\\Cashew\\anthracnose\\anthracnose1003_.jpg",
+    "md5": "eab5a31e77f7d1a26dbc9bb9f0bbf234"
+  },
+  {
+    "set": "othercrop",
+    "filename": "other_cashew_anthracnose_04_anthracnose1004_.jpg",
+    "path": "C:\\crop-data\\realtest\\othercrop\\other_cashew_anthracnose_04_anthracnose1004_.jpg",
+    "true_crop": "cashew",
+    "true_class": "cashew_anthracnose",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\Dataset for Crop Pest and Disease Detection\\Dataset for Crop Pest and Disease Detection\\Raw Data\\CCMT Dataset\\Cashew\\anthracnose\\anthracnose1004_.jpg",
+    "md5": "c1bee416224e31a46eabf83efef2cd3b"
+  },
+  {
+    "set": "othercrop",
+    "filename": "other_cashew_anthracnose_05_anthracnose1005_.jpg",
+    "path": "C:\\crop-data\\realtest\\othercrop\\other_cashew_anthracnose_05_anthracnose1005_.jpg",
+    "true_crop": "cashew",
+    "true_class": "cashew_anthracnose",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\Dataset for Crop Pest and Disease Detection\\Dataset for Crop Pest and Disease Detection\\Raw Data\\CCMT Dataset\\Cashew\\anthracnose\\anthracnose1005_.jpg",
+    "md5": "a99c651a8684b03b8c1a2c4d7a1884f2"
+  },
+  {
+    "set": "othercrop",
+    "filename": "other_cashew_red rust_00_red rust1000_.jpg",
+    "path": "C:\\crop-data\\realtest\\othercrop\\other_cashew_red rust_00_red rust1000_.jpg",
+    "true_crop": "cashew",
+    "true_class": "cashew_red rust",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\Dataset for Crop Pest and Disease Detection\\Dataset for Crop Pest and Disease Detection\\Raw Data\\CCMT Dataset\\Cashew\\red rust\\red rust1000_.jpg",
+    "md5": "e314d6a14e4a09c1cc9df848e0c287c3"
+  },
+  {
+    "set": "othercrop",
+    "filename": "other_cashew_red rust_01_red rust1001_.jpg",
+    "path": "C:\\crop-data\\realtest\\othercrop\\other_cashew_red rust_01_red rust1001_.jpg",
+    "true_crop": "cashew",
+    "true_class": "cashew_red rust",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\Dataset for Crop Pest and Disease Detection\\Dataset for Crop Pest and Disease Detection\\Raw Data\\CCMT Dataset\\Cashew\\red rust\\red rust1001_.jpg",
+    "md5": "9b6b748ed3d4b6482686624faa62361b"
+  },
+  {
+    "set": "othercrop",
+    "filename": "other_cashew_red rust_02_red rust1002_.jpg",
+    "path": "C:\\crop-data\\realtest\\othercrop\\other_cashew_red rust_02_red rust1002_.jpg",
+    "true_crop": "cashew",
+    "true_class": "cashew_red rust",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\Dataset for Crop Pest and Disease Detection\\Dataset for Crop Pest and Disease Detection\\Raw Data\\CCMT Dataset\\Cashew\\red rust\\red rust1002_.jpg",
+    "md5": "8ac1c27d78b4b875f1e721ddf79569aa"
+  },
+  {
+    "set": "othercrop",
+    "filename": "other_cashew_red rust_03_red rust1003_.jpg",
+    "path": "C:\\crop-data\\realtest\\othercrop\\other_cashew_red rust_03_red rust1003_.jpg",
+    "true_crop": "cashew",
+    "true_class": "cashew_red rust",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\Dataset for Crop Pest and Disease Detection\\Dataset for Crop Pest and Disease Detection\\Raw Data\\CCMT Dataset\\Cashew\\red rust\\red rust1003_.jpg",
+    "md5": "648c1d401b032cd5d0bf424e19da06c6"
+  },
+  {
+    "set": "othercrop",
+    "filename": "other_cashew_red rust_04_red rust1004_.jpg",
+    "path": "C:\\crop-data\\realtest\\othercrop\\other_cashew_red rust_04_red rust1004_.jpg",
+    "true_crop": "cashew",
+    "true_class": "cashew_red rust",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\Dataset for Crop Pest and Disease Detection\\Dataset for Crop Pest and Disease Detection\\Raw Data\\CCMT Dataset\\Cashew\\red rust\\red rust1004_.jpg",
+    "md5": "4dc62ce973aaab38b5927460d33dae43"
+  },
+  {
+    "set": "othercrop",
+    "filename": "other_cashew_red rust_05_red rust1005_.jpg",
+    "path": "C:\\crop-data\\realtest\\othercrop\\other_cashew_red rust_05_red rust1005_.jpg",
+    "true_crop": "cashew",
+    "true_class": "cashew_red rust",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\Dataset for Crop Pest and Disease Detection\\Dataset for Crop Pest and Disease Detection\\Raw Data\\CCMT Dataset\\Cashew\\red rust\\red rust1005_.jpg",
+    "md5": "103630a099a41d4030a3fb5951e44657"
+  },
+  {
+    "set": "othercrop",
+    "filename": "other_cashew_leaf miner_00_leaf miner1000_.jpg",
+    "path": "C:\\crop-data\\realtest\\othercrop\\other_cashew_leaf miner_00_leaf miner1000_.jpg",
+    "true_crop": "cashew",
+    "true_class": "cashew_leaf miner",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\Dataset for Crop Pest and Disease Detection\\Dataset for Crop Pest and Disease Detection\\Raw Data\\CCMT Dataset\\Cashew\\leaf miner\\leaf miner1000_.jpg",
+    "md5": "edd9e9563231aecb772c04533d84a13f"
+  },
+  {
+    "set": "othercrop",
+    "filename": "other_cashew_leaf miner_01_leaf miner1001_.jpg",
+    "path": "C:\\crop-data\\realtest\\othercrop\\other_cashew_leaf miner_01_leaf miner1001_.jpg",
+    "true_crop": "cashew",
+    "true_class": "cashew_leaf miner",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\Dataset for Crop Pest and Disease Detection\\Dataset for Crop Pest and Disease Detection\\Raw Data\\CCMT Dataset\\Cashew\\leaf miner\\leaf miner1001_.jpg",
+    "md5": "0cc85145bc467e140fd2b82a251f5c6f"
+  },
+  {
+    "set": "othercrop",
+    "filename": "other_cashew_leaf miner_02_leaf miner1002_.jpg",
+    "path": "C:\\crop-data\\realtest\\othercrop\\other_cashew_leaf miner_02_leaf miner1002_.jpg",
+    "true_crop": "cashew",
+    "true_class": "cashew_leaf miner",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\Dataset for Crop Pest and Disease Detection\\Dataset for Crop Pest and Disease Detection\\Raw Data\\CCMT Dataset\\Cashew\\leaf miner\\leaf miner1002_.jpg",
+    "md5": "cf4cbbde09d32560c89a562896399ffe"
+  },
+  {
+    "set": "othercrop",
+    "filename": "other_cashew_leaf miner_03_leaf miner1003_.jpg",
+    "path": "C:\\crop-data\\realtest\\othercrop\\other_cashew_leaf miner_03_leaf miner1003_.jpg",
+    "true_crop": "cashew",
+    "true_class": "cashew_leaf miner",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\Dataset for Crop Pest and Disease Detection\\Dataset for Crop Pest and Disease Detection\\Raw Data\\CCMT Dataset\\Cashew\\leaf miner\\leaf miner1003_.jpg",
+    "md5": "e7f8218fa3ae9eceb933a7c5da9bf1a4"
+  },
+  {
+    "set": "othercrop",
+    "filename": "other_cashew_leaf miner_04_leaf miner1004_.jpg",
+    "path": "C:\\crop-data\\realtest\\othercrop\\other_cashew_leaf miner_04_leaf miner1004_.jpg",
+    "true_crop": "cashew",
+    "true_class": "cashew_leaf miner",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\Dataset for Crop Pest and Disease Detection\\Dataset for Crop Pest and Disease Detection\\Raw Data\\CCMT Dataset\\Cashew\\leaf miner\\leaf miner1004_.jpg",
+    "md5": "22b9998710a31eeeefe048cae0c8ce2b"
+  },
+  {
+    "set": "othercrop",
+    "filename": "other_cashew_leaf miner_05_leaf miner1005_.jpg",
+    "path": "C:\\crop-data\\realtest\\othercrop\\other_cashew_leaf miner_05_leaf miner1005_.jpg",
+    "true_crop": "cashew",
+    "true_class": "cashew_leaf miner",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\Dataset for Crop Pest and Disease Detection\\Dataset for Crop Pest and Disease Detection\\Raw Data\\CCMT Dataset\\Cashew\\leaf miner\\leaf miner1005_.jpg",
+    "md5": "cfa198639b60a7878c052d4c9334da4c"
+  },
+  {
+    "set": "othercrop",
+    "filename": "other_cashew_healthy_00_healthy1000_.jpg",
+    "path": "C:\\crop-data\\realtest\\othercrop\\other_cashew_healthy_00_healthy1000_.jpg",
+    "true_crop": "cashew",
+    "true_class": "cashew_healthy",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\Dataset for Crop Pest and Disease Detection\\Dataset for Crop Pest and Disease Detection\\Raw Data\\CCMT Dataset\\Cashew\\healthy\\healthy1000_.jpg",
+    "md5": "4e5b57e1480d58b5c7551476f3efa587"
+  },
+  {
+    "set": "othercrop",
+    "filename": "other_cashew_healthy_01_healthy1001_.jpg",
+    "path": "C:\\crop-data\\realtest\\othercrop\\other_cashew_healthy_01_healthy1001_.jpg",
+    "true_crop": "cashew",
+    "true_class": "cashew_healthy",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\Dataset for Crop Pest and Disease Detection\\Dataset for Crop Pest and Disease Detection\\Raw Data\\CCMT Dataset\\Cashew\\healthy\\healthy1001_.jpg",
+    "md5": "78755f71909586962fe8a5d38f344460"
+  },
+  {
+    "set": "othercrop",
+    "filename": "other_cashew_healthy_02_healthy1002_.jpg",
+    "path": "C:\\crop-data\\realtest\\othercrop\\other_cashew_healthy_02_healthy1002_.jpg",
+    "true_crop": "cashew",
+    "true_class": "cashew_healthy",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\Dataset for Crop Pest and Disease Detection\\Dataset for Crop Pest and Disease Detection\\Raw Data\\CCMT Dataset\\Cashew\\healthy\\healthy1002_.jpg",
+    "md5": "747b165e4f240ab47b62af60eb22b8a5"
+  },
+  {
+    "set": "othercrop",
+    "filename": "other_cashew_healthy_03_healthy1003_.jpg",
+    "path": "C:\\crop-data\\realtest\\othercrop\\other_cashew_healthy_03_healthy1003_.jpg",
+    "true_crop": "cashew",
+    "true_class": "cashew_healthy",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\Dataset for Crop Pest and Disease Detection\\Dataset for Crop Pest and Disease Detection\\Raw Data\\CCMT Dataset\\Cashew\\healthy\\healthy1003_.jpg",
+    "md5": "21630e1b3d189365c7dc1ceaea3f6320"
+  },
+  {
+    "set": "othercrop",
+    "filename": "other_cashew_healthy_04_healthy1004_.jpg",
+    "path": "C:\\crop-data\\realtest\\othercrop\\other_cashew_healthy_04_healthy1004_.jpg",
+    "true_crop": "cashew",
+    "true_class": "cashew_healthy",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\Dataset for Crop Pest and Disease Detection\\Dataset for Crop Pest and Disease Detection\\Raw Data\\CCMT Dataset\\Cashew\\healthy\\healthy1004_.jpg",
+    "md5": "64fc61ccca22c90a5927dc693a9029fa"
+  },
+  {
+    "set": "othercrop",
+    "filename": "other_cashew_healthy_05_healthy1005_.jpg",
+    "path": "C:\\crop-data\\realtest\\othercrop\\other_cashew_healthy_05_healthy1005_.jpg",
+    "true_crop": "cashew",
+    "true_class": "cashew_healthy",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\Dataset for Crop Pest and Disease Detection\\Dataset for Crop Pest and Disease Detection\\Raw Data\\CCMT Dataset\\Cashew\\healthy\\healthy1005_.jpg",
+    "md5": "906a1d0e1b730562fc558fc0be0416e1"
+  },
+  {
+    "set": "othercrop",
+    "filename": "other_cassava_brown spot_00_brown spot1000_.jpg",
+    "path": "C:\\crop-data\\realtest\\othercrop\\other_cassava_brown spot_00_brown spot1000_.jpg",
+    "true_crop": "cassava",
+    "true_class": "cassava_brown spot",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\Dataset for Crop Pest and Disease Detection\\Dataset for Crop Pest and Disease Detection\\Raw Data\\CCMT Dataset\\Cassava\\brown spot\\brown spot1000_.jpg",
+    "md5": "b021861254e9dc3a058c57a3a688c251"
+  },
+  {
+    "set": "othercrop",
+    "filename": "other_cassava_brown spot_01_brown spot1001_.jpg",
+    "path": "C:\\crop-data\\realtest\\othercrop\\other_cassava_brown spot_01_brown spot1001_.jpg",
+    "true_crop": "cassava",
+    "true_class": "cassava_brown spot",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\Dataset for Crop Pest and Disease Detection\\Dataset for Crop Pest and Disease Detection\\Raw Data\\CCMT Dataset\\Cassava\\brown spot\\brown spot1001_.jpg",
+    "md5": "f989af0a0e344f599d658feecf6798da"
+  },
+  {
+    "set": "othercrop",
+    "filename": "other_cassava_brown spot_02_brown spot1002_.jpg",
+    "path": "C:\\crop-data\\realtest\\othercrop\\other_cassava_brown spot_02_brown spot1002_.jpg",
+    "true_crop": "cassava",
+    "true_class": "cassava_brown spot",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\Dataset for Crop Pest and Disease Detection\\Dataset for Crop Pest and Disease Detection\\Raw Data\\CCMT Dataset\\Cassava\\brown spot\\brown spot1002_.jpg",
+    "md5": "5bcb4e8f94f67cbb0c673477cab2b22e"
+  },
+  {
+    "set": "othercrop",
+    "filename": "other_cassava_brown spot_03_brown spot1003_.jpg",
+    "path": "C:\\crop-data\\realtest\\othercrop\\other_cassava_brown spot_03_brown spot1003_.jpg",
+    "true_crop": "cassava",
+    "true_class": "cassava_brown spot",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\Dataset for Crop Pest and Disease Detection\\Dataset for Crop Pest and Disease Detection\\Raw Data\\CCMT Dataset\\Cassava\\brown spot\\brown spot1003_.jpg",
+    "md5": "433503e5a9427f06721d1e7ee267b27d"
+  },
+  {
+    "set": "othercrop",
+    "filename": "other_cassava_brown spot_04_brown spot1004_.jpg",
+    "path": "C:\\crop-data\\realtest\\othercrop\\other_cassava_brown spot_04_brown spot1004_.jpg",
+    "true_crop": "cassava",
+    "true_class": "cassava_brown spot",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\Dataset for Crop Pest and Disease Detection\\Dataset for Crop Pest and Disease Detection\\Raw Data\\CCMT Dataset\\Cassava\\brown spot\\brown spot1004_.jpg",
+    "md5": "4862ea4a459868a8f5826803b1274457"
+  },
+  {
+    "set": "othercrop",
+    "filename": "other_cassava_brown spot_05_brown spot1005_.jpg",
+    "path": "C:\\crop-data\\realtest\\othercrop\\other_cassava_brown spot_05_brown spot1005_.jpg",
+    "true_crop": "cassava",
+    "true_class": "cassava_brown spot",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\Dataset for Crop Pest and Disease Detection\\Dataset for Crop Pest and Disease Detection\\Raw Data\\CCMT Dataset\\Cassava\\brown spot\\brown spot1005_.jpg",
+    "md5": "4f132b1340de9dad89e3c76c6187ed84"
+  },
+  {
+    "set": "othercrop",
+    "filename": "other_cassava_mosaic_00_mosaic1000_.jpg",
+    "path": "C:\\crop-data\\realtest\\othercrop\\other_cassava_mosaic_00_mosaic1000_.jpg",
+    "true_crop": "cassava",
+    "true_class": "cassava_mosaic",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\Dataset for Crop Pest and Disease Detection\\Dataset for Crop Pest and Disease Detection\\Raw Data\\CCMT Dataset\\Cassava\\mosaic\\mosaic1000_.jpg",
+    "md5": "eb2f67182441aa99126e1a0928b7fc27"
+  },
+  {
+    "set": "othercrop",
+    "filename": "other_cassava_mosaic_01_mosaic1001_.jpg",
+    "path": "C:\\crop-data\\realtest\\othercrop\\other_cassava_mosaic_01_mosaic1001_.jpg",
+    "true_crop": "cassava",
+    "true_class": "cassava_mosaic",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\Dataset for Crop Pest and Disease Detection\\Dataset for Crop Pest and Disease Detection\\Raw Data\\CCMT Dataset\\Cassava\\mosaic\\mosaic1001_.jpg",
+    "md5": "3d91e6196e571f24fcee4c3fe344fed8"
+  },
+  {
+    "set": "othercrop",
+    "filename": "other_cassava_mosaic_02_mosaic1002_.jpg",
+    "path": "C:\\crop-data\\realtest\\othercrop\\other_cassava_mosaic_02_mosaic1002_.jpg",
+    "true_crop": "cassava",
+    "true_class": "cassava_mosaic",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\Dataset for Crop Pest and Disease Detection\\Dataset for Crop Pest and Disease Detection\\Raw Data\\CCMT Dataset\\Cassava\\mosaic\\mosaic1002_.jpg",
+    "md5": "8f70d793a908e2eb0f5d815a12e8d596"
+  },
+  {
+    "set": "othercrop",
+    "filename": "other_cassava_mosaic_03_mosaic1003_.jpg",
+    "path": "C:\\crop-data\\realtest\\othercrop\\other_cassava_mosaic_03_mosaic1003_.jpg",
+    "true_crop": "cassava",
+    "true_class": "cassava_mosaic",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\Dataset for Crop Pest and Disease Detection\\Dataset for Crop Pest and Disease Detection\\Raw Data\\CCMT Dataset\\Cassava\\mosaic\\mosaic1003_.jpg",
+    "md5": "2f48ce5d364965e91f6c0d686cb6b4ba"
+  },
+  {
+    "set": "othercrop",
+    "filename": "other_cassava_mosaic_04_mosaic1004_.jpg",
+    "path": "C:\\crop-data\\realtest\\othercrop\\other_cassava_mosaic_04_mosaic1004_.jpg",
+    "true_crop": "cassava",
+    "true_class": "cassava_mosaic",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\Dataset for Crop Pest and Disease Detection\\Dataset for Crop Pest and Disease Detection\\Raw Data\\CCMT Dataset\\Cassava\\mosaic\\mosaic1004_.jpg",
+    "md5": "3606ad360dff50750d749c502cab09de"
+  },
+  {
+    "set": "othercrop",
+    "filename": "other_cassava_mosaic_05_mosaic1005_.jpg",
+    "path": "C:\\crop-data\\realtest\\othercrop\\other_cassava_mosaic_05_mosaic1005_.jpg",
+    "true_crop": "cassava",
+    "true_class": "cassava_mosaic",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\Dataset for Crop Pest and Disease Detection\\Dataset for Crop Pest and Disease Detection\\Raw Data\\CCMT Dataset\\Cassava\\mosaic\\mosaic1005_.jpg",
+    "md5": "6fba260964334dccbdaf4f02dd0bce96"
+  },
+  {
+    "set": "othercrop",
+    "filename": "other_cassava_green mite_00_green mite1000_.jpg",
+    "path": "C:\\crop-data\\realtest\\othercrop\\other_cassava_green mite_00_green mite1000_.jpg",
+    "true_crop": "cassava",
+    "true_class": "cassava_green mite",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\Dataset for Crop Pest and Disease Detection\\Dataset for Crop Pest and Disease Detection\\Raw Data\\CCMT Dataset\\Cassava\\green mite\\green mite1000_.jpg",
+    "md5": "9d59b41713a7651628f4ec2de2402e67"
+  },
+  {
+    "set": "othercrop",
+    "filename": "other_cassava_green mite_01_green mite1001_.jpg",
+    "path": "C:\\crop-data\\realtest\\othercrop\\other_cassava_green mite_01_green mite1001_.jpg",
+    "true_crop": "cassava",
+    "true_class": "cassava_green mite",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\Dataset for Crop Pest and Disease Detection\\Dataset for Crop Pest and Disease Detection\\Raw Data\\CCMT Dataset\\Cassava\\green mite\\green mite1001_.jpg",
+    "md5": "beb39d2cea7fe35921c84446f4feff99"
+  },
+  {
+    "set": "othercrop",
+    "filename": "other_cassava_green mite_02_green mite1002_.jpg",
+    "path": "C:\\crop-data\\realtest\\othercrop\\other_cassava_green mite_02_green mite1002_.jpg",
+    "true_crop": "cassava",
+    "true_class": "cassava_green mite",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\Dataset for Crop Pest and Disease Detection\\Dataset for Crop Pest and Disease Detection\\Raw Data\\CCMT Dataset\\Cassava\\green mite\\green mite1002_.jpg",
+    "md5": "da15493b698f9e31e8b1e2dc4570259a"
+  },
+  {
+    "set": "othercrop",
+    "filename": "other_cassava_green mite_03_green mite1003_.jpg",
+    "path": "C:\\crop-data\\realtest\\othercrop\\other_cassava_green mite_03_green mite1003_.jpg",
+    "true_crop": "cassava",
+    "true_class": "cassava_green mite",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\Dataset for Crop Pest and Disease Detection\\Dataset for Crop Pest and Disease Detection\\Raw Data\\CCMT Dataset\\Cassava\\green mite\\green mite1003_.jpg",
+    "md5": "d50c7a179fe0e5305f4116d3a0c2a826"
+  },
+  {
+    "set": "othercrop",
+    "filename": "other_cassava_green mite_04_green mite1004_.jpg",
+    "path": "C:\\crop-data\\realtest\\othercrop\\other_cassava_green mite_04_green mite1004_.jpg",
+    "true_crop": "cassava",
+    "true_class": "cassava_green mite",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\Dataset for Crop Pest and Disease Detection\\Dataset for Crop Pest and Disease Detection\\Raw Data\\CCMT Dataset\\Cassava\\green mite\\green mite1004_.jpg",
+    "md5": "28fc97e3d581ecb7bfa15c48bf5dfcdb"
+  },
+  {
+    "set": "othercrop",
+    "filename": "other_cassava_green mite_05_green mite1005_.jpg",
+    "path": "C:\\crop-data\\realtest\\othercrop\\other_cassava_green mite_05_green mite1005_.jpg",
+    "true_crop": "cassava",
+    "true_class": "cassava_green mite",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\Dataset for Crop Pest and Disease Detection\\Dataset for Crop Pest and Disease Detection\\Raw Data\\CCMT Dataset\\Cassava\\green mite\\green mite1005_.jpg",
+    "md5": "0c9ec9956a816e3c00637c7731a81ddd"
+  },
+  {
+    "set": "othercrop",
+    "filename": "other_cassava_healthy_00_healthy1000_.jpg",
+    "path": "C:\\crop-data\\realtest\\othercrop\\other_cassava_healthy_00_healthy1000_.jpg",
+    "true_crop": "cassava",
+    "true_class": "cassava_healthy",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\Dataset for Crop Pest and Disease Detection\\Dataset for Crop Pest and Disease Detection\\Raw Data\\CCMT Dataset\\Cassava\\healthy\\healthy1000_.jpg",
+    "md5": "d94eaa20ee643ae8338d9da8014affc3"
+  },
+  {
+    "set": "othercrop",
+    "filename": "other_cassava_healthy_01_healthy1001_.jpg",
+    "path": "C:\\crop-data\\realtest\\othercrop\\other_cassava_healthy_01_healthy1001_.jpg",
+    "true_crop": "cassava",
+    "true_class": "cassava_healthy",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\Dataset for Crop Pest and Disease Detection\\Dataset for Crop Pest and Disease Detection\\Raw Data\\CCMT Dataset\\Cassava\\healthy\\healthy1001_.jpg",
+    "md5": "f4b6e1fe4cb05ee5d44f2f37e1f7757f"
+  },
+  {
+    "set": "othercrop",
+    "filename": "other_cassava_healthy_02_healthy1002_.jpg",
+    "path": "C:\\crop-data\\realtest\\othercrop\\other_cassava_healthy_02_healthy1002_.jpg",
+    "true_crop": "cassava",
+    "true_class": "cassava_healthy",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\Dataset for Crop Pest and Disease Detection\\Dataset for Crop Pest and Disease Detection\\Raw Data\\CCMT Dataset\\Cassava\\healthy\\healthy1002_.jpg",
+    "md5": "fbcdd003f3b8dafa311cba2b6c3d23ff"
+  },
+  {
+    "set": "othercrop",
+    "filename": "other_cassava_healthy_03_healthy1003_.jpg",
+    "path": "C:\\crop-data\\realtest\\othercrop\\other_cassava_healthy_03_healthy1003_.jpg",
+    "true_crop": "cassava",
+    "true_class": "cassava_healthy",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\Dataset for Crop Pest and Disease Detection\\Dataset for Crop Pest and Disease Detection\\Raw Data\\CCMT Dataset\\Cassava\\healthy\\healthy1003_.jpg",
+    "md5": "059086bbff3069dbcc60e31d082b67ce"
+  },
+  {
+    "set": "othercrop",
+    "filename": "other_cassava_healthy_04_healthy1004_.jpg",
+    "path": "C:\\crop-data\\realtest\\othercrop\\other_cassava_healthy_04_healthy1004_.jpg",
+    "true_crop": "cassava",
+    "true_class": "cassava_healthy",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\Dataset for Crop Pest and Disease Detection\\Dataset for Crop Pest and Disease Detection\\Raw Data\\CCMT Dataset\\Cassava\\healthy\\healthy1004_.jpg",
+    "md5": "79b4c95ce80a17b7a93319dc7bcdd247"
+  },
+  {
+    "set": "othercrop",
+    "filename": "other_cassava_healthy_05_healthy1005_.jpg",
+    "path": "C:\\crop-data\\realtest\\othercrop\\other_cassava_healthy_05_healthy1005_.jpg",
+    "true_crop": "cassava",
+    "true_class": "cassava_healthy",
+    "source": "C:\\Users\\<USERNAME>\\Downloads\\Dataset for Crop Pest and Disease Detection\\Dataset for Crop Pest and Disease Detection\\Raw Data\\CCMT Dataset\\Cassava\\healthy\\healthy1005_.jpg",
+    "md5": "c72b1efc9ed7ad946f323657c7e97bbb"
+  },
+  {
+    "set": "nocrop",
+    "filename": "nocrop_object_00_IMG_20220824_221131.jpg",
+    "path": "C:\\crop-data\\realtest\\nocrop\\nocrop_object_00_IMG_20220824_221131.jpg",
+    "true_crop": "none",
+    "true_class": "non_crop_object",
+    "source": "C:\\Users\\<USERNAME>\\OneDrive\\Pictures\\Camera imports\\2026-03-14\\IMG_20220824_221131.jpg",
+    "md5": "9dbc47c0c75711f9a01ce77b51a399f4"
+  },
+  {
+    "set": "nocrop",
+    "filename": "nocrop_object_01_IMG_20221002_220816.jpg",
+    "path": "C:\\crop-data\\realtest\\nocrop\\nocrop_object_01_IMG_20221002_220816.jpg",
+    "true_crop": "none",
+    "true_class": "non_crop_object",
+    "source": "C:\\Users\\<USERNAME>\\OneDrive\\Pictures\\Camera imports\\2026-03-14\\IMG_20221002_220816.jpg",
+    "md5": "9501c9001b83bbc5f07164d946732d19"
+  },
+  {
+    "set": "nocrop",
+    "filename": "nocrop_object_02_IMG_20221003_101723.jpg",
+    "path": "C:\\crop-data\\realtest\\nocrop\\nocrop_object_02_IMG_20221003_101723.jpg",
+    "true_crop": "none",
+    "true_class": "non_crop_object",
+    "source": "C:\\Users\\<USERNAME>\\OneDrive\\Pictures\\Camera imports\\2026-03-14\\IMG_20221003_101723.jpg",
+    "md5": "2d990b6648a4a0623920dcac6d354531"
+  },
+  {
+    "set": "nocrop",
+    "filename": "nocrop_object_03_IMG_20221003_225550.jpg",
+    "path": "C:\\crop-data\\realtest\\nocrop\\nocrop_object_03_IMG_20221003_225550.jpg",
+    "true_crop": "none",
+    "true_class": "non_crop_object",
+    "source": "C:\\Users\\<USERNAME>\\OneDrive\\Pictures\\Camera imports\\2026-03-14\\IMG_20221003_225550.jpg",
+    "md5": "d32f871dedd4ff5800cebd015194ddf4"
+  },
+  {
+    "set": "nocrop",
+    "filename": "nocrop_object_04_IMG_20221004_084454.jpg",
+    "path": "C:\\crop-data\\realtest\\nocrop\\nocrop_object_04_IMG_20221004_084454.jpg",
+    "true_crop": "none",
+    "true_class": "non_crop_object",
+    "source": "C:\\Users\\<USERNAME>\\OneDrive\\Pictures\\Camera imports\\2026-03-14\\IMG_20221004_084454.jpg",
+    "md5": "ac691dac69c29be1f1ad34da6021fa66"
+  },
+  {
+    "set": "nocrop",
+    "filename": "nocrop_object_05_IMG_20221005_185233.jpg",
+    "path": "C:\\crop-data\\realtest\\nocrop\\nocrop_object_05_IMG_20221005_185233.jpg",
+    "true_crop": "none",
+    "true_class": "non_crop_object",
+    "source": "C:\\Users\\<USERNAME>\\OneDrive\\Pictures\\Camera imports\\2026-03-14\\IMG_20221005_185233.jpg",
+    "md5": "f9c65333acc81eac7ec323dbbf1094e5"
+  },
+  {
+    "set": "nocrop",
+    "filename": "nocrop_object_06_IMG_20221005_185430.jpg",
+    "path": "C:\\crop-data\\realtest\\nocrop\\nocrop_object_06_IMG_20221005_185430.jpg",
+    "true_crop": "none",
+    "true_class": "non_crop_object",
+    "source": "C:\\Users\\<USERNAME>\\OneDrive\\Pictures\\Camera imports\\2026-03-14\\IMG_20221005_185430.jpg",
+    "md5": "54ed3cd77fd2f384a701a0f226164ab7"
+  },
+  {
+    "set": "nocrop",
+    "filename": "nocrop_object_07_IMG_20221005_185515.jpg",
+    "path": "C:\\crop-data\\realtest\\nocrop\\nocrop_object_07_IMG_20221005_185515.jpg",
+    "true_crop": "none",
+    "true_class": "non_crop_object",
+    "source": "C:\\Users\\<USERNAME>\\OneDrive\\Pictures\\Camera imports\\2026-03-14\\IMG_20221005_185515.jpg",
+    "md5": "f93b2d07479e9601b7b73ed93d3b5fb1"
+  },
+  {
+    "set": "nocrop",
+    "filename": "nocrop_object_08_IMG_20221005_185654.jpg",
+    "path": "C:\\crop-data\\realtest\\nocrop\\nocrop_object_08_IMG_20221005_185654.jpg",
+    "true_crop": "none",
+    "true_class": "non_crop_object",
+    "source": "C:\\Users\\<USERNAME>\\OneDrive\\Pictures\\Camera imports\\2026-03-14\\IMG_20221005_185654.jpg",
+    "md5": "6b888b5f3a14c665c25308966910f843"
+  },
+  {
+    "set": "nocrop",
+    "filename": "nocrop_object_09_IMG_20221005_185754.jpg",
+    "path": "C:\\crop-data\\realtest\\nocrop\\nocrop_object_09_IMG_20221005_185754.jpg",
+    "true_crop": "none",
+    "true_class": "non_crop_object",
+    "source": "C:\\Users\\<USERNAME>\\OneDrive\\Pictures\\Camera imports\\2026-03-14\\IMG_20221005_185754.jpg",
+    "md5": "2b4e03bc9b4ae2a8e775b2a56f3d7609"
+  },
+  {
+    "set": "nocrop",
+    "filename": "nocrop_object_10_IMG_20221005_185832.jpg",
+    "path": "C:\\crop-data\\realtest\\nocrop\\nocrop_object_10_IMG_20221005_185832.jpg",
+    "true_crop": "none",
+    "true_class": "non_crop_object",
+    "source": "C:\\Users\\<USERNAME>\\OneDrive\\Pictures\\Camera imports\\2026-03-14\\IMG_20221005_185832.jpg",
+    "md5": "fcb7f1de2f4b839272fcbab4f3511c84"
+  },
+  {
+    "set": "nocrop",
+    "filename": "nocrop_object_11_IMG_20221005_190241.jpg",
+    "path": "C:\\crop-data\\realtest\\nocrop\\nocrop_object_11_IMG_20221005_190241.jpg",
+    "true_crop": "none",
+    "true_class": "non_crop_object",
+    "source": "C:\\Users\\<USERNAME>\\OneDrive\\Pictures\\Camera imports\\2026-03-14\\IMG_20221005_190241.jpg",
+    "md5": "b1dd994fe6ad2c953048639931d1d9eb"
+  },
+  {
+    "set": "nocrop",
+    "filename": "nocrop_object_12_IMG_20221005_192034.jpg",
+    "path": "C:\\crop-data\\realtest\\nocrop\\nocrop_object_12_IMG_20221005_192034.jpg",
+    "true_crop": "none",
+    "true_class": "non_crop_object",
+    "source": "C:\\Users\\<USERNAME>\\OneDrive\\Pictures\\Camera imports\\2026-03-14\\IMG_20221005_192034.jpg",
+    "md5": "899288335b397fdb8f4be7982cdfb4cf"
+  },
+  {
+    "set": "nocrop",
+    "filename": "nocrop_object_13_IMG_20221005_192230.jpg",
+    "path": "C:\\crop-data\\realtest\\nocrop\\nocrop_object_13_IMG_20221005_192230.jpg",
+    "true_crop": "none",
+    "true_class": "non_crop_object",
+    "source": "C:\\Users\\<USERNAME>\\OneDrive\\Pictures\\Camera imports\\2026-03-14\\IMG_20221005_192230.jpg",
+    "md5": "5f7899df3de662bf634c6c3e5f82e660"
+  },
+  {
+    "set": "nocrop",
+    "filename": "nocrop_object_14_IMG_20221005_192625.jpg",
+    "path": "C:\\crop-data\\realtest\\nocrop\\nocrop_object_14_IMG_20221005_192625.jpg",
+    "true_crop": "none",
+    "true_class": "non_crop_object",
+    "source": "C:\\Users\\<USERNAME>\\OneDrive\\Pictures\\Camera imports\\2026-03-14\\IMG_20221005_192625.jpg",
+    "md5": "b8889b1df87355a6150051d17b8601b5"
+  },
+  {
+    "set": "nocrop",
+    "filename": "nocrop_object_15_IMG_20221005_203923.jpg",
+    "path": "C:\\crop-data\\realtest\\nocrop\\nocrop_object_15_IMG_20221005_203923.jpg",
+    "true_crop": "none",
+    "true_class": "non_crop_object",
+    "source": "C:\\Users\\<USERNAME>\\OneDrive\\Pictures\\Camera imports\\2026-03-14\\IMG_20221005_203923.jpg",
+    "md5": "88a8f5efb1800c057fae3f66e94fed5b"
+  },
+  {
+    "set": "nocrop",
+    "filename": "nocrop_object_16_IMG_20221005_203949.jpg",
+    "path": "C:\\crop-data\\realtest\\nocrop\\nocrop_object_16_IMG_20221005_203949.jpg",
+    "true_crop": "none",
+    "true_class": "non_crop_object",
+    "source": "C:\\Users\\<USERNAME>\\OneDrive\\Pictures\\Camera imports\\2026-03-14\\IMG_20221005_203949.jpg",
+    "md5": "503a8175627e272325e5310e9e7c3b07"
+  },
+  {
+    "set": "nocrop",
+    "filename": "nocrop_object_17_IMG_20221008_170509.jpg",
+    "path": "C:\\crop-data\\realtest\\nocrop\\nocrop_object_17_IMG_20221008_170509.jpg",
+    "true_crop": "none",
+    "true_class": "non_crop_object",
+    "source": "C:\\Users\\<USERNAME>\\OneDrive\\Pictures\\Camera imports\\2026-03-14\\IMG_20221008_170509.jpg",
+    "md5": "2aade392b7fd06682a700ec0593642af"
+  },
+  {
+    "set": "nocrop",
+    "filename": "nocrop_object_18_IMG_20221009_184929.jpg",
+    "path": "C:\\crop-data\\realtest\\nocrop\\nocrop_object_18_IMG_20221009_184929.jpg",
+    "true_crop": "none",
+    "true_class": "non_crop_object",
+    "source": "C:\\Users\\<USERNAME>\\OneDrive\\Pictures\\Camera imports\\2026-03-14\\IMG_20221009_184929.jpg",
+    "md5": "c1e5f765692f85df0bcd7db720765124"
+  },
+  {
+    "set": "nocrop",
+    "filename": "nocrop_object_19_IMG_20221009_214352.jpg",
+    "path": "C:\\crop-data\\realtest\\nocrop\\nocrop_object_19_IMG_20221009_214352.jpg",
+    "true_crop": "none",
+    "true_class": "non_crop_object",
+    "source": "C:\\Users\\<USERNAME>\\OneDrive\\Pictures\\Camera imports\\2026-03-14\\IMG_20221009_214352.jpg",
+    "md5": "41f0738dcd92ff6b39c091c32fd344cb"
+  },
+  {
+    "set": "nocrop",
+    "filename": "nocrop_object_20_IMG_20221010_154550.jpg",
+    "path": "C:\\crop-data\\realtest\\nocrop\\nocrop_object_20_IMG_20221010_154550.jpg",
+    "true_crop": "none",
+    "true_class": "non_crop_object",
+    "source": "C:\\Users\\<USERNAME>\\OneDrive\\Pictures\\Camera imports\\2026-03-14\\IMG_20221010_154550.jpg",
+    "md5": "29e54ab254c4f1a3090a0a716824e92f"
+  },
+  {
+    "set": "nocrop",
+    "filename": "nocrop_object_21_IMG_20221013_153449.jpg",
+    "path": "C:\\crop-data\\realtest\\nocrop\\nocrop_object_21_IMG_20221013_153449.jpg",
+    "true_crop": "none",
+    "true_class": "non_crop_object",
+    "source": "C:\\Users\\<USERNAME>\\OneDrive\\Pictures\\Camera imports\\2026-03-14\\IMG_20221013_153449.jpg",
+    "md5": "6865472689462efeae0e8e46ede1ad11"
+  },
+  {
+    "set": "nocrop",
+    "filename": "nocrop_object_22_IMG_20221013_215914.jpg",
+    "path": "C:\\crop-data\\realtest\\nocrop\\nocrop_object_22_IMG_20221013_215914.jpg",
+    "true_crop": "none",
+    "true_class": "non_crop_object",
+    "source": "C:\\Users\\<USERNAME>\\OneDrive\\Pictures\\Camera imports\\2026-03-14\\IMG_20221013_215914.jpg",
+    "md5": "ab8ebb2ba9b75932981d759a161520b7"
+  },
+  {
+    "set": "nocrop",
+    "filename": "nocrop_object_23_IMG_20221015_200935_1.jpg",
+    "path": "C:\\crop-data\\realtest\\nocrop\\nocrop_object_23_IMG_20221015_200935_1.jpg",
+    "true_crop": "none",
+    "true_class": "non_crop_object",
+    "source": "C:\\Users\\<USERNAME>\\OneDrive\\Pictures\\Camera imports\\2026-03-14\\IMG_20221015_200935_1.jpg",
+    "md5": "f69b3d6ec9416f815986fc85440308bb"
+  },
+  {
+    "set": "nocrop",
+    "filename": "nocrop_object_24_IMG_20221020_193531.jpg",
+    "path": "C:\\crop-data\\realtest\\nocrop\\nocrop_object_24_IMG_20221020_193531.jpg",
+    "true_crop": "none",
+    "true_class": "non_crop_object",
+    "source": "C:\\Users\\<USERNAME>\\OneDrive\\Pictures\\Camera imports\\2026-03-14\\IMG_20221020_193531.jpg",
+    "md5": "e68144e37d03da3a0dced691a96455bc"
+  },
+  {
+    "set": "nocrop",
+    "filename": "nocrop_object_25_IMG_20221020_193601.jpg",
+    "path": "C:\\crop-data\\realtest\\nocrop\\nocrop_object_25_IMG_20221020_193601.jpg",
+    "true_crop": "none",
+    "true_class": "non_crop_object",
+    "source": "C:\\Users\\<USERNAME>\\OneDrive\\Pictures\\Camera imports\\2026-03-14\\IMG_20221020_193601.jpg",
+    "md5": "b4b2b7ada3f45cae348a05405b22c92d"
+  },
+  {
+    "set": "nocrop",
+    "filename": "nocrop_object_26_IMG_20221022_164405.jpg",
+    "path": "C:\\crop-data\\realtest\\nocrop\\nocrop_object_26_IMG_20221022_164405.jpg",
+    "true_crop": "none",
+    "true_class": "non_crop_object",
+    "source": "C:\\Users\\<USERNAME>\\OneDrive\\Pictures\\Camera imports\\2026-03-14\\IMG_20221022_164405.jpg",
+    "md5": "c163b705c8af7b25d1f8016eb8e2c7b1"
+  },
+  {
+    "set": "nocrop",
+    "filename": "nocrop_object_27_IMG_20221022_183543.jpg",
+    "path": "C:\\crop-data\\realtest\\nocrop\\nocrop_object_27_IMG_20221022_183543.jpg",
+    "true_crop": "none",
+    "true_class": "non_crop_object",
+    "source": "C:\\Users\\<USERNAME>\\OneDrive\\Pictures\\Camera imports\\2026-03-14\\IMG_20221022_183543.jpg",
+    "md5": "1f3b9207153fe86075ba81b259862551"
+  },
+  {
+    "set": "nocrop",
+    "filename": "nocrop_object_28_IMG_20221022_183612.jpg",
+    "path": "C:\\crop-data\\realtest\\nocrop\\nocrop_object_28_IMG_20221022_183612.jpg",
+    "true_crop": "none",
+    "true_class": "non_crop_object",
+    "source": "C:\\Users\\<USERNAME>\\OneDrive\\Pictures\\Camera imports\\2026-03-14\\IMG_20221022_183612.jpg",
+    "md5": "43b47f5f295366aa5229fa51883eab6b"
+  },
+  {
+    "set": "nocrop",
+    "filename": "nocrop_object_29_IMG_20221024_190027.jpg",
+    "path": "C:\\crop-data\\realtest\\nocrop\\nocrop_object_29_IMG_20221024_190027.jpg",
+    "true_crop": "none",
+    "true_class": "non_crop_object",
+    "source": "C:\\Users\\<USERNAME>\\OneDrive\\Pictures\\Camera imports\\2026-03-14\\IMG_20221024_190027.jpg",
+    "md5": "84339d89119e201ea17c111da096c767"
+  },
+  {
+    "set": "screen",
+    "filename": "screen_01_tomato_septoria_actual_phone.jpg",
+    "path": "C:\\crop-data\\realtest\\screen\\screen_01_tomato_septoria_actual_phone.jpg",
+    "true_crop": "tomato",
+    "true_class": "screen_01_tomato_septoria_actual_phone",
+    "source": "C:\\crop-data\\realtest\\screen\\screen_01_tomato_septoria_actual_phone.jpg",
+    "md5": "b63b0ea04c204370582711a6e6574585"
+  },
+  {
+    "set": "screen",
+    "filename": "screen_02_rice_sheath_blight_000004_Rice_aug_0_125.jpg",
+    "path": "C:\\crop-data\\realtest\\screen\\screen_02_rice_sheath_blight_000004_Rice_aug_0_125.jpg",
+    "true_crop": "rice",
+    "true_class": "screen_02_rice_sheath_blight_000004_Rice_aug_0_125",
+    "source": "C:\\crop-data\\realtest\\screen\\screen_02_rice_sheath_blight_000004_Rice_aug_0_125.jpg",
+    "md5": "917613ebee3b622ac691d0dd232e98f4"
+  },
+  {
+    "set": "screen",
+    "filename": "screen_03_rice_healthy_000005_Rice_20231006_165518.jpg",
+    "path": "C:\\crop-data\\realtest\\screen\\screen_03_rice_healthy_000005_Rice_20231006_165518.jpg",
+    "true_crop": "rice",
+    "true_class": "screen_03_rice_healthy_000005_Rice_20231006_165518",
+    "source": "C:\\crop-data\\realtest\\screen\\screen_03_rice_healthy_000005_Rice_20231006_165518.jpg",
+    "md5": "25a228f7c94038f00f8dca1993138642"
+  },
+  {
+    "set": "screen",
+    "filename": "screen_04_cotton_bacterial_blight_000007_Cotton_bact101.jpg",
+    "path": "C:\\crop-data\\realtest\\screen\\screen_04_cotton_bacterial_blight_000007_Cotton_bact101.jpg",
+    "true_crop": "cotton",
+    "true_class": "screen_04_cotton_bacterial_blight_000007_Cotton_bact101",
+    "source": "C:\\crop-data\\realtest\\screen\\screen_04_cotton_bacterial_blight_000007_Cotton_bact101.jpg",
+    "md5": "a61c41726c4e407595d6920761b518ab"
+  },
+  {
+    "set": "screen",
+    "filename": "screen_05_cotton_fusarium_wilt_000008_Cotton_done14.jpg",
+    "path": "C:\\crop-data\\realtest\\screen\\screen_05_cotton_fusarium_wilt_000008_Cotton_done14.jpg",
+    "true_crop": "cotton",
+    "true_class": "screen_05_cotton_fusarium_wilt_000008_Cotton_done14",
+    "source": "C:\\crop-data\\realtest\\screen\\screen_05_cotton_fusarium_wilt_000008_Cotton_done14.jpg",
+    "md5": "499da5b7690ee08a57920761e270c93a"
+  },
+  {
+    "set": "screen",
+    "filename": "screen_06_cotton_leaf_curl_virus_000010_Cotton_curl102.jpg",
+    "path": "C:\\crop-data\\realtest\\screen\\screen_06_cotton_leaf_curl_virus_000010_Cotton_curl102.jpg",
+    "true_crop": "cotton",
+    "true_class": "screen_06_cotton_leaf_curl_virus_000010_Cotton_curl102",
+    "source": "C:\\crop-data\\realtest\\screen\\screen_06_cotton_leaf_curl_virus_000010_Cotton_curl102.jpg",
+    "md5": "b572dc7c7d254cb4c3b4e1d6754f928d"
+  },
+  {
+    "set": "screen",
+    "filename": "screen_07_cotton_healthy_000011_Cotton_h108.jpg",
+    "path": "C:\\crop-data\\realtest\\screen\\screen_07_cotton_healthy_000011_Cotton_h108.jpg",
+    "true_crop": "cotton",
+    "true_class": "screen_07_cotton_healthy_000011_Cotton_h108",
+    "source": "C:\\crop-data\\realtest\\screen\\screen_07_cotton_healthy_000011_Cotton_h108.jpg",
+    "md5": "506202696c36f3d5066e6bf38500dced"
+  },
+  {
+    "set": "screen",
+    "filename": "screen_08_chilli_leaf_curl_virus_000013_Curl_Virus00013.jpg",
+    "path": "C:\\crop-data\\realtest\\screen\\screen_08_chilli_leaf_curl_virus_000013_Curl_Virus00013.jpg",
+    "true_crop": "chilli",
+    "true_class": "screen_08_chilli_leaf_curl_virus_000013_Curl_Virus00013",
+    "source": "C:\\crop-data\\realtest\\screen\\screen_08_chilli_leaf_curl_virus_000013_Curl_Virus00013.jpg",
+    "md5": "e118b20a80dcaf47b5c9f7e089792fba"
+  },
+  {
+    "set": "screen",
+    "filename": "screen_09_chilli_nutrition_deficiency_000014_Nutrition_Deficiency00014.jpg",
+    "path": "C:\\crop-data\\realtest\\screen\\screen_09_chilli_nutrition_deficiency_000014_Nutrition_Deficiency00014.jpg",
+    "true_crop": "chilli",
+    "true_class": "screen_09_chilli_nutrition_deficiency_000014_Nutrition_Deficiency00014",
+    "source": "C:\\crop-data\\realtest\\screen\\screen_09_chilli_nutrition_deficiency_000014_Nutrition_Deficiency00014.jpg",
+    "md5": "27466f4ab761c8ff4f3581cdd5824563"
+  },
+  {
+    "set": "screen",
+    "filename": "screen_10_chilli_healthy_000016_Healthy_Leaf00016.jpg",
+    "path": "C:\\crop-data\\realtest\\screen\\screen_10_chilli_healthy_000016_Healthy_Leaf00016.jpg",
+    "true_crop": "chilli",
+    "true_class": "screen_10_chilli_healthy_000016_Healthy_Leaf00016",
+    "source": "C:\\crop-data\\realtest\\screen\\screen_10_chilli_healthy_000016_Healthy_Leaf00016.jpg",
+    "md5": "46833df536846676b0d4edcfa13ff613"
+  },
+  {
+    "set": "screen",
+    "filename": "screen_11_chilli_leaf_curl_virus_000017_Curl_Virus00017.jpg",
+    "path": "C:\\crop-data\\realtest\\screen\\screen_11_chilli_leaf_curl_virus_000017_Curl_Virus00017.jpg",
+    "true_crop": "chilli",
+    "true_class": "screen_11_chilli_leaf_curl_virus_000017_Curl_Virus00017",
+    "source": "C:\\crop-data\\realtest\\screen\\screen_11_chilli_leaf_curl_virus_000017_Curl_Virus00017.jpg",
+    "md5": "586f19bfd93aaab16b948733a0a2d00c"
+  },
+  {
+    "set": "screen",
+    "filename": "screen_12_tomato_yellow_leaf_curl_virus_000019_1037tomato_train_leaf_curl.jpg",
+    "path": "C:\\crop-data\\realtest\\screen\\screen_12_tomato_yellow_leaf_curl_virus_000019_1037tomato_train_leaf_curl.jpg",
+    "true_crop": "tomato",
+    "true_class": "screen_12_tomato_yellow_leaf_curl_virus_000019_1037tomato_train_leaf_curl",
+    "source": "C:\\crop-data\\realtest\\screen\\screen_12_tomato_yellow_leaf_curl_virus_000019_1037tomato_train_leaf_curl.jpg",
+    "md5": "d7350fc329a4b9318623cb058935df78"
+  },
+  {
+    "set": "screen",
+    "filename": "screen_13_tomato_septoria_leaf_spot_000020_1131tomato_train_septoria_leaf_spot.jpg",
+    "path": "C:\\crop-data\\realtest\\screen\\screen_13_tomato_septoria_leaf_spot_000020_1131tomato_train_septoria_leaf_spot.jpg",
+    "true_crop": "tomato",
+    "true_class": "screen_13_tomato_septoria_leaf_spot_000020_1131tomato_train_septoria_leaf_spot",
+    "source": "C:\\crop-data\\realtest\\screen\\screen_13_tomato_septoria_leaf_spot_000020_1131tomato_train_septoria_leaf_spot.jpg",
+    "md5": "6260d37f28b978ec11f73a38a572ebc6"
+  },
+  {
+    "set": "screen",
+    "filename": "screen_14_tomato_healthy_000022_1059tomato_train_healthy.jpg",
+    "path": "C:\\crop-data\\realtest\\screen\\screen_14_tomato_healthy_000022_1059tomato_train_healthy.jpg",
+    "true_crop": "tomato",
+    "true_class": "screen_14_tomato_healthy_000022_1059tomato_train_healthy",
+    "source": "C:\\crop-data\\realtest\\screen\\screen_14_tomato_healthy_000022_1059tomato_train_healthy.jpg",
+    "md5": "9727fd546c379dbd387d8dc6ea947ee8"
+  },
+  {
+    "set": "screen",
+    "filename": "screen_15_tomato_yellow_leaf_curl_virus_000023_1042tomato_train_leaf_curl.jpg",
+    "path": "C:\\crop-data\\realtest\\screen\\screen_15_tomato_yellow_leaf_curl_virus_000023_1042tomato_train_leaf_curl.jpg",
+    "true_crop": "tomato",
+    "true_class": "screen_15_tomato_yellow_leaf_curl_virus_000023_1042tomato_train_leaf_curl",
+    "source": "C:\\crop-data\\realtest\\screen\\screen_15_tomato_yellow_leaf_curl_virus_000023_1042tomato_train_leaf_curl.jpg",
+    "md5": "1245b002980489bc8f3f1b781807c5ce"
+  },
+  {
+    "set": "screen",
+    "filename": "screen_16_maize_common_rust_000025_Corn_Corn_Common_Rust__1072_.jpg",
+    "path": "C:\\crop-data\\realtest\\screen\\screen_16_maize_common_rust_000025_Corn_Corn_Common_Rust__1072_.jpg",
+    "true_crop": "maize",
+    "true_class": "screen_16_maize_common_rust_000025_Corn_Corn_Common_Rust__1072_",
+    "source": "C:\\crop-data\\realtest\\screen\\screen_16_maize_common_rust_000025_Corn_Corn_Common_Rust__1072_.jpg",
+    "md5": "c38d3a35f0e40aaa0efcc211c5c31851"
+  },
+  {
+    "set": "screen",
+    "filename": "screen_17_maize_gray_leaf_spot_000026_Corn_Corn_Gray_Spot__124_.jpg",
+    "path": "C:\\crop-data\\realtest\\screen\\screen_17_maize_gray_leaf_spot_000026_Corn_Corn_Gray_Spot__124_.jpg",
+    "true_crop": "maize",
+    "true_class": "screen_17_maize_gray_leaf_spot_000026_Corn_Corn_Gray_Spot__124_",
+    "source": "C:\\crop-data\\realtest\\screen\\screen_17_maize_gray_leaf_spot_000026_Corn_Corn_Gray_Spot__124_.jpg",
+    "md5": "0075adc87d98884b879f7ad291f2facd"
+  },
+  {
+    "set": "screen",
+    "filename": "screen_18_maize_northern_leaf_blight_000028_Corn_Corn_Blight__1043_.jpg",
+    "path": "C:\\crop-data\\realtest\\screen\\screen_18_maize_northern_leaf_blight_000028_Corn_Corn_Blight__1043_.jpg",
+    "true_crop": "maize",
+    "true_class": "screen_18_maize_northern_leaf_blight_000028_Corn_Corn_Blight__1043_",
+    "source": "C:\\crop-data\\realtest\\screen\\screen_18_maize_northern_leaf_blight_000028_Corn_Corn_Blight__1043_.jpg",
+    "md5": "c21cf9645c86356af90452ed17813542"
+  },
+  {
+    "set": "screen",
+    "filename": "screen_19_maize_healthy_000029_Corn_Corn_Health__1065_.jpg",
+    "path": "C:\\crop-data\\realtest\\screen\\screen_19_maize_healthy_000029_Corn_Corn_Health__1065_.jpg",
+    "true_crop": "maize",
+    "true_class": "screen_19_maize_healthy_000029_Corn_Corn_Health__1065_",
+    "source": "C:\\crop-data\\realtest\\screen\\screen_19_maize_healthy_000029_Corn_Corn_Health__1065_.jpg",
+    "md5": "04c854a42a21af6ab98dd1ab27acca6b"
+  },
+  {
+    "set": "screen",
+    "filename": "screen_20_rice_bacterial_leaf_blight_000031_Rice_aug_0_1313.jpg",
+    "path": "C:\\crop-data\\realtest\\screen\\screen_20_rice_bacterial_leaf_blight_000031_Rice_aug_0_1313.jpg",
+    "true_crop": "rice",
+    "true_class": "screen_20_rice_bacterial_leaf_blight_000031_Rice_aug_0_1313",
+    "source": "C:\\crop-data\\realtest\\screen\\screen_20_rice_bacterial_leaf_blight_000031_Rice_aug_0_1313.jpg",
+    "md5": "5d026b08e07a39aa6f0b9725fd5180ce"
+  }
+]
