@@ -36,23 +36,24 @@ object PromptBuilder {
             else -> ""
         }
 
-        val naturalRemedy = if (kbEntry.treatment.natural.isNotEmpty()) {
-            kbEntry.treatment.natural.take(1).joinToString("; ") { it.action.en }
+        val rawNatural = if (kbEntry.treatment.natural.isNotEmpty()) {
+            kbEntry.treatment.natural.first().action.en
         } else {
             "Field hygiene, crop rotation, and removing infected plant debris."
         }
+        val naturalRemedy = GuardrailFilter.sanitize(rawNatural).take(75)
 
         val chemicalActives = if (kbEntry.treatment.chemical.isNotEmpty()) {
-            kbEntry.treatment.chemical.take(1).joinToString("; ") { "${it.activeIngredient} (${it.productExample})" }
+            kbEntry.treatment.chemical.first().let { "${it.activeIngredient} (${it.productExample})" }.take(50)
         } else {
             "None recommended for current stage. Follow official guidelines."
         }
 
-        val urgentStep = kbEntry.immediateStep.en.ifEmpty { "Isolate infected plants and avoid overhead watering." }
+        val urgentStep = GuardrailFilter.sanitize(kbEntry.immediateStep.en).take(80).ifEmpty { "Isolate infected plants and avoid overhead watering." }
 
         val regionalAdviceObj = kbEntry.getRegionalAdvice(region)
         val regionalAdviceText = if (regionalAdviceObj.differs && !regionalAdviceObj.text?.en.isNullOrBlank()) {
-            "${regionalAdviceObj.source}: ${regionalAdviceObj.text?.en}"
+            "${regionalAdviceObj.source}: ${regionalAdviceObj.text?.en?.take(75)}"
         } else {
             "${regionalAdviceObj.source}: Standard management practices apply across all regions."
         }
@@ -82,7 +83,7 @@ object PromptBuilder {
         } else {
             "Routine Field Monitoring"
         }
-        val referralContact = "Local Krishi Vigyan Kendra (KVK) or Agriculture Extension Officer (Kisan Call Centre 1800-180-1551)"
+        val referralContact = "KVK or Kisan Call Centre 1800-180-1551"
 
         val regionFormatted = when (region.lowercase()) {
             "telangana" -> "Telangana"
@@ -91,7 +92,7 @@ object PromptBuilder {
         }
 
         return """<|begin_of_text|><|start_header_id|>system<|end_header_id|>
-You are Crop Doctor, an offline farm assistant.
+Crop Doctor offline assistant.
 - Explain in plain words for a smallholder farmer$langInstruction.
 - Use only the steps in the knowledge-base entry below.
 - Choose and order the ones relevant to this urgency.

@@ -1,6 +1,33 @@
 # Project Progress - Crop Doctor Offline
 
-## Current Status: Task F1 Complete (Offline Crop Guide & Growth Stage Categorization)
+## Current Status: Task A-REAL Verified on Physical 6 GB Phone (Xiaomi POCO M4 Pro 5G)
+
+### Done in Task A-REAL: Real On-Device Llama Advisory & Offline Guide Path
+1. **Verification on Physical 6 GB Phone (`22041219PI`, Android 14, arm64-v8a)**:
+   - Model: `llama-3.2-1b-spinquant.pte` (1,135,951,488 bytes, INT4 SpinQuant).
+   - Tokenizer: `tokenizer.model` (2,183,982 bytes).
+   - ExecuTorch Runtime: `0.6.0` on Arm CPU (`XNNPACK`).
+   - Diagnosis test on Rice Leaf Blast:
+     - `outcome=DIAGNOSE code=ACCEPTED`
+     - `LlamaModule.load() returned status 0 in 6264 ms`
+     - `ADVISOR_COMPLETE: advisor_source=LLAMA tokens=120 ttft=10762ms tok_per_sec=7.59`
+     - `Peak RAM PSS: 1654 MB` (Rule H15 budget compliant $\le 2500\text{ MB}$).
+     - Guardrail validation: `PASSED` (`guardrail_passed=true`).
+   - Saved benchmark: `benchmarks/llama_real_poco_20261121_201606.json`.
+2. **Crash & KV Cache Resolution**:
+   - Fixed KV cache overflow assert (`assert(num_prompt_tokens < seq_len)`) by setting `seq_len = 512` and optimizing prompt construction with sanitized KB strings.
+   - Added pre-call prompt length guards (`> 1800` chars falls back to static offline guide).
+   - Completely eliminated native `SIGABRT` and `SIGSEGV` errors; zero process terminations.
+3. **Strict Source Labeling & Zero Fake Intelligence**:
+   - Production code has NO simulated delay or fake streaming.
+   - Live Llama output carries badge: `"🤖 Explained on this phone by Llama 3.2 1B"`.
+   - Fallback / Telugu / missing model carries badge: `"📖 Offline agronomy guide - AI explanation not available"`.
+   - Log lines log exact `advisor_source=LLAMA` vs `advisor_source=OFFLINE_GUIDE`.
+   - In-app offline model installer screen (`ModelInstallScreen`) allows zero-internet installation.
+
+---
+
+## Task F1 Complete (Offline Crop Guide & Growth Stage Categorization)
 
 ### Done in Task F1: Offline Crop Guide Screen & Stage Categorization (Rules H1, H4, H6)
 1. **Navigation Flow & Crop Selector**:

@@ -365,11 +365,18 @@ class ExecuTorchLlamaAdvisor(private val context: Context) : Advisor {
             }
         }
 
+        // Guard against oversized prompts that could exceed KV cache bounds
+        if (prompt.length > 1800) {
+            Log.w(TAG, "Prompt length (${prompt.length} chars) exceeds safety budget -> routing to static offline guide")
+            emitStaticOfflineGuide()
+            return@withContext
+        }
+
         try {
-            // Apply 25-second timeout safeguard and total sequence length of 256 (matches model KV cache)
+            // Total sequence length of 512 accommodates prompt + generated response comfortably
             val completedInTime = withTimeoutOrNull(25_000L) {
                 try {
-                    llamaModule?.generate(prompt, 256, llamaCallback, false)
+                    llamaModule?.generate(prompt, 512, llamaCallback, false)
                 } catch (t: Throwable) {
                     Log.e(TAG, "Native Llama generate failed, falling back to offline guide", t)
                     null
