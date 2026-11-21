@@ -59,6 +59,7 @@ enum class AppScreen {
     WELCOME,
     HOME,
     CROP_SELECTION,
+    CROP_GUIDE_SELECT,
     CAMERA,
     RESULT,
     SAVE_CASE_REPORT,
@@ -201,6 +202,12 @@ class MainActivity : ComponentActivity() {
                             currentScreen = AppScreen.CROP_SELECTION
                         } else if (currentScreen == AppScreen.CROP_SELECTION) {
                             currentScreen = AppScreen.HOME
+                        } else if (currentScreen == AppScreen.CROP_GUIDE_SELECT) {
+                            currentScreen = AppScreen.HOME
+                        } else if (currentScreen == AppScreen.KNOWLEDGE_BASE) {
+                            currentScreen = AppScreen.CROP_GUIDE_SELECT
+                        } else if (currentScreen == AppScreen.DISEASE_DETAILS) {
+                            currentScreen = AppScreen.KNOWLEDGE_BASE
                         } else if (currentScreen == AppScreen.SAVE_CASE_REPORT) {
                             currentScreen = AppScreen.RESULT
                         } else if (currentScreen == AppScreen.INSTALL_MODEL) {
@@ -1137,6 +1144,57 @@ class MainActivity : ComponentActivity() {
                                 }
                                 "show_home" -> navigateTo(AppScreen.HOME)
                                 "show_camera" -> navigateTo(AppScreen.CAMERA)
+                                "show_crop_guide_select_en" -> {
+                                    switchLanguage("en")
+                                    navigateTo(AppScreen.CROP_GUIDE_SELECT)
+                                }
+                                "show_crop_guide_select_te" -> {
+                                    switchLanguage("te")
+                                    navigateTo(AppScreen.CROP_GUIDE_SELECT)
+                                }
+                                "show_crop_guide_select_hi" -> {
+                                    switchLanguage("hi")
+                                    navigateTo(AppScreen.CROP_GUIDE_SELECT)
+                                }
+                                "show_crop_guide_problems_en" -> {
+                                    selectedCrop = "rice"
+                                    switchLanguage("en")
+                                    navigateTo(AppScreen.KNOWLEDGE_BASE)
+                                }
+                                "show_crop_guide_problems_te" -> {
+                                    selectedCrop = "rice"
+                                    switchLanguage("te")
+                                    navigateTo(AppScreen.KNOWLEDGE_BASE)
+                                }
+                                "show_crop_guide_problems_hi" -> {
+                                    selectedCrop = "rice"
+                                    switchLanguage("hi")
+                                    navigateTo(AppScreen.KNOWLEDGE_BASE)
+                                }
+                                "show_crop_guide_details_en" -> {
+                                    KnowledgeBase.initialize(this@MainActivity)
+                                    val kb = KnowledgeBase.getEntry("rice_bacterial_leaf_blight")
+                                        ?: KnowledgeBase.getAllEntries().first()
+                                    selectedDetailEntry = kb
+                                    switchLanguage("en")
+                                    navigateTo(AppScreen.DISEASE_DETAILS)
+                                }
+                                "show_crop_guide_details_te" -> {
+                                    KnowledgeBase.initialize(this@MainActivity)
+                                    val kb = KnowledgeBase.getEntry("rice_bacterial_leaf_blight")
+                                        ?: KnowledgeBase.getAllEntries().first()
+                                    selectedDetailEntry = kb
+                                    switchLanguage("te")
+                                    navigateTo(AppScreen.DISEASE_DETAILS)
+                                }
+                                "show_crop_guide_details_hi" -> {
+                                    KnowledgeBase.initialize(this@MainActivity)
+                                    val kb = KnowledgeBase.getEntry("rice_bacterial_leaf_blight")
+                                        ?: KnowledgeBase.getAllEntries().first()
+                                    selectedDetailEntry = kb
+                                    switchLanguage("hi")
+                                    navigateTo(AppScreen.DISEASE_DETAILS)
+                                }
                             }
                         }
                         intent?.let { inIntent ->
@@ -1231,7 +1289,7 @@ class MainActivity : ComponentActivity() {
                             HomeScreen(
                                 language = selectedLanguage,
                                 onScanClick = { navigateTo(AppScreen.CROP_SELECTION) },
-                                onBrowseDiseasesClick = { navigateTo(AppScreen.KNOWLEDGE_BASE) },
+                                onBrowseDiseasesClick = { navigateTo(AppScreen.CROP_GUIDE_SELECT) },
                                 onFarmingTipsClick = { navigateTo(AppScreen.FARMING_TIPS) },
                                 onChangeLanguageClick = { newLang -> switchLanguage(newLang) },
                                 onMoreOptionsClick = { navigateTo(AppScreen.MORE_OPTIONS) },
@@ -1254,6 +1312,20 @@ class MainActivity : ComponentActivity() {
                                 onCropSelected = { crop ->
                                     selectedCrop = crop
                                     navigateTo(AppScreen.CAMERA)
+                                },
+                                onBackClick = { navigateTo(AppScreen.HOME) },
+                                onLanguageChange = { newLang -> switchLanguage(newLang) }
+                            )
+                        }
+
+                        AppScreen.CROP_GUIDE_SELECT -> {
+                            CropSelectionScreen(
+                                language = selectedLanguage,
+                                customTitle = stringResource(R.string.crop_guide_title),
+                                customSubtitle = stringResource(R.string.select_crop_guide_subtitle),
+                                onCropSelected = { crop ->
+                                    selectedCrop = crop
+                                    navigateTo(AppScreen.KNOWLEDGE_BASE)
                                 },
                                 onBackClick = { navigateTo(AppScreen.HOME) },
                                 onLanguageChange = { newLang -> switchLanguage(newLang) }
@@ -1390,16 +1462,18 @@ class MainActivity : ComponentActivity() {
                             DiseaseDetailsScreen(
                                 kbEntry = entry,
                                 language = selectedLanguage,
-                                onBackClick = { navigateTo(previousScreen) },
+                                onBackClick = { navigateTo(AppScreen.KNOWLEDGE_BASE) },
                                 onBackToHome = { navigateTo(AppScreen.HOME) }
                             )
                         }
 
                         AppScreen.KNOWLEDGE_BASE -> {
                             KnowledgeBaseScreen(
+                                crop = selectedCrop,
                                 language = selectedLanguage,
-                                onBackClick = { navigateTo(AppScreen.HOME) },
-                                onDiseaseClick = { entry ->
+                                onBackClick = { navigateTo(AppScreen.CROP_GUIDE_SELECT) },
+                                onChangeCropClick = { navigateTo(AppScreen.CROP_GUIDE_SELECT) },
+                                onProblemClick = { entry ->
                                     selectedDetailEntry = entry
                                     navigateTo(AppScreen.DISEASE_DETAILS)
                                 }

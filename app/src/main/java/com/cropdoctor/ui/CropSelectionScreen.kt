@@ -46,7 +46,9 @@ fun CropSelectionScreen(
     language: String,
     onCropSelected: (String) -> Unit,
     onBackClick: () -> Unit,
-    onLanguageChange: (String) -> Unit
+    onLanguageChange: (String) -> Unit,
+    customTitle: String? = null,
+    customSubtitle: String? = null
 ) {
     BackHandler { onBackClick() }
 
@@ -57,6 +59,9 @@ fun CropSelectionScreen(
         CropTileData("tomato", R.string.crop_tomato, R.drawable.ic_tile_tomato, "Tomato"),
         CropTileData("maize", R.string.crop_maize, R.drawable.ic_tile_maize, "Maize")
     )
+
+    val displayTitle = customTitle ?: stringResource(R.string.select_crop_title)
+    val displaySubtitle = customSubtitle ?: stringResource(R.string.select_crop_sub)
 
     Scaffold(
         topBar = {
@@ -82,7 +87,7 @@ fun CropSelectionScreen(
                     }
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = stringResource(R.string.select_crop_title),
+                        text = displayTitle,
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.White
@@ -126,16 +131,16 @@ fun CropSelectionScreen(
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            text = stringResource(R.string.select_crop_title),
+                            text = displayTitle,
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold,
                             color = FarmGreenDark
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            text = stringResource(R.string.select_crop_sub),
+                            text = displaySubtitle,
                             fontSize = 15.sp,
-                            color = Color(0xFF37474F),
+                            color = FarmGreenDark.copy(alpha = 0.85f),
                             lineHeight = 20.sp
                         )
                     }

@@ -60,6 +60,7 @@ data class KbEntry(
     val type: String,
     val pathogen: String,
     val names: LocalizedText,
+    val stage: String? = null,
     @SerialName("needs_expert_review") val needsExpertReview: Boolean = true,
     @SerialName("referral_threshold") val referralThreshold: String = "SEVERE",
     @SerialName("severity_advice") val severityAdvice: Map<String, LocalizedText> = emptyMap(),

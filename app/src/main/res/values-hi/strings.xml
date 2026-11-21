@@ -215,4 +215,21 @@
     <string name="no_chemical_advice">इस स्थिति के लिए किसी रासायनिक छिड़काव की आवश्यकता नहीं है।</string>
     <string name="follow_product_label">उत्पाद लेबल का पालन करें</string>
     <string name="chemical_safety_warning">सुरक्षात्मक कपड़े पहनें। हमेशा पंजीकृत उत्पाद लेबल निर्देशों और सुरक्षा दिशानिर्देशों का पालन करें।</string>
+
+    <!-- Task F1: Crop Guide Screen -->
+    <string name="crop_guide_title">फसल संदर्शिका</string>
+    <string name="problems_of_crop">%1$s की समस्याएं</string>
+    <string name="stage_seedling">अंकुर / नर्सरी अवस्था</string>
+    <string name="stage_vegetative">वानस्पतिक अवस्था</string>
+    <string name="stage_flowering">फूल आने की अवस्था</string>
+    <string name="stage_fruiting_grain_filling">फल / दाना भरने की अवस्था</string>
+    <string name="stage_any">किसी भी अवस्था में</string>
+    <string name="stage_all">सभी अवस्थाएं</string>
+    <string name="btn_view_all">सभी देखें</string>
+    <string name="btn_collapse">संक्षिप्त करें</string>
+    <string name="chip_disease">रोग</string>
+    <string name="chip_pest">कीट</string>
+    <string name="select_crop_guide_subtitle">रोगों और कीटों की जानकारी देखने के लिए फसल चुनें</string>
+    <string name="no_problems_for_stage">इस अवस्था के लिए कोई समस्या दर्ज नहीं है</string>
+    <string name="source_label">स्रोत: %1$s</string>
 </resources>
