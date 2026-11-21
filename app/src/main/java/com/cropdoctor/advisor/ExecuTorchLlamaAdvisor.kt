@@ -77,51 +77,52 @@ class ExecuTorchLlamaAdvisor(private val context: Context) : Advisor {
     fun findModelFiles() {
         Log.i(TAG, "findModelFiles() scanning for Llama 3.2 1B weights...")
 
-        // 1. Check in app's internal private storage (context.filesDir: /data/data/com.cropdoctor/files/)
+        val extFilesDir = context.getExternalFilesDir(null)
+
+        // 1. Discover all candidate model files (> 50 MB)
         val internalCandidates = context.filesDir.listFiles()?.filter {
             it.name.endsWith(".pte") && (it.name.contains("llama", ignoreCase = true) || it.name.contains("1b", ignoreCase = true) || it.name.contains("spinquant", ignoreCase = true))
         } ?: emptyList()
 
-        val internalModel = internalCandidates.maxByOrNull { it.length() } ?: File(context.filesDir, "llama-3.2-1b-spinquant.pte")
-        val internalTokenizer = File(context.filesDir, "tokenizer.model")
-
-        if (internalModel.exists() && internalModel.length() > 50_000_000L && internalTokenizer.exists() && internalTokenizer.length() > 100_000L) {
-            modelFile = internalModel
-            tokenizerFile = internalTokenizer
-            Log.i(TAG, "Located Llama 3.2 1B in internal filesDir: ${internalModel.absolutePath} (${internalModel.length() / (1024 * 1024)} MB)")
-            return
-        }
-
-        // 2. Check in app-specific external storage (context.getExternalFilesDir(null): /sdcard/Android/data/com.cropdoctor/files/)
-        val extFilesDir = context.getExternalFilesDir(null)
-        if (extFilesDir != null && extFilesDir.exists()) {
-            val extCandidates = extFilesDir.listFiles()?.filter {
+        val extCandidates = if (extFilesDir != null && extFilesDir.exists()) {
+            extFilesDir.listFiles()?.filter {
                 it.name.endsWith(".pte") && (it.name.contains("llama", ignoreCase = true) || it.name.contains("1b", ignoreCase = true) || it.name.contains("spinquant", ignoreCase = true))
             } ?: emptyList()
-            val extModel = extCandidates.maxByOrNull { it.length() } ?: File(extFilesDir, "llama-3.2-1b-spinquant.pte")
-            val extTokenizer = File(extFilesDir, "tokenizer.model")
+        } else emptyList()
 
-            if (extModel.exists() && extModel.length() > 50_000_000L && extTokenizer.exists() && extTokenizer.length() > 100_000L) {
-                modelFile = extModel
-                tokenizerFile = extTokenizer
-                Log.i(TAG, "Located Llama 3.2 1B in external filesDir: ${extModel.absolutePath} (${extModel.length() / (1024 * 1024)} MB)")
-                return
-            }
+        val allModelCandidates = (internalCandidates + extCandidates).filter { it.exists() && it.canRead() && it.length() > 50_000_000L }
+        var chosenModel = allModelCandidates.maxByOrNull { it.length() }
+
+        // 2. Discover all candidate tokenizer files (> 50 KB)
+        val candidateTokenizers = listOfNotNull(
+            File(context.filesDir, "tokenizer.model").takeIf { it.exists() && it.canRead() && it.length() > 50_000L },
+            if (extFilesDir != null) File(extFilesDir, "tokenizer.model").takeIf { it.exists() && it.canRead() && it.length() > 50_000L } else null
+        )
+        var chosenTokenizer = candidateTokenizers.firstOrNull()
+
+        // 3. Fallback to /data/local/tmp (Android 14 SELinux check: only if canRead() is permitted)
+        if (chosenModel == null) {
+            try {
+                val tmp = File("/data/local/tmp/llama-3.2-1b-spinquant.pte")
+                if (tmp.exists() && tmp.canRead() && tmp.length() > 50_000_000L) {
+                    chosenModel = tmp
+                }
+            } catch (ignored: Throwable) {}
+        }
+        if (chosenTokenizer == null) {
+            try {
+                val tmp = File("/data/local/tmp/tokenizer.model")
+                if (tmp.exists() && tmp.canRead() && tmp.length() > 50_000L) {
+                    chosenTokenizer = tmp
+                }
+            } catch (ignored: Throwable) {}
         }
 
-        // 3. Fallback to /data/local/tmp/ (Android 14 SELinux check: only if canRead() is permitted)
-        try {
-            val tmpModel = File("/data/local/tmp/llama-3.2-1b-spinquant.pte")
-            val tmpTokenizer = File("/data/local/tmp/tokenizer.model")
-            if (tmpModel.exists() && tmpModel.canRead() && tmpModel.length() > 50_000_000L &&
-                tmpTokenizer.exists() && tmpTokenizer.canRead() && tmpTokenizer.length() > 100_000L) {
-                modelFile = tmpModel
-                tokenizerFile = tmpTokenizer
-                Log.i(TAG, "Located Llama 3.2 1B in /data/local/tmp/: ${tmpModel.absolutePath} (${tmpModel.length() / (1024 * 1024)} MB)")
-                return
-            }
-        } catch (e: Throwable) {
-            Log.w(TAG, "Cannot access /data/local/tmp/ due to SELinux policy: ${e.message}")
+        if (chosenModel != null && chosenTokenizer != null) {
+            modelFile = chosenModel
+            tokenizerFile = chosenTokenizer
+            Log.i(TAG, "Located Llama 3.2 1B: model=${chosenModel.absolutePath} (${chosenModel.length() / (1024 * 1024)} MB), tok=${chosenTokenizer.absolutePath}")
+            return
         }
 
         modelFile = null
@@ -365,10 +366,10 @@ class ExecuTorchLlamaAdvisor(private val context: Context) : Advisor {
         }
 
         try {
-            // Apply 25-second timeout safeguard and total sequence length of 1024
+            // Apply 25-second timeout safeguard and total sequence length of 256 (matches model KV cache)
             val completedInTime = withTimeoutOrNull(25_000L) {
                 try {
-                    llamaModule?.generate(prompt, 1024, llamaCallback, false)
+                    llamaModule?.generate(prompt, 256, llamaCallback, false)
                 } catch (t: Throwable) {
                     Log.e(TAG, "Native Llama generate failed, falling back to offline guide", t)
                     null
