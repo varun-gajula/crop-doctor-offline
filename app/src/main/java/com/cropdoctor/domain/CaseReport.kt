@@ -37,7 +37,8 @@ data class CaseReport(
     val doseVerified: Boolean = false,
     val activeIngredient: String? = null,
     val productExample: String? = null,
-    val verifiedDose: String? = null
+    val verifiedDose: String? = null,
+    val advisorSource: String = "OFFLINE_GUIDE" // "LLAMA" or "OFFLINE_GUIDE" (Task A-REAL)
 )
 
 /**
@@ -67,7 +68,8 @@ object CaseReportRepository {
         doseVerified: Boolean = false,
         activeIngredient: String? = null,
         productExample: String? = null,
-        verifiedDose: String? = null
+        verifiedDose: String? = null,
+        advisorSource: String = "OFFLINE_GUIDE"
     ): CaseReport {
         val id = UUID.randomUUID().toString()
         val timestamp = System.currentTimeMillis()
@@ -107,7 +109,8 @@ object CaseReportRepository {
             doseVerified = doseVerified,
             activeIngredient = if (doseVerified) activeIngredient else null,
             productExample = if (doseVerified) productExample else null,
-            verifiedDose = if (doseVerified) verifiedDose else null
+            verifiedDose = if (doseVerified) verifiedDose else null,
+            advisorSource = advisorSource
         )
 
         val currentList = getAllCaseReports(context).toMutableList()
@@ -151,7 +154,8 @@ object CaseReportRepository {
                         doseVerified = obj.optBoolean("doseVerified", false),
                         activeIngredient = obj.optString("activeIngredient", "").ifEmpty { null },
                         productExample = obj.optString("productExample", "").ifEmpty { null },
-                        verifiedDose = obj.optString("verifiedDose", "").ifEmpty { null }
+                        verifiedDose = obj.optString("verifiedDose", "").ifEmpty { null },
+                        advisorSource = obj.optString("advisorSource", "OFFLINE_GUIDE")
                     )
                 )
             }
@@ -209,6 +213,7 @@ object CaseReportRepository {
                     put("activeIngredient", item.activeIngredient ?: "")
                     put("productExample", item.productExample ?: "")
                     put("verifiedDose", item.verifiedDose ?: "")
+                    put("advisorSource", item.advisorSource)
                 }
                 array.put(obj)
             }
@@ -239,6 +244,7 @@ object CaseReportRepository {
         }
         val photoStatus = if (!report.photoPath.isNullOrBlank()) "Attached" else "None"
         sb.appendLine("Photo: $photoStatus")
+        sb.appendLine("Advisor: ${report.advisorSource}")
         if (report.note.isNotBlank()) {
             val cleanNote = if (!report.doseVerified) GuardrailFilter.sanitize(report.note.trim()) else report.note.trim()
             sb.appendLine("Note: $cleanNote")

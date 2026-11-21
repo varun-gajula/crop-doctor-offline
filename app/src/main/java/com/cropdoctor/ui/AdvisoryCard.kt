@@ -18,14 +18,21 @@ import com.cropdoctor.advisor.OfflineAudioAdvisor
 import com.cropdoctor.ui.theme.FarmGreenDark
 import com.cropdoctor.ui.theme.FarmGreenPrimary
 
+/**
+ * Advisory Card displaying on-device guidance (Task A-REAL).
+ *
+ * Rules & Verifications:
+ * - When real Llama streams tokens: shows label "Explained on this phone by Llama 3.2 1B".
+ * - When real Llama cannot run (weights missing, low memory, load failure, Telugu): shows
+ *   static verified knowledge-base advice immediately with visible label:
+ *   "Offline guide - AI explanation not available", never typed out word by word and never labelled as AI.
+ */
 @Composable
 fun AdvisoryCard(
     advisoryText: String,
     isGenerating: Boolean,
     language: String,
-    isFake: Boolean = true,
-    isLowMemoryFallback: Boolean = false,
-    isOfflineGuideFallback: Boolean = false,
+    advisorSource: String = "OFFLINE_GUIDE", // "LLAMA" or "OFFLINE_GUIDE"
     audioAdvisor: OfflineAudioAdvisor? = null,
     onCancel: () -> Unit = {}
 ) {
@@ -43,6 +50,8 @@ fun AdvisoryCard(
     val isPaused = activeAdvisor.isPaused.value
     val currentSpeed = activeAdvisor.playbackSpeed.value
 
+    val isLlama = advisorSource == "LLAMA"
+
     val cancelLabel = when (language.lowercase()) {
         "te" -> "రద్దు చేయి"
         "hi" -> "रद्द करें"
@@ -52,24 +61,31 @@ fun AdvisoryCard(
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFF1F8E9)),
-        border = BorderStroke(1.5.dp, Color(0xFFC8E6C9)),
+        colors = CardDefaults.cardColors(
+            containerColor = if (isLlama) Color(0xFFF1F8E9) else Color(0xFFF4F7FB)
+        ),
+        border = BorderStroke(1.5.dp, if (isLlama) Color(0xFFC8E6C9) else Color(0xFFBBDEFB)),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
+            // Header Row
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "🤖 " + stringResource(R.string.advisory_card_title),
+                    text = if (isLlama) {
+                        "🤖 " + stringResource(R.string.advisory_card_title)
+                    } else {
+                        "📖 " + stringResource(R.string.advisory_card_title_offline)
+                    },
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
-                    color = FarmGreenPrimary
+                    color = if (isLlama) FarmGreenPrimary else Color(0xFF1565C0)
                 )
 
-                if (isGenerating) {
+                if (isGenerating && isLlama) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         TextButton(
                             onClick = onCancel,
@@ -90,7 +106,7 @@ fun AdvisoryCard(
                         )
                     }
                 } else if (advisoryText.isNotBlank()) {
-                    // Audio Playback Controls on Advisory Card (Requirement F10 / Task A1)
+                    // Audio Playback Controls
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(4.dp)
@@ -106,8 +122,8 @@ fun AdvisoryCard(
                                 )
                             },
                             colors = AssistChipDefaults.assistChipColors(
-                                containerColor = Color(0xFFE8F5E9),
-                                labelColor = FarmGreenDark
+                                containerColor = if (isLlama) Color(0xFFE8F5E9) else Color(0xFFE3F2FD),
+                                labelColor = if (isLlama) FarmGreenDark else Color(0xFF0D47A1)
                             ),
                             shape = RoundedCornerShape(8.dp),
                             modifier = Modifier.height(34.dp)
@@ -120,7 +136,6 @@ fun AdvisoryCard(
                                     isPlaying -> activeAdvisor.pause()
                                     isPaused -> activeAdvisor.resume()
                                     else -> {
-                                        val isLlama = !isOfflineGuideFallback && !isLowMemoryFallback && language.lowercase() != "te"
                                         activeAdvisor.playText(
                                             text = advisoryText,
                                             language = language,
@@ -130,7 +145,7 @@ fun AdvisoryCard(
                                 }
                             },
                             colors = ButtonDefaults.filledTonalButtonColors(
-                                containerColor = if (isPlaying) Color(0xFFFFCDD2) else Color(0xFFE8F5E9)
+                                containerColor = if (isPlaying) Color(0xFFFFCDD2) else (if (isLlama) Color(0xFFE8F5E9) else Color(0xFFE3F2FD))
                             ),
                             shape = RoundedCornerShape(10.dp),
                             contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp),
@@ -144,7 +159,7 @@ fun AdvisoryCard(
                                 },
                                 fontSize = 13.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = if (isPlaying) Color(0xFFC62828) else FarmGreenDark
+                                color = if (isPlaying) Color(0xFFC62828) else (if (isLlama) FarmGreenDark else Color(0xFF0D47A1))
                             )
                         }
 
@@ -166,10 +181,11 @@ fun AdvisoryCard(
 
             Spacer(modifier = Modifier.height(10.dp))
 
+            // Body text
             Text(
-                text = if (advisoryText.isEmpty() && isGenerating) {
+                text = if (advisoryText.isEmpty() && isGenerating && isLlama) {
                     stringResource(R.string.advisory_generating)
-                } else advisoryText + (if (isGenerating) " ▌" else ""),
+                } else advisoryText + (if (isGenerating && isLlama) " ▌" else ""),
                 fontSize = 17.sp,
                 color = Color(0xFF263238),
                 lineHeight = 24.sp
@@ -177,31 +193,27 @@ fun AdvisoryCard(
 
             Spacer(modifier = Modifier.height(12.dp))
 
+            // Visible source badge row (Rule A-REAL: truthful label)
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.End,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                if (isOfflineGuideFallback || isLowMemoryFallback || language.lowercase() == "te") {
+                Surface(
+                    shape = RoundedCornerShape(8.dp),
+                    color = if (isLlama) Color(0xFFE8F5E9) else Color(0xFFE3F2FD),
+                    border = BorderStroke(1.dp, if (isLlama) Color(0xFFA5D6A7) else Color(0xFF90CAF9))
+                ) {
                     Text(
-                        text = "Offline guide",
+                        text = if (isLlama) {
+                            stringResource(R.string.advisory_label_llama)
+                        } else {
+                            stringResource(R.string.advisory_label_offline_guide)
+                        },
                         fontSize = 12.sp,
                         fontWeight = FontWeight.SemiBold,
-                        color = Color(0xFF1565C0)
-                    )
-                } else if (isFake) {
-                    Text(
-                        text = "AI explanation",
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = Color(0xFF2E7D32)
-                    )
-                } else {
-                    Text(
-                        text = "AI explanation · Built with Llama 3.2 1B · ExecuTorch",
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = Color(0xFF2E7D32)
+                        color = if (isLlama) Color(0xFF2E7D32) else Color(0xFF1565C0),
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
                     )
                 }
             }

@@ -56,9 +56,7 @@ fun ResultScreen(
     onRegionChange: ((String) -> Unit)? = null,
     advisoryText: String,
     isGeneratingAdvice: Boolean,
-    isFakeAdvisor: Boolean = true,
-    isLowMemoryFallback: Boolean = false,
-    isOfflineGuideFallback: Boolean = false,
+    advisorSource: String = "OFFLINE_GUIDE",
     capturedBitmap: Bitmap? = null,
     onBackClick: () -> Unit,
     onChangeLanguageClick: (String) -> Unit = {},
@@ -68,7 +66,8 @@ fun ResultScreen(
     onSaveCaseReport: () -> Unit = {},
     onCancelAdvice: () -> Unit = {},
     onChangeCropClick: () -> Unit = {},
-    onTakeAnotherPhoto: () -> Unit = {}
+    onTakeAnotherPhoto: () -> Unit = {},
+    onInstallModelClick: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val scrollState = rememberScrollState()
@@ -1362,12 +1361,25 @@ fun ResultScreen(
                 advisoryText = filteredAdvisoryText,
                 isGenerating = isGeneratingAdvice,
                 language = language,
-                isFake = isFakeAdvisor,
-                isLowMemoryFallback = isLowMemoryFallback,
-                isOfflineGuideFallback = isOfflineGuideFallback,
+                advisorSource = advisorSource,
                 audioAdvisor = audioAdvisor,
                 onCancel = onCancelAdvice
             )
+
+            if (advisorSource != "LLAMA" && result.outcome == DiagnosisOutcome.DIAGNOSE) {
+                Spacer(modifier = Modifier.height(8.dp))
+                TextButton(
+                    onClick = onInstallModelClick,
+                    modifier = Modifier.align(Alignment.End)
+                ) {
+                    Text(
+                        text = "⚙️ " + stringResource(R.string.btn_install_ai_model),
+                        fontSize = 13.sp,
+                        color = Color(0xFF1565C0),
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+            }
         }
 
         // ACTION BUTTONS SECTION (Preserves old button hierarchy and styling)
@@ -1484,7 +1496,8 @@ fun ResultScreen(
                         reportBuilder.append("Crop: ${kbEntry.crop.replaceFirstChar { it.uppercase() }}\n")
                         reportBuilder.append("Diagnosis: ${kbEntry.names.forLanguage(language)}\n")
                         reportBuilder.append("Severity: ${result.severityBand.name}\n")
-                        reportBuilder.append("Certainty: ${result.certaintyBand.name} (${(result.confidence * 100).toInt()}%)\n\n")
+                        reportBuilder.append("Certainty: ${result.certaintyBand.name} (${(result.confidence * 100).toInt()}%)\n")
+                        reportBuilder.append("Advisor: $advisorSource\n\n")
 
                         val immediate = kbEntry.immediateStep.forLanguage(language)
                         if (immediate.isNotBlank() && !isUncertain) {

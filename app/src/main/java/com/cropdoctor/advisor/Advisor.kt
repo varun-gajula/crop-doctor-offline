@@ -8,6 +8,8 @@ interface Advisor {
     val isFake: Boolean get() = false
     val isLowMemoryFallback: Boolean get() = false
     val isFallbackToOfflineGuide: Boolean get() = false
+    val advisorSource: String get() = "OFFLINE_GUIDE"
+    val isModelAvailable: Boolean get() = false
 
     suspend fun generateAdvice(
         classId: String,

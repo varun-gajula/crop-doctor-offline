@@ -152,14 +152,33 @@ adb install -r app/build/outputs/apk/release/app-release.apk
 adb shell pm grant com.cropdoctor android.permission.CAMERA
 ```
 
-### 5.5 Optional: Push Llama Weights for On-Device LLM Advisory
-The vision model (`vision.pte`) is pre-bundled in the APK assets and functions immediately out of the box. To enable live Llama 3.2 1B-Instruct reasoning:
+### 5.5 Installing Llama 3.2 1B Model for Offline AI Explanations
+
+The vision model (`vision.pte`, 16.9 MB) is pre-bundled in the APK assets and functions immediately out of the box with zero setup.
+
+To enable on-device **Llama 3.2 1B-Instruct** explanations (which stream live on the Arm CPU via ExecuTorch INT4 SpinQuant):
+
+#### Method A: In-App Installer (Zero-ADB / Direct on Phone)
+1. Transfer `Llama-3.2-1B-Instruct-SpinQuant_INT4_EO8.pte` (~1.13 GB) and `tokenizer.model` (~2.18 MB) to the phone's storage (e.g. via USB cable, SD card, Bluetooth, or Nearby Share to `Downloads/`).
+2. Open **Crop Doctor** -> Tap **More Options (☰)** -> Tap **"Install AI Model (.pte)"** (or tap **"⚙️ Install AI Model (Offline)"** on any result screen).
+3. Tap **"Select Model File (.pte)"** and pick the `.pte` file using the Android system file picker.
+4. Tap **"Select Tokenizer (.model)"** and pick `tokenizer.model`.
+5. The app copies them to its private storage (`context.filesDir`), validates file sizes ($\ge 100\text{ MB}$ for model, $\ge 50\text{ KB}$ for tokenizer), and loads the model instantly without internet.
+
+#### Method B: Push via ADB (For Developers)
+On Android 14+, regular apps cannot access `/data/local/tmp` due to SELinux `untrusted_app` policy. Push directly to the app's external files directory (no root or `run-as` required):
 ```bash
-# Push 4-bit quantized Llama weights and tokenizer to app storage
-adb push llama-3.2-1b-spinquant.pte /data/data/com.cropdoctor/files/models/
-adb push tokenizer.model /data/data/com.cropdoctor/files/models/
+# Push 4-bit quantized Llama weights and tokenizer to app-specific storage
+adb push Llama-3.2-1B-Instruct-SpinQuant_INT4_EO8.pte /sdcard/Android/data/com.cropdoctor/files/llama-3.2-1b-spinquant.pte
+adb push tokenizer.model /sdcard/Android/data/com.cropdoctor/files/tokenizer.model
 ```
-*Note: If the Llama model files are not present on the device, Crop Doctor automatically provides the human-reviewed, verified Knowledge Base advice ("Offline guide") without error.*
+
+#### Verifiable Fallback Guarantee (Task A-REAL)
+- **Model Missing or Unloaded**: If the model files are not installed, memory is low, or language is Telugu (which Llama does not officially support), Crop Doctor immediately displays the verified Agronomy Knowledge Base text labeled:
+  `"Offline guide - AI explanation not available"`
+- **Model Running**: When Llama 3.2 1B streams tokens on device, the advisory card displays:
+  `"Explained on this phone by Llama 3.2 1B"`
+- Every case report and system log records the exact source (`advisor_source=LLAMA` or `advisor_source=OFFLINE_GUIDE`).
 
 ---
 
