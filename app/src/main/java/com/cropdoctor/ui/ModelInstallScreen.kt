@@ -71,25 +71,25 @@ fun ModelInstallScreen(
     val modelFileTmp = remember(refreshTrigger) { File("/data/local/tmp/llama-3.2-1b-spinquant.pte") }
     val tokenizerFileTmp = remember(refreshTrigger) { File("/data/local/tmp/tokenizer.model") }
 
-    val hasModel = (modelFileInternal.exists() && modelFileInternal.length() > 100_000_000L) ||
-            (modelFileExternal?.exists() == true && modelFileExternal.length() > 100_000_000L) ||
-            (modelFileTmp.exists() && modelFileTmp.canRead() && modelFileTmp.length() > 100_000_000L)
+    val hasModel = (modelFileInternal.exists() && modelFileInternal.length() > 50_000_000L) ||
+            (modelFileExternal?.exists() == true && modelFileExternal.length() > 50_000_000L) ||
+            (modelFileTmp.exists() && modelFileTmp.canRead() && modelFileTmp.length() > 50_000_000L)
 
     val hasTokenizer = (tokenizerFileInternal.exists() && tokenizerFileInternal.length() > 50_000L) ||
             (tokenizerFileExternal?.exists() == true && tokenizerFileExternal.length() > 50_000L) ||
             (tokenizerFileTmp.exists() && tokenizerFileTmp.canRead() && tokenizerFileTmp.length() > 50_000L)
 
     val modelSizeMb = when {
-        modelFileInternal.exists() -> modelFileInternal.length() / (1024 * 1024)
-        modelFileExternal?.exists() == true -> modelFileExternal.length() / (1024 * 1024)
-        modelFileTmp.exists() && modelFileTmp.canRead() -> modelFileTmp.length() / (1024 * 1024)
+        modelFileInternal.exists() && modelFileInternal.length() > 50_000_000L -> modelFileInternal.length() / (1024 * 1024)
+        modelFileExternal?.exists() == true && modelFileExternal.length() > 50_000_000L -> modelFileExternal.length() / (1024 * 1024)
+        modelFileTmp.exists() && modelFileTmp.canRead() && modelFileTmp.length() > 50_000_000L -> modelFileTmp.length() / (1024 * 1024)
         else -> 0L
     }
 
     val tokenizerSizeKb = when {
-        tokenizerFileInternal.exists() -> tokenizerFileInternal.length() / 1024
-        tokenizerFileExternal?.exists() == true -> tokenizerFileExternal.length() / 1024
-        tokenizerFileTmp.exists() && tokenizerFileTmp.canRead() -> tokenizerFileTmp.length() / 1024
+        tokenizerFileInternal.exists() && tokenizerFileInternal.length() > 50_000L -> tokenizerFileInternal.length() / 1024
+        tokenizerFileExternal?.exists() == true && tokenizerFileExternal.length() > 50_000L -> tokenizerFileExternal.length() / 1024
+        tokenizerFileTmp.exists() && tokenizerFileTmp.canRead() && tokenizerFileTmp.length() > 50_000L -> tokenizerFileTmp.length() / 1024
         else -> 0L
     }
 

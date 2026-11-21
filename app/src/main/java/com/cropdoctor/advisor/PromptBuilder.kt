@@ -37,37 +37,18 @@ object PromptBuilder {
         }
 
         val naturalRemedy = if (kbEntry.treatment.natural.isNotEmpty()) {
-            kbEntry.treatment.natural.take(2).joinToString("\n") { "• Step ${it.step}: ${it.action.en}" }
+            kbEntry.treatment.natural.take(1).joinToString("; ") { it.action.en }
         } else {
-            "• Field hygiene, crop rotation, and removing infected plant debris."
+            "Field hygiene, crop rotation, and removing infected plant debris."
         }
 
         val chemicalActives = if (kbEntry.treatment.chemical.isNotEmpty()) {
-            kbEntry.treatment.chemical.take(2).joinToString("\n") { "• ${it.activeIngredient} (${it.productExample}) [Dose: follow the product label]" }
+            kbEntry.treatment.chemical.take(1).joinToString("; ") { "${it.activeIngredient} (${it.productExample})" }
         } else {
-            "• None recommended for current stage. Follow official guidelines."
+            "None recommended for current stage. Follow official guidelines."
         }
-
-        val precautions = if (kbEntry.treatment.chemical.isNotEmpty()) {
-            kbEntry.treatment.chemical.mapNotNull { it.safetyLine.en.takeIf { s -> s.isNotBlank() } }.distinct().joinToString("; ")
-                .ifEmpty { "Wear protective gear, avoid spraying during high wind or mid-day heat, and follow waiting period (PHI)." }
-        } else {
-            "Wear protective gloves and mask when handling diseased plant tissues."
-        }
-
-        val isSevereOrActNow = severity.equals("SEVERE", ignoreCase = true) || urgency.contains("now", ignoreCase = true)
-        val referralStatus = if (isSevereOrActNow) {
-            "Immediate Referral Required"
-        } else {
-            "Routine Field Monitoring"
-        }
-        val referralContact = "Local Krishi Vigyan Kendra (KVK) or Agriculture Extension Officer (Kisan Call Centre 1800-180-1551)"
 
         val urgentStep = kbEntry.immediateStep.en.ifEmpty { "Isolate infected plants and avoid overhead watering." }
-        val sevAdviceText = kbEntry.severityAdvice[severity.uppercase()]?.en ?: kbEntry.explainText.en
-        val earlyWarningText = kbEntry.earlyWarningSigns.en.ifEmpty { "Watch for expanding spots, yellowing, or wilt." }
-        val preventionText = kbEntry.preventionAndFieldPractice.en.ifEmpty { "Follow clean field sanitation and balanced fertilization." }
-        val officerText = kbEntry.whenToCallExtensionOfficer.en.ifEmpty { referralContact }
 
         val regionalAdviceObj = kbEntry.getRegionalAdvice(region)
         val regionalAdviceText = if (regionalAdviceObj.differs && !regionalAdviceObj.text?.en.isNullOrBlank()) {
@@ -95,6 +76,14 @@ object PromptBuilder {
             else -> "55.0"
         }
 
+        val isSevereOrActNow = severity.equals("SEVERE", ignoreCase = true) || urgency.contains("now", ignoreCase = true)
+        val referralStatus = if (isSevereOrActNow) {
+            "Immediate Referral Required"
+        } else {
+            "Routine Field Monitoring"
+        }
+        val referralContact = "Local Krishi Vigyan Kendra (KVK) or Agriculture Extension Officer (Kisan Call Centre 1800-180-1551)"
+
         val regionFormatted = when (region.lowercase()) {
             "telangana" -> "Telangana"
             "andhra_pradesh", "andhra pradesh" -> "Andhra Pradesh"
@@ -102,10 +91,8 @@ object PromptBuilder {
         }
 
         return """<|begin_of_text|><|start_header_id|>system<|end_header_id|>
-You are Crop Doctor, an offline agricultural field assistant for smallholder farmers in India.
-Your mission is to explain the crop diagnosis clearly, practically, and calmly$langInstruction.
-Instructions:
-- Explain in plain words for a smallholder farmer (Grade-6 reading level, simple terms).
+You are Crop Doctor, an offline farm assistant.
+- Explain in plain words for a smallholder farmer$langInstruction.
 - Use only the steps in the knowledge-base entry below.
 - Choose and order the ones relevant to this urgency.
 - Mention what to watch in the coming days.
@@ -116,7 +103,6 @@ Output in three short parts:
 1. What I see:
 2. What to do now:
 3. When to get help:<|eot_id|><|start_header_id|>user<|end_header_id|>
-[CASE FINDING]
 - Crop: $crop
 - Problem: $diseaseName (${kbEntry.type})
 - Type: ${kbEntry.type}
@@ -125,22 +111,12 @@ Output in three short parts:
 - Field Spread: $fieldSpread
 - Region: $regionFormatted
 - Urgency Level: $urgency
-
-[APPROVED KNOWLEDGE-BASE ENTRY]
 - Immediate Cultural Step: $urgentStep
-- Severity Advice ($severity): $sevAdviceText
-- Early-Warning Signs to Watch: $earlyWarningText
-- Prevention & Field Practice: $preventionText
-- When to Call Extension Officer: $officerText
-- Natural / Cultural Methods:
-$naturalRemedy
-- Chemical Management Options (CIB&RC Registered):
-$chemicalActives
+- Natural / Cultural Methods: $naturalRemedy
+- Chemical Management Options (CIB&RC Registered): $chemicalActives
 - Regional Guidance ($regionFormatted): $regionalAdviceText
-- Precautions: $precautions
 - Official Referral Rule: $referralStatus ($referralContact)
-
-Explain what this problem is in plain words, what steps to take for this urgency level, and when to get help.<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+Explain practical steps for the farmer.<|eot_id|><|start_header_id|>assistant<|end_header_id|>
 """
     }
 }
