@@ -183,4 +183,35 @@ class CaseReportTest {
         assertFalse("Unverified report note must sanitize raw dosage number", shareText.contains("2.5 g/L"))
         assertTrue("Sanitized note replaces raw dose with label instruction", shareText.contains("follow the product label"))
     }
+
+    @Test
+    fun testCaseReportAdvisorSourceField() {
+        val reportLlama = CaseReport(
+            id = "case-adv-001",
+            dateString = "21 Nov 2026, 10:00 AM",
+            crop = "Tomato",
+            problemLabel = "Tomato Early Blight",
+            certaintyWord = "Sure",
+            severity = "Mild",
+            region = "Telangana",
+            advisorSource = "LLAMA"
+        )
+        assertEquals("LLAMA", reportLlama.advisorSource)
+        val shareTextLlama = CaseReportRepository.formatShareText(reportLlama)
+        assertTrue(shareTextLlama.contains("Advisor: LLAMA"))
+
+        val reportOffline = CaseReport(
+            id = "case-adv-002",
+            dateString = "21 Nov 2026, 10:05 AM",
+            crop = "Rice",
+            problemLabel = "Rice Blast",
+            certaintyWord = "Probably",
+            severity = "Moderate",
+            region = "Andhra Pradesh",
+            advisorSource = "OFFLINE_GUIDE"
+        )
+        assertEquals("OFFLINE_GUIDE", reportOffline.advisorSource)
+        val shareTextOffline = CaseReportRepository.formatShareText(reportOffline)
+        assertTrue(shareTextOffline.contains("Advisor: OFFLINE_GUIDE"))
+    }
 }

@@ -67,7 +67,8 @@ enum class AppScreen {
     MORE_OPTIONS,
     FARMING_TIPS,
     CHATBOT,
-    SCAN_HISTORY
+    SCAN_HISTORY,
+    INSTALL_MODEL
 }
 
 class MainActivity : ComponentActivity() {
@@ -140,6 +141,7 @@ class MainActivity : ComponentActivity() {
                     var isGeneratingAdvice by remember { mutableStateOf(false) }
                     var capturedLeafBitmap by remember { mutableStateOf<Bitmap?>(null) }
                     var currentFieldSpread by remember { mutableStateOf<com.cropdoctor.domain.RulesEngine.FieldSpread?>(null) }
+                    var debugAdvisorSourceOverride by remember { mutableStateOf<String?>(null) }
 
                     val app = application as CropDoctorApplication
 
@@ -200,6 +202,8 @@ class MainActivity : ComponentActivity() {
                             currentScreen = AppScreen.HOME
                         } else if (currentScreen == AppScreen.SAVE_CASE_REPORT) {
                             currentScreen = AppScreen.RESULT
+                        } else if (currentScreen == AppScreen.INSTALL_MODEL) {
+                            currentScreen = previousScreen
                         } else {
                             currentScreen = previousScreen
                         }
@@ -615,12 +619,17 @@ class MainActivity : ComponentActivity() {
                                 val filePath = intent.getStringExtra("file_path")
                                 val source = intent.getStringExtra("image_source") ?: "gallery"
                                 val cropHint = intent.getStringExtra("crop_hint") ?: "auto"
+                                val forceAdv = intent.getStringExtra("force_advisor_source")
+                                if (forceAdv != null) {
+                                    debugAdvisorSourceOverride = forceAdv
+                                }
                                 if (filePath != null) {
                                     try {
                                         val file = File(filePath)
                                         if (file.exists()) {
                                             val bytes = file.readBytes()
-                                            processImageBytes(bytes, source, cropHint, autoStartAdvisor = false, skipSoftWarning = true)
+                                            val autoStart = intent.getBooleanExtra("auto_start_advisor", true)
+                                            processImageBytes(bytes, source, cropHint, autoStartAdvisor = autoStart, skipSoftWarning = true)
                                         } else {
                                             Log.e("MainActivityBenchmark", "diagnose_file: file not found: $filePath")
                                         }
@@ -1086,9 +1095,7 @@ class MainActivity : ComponentActivity() {
                                     },
                                     advisoryText = advisoryText,
                                     isGeneratingAdvice = isGeneratingAdvice,
-                                    isFakeAdvisor = try { (application as CropDoctorApplication).advisor.isFake } catch (e: Exception) { true },
-                                    isLowMemoryFallback = try { (application as CropDoctorApplication).advisor.isLowMemoryFallback } catch (e: Exception) { false },
-                                    isOfflineGuideFallback = try { (application as CropDoctorApplication).advisor.isFallbackToOfflineGuide } catch (e: Exception) { false },
+                                    advisorSource = debugAdvisorSourceOverride ?: (application as CropDoctorApplication).advisor.advisorSource,
                                     capturedBitmap = capturedLeafBitmap,
                                     onBackClick = { navigateTo(AppScreen.HOME) },
                                     onChangeLanguageClick = { newLang -> switchLanguage(newLang) },
@@ -1124,7 +1131,8 @@ class MainActivity : ComponentActivity() {
                                         isGeneratingAdvice = false
                                     },
                                     onChangeCropClick = { navigateTo(AppScreen.CROP_SELECTION) },
-                                    onTakeAnotherPhoto = { navigateTo(AppScreen.CAMERA) }
+                                    onTakeAnotherPhoto = { navigateTo(AppScreen.CAMERA) },
+                                    onInstallModelClick = { navigateTo(AppScreen.INSTALL_MODEL) }
                                 )
                             } else {
                                 navigateTo(AppScreen.HOME)
@@ -1139,6 +1147,7 @@ class MainActivity : ComponentActivity() {
                                     language = selectedLanguage,
                                     region = selectedRegion,
                                     capturedBitmap = capturedLeafBitmap,
+                                    advisorSource = debugAdvisorSourceOverride ?: (application as CropDoctorApplication).advisor.advisorSource,
                                     onBackClick = { navigateTo(AppScreen.RESULT) },
                                     onViewSavedCases = { navigateTo(AppScreen.SCAN_HISTORY) }
                                 )
@@ -1186,7 +1195,15 @@ class MainActivity : ComponentActivity() {
                                 onFarmingTipsClick = { navigateTo(AppScreen.FARMING_TIPS) },
                                 onBrowseDiseasesClick = { navigateTo(AppScreen.KNOWLEDGE_BASE) },
                                 onChatbotClick = { navigateTo(AppScreen.CHATBOT) },
-                                onScanHistoryClick = { navigateTo(AppScreen.SCAN_HISTORY) }
+                                onScanHistoryClick = { navigateTo(AppScreen.SCAN_HISTORY) },
+                                onInstallModelClick = { navigateTo(AppScreen.INSTALL_MODEL) }
+                            )
+                        }
+
+                        AppScreen.INSTALL_MODEL -> {
+                            ModelInstallScreen(
+                                language = selectedLanguage,
+                                onBackClick = { navigateTo(previousScreen) }
                             )
                         }
 

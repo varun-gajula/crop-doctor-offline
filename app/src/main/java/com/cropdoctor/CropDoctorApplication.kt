@@ -6,7 +6,6 @@ import android.content.Context
 import android.util.Log
 import com.cropdoctor.advisor.Advisor
 import com.cropdoctor.advisor.ExecuTorchLlamaAdvisor
-import com.cropdoctor.advisor.FakeAdvisor
 import com.cropdoctor.knowledge.KnowledgeBase
 import com.cropdoctor.vision.Classifier
 import com.cropdoctor.vision.ExecuTorchClassifier

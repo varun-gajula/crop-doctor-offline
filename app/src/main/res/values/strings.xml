@@ -181,4 +181,19 @@
     <string name="outcome_out_of_class_message">Out of class. This does not match %1$s or one of the 20 problems we support. Choose the right crop or ask an extension officer.</string>
     <string name="btn_take_another_photo">Take another photo</string>
     <string name="btn_call_kisan_helpline">Call Extension Officer (1800-180-1551)</string>
+
+    <!-- Task A-REAL: Real Llama and Offline Guide Labels -->
+    <string name="advisory_label_llama">Explained on this phone by Llama 3.2 1B</string>
+    <string name="advisory_label_offline_guide">Offline guide - AI explanation not available</string>
+    <string name="advisory_card_title_offline">Offline Agronomy Guide</string>
+    <string name="model_install_title">Install AI Model (Offline)</string>
+    <string name="btn_install_ai_model">Install AI Model (Offline)</string>
+    <string name="model_install_desc">Load Llama 3.2 1B (.pte) and tokenizer (.model) from phone storage without internet to enable on-device AI explanations.</string>
+    <string name="model_file_label">Llama 3.2 1B Model (.pte)</string>
+    <string name="tokenizer_file_label">Tokenizer (.model)</string>
+    <string name="btn_select_model_file">Select Model File (.pte)</string>
+    <string name="btn_select_tokenizer_file">Select Tokenizer (.model)</string>
+    <string name="status_installed">Installed</string>
+    <string name="status_not_installed">Not Installed</string>
+    <string name="btn_remove_model_files">Remove Model Files (Test Offline Guide)</string>
 </resources>

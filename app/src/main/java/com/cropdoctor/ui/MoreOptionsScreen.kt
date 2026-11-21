@@ -46,7 +46,8 @@ fun MoreOptionsScreen(
     onFarmingTipsClick: () -> Unit,
     onBrowseDiseasesClick: () -> Unit,
     onChatbotClick: () -> Unit = {},
-    onScanHistoryClick: () -> Unit = {}
+    onScanHistoryClick: () -> Unit = {},
+    onInstallModelClick: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val scrollState = rememberScrollState()
@@ -205,21 +206,19 @@ fun MoreOptionsScreen(
                     }
                 )
 
-                // Import Llama 3.2 Model Fallback (Rule T5)
+                // Import Llama 3.2 Model Fallback (Rule T5 / Task A-REAL)
                 val hasLlamaModel = File(context.filesDir, "llama-3.2-1b-spinquant.pte").exists() || File("/data/local/tmp/llama-3.2-1b-spinquant.pte").exists()
                 MoreOptionItem(
                     icon = Icons.Default.CloudDownload,
                     iconBg = Color(0xFFFFF3E0),
                     iconTint = Color(0xFFE65100),
-                    title = when (language) { "te" -> "AI మోడల్ దిగుమతి (.pte)"; "hi" -> "AI मॉडल आयात करें (.pte)"; else -> "Import AI Model (.pte)" },
+                    title = when (language) { "te" -> "AI మోడల్ ఇన్‌స్టాలేషన్ (.pte)"; "hi" -> "AI मॉडल इंस्टॉल करें (.pte)"; else -> "Install AI Model (.pte)" },
                     subtitle = if (hasLlamaModel) {
                         when (language) { "te" -> "Llama 3.2 1B సిద్ధంగా ఉంది"; "hi" -> "Llama 3.2 1B तैयार है"; else -> "Llama 3.2 1B Installed" }
                     } else {
-                        when (language) { "te" -> ".pte లేదా tokenizer.model ఎంచుకోండి"; "hi" -> ".pte या tokenizer.model चुनें"; else -> "Select .pte or tokenizer.model" }
+                        when (language) { "te" -> ".pte & tokenizer.model ఇన్‌స్టాల్ చేయండి"; "hi" -> ".pte और tokenizer.model इंस्टॉल करें"; else -> "Install .pte & tokenizer.model" }
                     },
-                    onClick = {
-                        importModelLauncher.launch(arrayOf("*/*"))
-                    }
+                    onClick = onInstallModelClick
                 )
             }
 

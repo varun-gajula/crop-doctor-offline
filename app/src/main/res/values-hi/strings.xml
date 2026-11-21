@@ -181,4 +181,19 @@
     <string name="outcome_out_of_class_message">समर्थित वर्ग से बाहर। यह %1$s या हमारे द्वारा समर्थित 20 समस्याओं में से किसी से मेल नहीं खाता है। सही फसल चुनें या कृषि विस्तार अधिकारी से संपर्क करें।</string>
     <string name="btn_take_another_photo">दूसरी फोटो लें</string>
     <string name="btn_call_kisan_helpline">कृषि विस्तार अधिकारी को कॉल करें (1800-180-1551)</string>
+
+    <!-- Task A-REAL: Real Llama and Offline Guide Labels -->
+    <string name="advisory_label_llama">इस फ़ोन पर Llama 3.2 1B द्वारा समझाया गया</string>
+    <string name="advisory_label_offline_guide">ऑफ़लाइन गाइड - AI स्पष्टीकरण उपलब्ध नहीं है</string>
+    <string name="advisory_card_title_offline">ऑफ़लाइन कृषि गाइड</string>
+    <string name="model_install_title">AI मॉडल इंस्टॉल करें (ऑफ़लाइन)</string>
+    <string name="btn_install_ai_model">AI मॉडल इंस्टॉल करें (ऑफ़लाइन)</string>
+    <string name="model_install_desc">इंटरनेट के बिना ऑन-डिवाइस AI स्पष्टीकरण के लिए फ़ोन स्टोरेज से Llama 3.2 1B (.pte) और टोकनाइज़र (.model) फ़ाइलें लोड करें।</string>
+    <string name="model_file_label">Llama 3.2 1B मॉडल (.pte)</string>
+    <string name="tokenizer_file_label">टोकनाइज़र (.model)</string>
+    <string name="btn_select_model_file">मॉडल फ़ाइल चुनें (.pte)</string>
+    <string name="btn_select_tokenizer_file">टोकनाइज़र चुनें (.model)</string>
+    <string name="status_installed">इंस्टॉल किया गया</string>
+    <string name="status_not_installed">इंस्टॉल नहीं है</string>
+    <string name="btn_remove_model_files">मॉडल फ़ाइलें हटाएं (ऑफ़लाइन गाइड का परीक्षण करें)</string>
 </resources>

@@ -181,4 +181,19 @@
     <string name="outcome_out_of_class_message">ఈ సమస్య మద్దతు ఉన్న జాబితాలో లేదు. ఇది %1$s లేదా మేము గుర్తించే 20 సమస్యలలో దేనికీ సరిపోలడం లేదు. సరైన పంటను ఎంచుకోండి లేదా వ్యవసాయ విస్తరణ అధికారిని సంప్రదించండి.</string>
     <string name="btn_take_another_photo">మరొక ఫోటో తీయండి</string>
     <string name="btn_call_kisan_helpline">విస్తరణ అధికారికి కాల్ చేయండి (1800-180-1551)</string>
+
+    <!-- Task A-REAL: Real Llama and Offline Guide Labels -->
+    <string name="advisory_label_llama">ఈ ఫోన్‌లో Llama 3.2 1B ద్వారా వివరించబడింది</string>
+    <string name="advisory_label_offline_guide">ఆఫ్‌లైన్ గైడ్ - AI వివరణ అందుబాటులో లేదు</string>
+    <string name="advisory_card_title_offline">ఆఫ్‌లైన్ వ్యవసాయ మార్గదర్శి</string>
+    <string name="model_install_title">AI మోడల్‌ను ఇన్‌స్టాల్ చేయండి (ఆఫ్‌లైన్)</string>
+    <string name="btn_install_ai_model">AI మోడల్‌ను ఇన్‌స్టాల్ చేయండి (ఆఫ్‌లైన్)</string>
+    <string name="model_install_desc">ఇంటర్నెట్ లేకుండా ఆన్-డివైస్ AI వివరణల కోసం ఫోన్ స్టోరేజ్ నుండి Llama 3.2 1B (.pte) మరియు టోకనైజర్ (.model) ఫైళ్లను లోడ్ చేయండి.</string>
+    <string name="model_file_label">Llama 3.2 1B మోడల్ (.pte)</string>
+    <string name="tokenizer_file_label">టోకనైజర్ (.model)</string>
+    <string name="btn_select_model_file">మోడల్ ఫైల్‌ను ఎంచుకోండి (.pte)</string>
+    <string name="btn_select_tokenizer_file">టోకనైజర్‌ను ఎంచుకోండి (.model)</string>
+    <string name="status_installed">ఇన్‌స్టాల్ చేయబడింది</string>
+    <string name="status_not_installed">ఇన్‌స్టాల్ చేయబడలేదు</string>
+    <string name="btn_remove_model_files">మోడల్ ఫైళ్లను తొలగించండి (ఆఫ్‌లైన్ గైడ్‌ను పరీక్షించండి)</string>
 </resources>

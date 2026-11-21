@@ -47,6 +47,7 @@ fun SaveCaseReportScreen(
     language: String,
     region: String,
     capturedBitmap: Bitmap?,
+    advisorSource: String = "OFFLINE_GUIDE",
     onBackClick: () -> Unit,
     onViewSavedCases: () -> Unit
 ) {
@@ -263,6 +264,12 @@ fun SaveCaseReportScreen(
                         label = stringResource(R.string.report_region),
                         value = region.ifEmpty { "India" }
                     )
+                    HorizontalDivider(color = Color(0xFFEEEEEE))
+
+                    ReportDetailRow(
+                        label = "Advisor",
+                        value = if (advisorSource == "LLAMA") "Llama 3.2 1B (On-device)" else "Offline Guide"
+                    )
 
                     // Verified Treatment (Only shown if dose_verified is true per Rule H4 & F9)
                     if (verifiedChem != null) {
@@ -326,7 +333,8 @@ fun SaveCaseReportScreen(
                         doseVerified = verifiedChem != null,
                         activeIngredient = verifiedChem?.activeIngredient,
                         productExample = verifiedChem?.productExample,
-                        verifiedDose = verifiedChem?.dose
+                        verifiedDose = verifiedChem?.dose,
+                        advisorSource = advisorSource
                     )
                     savedReport = report
                     isSaved = true
@@ -369,7 +377,8 @@ fun SaveCaseReportScreen(
                         doseVerified = verifiedChem != null,
                         activeIngredient = verifiedChem?.activeIngredient,
                         productExample = verifiedChem?.productExample,
-                        verifiedDose = verifiedChem?.dose
+                        verifiedDose = verifiedChem?.dose,
+                        advisorSource = advisorSource
                     )
                     CaseReportRepository.shareCaseReport(context, reportToShare)
                 },

@@ -1,6 +1,27 @@
 # Project Progress - Crop Doctor Offline
 
-## Current Status: Tasks UI-RESTORE & BUG-CAPTURE Complete
+## Current Status: Tasks A-REAL, UI-RESTORE & BUG-CAPTURE Complete
+
+### Done in Task A-REAL: Real Verifiable Llama Runtime & Transparent Offline Fallback
+1. **Directory Discovery & SELinux Compatibility**:
+   - Fixed Android 14+ SELinux access violations on `/data/local/tmp` by introducing multi-tier directory discovery: (1) `context.filesDir` (internal private storage), (2) `context.getExternalFilesDir(null)` (`/sdcard/Android/data/com.cropdoctor/files/` - accessible by non-root `adb push` on all Android versions), and (3) `/data/local/tmp` guarded by `canRead()`.
+2. **Elimination of Fake Intelligence (Rule H11)**:
+   - Deleted `FakeAdvisor.kt` from production sources via `git rm`.
+   - Removed artificial `delay(30)` simulated word-by-word streaming loop.
+3. **Transparent UI Labels**:
+   - Real Llama streaming: Title `"🤖 AI Advisory"`, Badge `"Explained on this phone by Llama 3.2 1B"`.
+   - Offline fallback: Title `"📖 Offline Agronomy Guide"`, Badge `"Offline guide - AI explanation not available"`, Button `"⚙️ Install AI Model (Offline)"`.
+4. **Logcat & Case Report Audit Trail**:
+   - Logcat tag `CROPDOC_DECISION`: logs `ADVISOR_COMPLETE: advisor_source=LLAMA` or `advisor_source=OFFLINE_GUIDE` with tokens, ttft, tok_per_sec.
+   - `CaseReport` data class carries `advisorSource` (`"LLAMA"` or `"OFFLINE_GUIDE"`), serialized to JSON and exportable via WhatsApp / Android share sheet.
+5. **In-App Offline Model Installer (`ModelInstallScreen.kt`)**:
+   - Allows users to select `.pte` and `.model` files from local device storage without computer or internet.
+   - Size validation ($\ge 100\text{ MB}$, $\ge 50\text{ KB}$), presence status badges, and file removal option.
+6. **Artifact Audit**:
+   - Saved `benchmarks/a_real_check.md` with full audit table of historical screenshots/benchmarks, marking any unverified artifacts.
+   - Verified screenshots saved: `a_real_model_install_screen.png`, `a_real_model_installed_screen.png`, `a_real_label_offline_guide.png`, `a_real_label_llama.png`.
+
+---
 
 ### Done in Task BUG-CAPTURE: Shutter Stability & Crash/Hang Resolution
 1. **Root Cause Analysis & Proving**:

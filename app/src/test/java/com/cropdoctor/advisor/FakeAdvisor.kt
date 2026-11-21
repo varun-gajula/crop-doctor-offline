@@ -4,15 +4,17 @@ import com.cropdoctor.domain.CertaintyBand
 import com.cropdoctor.domain.RulesEngine
 import com.cropdoctor.domain.SeverityBand
 import com.cropdoctor.knowledge.KbEntry
-import kotlinx.coroutines.delay
 
 /**
- * FakeAdvisor enables UI testing, demonstration, and emulator development.
- * It simulates streaming token generation from Llama 3.2 1B with grounded, safe advice.
+ * FakeAdvisor exists ONLY in unit test/debug code (Task A-REAL).
+ * Used for automated unit tests without native ExecuTorch dependencies.
+ * Contains ZERO artificial delay streaming (delay(30) removed).
  */
 class FakeAdvisor : Advisor {
 
     override val isFake: Boolean = true
+    override val advisorSource: String = "OFFLINE_GUIDE"
+    override val isModelAvailable: Boolean = false
 
     override suspend fun generateAdvice(
         classId: String,
@@ -55,16 +57,9 @@ class FakeAdvisor : Advisor {
             kbEntry = kbEntry
         )
 
-        // Clean through GuardrailFilter
+        // Clean through GuardrailFilter and emit immediately without fake streaming
         val safeText = GuardrailFilter.sanitize(adviceText)
-
-        // Stream tokens word-by-word with ~30ms delay
-        val words = safeText.split(" ")
-        for (i in words.indices) {
-            val token = if (i == words.size - 1) words[i] else words[i] + " "
-            onToken(token)
-            delay(30)
-        }
+        onToken(safeText)
     }
 
     override fun close() {
