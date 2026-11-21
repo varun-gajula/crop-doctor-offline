@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.net.Uri
 import java.io.File
 import android.os.Bundle
 import android.util.Log
@@ -744,6 +745,30 @@ class MainActivity : ComponentActivity() {
                                 "lang_en" -> switchLanguage("en")
                                 "lang_te" -> switchLanguage("te")
                                 "lang_hi" -> switchLanguage("hi")
+                                "show_home_en" -> {
+                                    switchLanguage("en")
+                                    navigateTo(AppScreen.HOME)
+                                }
+                                "show_home_te" -> {
+                                    switchLanguage("te")
+                                    navigateTo(AppScreen.HOME)
+                                }
+                                "show_home_hi" -> {
+                                    switchLanguage("hi")
+                                    navigateTo(AppScreen.HOME)
+                                }
+                                "show_camera_en" -> {
+                                    switchLanguage("en")
+                                    navigateTo(AppScreen.CAMERA)
+                                }
+                                "show_camera_te" -> {
+                                    switchLanguage("te")
+                                    navigateTo(AppScreen.CAMERA)
+                                }
+                                "show_camera_hi" -> {
+                                    switchLanguage("hi")
+                                    navigateTo(AppScreen.CAMERA)
+                                }
                                 "show_crop_selection_en" -> {
                                     switchLanguage("en")
                                     navigateTo(AppScreen.CROP_SELECTION)
@@ -756,13 +781,14 @@ class MainActivity : ComponentActivity() {
                                     switchLanguage("hi")
                                     navigateTo(AppScreen.CROP_SELECTION)
                                 }
-                                "show_outcome_diagnose" -> {
+                                "show_outcome_diagnose", "show_outcome_diagnose_en" -> {
+                                    switchLanguage("en")
                                     KnowledgeBase.initialize(this@MainActivity)
                                     val kb = KnowledgeBase.getEntry("chilli_leaf_curl_virus")
                                         ?: KnowledgeBase.getAllEntries().first()
                                     val result = ClassifierResult(
                                         classId = "chilli_leaf_curl_virus",
-                                        displayName = kb.names.forLanguage(selectedLanguage),
+                                        displayName = kb.names.forLanguage("en"),
                                         confidence = 0.92f,
                                         severityBand = SeverityBand.MODERATE,
                                         certaintyBand = CertaintyBand.SURE,
@@ -781,7 +807,60 @@ class MainActivity : ComponentActivity() {
                                     activeKbEntry = kb
                                     navigateTo(AppScreen.RESULT)
                                 }
-                                "show_outcome_cant_tell" -> {
+                                "show_outcome_diagnose_te" -> {
+                                    switchLanguage("te")
+                                    KnowledgeBase.initialize(this@MainActivity)
+                                    val kb = KnowledgeBase.getEntry("chilli_leaf_curl_virus")
+                                        ?: KnowledgeBase.getAllEntries().first()
+                                    val result = ClassifierResult(
+                                        classId = "chilli_leaf_curl_virus",
+                                        displayName = kb.names.forLanguage("te"),
+                                        confidence = 0.92f,
+                                        severityBand = SeverityBand.MODERATE,
+                                        certaintyBand = CertaintyBand.SURE,
+                                        lesionFraction = 0.20f,
+                                        inferenceTimeMs = 84L,
+                                        memoryUsedMb = 120L,
+                                        isDemoMode = false,
+                                        selectedCrop = "chilli",
+                                        cropMass = 0.98f,
+                                        outcome = DiagnosisOutcome.DIAGNOSE,
+                                        outcomeReason = "ACCEPTED",
+                                        margin = 0.85f,
+                                        freeEnergy = -16.5
+                                    )
+                                    classifierResult = result
+                                    activeKbEntry = kb
+                                    navigateTo(AppScreen.RESULT)
+                                }
+                                "show_outcome_diagnose_hi" -> {
+                                    switchLanguage("hi")
+                                    KnowledgeBase.initialize(this@MainActivity)
+                                    val kb = KnowledgeBase.getEntry("chilli_leaf_curl_virus")
+                                        ?: KnowledgeBase.getAllEntries().first()
+                                    val result = ClassifierResult(
+                                        classId = "chilli_leaf_curl_virus",
+                                        displayName = kb.names.forLanguage("hi"),
+                                        confidence = 0.92f,
+                                        severityBand = SeverityBand.MODERATE,
+                                        certaintyBand = CertaintyBand.SURE,
+                                        lesionFraction = 0.20f,
+                                        inferenceTimeMs = 84L,
+                                        memoryUsedMb = 120L,
+                                        isDemoMode = false,
+                                        selectedCrop = "chilli",
+                                        cropMass = 0.98f,
+                                        outcome = DiagnosisOutcome.DIAGNOSE,
+                                        outcomeReason = "ACCEPTED",
+                                        margin = 0.85f,
+                                        freeEnergy = -16.5
+                                    )
+                                    classifierResult = result
+                                    activeKbEntry = kb
+                                    navigateTo(AppScreen.RESULT)
+                                }
+                                "show_outcome_cant_tell", "show_outcome_cant_tell_en" -> {
+                                    switchLanguage("en")
                                     val kb = KbEntry(
                                         classId = "unknown",
                                         index = -1,
@@ -815,7 +894,78 @@ class MainActivity : ComponentActivity() {
                                     activeKbEntry = kb
                                     navigateTo(AppScreen.RESULT)
                                 }
-                                "show_outcome_out_of_class" -> {
+                                "show_outcome_cant_tell_te" -> {
+                                    switchLanguage("te")
+                                    val kb = KbEntry(
+                                        classId = "unknown",
+                                        index = -1,
+                                        crop = "crop",
+                                        type = "unknown",
+                                        pathogen = "Unknown",
+                                        names = LocalizedText("Not sure", "ఖచ్చితంగా తెలియదు", "अनिश्चित स्थिति"),
+                                        referralThreshold = "MILD",
+                                        immediateStep = LocalizedText("", "", ""),
+                                        explainText = LocalizedText("", "", ""),
+                                        treatment = TreatmentPlan()
+                                    )
+                                    val result = ClassifierResult(
+                                        classId = "unknown",
+                                        displayName = "ఖచ్చితంగా తెలియదు",
+                                        confidence = 0.22f,
+                                        severityBand = SeverityBand.MILD,
+                                        certaintyBand = CertaintyBand.NOT_SURE,
+                                        lesionFraction = 0.0f,
+                                        inferenceTimeMs = 65L,
+                                        memoryUsedMb = 120L,
+                                        isDemoMode = false,
+                                        selectedCrop = selectedCrop,
+                                        cropMass = 0.15f,
+                                        outcome = DiagnosisOutcome.CANT_TELL,
+                                        outcomeReason = "HIGH_FREE_ENERGY(-5.4 > -8.0)",
+                                        margin = 0.05f,
+                                        freeEnergy = -5.4
+                                    )
+                                    classifierResult = result
+                                    activeKbEntry = kb
+                                    navigateTo(AppScreen.RESULT)
+                                }
+                                "show_outcome_cant_tell_hi" -> {
+                                    switchLanguage("hi")
+                                    val kb = KbEntry(
+                                        classId = "unknown",
+                                        index = -1,
+                                        crop = "crop",
+                                        type = "unknown",
+                                        pathogen = "Unknown",
+                                        names = LocalizedText("Not sure", "ఖచ్చితంగా తెలియదు", "अनिश्चित स्थिति"),
+                                        referralThreshold = "MILD",
+                                        immediateStep = LocalizedText("", "", ""),
+                                        explainText = LocalizedText("", "", ""),
+                                        treatment = TreatmentPlan()
+                                    )
+                                    val result = ClassifierResult(
+                                        classId = "unknown",
+                                        displayName = "अनिश्चित स्थिति",
+                                        confidence = 0.22f,
+                                        severityBand = SeverityBand.MILD,
+                                        certaintyBand = CertaintyBand.NOT_SURE,
+                                        lesionFraction = 0.0f,
+                                        inferenceTimeMs = 65L,
+                                        memoryUsedMb = 120L,
+                                        isDemoMode = false,
+                                        selectedCrop = selectedCrop,
+                                        cropMass = 0.15f,
+                                        outcome = DiagnosisOutcome.CANT_TELL,
+                                        outcomeReason = "HIGH_FREE_ENERGY(-5.4 > -8.0)",
+                                        margin = 0.05f,
+                                        freeEnergy = -5.4
+                                    )
+                                    classifierResult = result
+                                    activeKbEntry = kb
+                                    navigateTo(AppScreen.RESULT)
+                                }
+                                "show_outcome_out_of_class", "show_outcome_out_of_class_en" -> {
+                                    switchLanguage("en")
                                     val kb = KbEntry(
                                         classId = "out_of_class",
                                         index = -1,
@@ -831,6 +981,76 @@ class MainActivity : ComponentActivity() {
                                     val result = ClassifierResult(
                                         classId = "out_of_class",
                                         displayName = "Out of class - plant does not match",
+                                        confidence = 0.42f,
+                                        severityBand = SeverityBand.MILD,
+                                        certaintyBand = CertaintyBand.NOT_SURE,
+                                        lesionFraction = 0.0f,
+                                        inferenceTimeMs = 70L,
+                                        memoryUsedMb = 120L,
+                                        isDemoMode = false,
+                                        selectedCrop = selectedCrop,
+                                        cropMass = 0.18f,
+                                        outcome = DiagnosisOutcome.OUT_OF_CLASS,
+                                        outcomeReason = "LOW_CROP_MASS(0.18 < 0.60)",
+                                        margin = 0.10f,
+                                        freeEnergy = -12.3
+                                    )
+                                    classifierResult = result
+                                    activeKbEntry = kb
+                                    navigateTo(AppScreen.RESULT)
+                                }
+                                "show_outcome_out_of_class_te" -> {
+                                    switchLanguage("te")
+                                    val kb = KbEntry(
+                                        classId = "out_of_class",
+                                        index = -1,
+                                        crop = selectedCrop,
+                                        type = "out_of_class",
+                                        pathogen = "Unsupported / Out of Class",
+                                        names = LocalizedText("Out of class", "గుర్తించిన పంట సమస్య కాదు", "समर्थित वर्ग से बाहर"),
+                                        referralThreshold = "MILD",
+                                        immediateStep = LocalizedText("", "", ""),
+                                        explainText = LocalizedText("", "", ""),
+                                        treatment = TreatmentPlan()
+                                    )
+                                    val result = ClassifierResult(
+                                        classId = "out_of_class",
+                                        displayName = "గుర్తించిన పంట సమస్య కాదు",
+                                        confidence = 0.42f,
+                                        severityBand = SeverityBand.MILD,
+                                        certaintyBand = CertaintyBand.NOT_SURE,
+                                        lesionFraction = 0.0f,
+                                        inferenceTimeMs = 70L,
+                                        memoryUsedMb = 120L,
+                                        isDemoMode = false,
+                                        selectedCrop = selectedCrop,
+                                        cropMass = 0.18f,
+                                        outcome = DiagnosisOutcome.OUT_OF_CLASS,
+                                        outcomeReason = "LOW_CROP_MASS(0.18 < 0.60)",
+                                        margin = 0.10f,
+                                        freeEnergy = -12.3
+                                    )
+                                    classifierResult = result
+                                    activeKbEntry = kb
+                                    navigateTo(AppScreen.RESULT)
+                                }
+                                "show_outcome_out_of_class_hi" -> {
+                                    switchLanguage("hi")
+                                    val kb = KbEntry(
+                                        classId = "out_of_class",
+                                        index = -1,
+                                        crop = selectedCrop,
+                                        type = "out_of_class",
+                                        pathogen = "Unsupported / Out of Class",
+                                        names = LocalizedText("Out of class", "గుర్తించిన పంట సమస్య కాదు", "समर्थित वर्ग से बाहर"),
+                                        referralThreshold = "MILD",
+                                        immediateStep = LocalizedText("", "", ""),
+                                        explainText = LocalizedText("", "", ""),
+                                        treatment = TreatmentPlan()
+                                    )
+                                    val result = ClassifierResult(
+                                        classId = "out_of_class",
+                                        displayName = "समर्थित वर्ग से बाहर",
                                         confidence = 0.42f,
                                         severityBand = SeverityBand.MILD,
                                         certaintyBand = CertaintyBand.NOT_SURE,
@@ -1015,7 +1235,16 @@ class MainActivity : ComponentActivity() {
                                 onFarmingTipsClick = { navigateTo(AppScreen.FARMING_TIPS) },
                                 onChangeLanguageClick = { newLang -> switchLanguage(newLang) },
                                 onMoreOptionsClick = { navigateTo(AppScreen.MORE_OPTIONS) },
-                                onChatbotClick = { navigateTo(AppScreen.CHATBOT) }
+                                onChatbotClick = { navigateTo(AppScreen.CHATBOT) },
+                                onSavedReportsClick = { navigateTo(AppScreen.SCAN_HISTORY) },
+                                onHelpOfficerClick = {
+                                    try {
+                                        val dialIntent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:18001801551"))
+                                        startActivity(dialIntent)
+                                    } catch (e: Exception) {
+                                        Log.e("MainActivity", "Failed to launch dialer", e)
+                                    }
+                                }
                             )
                         }
 

@@ -112,6 +112,7 @@
     <string name="ai_explanation_label">AI explanation</string>
     <string name="btn_listen">Listen</string>
     <string name="btn_pause">Pause</string>
+    <string name="btn_resume">Resume</string>
     <string name="btn_stop">Stop</string>
     <string name="voice_not_installed">Voice not installed</string>
     <string name="voice_install_guide">Voice data for this language is not installed on your phone. To install it once for offline use:\n\n1. Open Android Settings → System → Languages &amp; input → Text-to-speech output.\n2. Tap Settings icon next to Preferred engine → Install voice data.\n3. Download speech data for this language.</string>
@@ -196,4 +197,22 @@
     <string name="status_installed">Installed</string>
     <string name="status_not_installed">Not Installed</string>
     <string name="btn_remove_model_files">Remove Model Files (Test Offline Guide)</string>
+
+    <!-- Task U1: Accessible Home & Result Screen UI -->
+    <string name="home_crop_guide">Crop guide</string>
+    <string name="home_crop_guide_sub">Learn about crops and diseases</string>
+    <string name="home_saved_reports">Saved reports</string>
+    <string name="home_saved_reports_sub">View past scan records</string>
+    <string name="home_help_officer">Help from extension officer</string>
+    <string name="home_help_officer_sub">Toll-free Kisan Call Centre (1800-180-1551)</string>
+    <string name="section_what_it_is">What it is</string>
+    <string name="section_what_to_do_now">What to do now</string>
+    <string name="section_prevention">Prevention</string>
+    <string name="section_natural">Natural &amp; Traditional</string>
+    <string name="section_chemical">Chemical (Advanced)</string>
+    <string name="btn_call_officer">Call extension officer (1800-180-1551)</string>
+    <string name="no_treatment_needed_healthy">Crop is healthy. No treatment needed. Continue good crop practices.</string>
+    <string name="no_chemical_advice">No chemical spray needed for this condition.</string>
+    <string name="follow_product_label">Follow product label</string>
+    <string name="chemical_safety_warning">Wear protective clothing. Always follow the registered product label instructions and safety directions.</string>
 </resources>

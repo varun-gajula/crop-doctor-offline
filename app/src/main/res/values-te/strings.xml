@@ -112,6 +112,7 @@
     <string name="ai_explanation_label">AI వివరణ</string>
     <string name="btn_listen">వినండి</string>
     <string name="btn_pause">పాజ్</string>
+    <string name="btn_resume">పునఃప్రారంభించు</string>
     <string name="btn_stop">ఆపండి</string>
     <string name="voice_not_installed">వాయిస్ ఇన్‌స్టాల్ చేయబడలేదు</string>
     <string name="voice_install_guide">ఈ భాషకు వాయిస్ డేటా మీ ఫోన్‌లో ఇన్‌స్టాల్ చేయబడలేదు. ఆఫ్‌లైన్ ఉపయోగం కోసం ఒకసారి ఇన్‌స్టాల్ చేయడానికి:\n\n1. సెట్టింగ్‌లు → సిస్టమ్ → టెక్స్ట్-టు-స్పీచ్ అవుట్‌పుట్ తెరవండి.\n2. ఇష్టపడే ఇంజిన్ పక్కన సెట్టింగ్‌లు → వాయిస్ డేటాను ఇన్‌స్టాల్ చేయండి నొక్కండి.\n3. ఈ భాష కోసం స్పీచ్ డేటాను డౌన్‌లోడ్ చేసుకోండి.</string>
@@ -196,4 +197,22 @@
     <string name="status_installed">ఇన్‌స్టాల్ చేయబడింది</string>
     <string name="status_not_installed">ఇన్‌స్టాల్ చేయబడలేదు</string>
     <string name="btn_remove_model_files">మోడల్ ఫైళ్లను తొలగించండి (ఆఫ్‌లైన్ గైడ్‌ను పరీక్షించండి)</string>
+
+    <!-- Task U1: Accessible Home & Result Screen UI -->
+    <string name="home_crop_guide">పంటల మార్గదర్శి</string>
+    <string name="home_crop_guide_sub">పంటలు మరియు తెగుళ్ల వివరాలు తెలుసుకోండి</string>
+    <string name="home_saved_reports">భద్రపరిచిన నివేదికలు</string>
+    <string name="home_saved_reports_sub">గతంలో స్కాన్ చేసిన వివరాలు చూడండి</string>
+    <string name="home_help_officer">వ్యవసాయ అధికారి సహాయం</string>
+    <string name="home_help_officer_sub">ఉచిత కిసాన్ కాల్ సెంటర్ (1800-180-1551)</string>
+    <string name="section_what_it_is">లక్షణాలు &amp; వివరాలు</string>
+    <string name="section_what_to_do_now">ఇప్పుడు ఏమి చేయాలి</string>
+    <string name="section_prevention">నివారణ పద్ధతులు</string>
+    <string name="section_natural">సహజ &amp; సంప్రదాయ పద్ధతులు</string>
+    <string name="section_chemical">రసాయన పద్ధతులు</string>
+    <string name="btn_call_officer">వ్యవసాయ అధికారికి కాల్ చేయండి (1800-180-1551)</string>
+    <string name="no_treatment_needed_healthy">పంట ఆరోగ్యంగా ఉంది. ఎలాంటి చికిత్స అవసరం లేదు. మంచి సాగు పద్ధతులను కొనసాగించండి.</string>
+    <string name="no_chemical_advice">ఈ పరిస్థితికి రసాయన పిచికారీ అవసరం లేదు.</string>
+    <string name="follow_product_label">ఉత్పత్తి లేబుల్‌ని అనుసరించండి</string>
+    <string name="chemical_safety_warning">రక్షిత దుస్తులు ధరించండి. ఎల్లప్పుడూ రిజిస్టర్డ్ ఉత్పత్తి లేబుల్ సూచనలు మరియు భద్రతా మార్గదర్శకాలను అనుసరించండి.</string>
 </resources>
