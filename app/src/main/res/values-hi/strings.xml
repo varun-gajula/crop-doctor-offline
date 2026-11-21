@@ -112,6 +112,7 @@
     <string name="ai_explanation_label">AI स्पष्टीकरण</string>
     <string name="btn_listen">सुनें</string>
     <string name="btn_pause">रोकें</string>
+    <string name="btn_resume">फिर से शुरू करें</string>
     <string name="btn_stop">बंद करें</string>
     <string name="voice_not_installed">आवाज इंस्टॉल नहीं है</string>
     <string name="voice_install_guide">इस भाषा के लिए वॉयस डेटा आपके फोन में इंस्टॉल नहीं है। ऑफ़लाइन उपयोग के लिए इसे एक बार इंस्टॉल करने के लिए:\n\n1. सेटिंग्स → सिस्टम → टेक्स्ट-टू-स्पीच आउटपुट खोलें।\n2. पसंदीदा इंजन के बगल में सेटिंग्स → वॉयस डेटा इंस्टॉल करें पर टैप करें।\n3. इस भाषा के लिए स्पीच डेटा डाउनलोड करें।</string>
@@ -196,4 +197,22 @@
     <string name="status_installed">इंस्टॉल किया गया</string>
     <string name="status_not_installed">इंस्टॉल नहीं है</string>
     <string name="btn_remove_model_files">मॉडल फ़ाइलें हटाएं (ऑफ़लाइन गाइड का परीक्षण करें)</string>
+
+    <!-- Task U1: Accessible Home & Result Screen UI -->
+    <string name="home_crop_guide">फसल गाइड</string>
+    <string name="home_crop_guide_sub">फसलों और रोगों की जानकारी प्राप्त करें</string>
+    <string name="home_saved_reports">सहेजी गई रिपोर्ट</string>
+    <string name="home_saved_reports_sub">पुराने स्कैन रिकॉर्ड देखें</string>
+    <string name="home_help_officer">कृषि अधिकारी से सहायता</string>
+    <string name="home_help_officer_sub">टोल-फ्री किसान कॉल सेंटर (1800-180-1551)</string>
+    <string name="section_what_it_is">लक्षण और विवरण</string>
+    <string name="section_what_to_do_now">अभी क्या करें</string>
+    <string name="section_prevention">रोकथाम और सावधानियां</string>
+    <string name="section_natural">प्राकृतिक और पारंपरिक तरीके</string>
+    <string name="section_chemical">रासायनिक उपचार</string>
+    <string name="btn_call_officer">कृषि अधिकारी को कॉल करें (1800-180-1551)</string>
+    <string name="no_treatment_needed_healthy">फसल स्वस्थ है। किसी उपचार की आवश्यकता नहीं है। अच्छी कृषि पद्धतियां जारी रखें।</string>
+    <string name="no_chemical_advice">इस स्थिति के लिए किसी रासायनिक छिड़काव की आवश्यकता नहीं है।</string>
+    <string name="follow_product_label">उत्पाद लेबल का पालन करें</string>
+    <string name="chemical_safety_warning">सुरक्षात्मक कपड़े पहनें। हमेशा पंजीकृत उत्पाद लेबल निर्देशों और सुरक्षा दिशानिर्देशों का पालन करें।</string>
 </resources>

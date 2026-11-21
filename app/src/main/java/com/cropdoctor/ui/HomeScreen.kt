@@ -1,5 +1,6 @@
 package com.cropdoctor.ui
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -15,7 +16,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
@@ -23,7 +23,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.cropdoctor.R
-import com.cropdoctor.ui.components.LanguageChip
 import com.cropdoctor.ui.theme.FarmGreenDark
 import com.cropdoctor.ui.theme.FarmGreenPrimary
 
@@ -32,159 +31,153 @@ fun HomeScreen(
     language: String,
     onScanClick: () -> Unit,
     onBrowseDiseasesClick: () -> Unit,
-    onFarmingTipsClick: () -> Unit,
+    onFarmingTipsClick: () -> Unit = {},
     onChangeLanguageClick: (String) -> Unit,
-    onMoreOptionsClick: () -> Unit,
-    onChatbotClick: () -> Unit = {}
+    onMoreOptionsClick: () -> Unit = {},
+    onChatbotClick: () -> Unit = {},
+    onSavedReportsClick: () -> Unit = {},
+    onHelpOfficerClick: () -> Unit = {}
 ) {
     val scrollState = rememberScrollState()
 
     Scaffold(
         topBar = {
-            Row(
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(FarmGreenPrimary)
                     .statusBarsPadding()
-                    .padding(horizontal = 16.dp, vertical = 14.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                    .padding(horizontal = 16.dp, vertical = 12.dp)
             ) {
-                IconButton(onClick = onMoreOptionsClick) {
-                    Icon(
-                        imageVector = Icons.Default.Menu,
-                        contentDescription = "Menu",
-                        tint = Color.White
-                    )
-                }
-
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    androidx.compose.foundation.Image(
-                        painter = androidx.compose.ui.res.painterResource(id = R.drawable.ic_agricare_logo),
-                        contentDescription = "Logo",
-                        modifier = Modifier.size(34.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = stringResource(R.string.app_name),
-                        fontSize = 22.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White
-                    )
-                }
-
-                // Persistent language chip on top bar (T2)
-                LanguageChip(
-                    currentLanguage = language,
-                    onLanguageSelected = { newLang ->
-                        onChangeLanguageClick(newLang)
+                // App Title and Settings / More Menu
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Box(
+                            modifier = Modifier
+                                .size(36.dp)
+                                .clip(CircleShape)
+                                .background(Color.White.copy(alpha = 0.2f)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Spa,
+                                contentDescription = null,
+                                tint = Color.White,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Text(
+                            text = stringResource(R.string.app_name),
+                            fontSize = 22.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White
+                        )
                     }
-                )
-            }
-        },
-        bottomBar = {
-            NavigationBar(
-                containerColor = Color.White,
-                tonalElevation = 8.dp
-            ) {
-                NavigationBarItem(
-                    selected = true,
-                    onClick = { /* Already Home */ },
-                    icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
-                    label = { Text(stringResource(R.string.nav_home), fontSize = 12.sp) },
-                    colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = FarmGreenPrimary,
-                        selectedTextColor = FarmGreenPrimary,
-                        indicatorColor = Color(0xFFE8F5E9)
+
+                    IconButton(
+                        onClick = onMoreOptionsClick,
+                        modifier = Modifier.size(48.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.MoreVert,
+                            contentDescription = "Options",
+                            tint = Color.White,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                // Three Language Chips side-by-side (English, Telugu, Hindi)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    val langOptions = listOf(
+                        Triple("en", "English", "EN"),
+                        Triple("te", "తెలుగు", "TE"),
+                        Triple("hi", "हिन्दी", "HI")
                     )
-                )
 
-                NavigationBarItem(
-                    selected = false,
-                    onClick = onBrowseDiseasesClick,
-                    icon = { Icon(Icons.Default.Search, contentDescription = "Knowledge Base") },
-                    label = { Text(stringResource(R.string.nav_diseases), fontSize = 12.sp) }
-                )
-
-                NavigationBarItem(
-                    selected = false,
-                    onClick = onMoreOptionsClick,
-                    icon = { Icon(Icons.Default.MoreHoriz, contentDescription = "More") },
-                    label = { Text(stringResource(R.string.nav_more), fontSize = 12.sp) }
-                )
+                    langOptions.forEach { (code, label, _) ->
+                        val isSelected = language == code
+                        Surface(
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(48.dp)
+                                .clickable { onChangeLanguageClick(code) },
+                            shape = RoundedCornerShape(24.dp),
+                            color = if (isSelected) Color.White else Color.White.copy(alpha = 0.22f),
+                            border = BorderStroke(
+                                width = if (isSelected) 2.dp else 1.dp,
+                                color = if (isSelected) Color.White else Color.White.copy(alpha = 0.4f)
+                            )
+                        ) {
+                            Box(
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.Center
+                                ) {
+                                    if (isSelected) {
+                                        Icon(
+                                            imageVector = Icons.Default.Check,
+                                            contentDescription = null,
+                                            tint = FarmGreenDark,
+                                            modifier = Modifier.size(18.dp)
+                                        )
+                                        Spacer(modifier = Modifier.width(4.dp))
+                                    }
+                                    Text(
+                                        text = label,
+                                        fontSize = 16.sp,
+                                        fontWeight = if (isSelected) FontWeight.ExtraBold else FontWeight.SemiBold,
+                                        color = if (isSelected) FarmGreenDark else Color.White
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     ) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color(0xFFF7FAF7))
+                .background(Color(0xFFF4F8F4))
                 .padding(paddingValues)
                 .verticalScroll(scrollState)
-                .padding(16.dp)
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Hero Banner
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(18.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(
-                            Brush.horizontalGradient(
-                                colors = listOf(Color(0xFFE8F5E9), Color(0xFFC8E6C9))
-                            )
-                        )
-                        .padding(18.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(
-                            text = stringResource(R.string.home_banner_title),
-                            fontSize = 19.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = FarmGreenDark,
-                            lineHeight = 25.sp
-                        )
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Text(
-                            text = stringResource(R.string.home_banner_sub),
-                            fontSize = 14.sp,
-                            color = Color(0xFF37474F)
-                        )
-                    }
-                    Text(
-                        text = "👨‍🌾🌾",
-                        fontSize = 44.sp,
-                        modifier = Modifier.padding(start = 12.dp)
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(20.dp))
-
-            // Primary Scan Leaf Action Card
+            // One Big "Scan Leaf" Button Card
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable { onScanClick() },
-                shape = RoundedCornerShape(20.dp),
+                shape = RoundedCornerShape(16.dp),
                 colors = CardDefaults.cardColors(containerColor = Color.White),
-                border = androidx.compose.foundation.BorderStroke(2.dp, Color(0xFF81C784)),
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                border = BorderStroke(2.dp, FarmGreenPrimary),
+                elevation = CardDefaults.cardElevation(defaultElevation = 3.dp)
             ) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 28.dp, horizontal = 20.dp),
+                        .padding(vertical = 24.dp, horizontal = 20.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Box(
                         modifier = Modifier
-                            .size(80.dp)
+                            .size(76.dp)
                             .clip(CircleShape)
                             .background(Color(0xFFE8F5E9)),
                         contentAlignment = Alignment.Center
@@ -193,7 +186,7 @@ fun HomeScreen(
                             imageVector = Icons.Default.FilterCenterFocus,
                             contentDescription = "Scan",
                             tint = FarmGreenPrimary,
-                            modifier = Modifier.size(46.dp)
+                            modifier = Modifier.size(44.dp)
                         )
                     }
 
@@ -210,85 +203,118 @@ fun HomeScreen(
 
                     Text(
                         text = stringResource(R.string.scan_leaf_sub),
-                        fontSize = 14.sp,
-                        color = Color(0xFF616161)
+                        fontSize = 16.sp,
+                        color = Color(0xFF424242),
+                        lineHeight = 22.sp
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.height(22.dp))
+            // Big Card 1: Crop Guide
+            HomeBigNavCard(
+                title = stringResource(R.string.home_crop_guide),
+                subtitle = stringResource(R.string.home_crop_guide_sub),
+                icon = Icons.AutoMirrored.Filled.MenuBook,
+                iconTint = FarmGreenPrimary,
+                iconBg = Color(0xFFE8F5E9),
+                onClick = onBrowseDiseasesClick
+            )
 
-            // Quick Action Tiles (T2b: Farming Tips & Chatbot moved into More menu)
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(14.dp)
-            ) {
-                QuickActionTile(
-                    title = stringResource(R.string.browse_diseases),
-                    icon = Icons.Default.Search,
-                    color = Color(0xFF2E7D32),
-                    modifier = Modifier.weight(1f),
-                    onClick = onBrowseDiseasesClick
-                )
+            // Big Card 2: Saved Reports
+            HomeBigNavCard(
+                title = stringResource(R.string.home_saved_reports),
+                subtitle = stringResource(R.string.home_saved_reports_sub),
+                icon = Icons.Default.Assignment,
+                iconTint = Color(0xFF1565C0),
+                iconBg = Color(0xFFE3F2FD),
+                onClick = onSavedReportsClick
+            )
 
-                QuickActionTile(
-                    title = stringResource(R.string.nav_more),
-                    icon = Icons.Default.MoreHoriz,
-                    color = Color(0xFF1565C0),
-                    modifier = Modifier.weight(1f),
-                    onClick = onMoreOptionsClick
-                )
-            }
+            // Big Card 3: Help from Extension Officer
+            HomeBigNavCard(
+                title = stringResource(R.string.home_help_officer),
+                subtitle = stringResource(R.string.home_help_officer_sub),
+                icon = Icons.Default.PhoneInTalk,
+                iconTint = Color(0xFFE65100),
+                iconBg = Color(0xFFFFF3E0),
+                onClick = onHelpOfficerClick
+            )
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(20.dp))
         }
     }
 }
 
 @Composable
-fun QuickActionTile(
+fun HomeBigNavCard(
     title: String,
+    subtitle: String,
     icon: ImageVector,
-    color: Color,
-    modifier: Modifier = Modifier,
+    iconTint: Color,
+    iconBg: Color,
     onClick: () -> Unit
 ) {
     Card(
-        modifier = modifier
-            .height(115.dp)
+        modifier = Modifier
+            .fillMaxWidth()
+            .heightIn(min = 84.dp)
             .clickable { onClick() },
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        border = BorderStroke(1.dp, Color(0xFFE0E0E0))
     ) {
-        Column(
+        Row(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(14.dp),
-            verticalArrangement = Arrangement.SpaceBetween,
-            horizontalAlignment = Alignment.Start
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Box(
-                modifier = Modifier
-                    .size(42.dp)
-                    .clip(RoundedCornerShape(10.dp))
-                    .background(color.copy(alpha = 0.12f)),
-                contentAlignment = Alignment.Center
+            Row(
+                modifier = Modifier.weight(1f),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    imageVector = icon,
-                    contentDescription = null,
-                    tint = color,
-                    modifier = Modifier.size(24.dp)
-                )
+                Box(
+                    modifier = Modifier
+                        .size(52.dp)
+                        .clip(RoundedCornerShape(14.dp))
+                        .background(iconBg),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = null,
+                        tint = iconTint,
+                        modifier = Modifier.size(28.dp)
+                    )
+                }
+
+                Spacer(modifier = Modifier.width(16.dp))
+
+                Column {
+                    Text(
+                        text = title,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF1C271E),
+                        lineHeight = 24.sp
+                    )
+                    Spacer(modifier = Modifier.height(3.dp))
+                    Text(
+                        text = subtitle,
+                        fontSize = 15.sp,
+                        color = Color(0xFF555555),
+                        lineHeight = 20.sp
+                    )
+                }
             }
 
-            Text(
-                text = title,
-                fontSize = 15.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color(0xFF263238),
-                lineHeight = 18.sp
+            Icon(
+                imageVector = Icons.Default.ChevronRight,
+                contentDescription = null,
+                tint = Color(0xFF8A948C),
+                modifier = Modifier.size(28.dp)
             )
         }
     }
