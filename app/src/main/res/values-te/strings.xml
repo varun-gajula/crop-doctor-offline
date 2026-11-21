@@ -215,4 +215,21 @@
     <string name="no_chemical_advice">ఈ పరిస్థితికి రసాయన పిచికారీ అవసరం లేదు.</string>
     <string name="follow_product_label">ఉత్పత్తి లేబుల్‌ని అనుసరించండి</string>
     <string name="chemical_safety_warning">రక్షిత దుస్తులు ధరించండి. ఎల్లప్పుడూ రిజిస్టర్డ్ ఉత్పత్తి లేబుల్ సూచనలు మరియు భద్రతా మార్గదర్శకాలను అనుసరించండి.</string>
+
+    <!-- Task F1: Crop Guide Screen -->
+    <string name="crop_guide_title">పంటల విజ్ఞానం</string>
+    <string name="problems_of_crop">%1$s సమస్యలు</string>
+    <string name="stage_seedling">నారు దశ</string>
+    <string name="stage_vegetative">శాకీయ దశ</string>
+    <string name="stage_flowering">పూత దశ</string>
+    <string name="stage_fruiting_grain_filling">కాయ / గింజ నిండే దశ</string>
+    <string name="stage_any">ఏ దశలోనైనా</string>
+    <string name="stage_all">అన్ని దశలు</string>
+    <string name="btn_view_all">అన్నీ చూడండి</string>
+    <string name="btn_collapse">కుదించండి</string>
+    <string name="chip_disease">తెగులు</string>
+    <string name="chip_pest">పురుగు</string>
+    <string name="select_crop_guide_subtitle">తెగుళ్లు మరియు పురుగుల సమాచారం కోసం పంటను ఎంచుకోండి</string>
+    <string name="no_problems_for_stage">ఈ దశలో సమస్యలు ఏవీ లేవు</string>
+    <string name="source_label">ఆధారం: %1$s</string>
 </resources>

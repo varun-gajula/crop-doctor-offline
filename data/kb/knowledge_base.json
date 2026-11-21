@@ -116,7 +116,8 @@
         "en": "Call extension officer if water-soaked wavy lesions affect >20% of tillers, kresek seedling wilting appears, or lesions reach the flag leaf. Contact local KVK or Kisan Call Centre (Toll-Free 1800-180-1551).",
         "te": "20% కంటే ఎక్కువ పిలకలకు అలల తరంగాల మచ్చలు సోకినప్పుడు, నారు లేదా పిలక దశలో క్రెసెక్ (మొక్కలు ఎండిపోవడం) కనిపించినప్పుడు లేదా మచ్చలు జెండా ఆకుకు చేరినప్పుడు వెంటనే వ్యవసాయ విస్తరణ అధికారిని సంప్రదించండి. కిసాన్ కాల్ సెంటర్ (1800-180-1551) లేదా స్థానిక KVK కి కాల్ చేయండి.",
         "hi": "यदि 20% से अधिक कल्ले रोगग्रस्त हों, पत्तियों पर लहरदार धारियां ध्वज पत्ती (फ्लैग लीफ) तक पहुंच जाएं या क्रेसेक (पौधों का सूखना) दिखे, तो तुरंत कृषि विस्तार अधिकारी से संपर्क करें। किसान कॉल सेंटर (1800-180-1551) या स्थानीय KVK पर कॉल करें।"
-      }
+      },
+      "stage": "Seedling"
     },
     {
       "class_id": "rice_brown_spot",
@@ -219,7 +220,8 @@
         "en": "Call extension officer if spots cover >15% of flag leaf area before grain filling or grain discoloration spreads across panicles despite fertilizer application. Contact Kisan Call Centre (Toll-Free 1800-180-1551) or local KVK.",
         "te": "గింజ పాలుపోసుకునే దశకు ముందే జెండా ఆకులో 15% కంటే ఎక్కువ భాగం మచ్చలు కప్పివేసినా లేదా ఎరువులు వేసినా గింజలపై మచ్చలు వ్యాపిస్తున్నట్లయితే వ్యవసాయ అధికారిని సంప్రదించండి. కిసాన్ కాల్ సెంటర్ (1800-180-1551) లేదా KVK ని సంప్రదించండి.",
         "hi": "यदि दाना भरने से पहले ध्वज पत्ती का 15% से अधिक हिस्सा धब्बों से ढक जाए या दानों पर भूरापन फैलने लगे, तो तुरंत कृषि अधिकारी से संपर्क करें। किसान कॉल सेंटर (1800-180-1551) या स्थानीय KVK पर संपर्क करें।"
-      }
+      },
+      "stage": "Fruiting or Grain filling"
     },
     {
       "class_id": "rice_leaf_blast",
@@ -425,7 +427,8 @@
         "en": "Call extension officer if banded sheath lesions reach the penultimate or flag leaf sheath on >20% of hills, threatening grain filling. Contact Kisan Call Centre (Toll-Free 1800-180-1551) or local KVK.",
         "te": "20% కంటే ఎక్కువ కుదుళ్ళలో పాముపొడ మచ్చలు రెండవ పై ఆకు తొడుగుకు లేదా జెండా ఆకుకు చేరినప్పుడు వెంటనే వ్యవసాయ విస్తరణ అధికారిని సంప్రదించండి. కిసాన్ కాల్ సెంటర్ (1800-180-1551) లేదా KVK ని సంప్రదించండి.",
         "hi": "यदि 20% से अधिक पौधों में आवरण झुलसा के धब्बे ऊपर की दूसरी पत्ती या फ्लैग लीफ तक पहुंच जाएं, तो तुरंत कृषि विस्तार अधिकारी से संपर्क करें। किसान कॉल सेंटर (1800-180-1551) या स्थानीय KVK पर संपर्क करें।"
-      }
+      },
+      "stage": "Fruiting or Grain filling"
     },
     {
       "class_id": "rice_healthy",
@@ -614,7 +617,8 @@
         "en": "Call extension officer if black-arm cankers girdle >10% of main vegetative branches or water-soaked oily spots appear on developing bolls. Contact Kisan Call Centre (Toll-Free 1800-180-1551) or local KVK.",
         "te": "10% కంటే ఎక్కువ ప్రధాన కొమ్మలపై నల్లటి పుండ్లు ఏర్పడి కొమ్మలు విరిగిపోతున్నా లేదా పసి కాయలపై నూనె మచ్చలు విస్తరిస్తున్నా వెంటనే వ్యవసాయ విస్తరణ అధికారిని సంప్రదించండి. కిసాన్ కాల్ సెంటర్ (1800-180-1551) లేదా KVK ని సంప్రదించండి.",
         "hi": "यदि मुख्य शाखाओं के 10% से अधिक हिस्से पर काले घाव (ब्लैक आर्म) फैल जाएं या बनते हुए गूलरों पर तैलीय धब्बे दिखाई दें, तो तुरंत कृषि अधिकारी से संपर्क करें। किसान कॉल सेंटर (1800-180-1551) पर संपर्क करें।"
-      }
+      },
+      "stage": "Vegetative"
     },
     {
       "class_id": "cotton_fusarium_wilt",
@@ -1030,7 +1034,8 @@
         "en": "Call extension officer as soon as 5-10% of plants show leaf curling before flowering; viral diseases have no chemical cure and vector management and rogueing must be coordinated under officer guidance. Call Kisan Call Centre (Toll-Free 1800-180-1551).",
         "te": "పూత దశకు ముందే 5-10% మొక్కలలో ఆకు ముడత లక్షణాలు కనిపించిన వెంటనే వ్యవసాయ విస్తరణ అధికారిని సంప్రదించండి; వైరస్ తెగుళ్లకు రసాయన మందుల ద్వారా చికిత్స సాధ్యం కాదు, తెగులు సోకిన మొక్కలను పీకివేయడం మరియు తెల్లదోమ నివారణ చర్యలను అధికారి మార్గదర్శకత్వంలో చేపట్టాలి. కిసాన్ కాల్ సెంటర్ (1800-180-1551) కు కాల్ చేయండి.",
         "hi": "फूल आने से पहले यदि 5-10% पौधों में पत्ती मरोड़ दिखे तो तुरंत कृषि विस्तार अधिकारी से संपर्क करें; वायरल रोगों का कोई रासायनिक इलाज नहीं है, इसलिए रोगी पौधों को उखाड़ना और सफेद मक्खी नियंत्रण अधिकारी की सलाह से ही करें। किसान कॉल सेंटर (1800-180-1551) पर संपर्क करें।"
-      }
+      },
+      "stage": "Flowering"
     },
     {
       "class_id": "chilli_healthy",
@@ -1447,7 +1452,8 @@
         "en": "Call extension officer as soon as 5% of young plants show yellow leaf curling before flowering; viral infections are incurable and vector eradication and rogueing require officer guidance. Contact Kisan Call Centre (Toll-Free 1800-180-1551).",
         "te": "పూత దశకు ముందే 5% మొక్కలలో పసుపు ఆకు ముడత లేదా గిడసబారడం కనిపించిన వెంటనే వ్యవసాయ విస్తరణ అధికారిని సంప్రదించండి; వైరస్ తెగుళ్లకు మందుల ద్వారా నివారణ ఉండదు కాబట్టి తెల్లదోమల నిర్మూలన మరియు రోగగ్రస్త మొక్కల తొలగింపు అధికారి సూచనల మేరకే చేయాలి. కిసాన్ కాల్ సెంటర్ (1800-180-1551) కు కాల్ చేయండి.",
         "hi": "फूल आने से पहले यदि 5% पौधों में पीला पत्ती मरोड़ या बौनापन दिखे तो तुरंत कृषि विस्तार अधिकारी से संपर्क करें; वायरल रोगों का कोई इलाज नहीं है और सफेद मक्खी नियंत्रण तथा पौधों को नष्ट करने की सलाह जरूरी है। किसान कॉल सेंटर (1800-180-1551) पर संपर्क करें।"
-      }
+      },
+      "stage": "Seedling"
     },
     {
       "class_id": "tomato_spider_mites",
@@ -2102,7 +2108,8 @@
         "en": "Call extension officer IMMEDIATELY if whorl infestation exceeds ETL (5% at seedling stage, 10% at vegetative stage), or large larvae (>1.5 cm) are detected feeding deep inside central whorls. Contact Kisan Call Centre (Toll-Free 1800-180-1551).",
         "te": "సుడుల నష్టం ఆర్థిక పరిమితి (మొలక దశలో 5%, పైరు దశలో 10%) దాటినా లేదా 1.5 సెం.మీ కంటే పెద్ద లార్వాలు సుడుల లోపల చేరి తింటున్నట్లు గుర్తించినా వెంటనే వ్యవసాయ విస్తరణ అధికారిని సంప్రదించండి. కిసాన్ కాల్ సెంటర్ (1800-180-1551) కు కాల్ చేయండి.",
         "hi": "यदि गोभ का प्रकोप ईटीएल (अंकुरण पर 5%, वानस्पतिक पर 10%) से अधिक हो जाए या 1.5 सेमी से बड़ी सूंडियां गोभ के अंदर नुकसान पहुंचाती मिलें, तो तुरंत कृषि अधिकारी से संपर्क करें। किसान कॉल सेंटर (1800-180-1551) पर संपर्क करें।"
-      }
+      },
+      "stage": "Vegetative"
     },
     {
       "class_id": "maize_healthy",

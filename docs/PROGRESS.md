@@ -1,6 +1,49 @@
 # Project Progress - Crop Doctor Offline
 
-## Current Status: Task U1 Complete (Accessible Low-Literacy UI Redesign)
+## Current Status: Task F1 Complete (Offline Crop Guide & Growth Stage Categorization)
+
+### Done in Task F1: Offline Crop Guide Screen & Stage Categorization (Rules H1, H4, H6)
+1. **Navigation Flow & Crop Selector**:
+   - Home card "Crop guide" opens the crop selector using the exact same 5 picture tiles (Rice, Cotton, Chilli, Tomato, Maize) as the scan flow.
+   - Selecting a crop navigates to "Problems of <crop>" (`stringResource(R.string.problems_of_crop, cropDisplayName)`).
+   - Change crop action allows switching between crops seamlessly.
+2. **Growth Stage Grouping & Rule H4 Compliance**:
+   - Added optional `stage` field to `KbEntry` data model and knowledge base assets.
+   - Grounded strictly in official citations (ICAR, ANGRAU, PJTSAU, TNAU, NIPHM); zero invented stages.
+   - Exactly 7 problems with sourced growth stages:
+     - `rice_bacterial_leaf_blight` -> `Seedling` (ICAR-IIRR / PJTSAU)
+     - `rice_brown_spot` -> `Fruiting or Grain filling` (ICAR-IIRR / ANGRAU)
+     - `rice_sheath_blight` -> `Fruiting or Grain filling` (ICAR-IIRR / ANGRAU)
+     - `cotton_bacterial_blight` -> `Vegetative` (ICAR-CICR / PJTSAU)
+     - `chilli_leaf_curl_virus` -> `Flowering` (PJTSAU / Dr. YSRHU)
+     - `tomato_yellow_leaf_curl_virus` -> `Seedling` (ICAR-IIHR / TNAU)
+     - `maize_fall_armyworm` -> `Vegetative` (ICAR-NBAIR / ICAR-IIMR / NIPHM)
+   - Exactly 9 unconstrained problems categorized under **"Any stage"**:
+     - `rice_leaf_blast`, `cotton_fusarium_wilt`, `chilli_bacterial_spot`, `tomato_early_blight`, `tomato_late_blight`, `tomato_spider_mites`, `maize_gray_leaf_spot`, `maize_common_rust`, `maize_northern_leaf_blight`.
+   - Comprehensive audit table and rationale documented in `benchmarks/f1_missing_stage.md`.
+3. **Stage Header & "View all" Controls**:
+   - Each stage section displays stage icon, stage name, problem count badge, and a "View all" / "Collapse" toggle.
+   - Horizontal filter chips row allows quick single-stage filtering (`All stages`, `Seedling`, `Vegetative`, `Flowering`, `Fruiting or Grain filling`, `Any stage`).
+   - Problem cards display localized problem name, Disease/Pest badge, Stage badge, pathogen subtitle, and chevron.
+4. **Advice Tiers on Problem Details**:
+   - Tapping any problem card opens `DiseaseDetailsScreen` displaying the same advice tiers as `ResultScreen`:
+     - What it is (`explainText`, `pathogen`, `earlyWarningSigns`)
+     - What to do now (`immediateStep`) - expanded by default
+     - Prevention & Field practices (`preventionAndFieldPractice`) with official source cited
+     - Natural & Traditional (`treatment.natural`) with steps, doses, sources, and quotes
+     - Chemical (Advanced) (`treatment.chemical`) with active ingredients, verified dose/label, safety warning, PHI days, and CIB&RC source
+     - Extension officer referral button (Kisan Call Centre `1800-180-1551`)
+   - 100% offline; zero Llama calls on this screen; Telugu text strictly from reviewed KB translations (Rule H6).
+5. **Strict Local Pictures Protocol**:
+   - Uses only local photos placed in `app/src/main/assets/guide/<class_id>.jpg` (or `.png`) credited in `docs/CREDITS.md`.
+   - Zero web photos; falls back cleanly to vector leaf icon (`Icons.Default.Spa`).
+6. **Zero Internet & Unit Tests Verification**:
+   - Zero `INTERNET` permission in `AndroidManifest.xml` (Rule H1 verified).
+   - Added `CropGuideTest.kt` unit test suite (7 tests covering crop counts, healthy exclusion, stage grouping, "Any stage" mapping, Telugu text presence, and source attribution).
+   - **139 / 139 unit tests passing**.
+   - 9 screenshots captured in 3 languages in `benchmarks/f1_screenshots/`.
+
+---
 
 ### Done in Task U1: Low-Literacy Accessible UI Redesign (Theme, Home, Result & Audio)
 1. **Single Consistent Accessible Theme**:

@@ -215,4 +215,21 @@
     <string name="no_chemical_advice">No chemical spray needed for this condition.</string>
     <string name="follow_product_label">Follow product label</string>
     <string name="chemical_safety_warning">Wear protective clothing. Always follow the registered product label instructions and safety directions.</string>
+
+    <!-- Task F1: Crop Guide Screen -->
+    <string name="crop_guide_title">Crop Guide</string>
+    <string name="problems_of_crop">Problems of %1$s</string>
+    <string name="stage_seedling">Seedling</string>
+    <string name="stage_vegetative">Vegetative</string>
+    <string name="stage_flowering">Flowering</string>
+    <string name="stage_fruiting_grain_filling">Fruiting or Grain filling</string>
+    <string name="stage_any">Any stage</string>
+    <string name="stage_all">All stages</string>
+    <string name="btn_view_all">View all</string>
+    <string name="btn_collapse">Collapse</string>
+    <string name="chip_disease">Disease</string>
+    <string name="chip_pest">Pest</string>
+    <string name="select_crop_guide_subtitle">Select a crop to explore known diseases and pests</string>
+    <string name="no_problems_for_stage">No problems recorded for this stage</string>
+    <string name="source_label">Source: %1$s</string>
 </resources>
