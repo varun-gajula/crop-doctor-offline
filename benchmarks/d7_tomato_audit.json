@@ -1,0 +1,17 @@
+{
+  "tomato_healthy": {
+    "raw_count": 800,
+    "unique_clusters_hamming_10": 497,
+    "internal_duplicates": 303,
+    "capped_count": 497,
+    "under_300": false
+  },
+  "tomato_septoria_leaf_spot": {
+    "raw_count": 800,
+    "unique_clusters_hamming_10": 595,
+    "internal_duplicates": 205,
+    "capped_count": 595,
+    "under_300": false
+  },
+  "cross_class_duplicates": []
+}

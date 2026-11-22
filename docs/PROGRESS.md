@@ -1,6 +1,28 @@
 # Project Progress - Crop Doctor Offline
 
-## Current Status: Task D6 Complete (13-Class Pre-Training Verification & Audit)
+## Current Status: Task D7 Complete (15-Class Pre-Training Verification & Tomato Audit Checkpoint)
+
+### Done in Task D7: Tomato Classes Audit, Verification & Final 15-Class Roster (Rules H2, H3, H4, H9, H11, H14)
+1. **Added Two Tomato Classes & Within-Class Clustering at Hamming $\le 10$ (Rule 1)**:
+   - `tomato_healthy`: 800 raw photos, **497 unique clusters** (Hamming $\le 10$), duplicate rate: 37.8%, capped at **497 photos**. Meets and exceeds $\ge 300$ requirement (PASS).
+   - `tomato_septoria_leaf_spot`: 800 raw photos, **595 unique clusters** (Hamming $\le 10$), duplicate rate: 25.6%, capped at **595 photos**. Meets and exceeds $\ge 300$ requirement (PASS).
+2. **Contact Sheet Ground-Truth Symptom Inspection (Rule 2)**:
+   - Generated 80-photo contact sheet at `benchmarks/d7_tomato_contact_sheet.jpg` (40 random photos of `tomato_septoria_leaf_spot` + 40 random photos of `tomato_healthy`).
+   - Visually verified classic *Septoria lycopersici* symptoms: small circular brown lesions with distinct sunken pale gray/tan centers and pycnidia on leaf laminae.
+3. **Cross-Class Collision Check (Rule 3)**:
+   - Tested all dihedral hashes between `tomato_healthy` and `tomato_septoria_leaf_spot` at Hamming $\le 2$. Exactly **0 cross-class duplicate pairs** detected.
+4. **Exclusion of Tomato Spider Mites (Rule 4)**:
+   - `tomato_spider_mites` strictly excluded from the vision model dataset roster.
+5. **Final 15-Class Dataset Verification Table (Rule 5)**:
+   - Full 15-class roster audited across 10 local repositories: 16,656 raw photos, 12,742 unique clusters, **9,146 usable photos** after 800 cap.
+   - Comprehensive audit checkpoint saved to `benchmarks/d7_checkpoint.md` and audit metrics to `benchmarks/d7_tomato_audit.json`.
+6. **Dataset Locations & `crop_doctor_512` Architecture**:
+   - Documented exact file paths for all 15 classes across local disks.
+   - Explained why `C:\crop-data\crop_doctor_512` currently lacks the 3 pest classes (`maize_fall_armyworm`, `rice_stem_borer`, `rice_hispa`), and prepared pipeline to ingest them into `crop_doctor_512` to create a single self-contained training folder.
+
+---
+
+## Previous Status: Task D6 Complete (13-Class Pre-Training Verification & Audit)
 
 ### Done in Task D6: 13-Class Pre-Training Verification & Audit (Rules H2, H3, H4, H9, H11, H14)
 1. **13-Class Roster Audited via Dihedral Perceptual Hashing (64-bit pHash, Hamming $\le 8$)**:
