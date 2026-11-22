@@ -277,6 +277,33 @@ A scripted test harness (`tools/run_p5_benchmarks.py`) evaluated 55 test photos 
 - **Other Crops Cashew/Cassava (`othercrop`, 10 photos)**: 1 diagnosed, 2 CANT_TELL, 7 OUT_OF_CLASS, mean latency 734.0 ms.
 - **Laptop Screen Captures (`screen`, 10 photos)**: 6 diagnosed, 4 CANT_TELL, 0 OUT_OF_CLASS, mean latency 720.6 ms.
 
+### 7.7 Farmer-First Accessibility & Contrast Ratio Verification (Rule U2)
+
+To ensure usability in harsh direct sunlight for rural farmers with limited reading ability, Crop Doctor adheres to WCAG 2.1 accessibility standards.
+
+#### Color Contrast Ratio Derivation:
+- **Foreground (Primary Brand / Text)**: `#1B5E20` (Deep Farm Green: $R=27, G=94, B=32$)
+- **Background (Card Surface)**: `#FFFFFF` (White: $R=255, G=255, B=255$)
+
+Relative luminance $L$ formula (W3C WCAG 2.1):
+$$L = 0.2126 \times R_{\text{linear}} + 0.7152 \times G_{\text{linear}} + 0.0722 \times B_{\text{linear}}$$
+where linearized components $C_{\text{linear}}$ are computed as:
+$$C_{\text{linear}} = \begin{cases} \frac{C / 255}{12.92}, & \frac{C}{255} \le 0.04045 \\ \left(\frac{C / 255 + 0.055}{1.055}\right)^{2.4}, & \frac{C}{255} > 0.04045 \end{cases}$$
+
+Calculations:
+- For `#FFFFFF`: $R_{\text{linear}} = G_{\text{linear}} = B_{\text{linear}} = 1.0 \implies L_1 = 1.000000$
+- For `#1B5E20`:
+  - $R_{\text{linear}} = ((27/255 + 0.055) / 1.055)^{2.4} \approx 0.010729$
+  - $G_{\text{linear}} = ((94/255 + 0.055) / 1.055)^{2.4} \approx 0.110287$
+  - $B_{\text{linear}} = ((32/255 + 0.055) / 1.055)^{2.4} \approx 0.014164$
+  - $L_2 = 0.2126(0.010729) + 0.7152(0.110287) + 0.0722(0.014164) = 0.083427$
+
+WCAG Contrast Ratio:
+$$\text{Contrast Ratio} = \frac{L_1 + 0.05}{L_2 + 0.05} = \frac{1.000000 + 0.05}{0.083427 + 0.05} = \frac{1.050000}{0.133427} \approx \mathbf{7.87:1} \quad (7.8695:1)$$
+
+- **Compliance**: Exceeds WCAG Level AA threshold ($4.5:1$) and Level AAA threshold ($7.0:1$) for standard text, confirming high legibility under harsh daylight.
+- **Typography & Touch Targets**: Minimum body text is $18\text{ sp}$ ($20\text{ sp}$ for Telugu script), headers are $22\text{ sp}$ bold, and interactive touch targets are $\ge 56\text{ dp}$ (exceeding the $48\text{ dp}$ Material 3 recommendation).
+
 ---
 
 ## 8. Honest Limitations

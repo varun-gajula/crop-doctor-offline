@@ -229,7 +229,7 @@
     <string name="btn_collapse">కుదించండి</string>
     <string name="chip_disease">తెగులు</string>
     <string name="chip_pest">పురుగు</string>
-    <string name="select_crop_guide_subtitle">తెగుళ్లు మరియు పురుగుల సమాచారం కోసం పంటను ఎంచుకోండి</string>
+    <string name="select_crop_guide_subtitle">తెగుళ్ల సమాచారం కోసం పంటను ఎంచుకోండి</string>
     <string name="no_problems_for_stage">ఈ దశలో సమస్యలు ఏవీ లేవు</string>
     <string name="source_label">ఆధారం: %1$s</string>
 </resources>

@@ -229,7 +229,7 @@
     <string name="btn_collapse">संक्षिप्त करें</string>
     <string name="chip_disease">रोग</string>
     <string name="chip_pest">कीट</string>
-    <string name="select_crop_guide_subtitle">रोगों और कीटों की जानकारी देखने के लिए फसल चुनें</string>
+    <string name="select_crop_guide_subtitle">रोगों की जानकारी देखने के लिए फसल चुनें</string>
     <string name="no_problems_for_stage">इस अवस्था के लिए कोई समस्या दर्ज नहीं है</string>
     <string name="source_label">स्रोत: %1$s</string>
 </resources>

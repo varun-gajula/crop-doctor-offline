@@ -221,9 +221,11 @@
 
 ### Done in Task U1: Low-Literacy Accessible UI Redesign (Theme, Home, Result & Audio)
 1. **Single Consistent Accessible Theme**:
-   - Primary colour: Deep Farm Green (`#1B5E20`) providing contrast ratio of 10.7:1 against white card surfaces (`#FFFFFF`).
+   - Primary colour: Deep Farm Green (`#1B5E20`) providing contrast ratio of **7.87:1** against white card surfaces (`#FFFFFF`), computed via standard WCAG 2.1 relative luminance formula:
+     $$\text{Contrast Ratio} = \frac{L_1 + 0.05}{L_2 + 0.05} = \frac{1.000000 + 0.05}{0.083427 + 0.05} = \frac{1.050000}{0.133427} \approx 7.87:1$$
+     Exceeds both WCAG AA ($4.5:1$) and WCAG AAA ($7.0:1$) standards for accessible contrast.
    - Cards: 16dp rounded corners (`RoundedCornerShape(16.dp)`), 2dp soft elevation (`CardDefaults.cardElevation(defaultElevation = 2.dp)`), subtle 1dp border (`#E0E0E0`).
-   - High Contrast & Typography: 18sp minimum body text (`18.sp` / `20.sp` for Telugu), 24sp extra bold headers, 48dp+ minimum touch targets across all interactive buttons, chips, and cards. Text contrast exceeds WCAG AA 4.5:1 (10.7:1 for primary, 14.1:1 for body text `#1B2E1E`).
+   - High Contrast & Typography: 18sp minimum body text (`18.sp` / `20.sp` for Telugu), 24sp extra bold headers, 48dp+ minimum touch targets across all interactive buttons, chips, and cards. Text contrast exceeds WCAG AAA 7.0:1 (7.87:1 for primary `#1B5E20`, 14.1:1 for body text `#1B2E1E`).
 2. **Redesigned Home Screen**:
    - Header with app title (`Crop Doctor`), leaf icon, and three quick one-tap language chips (`English`, `తెలుగు`, `हिन्दी`) with checkmark indicator.
    - Big prominent "Scan leaf" card with 44dp icon, 22sp bold text, and 2dp green outline.

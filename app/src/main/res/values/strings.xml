@@ -229,7 +229,7 @@
     <string name="btn_collapse">Collapse</string>
     <string name="chip_disease">Disease</string>
     <string name="chip_pest">Pest</string>
-    <string name="select_crop_guide_subtitle">Select a crop to explore known diseases and pests</string>
+    <string name="select_crop_guide_subtitle">Select a crop to explore known diseases</string>
     <string name="no_problems_for_stage">No problems recorded for this stage</string>
     <string name="source_label">Source: %1$s</string>
 </resources>
