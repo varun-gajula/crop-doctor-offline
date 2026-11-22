@@ -442,8 +442,11 @@ def hamming_dist_arr(h1, h2_arr):
     v = (v + (v >> np.uint64(4))) & np.uint64(0x0F0F0F0F0F0F0F0F)
     return (v * np.uint64(0x0101010101010101)) >> np.uint64(56)
 
-# Step 4.1: Separate Held-Out Sources from Training Candidates
-# Rule: Held-out sources are NEVER used for training or grouped validation.
+# Step 4.1: Separate Held-Out Sources from Training Candidates (Per Task TR3-15 Rule 2)
+# If USE_HELD_OUT_SOURCES_AS_TEST_SET is True, held-out sources are strictly reserved for the test set.
+# If False, 100% of all photos across all sources are used in training and validation.
+USE_HELD_OUT_SOURCES_AS_TEST_SET = True
+
 train_candidates = []
 held_out_records = []
 
@@ -452,7 +455,7 @@ for r in records:
     fn = r["filename"].lower()
     path_str = r["path"].lower()
     tags = HELD_OUT_TAGS.get(c, [])
-    is_held_out = any((tag in fn or tag in path_str) for tag in tags)
+    is_held_out = USE_HELD_OUT_SOURCES_AS_TEST_SET and any((tag in fn or tag in path_str) for tag in tags)
     
     if is_held_out:
         held_out_records.append(r)
@@ -462,7 +465,7 @@ for r in records:
 print(f"Partitioned: {len(train_candidates):,} training candidates | {len(held_out_records):,} held-out test photos.")
 for c in CLASS_NAMES:
     h_count = sum(r["class_name"] == c for r in held_out_records)
-    tag_info = f"Held-out: {h_count} photos" if c in HELD_OUT_TAGS else "Source-limited: grouped split only"
+    tag_info = f"Held-out: {h_count} photos" if c in HELD_OUT_TAGS and USE_HELD_OUT_SOURCES_AS_TEST_SET else "Grouped split pool"
     print(f"  - {c:28s}: {tag_info}")
 
 # Step 4.2: Compute Dihedral pHashes for training candidates
@@ -475,8 +478,8 @@ for r, h in zip(train_candidates, hashes):
 print(f"✓ Hashes computed in {time.time()-t_hash:.1f}s.")
 
 # Step 4.3: Within-Class Single-Linkage Clustering
-print("\\nPerforming within-class clustering and 800-cap...")
-train_pool_by_class = defaultdict(list)
+print("\\nPerforming within-class clustering...")
+class_clusters = {}
 unique_clusters_by_class = {}
 
 for c in CLASS_NAMES:
@@ -498,40 +501,52 @@ for c in CLASS_NAMES:
     for i in range(N):
         clusters[uf.find(i)].append(c_recs[i])
         
+    class_clusters[c] = list(clusters.values())
     unique_clusters_by_class[c] = len(clusters)
-    
-    # Cap clusters at 800
-    sorted_cluster_roots = sorted(clusters.keys())
-    rng = random.Random(SEED + CLASS_TO_IDX[c])
-    rng.shuffle(sorted_cluster_roots)
-    selected_roots = sorted_cluster_roots[:MAX_CLASS_TOTAL]
-    
-    # Take 1 representative photo per selected cluster to guarantee strict independence
-    selected_photos = [clusters[root][0] for root in selected_roots]
-    train_pool_by_class[c] = selected_photos
-    
     dups = N - len(clusters)
-    print(f"  - {c:28s}: Raw={N:4d} | Clusters={len(clusters):4d} (Dups={dups:3d}) | Capped Used={len(selected_photos):4d}")
+    print(f"  - {c:28s}: Raw={N:4d} | Clusters={len(clusters):4d} (Dups={dups:3d})")
 
-# Step 4.4: Grouped 80/20 Train / Validation Split
-print("\\nSplitting into Grouped 80/20 Train and Validation sets (Zero Leakage)...")
+# Step 4.4: Exact TR2 Grouped 80/20 Train / Validation Split (Zero Leakage, All Photos Utilized up to Cap)
+print("\\nSplitting into Grouped 80/20 Train and Validation sets (Zero Leakage, TR2 Capped Pipeline)...")
 train_items = []
 val_items = []
 
 for c in CLASS_NAMES:
-    photos = train_pool_by_class[c]
+    clusters = list(class_clusters[c])
+    cluster_count = len(clusters)
+    
     rng = random.Random(SEED + 100 + CLASS_TO_IDX[c])
-    shuffled = list(photos)
-    rng.shuffle(shuffled)
+    rng.shuffle(clusters)
     
-    # 80% train, 20% validation
-    n_val = max(1, int(len(shuffled) * 0.20))
-    c_val = shuffled[:n_val]
-    c_train = shuffled[n_val:]
+    val_k = max(1, int(round(cluster_count * 0.20)))
+    val_clusters = clusters[:val_k]
+    train_clusters = clusters[val_k:]
     
-    val_items.extend(c_val)
-    train_items.extend(c_train)
-    print(f"  - {c:28s}: Train={len(c_train):4d} | Val={len(c_val):3d}")
+    train_c = []
+    for cl in train_clusters:
+        train_c.extend(cl)  # Include all cluster photos in training
+        
+    val_c = []
+    for cl in val_clusters:
+        val_c.append(rng.choice(cl))  # 1 independent representative per val cluster
+        
+    if len(train_c) > MAX_TRAIN_PER_CLASS:
+        rng.shuffle(train_c)
+        train_c = train_c[:MAX_TRAIN_PER_CLASS]
+        
+    total_c = len(train_c) + len(val_c)
+    if total_c > MAX_CLASS_TOTAL:
+        excess = total_c - MAX_CLASS_TOTAL
+        cut_train = min(excess, max(0, len(train_c) - 100))
+        if cut_train > 0:
+            train_c = train_c[:-cut_train]
+        excess = (len(train_c) + len(val_c)) - MAX_CLASS_TOTAL
+        if excess > 0:
+            val_c = val_c[:-excess]
+            
+    train_items.extend(train_c)
+    val_items.extend(val_c)
+    print(f"  - {c:28s}: Train={len(train_c):4d} | Val={len(val_c):3d} | Total={len(train_c)+len(val_c):4d}")
 
 print(f"\\nTotal Dataset Split: Train={len(train_items):,} | Val={len(val_items):,} | Held-Out Test={len(held_out_records):,}")
 
