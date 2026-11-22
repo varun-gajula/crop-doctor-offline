@@ -37,3 +37,21 @@ All bundled font families use the SIL Open Font License (OFL) 1.1:
 - **Noto Sans Telugu** (Google / SIL Open Font License 1.1)
 - **Noto Sans Devanagari** (Google / SIL Open Font License 1.1)
 - **Roboto / Material Typography** (Apache License 2.0)
+
+---
+
+## 4. Candidate & Benchmarked Pest Datasets (Task D5b)
+
+In compliance with **Rule H2 (No datasets committed to git repo)** and **Rule H9 (Free only / Open licenses)**, all training and evaluation datasets reside strictly on local disk under `C:\crop-data\` and external caches. None of these images are bundled in the repository or APK.
+
+| Dataset Identifier | Crop | Pest(s) Covered | License | Source / Citation | Status / Disk Location |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **MLD (3myfctrgk3.1)** | Maize | Fall Armyworm (*Spodoptera frugiperda*) | CC BY 4.0 | Mendeley Data: [doi:10.17632/3myfctrgk3.1](https://doi.org/10.17632/3myfctrgk3.1) | Verified on disk (`C:\crop-data\candidates\raw\3myfctrgk3\`) |
+| **CCMT (bwh3zbpkpv.1)** | Maize | Fall Armyworm (*S. frugiperda*), Grasshopper, Leaf Beetle | CC BY 4.0 | Mendeley Data: [doi:10.17632/bwh3zbpkpv.1](https://doi.org/10.17632/bwh3zbpkpv.1) | Verified on disk (`Downloads\Dataset for Crop Pest and Disease Detection\`) |
+| **Paddy Doctor** | Rice | Yellow Stem Borer (*dead_heart*), Rice Hispa (*hispa*), Green Leafhopper (*tungro*) | CC BY 4.0 | IEEE DataPort: [doi:10.21227/zsc8-d217](https://doi.org/10.21227/zsc8-d217); Kaggle: [paddy-disease-classification](https://www.kaggle.com/competitions/paddy-disease-classification) | Verified on disk (`C:\crop-data\candidates\raw\paddy-disease-classification.zip`) |
+| **Chili Krishna River Basin (ymt8k9bjkn.3)** | Chilli | Chilli Leaf Curl Complex (Thrips & Whitefly damage), Bacterial Spot | CC BY 4.0 | Mendeley Data: [doi:10.17632/ymt8k9bjkn.3](https://doi.org/10.17632/ymt8k9bjkn.3) | Verified on disk (`Downloads\Chili Leaf Disease Original Dataset\`) |
+| **Paddy Field Pest Image Dataset (Islam et al.)** | Rice | BPH, Leaf Folder, Stem Borer, Green Leafhopper, Rice Bug | CC BY 4.0 | Mendeley Data: [doi:10.17632/y5hwbhrn5m.3](https://doi.org/10.17632/y5hwbhrn5m.3) | Candidate (Awaiting download) |
+| **Makerere FAW** | Maize | Fall Armyworm (*Spodoptera frugiperda*) | CC BY 4.0 / Open Access | Zindi Challenge; Makerere AI Lab: [fall-armyworm](https://github.com/makerere-ai/fall-armyworm) | Candidate (Awaiting download) |
+| **IP102 Benchmark** | Rice / Multi-crop | 14 Rice Pests, Corn Borers, Aphids, Mites | Academic / Non-commercial | CVPR 2019; [xpwu95/IP102](https://github.com/xpwu95/IP102) | Candidate (Awaiting download) |
+| **Red Chili Pepper Pests** | Chilli | Aphids, Whiteflies, Thrips, Caterpillars (*Helicoverpa* / *Spodoptera*) | CC BY-SA 4.0 / Open Access | IJAIN 2023; Kaggle: [indraagustian/red-chili-pepper-pests-dataset](https://www.kaggle.com/datasets/indraagustian/red-chili-pepper-pests-dataset) | Candidate (Awaiting download) |
+

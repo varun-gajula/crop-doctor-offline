@@ -1,6 +1,38 @@
 # Project Progress - Crop Doctor Offline
 
-## Current Status: Task A-REAL Verified on Physical 6 GB Phone (Xiaomi POCO M4 Pro 5G)
+## Current Status: Task D6 Complete (13-Class Pre-Training Verification & Audit)
+
+### Done in Task D6: 13-Class Pre-Training Verification & Audit (Rules H2, H3, H4, H9, H11, H14)
+1. **13-Class Roster Audited via Dihedral Perceptual Hashing (64-bit pHash, Hamming $\le 8$)**:
+   - Total images audited: 14,808 across 10 distinct local repositories on disk.
+   - Total unique clusters: 11,449 (3,359 redundant internal duplicates identified and clustered).
+   - Total usable photos after 800 per-class cap: **8,790 photos**.
+   - Audit report saved to `benchmarks/d6_class_audit.md`, complete data in `benchmarks/d6_audit_data.json`, and cached hashes in `benchmarks/d6_hashes.json`.
+2. **Pest & Multi-Source Validation Analysis**:
+   - `maize_fall_armyworm`: Multi-source (MLD + CCMT, 794 unique photos). Held-out validation source: CCMT (274 unique photos).
+   - `rice_stem_borer`: Single source (Paddy Doctor, 1,022 unique photos) -> **Source-Limited**. Grouped 80/20 cluster split.
+   - `rice_hispa`: Single source (Paddy Doctor, 968 unique photos) -> **Source-Limited**. Grouped 80/20 cluster split.
+   - `tomato_spider_mites`: PlantVillage (234 unique) + PlantDoc (2 unique) = 236 unique photos -> Effectively **Source-Limited**; below 300 threshold.
+   - `rice_leaf_blast` & `rice_healthy`: Multi-source (Paddy Doctor + Project-AgML). Held-out validation source: Project-AgML (588 and 628 unique photos).
+   - `chilli_leaf_curl_virus` & `chilli_healthy`: Single source on disk (Mendeley Krishna River Basin, 270 and 253 unique photos) -> **Source-Limited**; below 300 threshold.
+3. **Chilli Leaf Curl Virus Symptom & Label Recommendation**:
+   - Sourced agronomy (ICAR-IIHR / PJTSAU / ANGRAU): upward curling is a co-occurring complex of *Begomovirus* (ChiLCV, whitefly vector) and *Scirtothrips dorsalis* (thrips feeding injury).
+   - Original Krishna Basin dataset provides no laboratory ground truth to separate thrips vs viral photos.
+   - **Verdict:** Do NOT split (would violate Rule H11 and collapse sample size to ~135). RENAME to `"Chilli Leaf Curl Complex (Thrips & Virus)"` (`chilli_leaf_curl_complex`).
+4. **Licensing & Competition Legality**:
+   - Zero sources forbid competition use.
+   - Paddy Doctor, Mendeley, and Kaggle agri_data use CC BY 4.0; PlantDoc uses MIT License.
+   - PlantVillage uses CC BY-NC 3.0 (permitted for non-profit student competition; flagged for commercial transparency).
+5. **Collision Audit (Zero Duplicate Leakage)**:
+   - Exactly 0 valid cross-class duplicate images across all 13 classes.
+   - Exactly 0 cross-source duplicates within multi-source classes.
+   - Discovered and flagged 20 corrupted/unreadable JPEG files in CCMT Maize (`16 in leaf blight`, `4 in healthy`).
+6. **Passing Test Suite**:
+   - `./gradlew testDebugUnitTest` passing (139 / 139 unit tests).
+
+---
+
+## Task A-REAL Verified on Physical 6 GB Phone (Xiaomi POCO M4 Pro 5G)
 
 ### Done in Task A-REAL: Real On-Device Llama Advisory & Offline Guide Path
 1. **Verification on Physical 6 GB Phone (`22041219PI`, Android 14, arm64-v8a)**:

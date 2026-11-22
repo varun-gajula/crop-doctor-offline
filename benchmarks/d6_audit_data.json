@@ -1,0 +1,773 @@
+{
+  "classes": {
+    "rice_leaf_blast": {
+      "raw_count": 2372,
+      "unique_clusters": 1751,
+      "internal_duplicates": 621,
+      "capped_count": 800,
+      "sources": [
+        "PaddyDoctor",
+        "Project-AgML"
+      ],
+      "source_breakdown": {
+        "PaddyDoctor": 1738,
+        "Project-AgML": 634
+      },
+      "source_limited": false
+    },
+    "rice_healthy": {
+      "raw_count": 2417,
+      "unique_clusters": 1944,
+      "internal_duplicates": 473,
+      "capped_count": 800,
+      "sources": [
+        "PaddyDoctor",
+        "Project-AgML"
+      ],
+      "source_breakdown": {
+        "PaddyDoctor": 1764,
+        "Project-AgML": 653
+      },
+      "source_limited": false
+    },
+    "cotton_bacterial_blight": {
+      "raw_count": 587,
+      "unique_clusters": 543,
+      "internal_duplicates": 44,
+      "capped_count": 543,
+      "sources": [
+        "Mendeley_74jsdxtmx2",
+        "Mendeley_b3jy2p6k8w",
+        "Mendeley_t9hgvk2h9p"
+      ],
+      "source_breakdown": {
+        "Mendeley_74jsdxtmx2": 119,
+        "Mendeley_t9hgvk2h9p": 218,
+        "Mendeley_b3jy2p6k8w": 250
+      },
+      "source_limited": false
+    },
+    "cotton_healthy": {
+      "raw_count": 1379,
+      "unique_clusters": 1191,
+      "internal_duplicates": 188,
+      "capped_count": 800,
+      "sources": [
+        "Mendeley_74jsdxtmx2",
+        "Mendeley_b3jy2p6k8w",
+        "Mendeley_t9hgvk2h9p"
+      ],
+      "source_breakdown": {
+        "Mendeley_74jsdxtmx2": 789,
+        "Mendeley_t9hgvk2h9p": 333,
+        "Mendeley_b3jy2p6k8w": 257
+      },
+      "source_limited": false
+    },
+    "chilli_leaf_curl_virus": {
+      "raw_count": 423,
+      "unique_clusters": 270,
+      "internal_duplicates": 153,
+      "capped_count": 270,
+      "sources": [
+        "Mendeley_ymt8k9bjkn"
+      ],
+      "source_breakdown": {
+        "Mendeley_ymt8k9bjkn": 423
+      },
+      "source_limited": true
+    },
+    "chilli_healthy": {
+      "raw_count": 458,
+      "unique_clusters": 253,
+      "internal_duplicates": 205,
+      "capped_count": 253,
+      "sources": [
+        "Mendeley_ymt8k9bjkn"
+      ],
+      "source_breakdown": {
+        "Mendeley_ymt8k9bjkn": 458
+      },
+      "source_limited": true
+    },
+    "maize_northern_leaf_blight": {
+      "raw_count": 1669,
+      "unique_clusters": 1633,
+      "internal_duplicates": 36,
+      "capped_count": 800,
+      "sources": [
+        "Mendeley_3myfctrgk3",
+        "Mendeley_bwh3zbpkpv",
+        "PlantDoc"
+      ],
+      "source_breakdown": {
+        "Mendeley_3myfctrgk3": 489,
+        "Mendeley_bwh3zbpkpv": 1006,
+        "PlantDoc": 174
+      },
+      "source_limited": false
+    },
+    "maize_healthy": {
+      "raw_count": 635,
+      "unique_clusters": 555,
+      "internal_duplicates": 80,
+      "capped_count": 555,
+      "sources": [
+        "Mendeley_3myfctrgk3",
+        "Mendeley_bwh3zbpkpv"
+      ],
+      "source_breakdown": {
+        "Mendeley_3myfctrgk3": 427,
+        "Mendeley_bwh3zbpkpv": 208
+      },
+      "source_limited": false
+    },
+    "maize_fall_armyworm": {
+      "raw_count": 810,
+      "unique_clusters": 794,
+      "internal_duplicates": 16,
+      "capped_count": 794,
+      "sources": [
+        "Mendeley_3myfctrgk3",
+        "Mendeley_bwh3zbpkpv"
+      ],
+      "source_breakdown": {
+        "Mendeley_3myfctrgk3": 525,
+        "Mendeley_bwh3zbpkpv": 285
+      },
+      "source_limited": false
+    },
+    "rice_stem_borer": {
+      "raw_count": 1442,
+      "unique_clusters": 1022,
+      "internal_duplicates": 420,
+      "capped_count": 800,
+      "sources": [
+        "PaddyDoctor"
+      ],
+      "source_breakdown": {
+        "PaddyDoctor": 1442
+      },
+      "source_limited": true
+    },
+    "rice_hispa": {
+      "raw_count": 1594,
+      "unique_clusters": 968,
+      "internal_duplicates": 626,
+      "capped_count": 800,
+      "sources": [
+        "PaddyDoctor"
+      ],
+      "source_breakdown": {
+        "PaddyDoctor": 1594
+      },
+      "source_limited": true
+    },
+    "tomato_spider_mites": {
+      "raw_count": 252,
+      "unique_clusters": 236,
+      "internal_duplicates": 16,
+      "capped_count": 236,
+      "sources": [
+        "PlantDoc",
+        "PlantVillage"
+      ],
+      "source_breakdown": {
+        "PlantVillage": 250,
+        "PlantDoc": 2
+      },
+      "source_limited": false
+    },
+    "other_not_a_crop": {
+      "raw_count": 800,
+      "unique_clusters": 339,
+      "internal_duplicates": 461,
+      "capped_count": 339,
+      "sources": [
+        "Kaggle_agri_data"
+      ],
+      "source_breakdown": {
+        "Kaggle_agri_data": 800
+      },
+      "source_limited": true
+    }
+  },
+  "cross_class_conflicts": [
+    {
+      "class1": "maize_northern_leaf_blight",
+      "source1": "Mendeley_bwh3zbpkpv",
+      "file1": "leaf blight379_.jpg",
+      "class2": "maize_healthy",
+      "source2": "Mendeley_bwh3zbpkpv",
+      "file2": "healthy189_.jpg",
+      "dist": 0
+    },
+    {
+      "class1": "maize_northern_leaf_blight",
+      "source1": "Mendeley_bwh3zbpkpv",
+      "file1": "leaf blight379_.jpg",
+      "class2": "maize_healthy",
+      "source2": "Mendeley_bwh3zbpkpv",
+      "file2": "healthy18_.jpg",
+      "dist": 0
+    },
+    {
+      "class1": "maize_northern_leaf_blight",
+      "source1": "Mendeley_bwh3zbpkpv",
+      "file1": "leaf blight379_.jpg",
+      "class2": "maize_healthy",
+      "source2": "Mendeley_bwh3zbpkpv",
+      "file2": "healthy87_.jpg",
+      "dist": 0
+    },
+    {
+      "class1": "maize_northern_leaf_blight",
+      "source1": "Mendeley_bwh3zbpkpv",
+      "file1": "leaf blight379_.jpg",
+      "class2": "maize_healthy",
+      "source2": "Mendeley_bwh3zbpkpv",
+      "file2": "healthy88_.jpg",
+      "dist": 0
+    },
+    {
+      "class1": "maize_northern_leaf_blight",
+      "source1": "Mendeley_bwh3zbpkpv",
+      "file1": "leaf blight37_.jpg",
+      "class2": "maize_healthy",
+      "source2": "Mendeley_bwh3zbpkpv",
+      "file2": "healthy189_.jpg",
+      "dist": 0
+    },
+    {
+      "class1": "maize_northern_leaf_blight",
+      "source1": "Mendeley_bwh3zbpkpv",
+      "file1": "leaf blight37_.jpg",
+      "class2": "maize_healthy",
+      "source2": "Mendeley_bwh3zbpkpv",
+      "file2": "healthy18_.jpg",
+      "dist": 0
+    },
+    {
+      "class1": "maize_northern_leaf_blight",
+      "source1": "Mendeley_bwh3zbpkpv",
+      "file1": "leaf blight37_.jpg",
+      "class2": "maize_healthy",
+      "source2": "Mendeley_bwh3zbpkpv",
+      "file2": "healthy87_.jpg",
+      "dist": 0
+    },
+    {
+      "class1": "maize_northern_leaf_blight",
+      "source1": "Mendeley_bwh3zbpkpv",
+      "file1": "leaf blight37_.jpg",
+      "class2": "maize_healthy",
+      "source2": "Mendeley_bwh3zbpkpv",
+      "file2": "healthy88_.jpg",
+      "dist": 0
+    },
+    {
+      "class1": "maize_northern_leaf_blight",
+      "source1": "Mendeley_bwh3zbpkpv",
+      "file1": "leaf blight452_.jpg",
+      "class2": "maize_healthy",
+      "source2": "Mendeley_bwh3zbpkpv",
+      "file2": "healthy189_.jpg",
+      "dist": 0
+    },
+    {
+      "class1": "maize_northern_leaf_blight",
+      "source1": "Mendeley_bwh3zbpkpv",
+      "file1": "leaf blight452_.jpg",
+      "class2": "maize_healthy",
+      "source2": "Mendeley_bwh3zbpkpv",
+      "file2": "healthy18_.jpg",
+      "dist": 0
+    },
+    {
+      "class1": "maize_northern_leaf_blight",
+      "source1": "Mendeley_bwh3zbpkpv",
+      "file1": "leaf blight452_.jpg",
+      "class2": "maize_healthy",
+      "source2": "Mendeley_bwh3zbpkpv",
+      "file2": "healthy87_.jpg",
+      "dist": 0
+    },
+    {
+      "class1": "maize_northern_leaf_blight",
+      "source1": "Mendeley_bwh3zbpkpv",
+      "file1": "leaf blight452_.jpg",
+      "class2": "maize_healthy",
+      "source2": "Mendeley_bwh3zbpkpv",
+      "file2": "healthy88_.jpg",
+      "dist": 0
+    },
+    {
+      "class1": "maize_northern_leaf_blight",
+      "source1": "Mendeley_bwh3zbpkpv",
+      "file1": "leaf blight453_.jpg",
+      "class2": "maize_healthy",
+      "source2": "Mendeley_bwh3zbpkpv",
+      "file2": "healthy189_.jpg",
+      "dist": 0
+    },
+    {
+      "class1": "maize_northern_leaf_blight",
+      "source1": "Mendeley_bwh3zbpkpv",
+      "file1": "leaf blight453_.jpg",
+      "class2": "maize_healthy",
+      "source2": "Mendeley_bwh3zbpkpv",
+      "file2": "healthy18_.jpg",
+      "dist": 0
+    },
+    {
+      "class1": "maize_northern_leaf_blight",
+      "source1": "Mendeley_bwh3zbpkpv",
+      "file1": "leaf blight453_.jpg",
+      "class2": "maize_healthy",
+      "source2": "Mendeley_bwh3zbpkpv",
+      "file2": "healthy87_.jpg",
+      "dist": 0
+    },
+    {
+      "class1": "maize_northern_leaf_blight",
+      "source1": "Mendeley_bwh3zbpkpv",
+      "file1": "leaf blight453_.jpg",
+      "class2": "maize_healthy",
+      "source2": "Mendeley_bwh3zbpkpv",
+      "file2": "healthy88_.jpg",
+      "dist": 0
+    },
+    {
+      "class1": "maize_northern_leaf_blight",
+      "source1": "Mendeley_bwh3zbpkpv",
+      "file1": "leaf blight522_.jpg",
+      "class2": "maize_healthy",
+      "source2": "Mendeley_bwh3zbpkpv",
+      "file2": "healthy189_.jpg",
+      "dist": 0
+    },
+    {
+      "class1": "maize_northern_leaf_blight",
+      "source1": "Mendeley_bwh3zbpkpv",
+      "file1": "leaf blight522_.jpg",
+      "class2": "maize_healthy",
+      "source2": "Mendeley_bwh3zbpkpv",
+      "file2": "healthy18_.jpg",
+      "dist": 0
+    },
+    {
+      "class1": "maize_northern_leaf_blight",
+      "source1": "Mendeley_bwh3zbpkpv",
+      "file1": "leaf blight522_.jpg",
+      "class2": "maize_healthy",
+      "source2": "Mendeley_bwh3zbpkpv",
+      "file2": "healthy87_.jpg",
+      "dist": 0
+    },
+    {
+      "class1": "maize_northern_leaf_blight",
+      "source1": "Mendeley_bwh3zbpkpv",
+      "file1": "leaf blight522_.jpg",
+      "class2": "maize_healthy",
+      "source2": "Mendeley_bwh3zbpkpv",
+      "file2": "healthy88_.jpg",
+      "dist": 0
+    },
+    {
+      "class1": "maize_northern_leaf_blight",
+      "source1": "Mendeley_bwh3zbpkpv",
+      "file1": "leaf blight58_.jpg",
+      "class2": "maize_healthy",
+      "source2": "Mendeley_bwh3zbpkpv",
+      "file2": "healthy189_.jpg",
+      "dist": 0
+    },
+    {
+      "class1": "maize_northern_leaf_blight",
+      "source1": "Mendeley_bwh3zbpkpv",
+      "file1": "leaf blight58_.jpg",
+      "class2": "maize_healthy",
+      "source2": "Mendeley_bwh3zbpkpv",
+      "file2": "healthy18_.jpg",
+      "dist": 0
+    },
+    {
+      "class1": "maize_northern_leaf_blight",
+      "source1": "Mendeley_bwh3zbpkpv",
+      "file1": "leaf blight58_.jpg",
+      "class2": "maize_healthy",
+      "source2": "Mendeley_bwh3zbpkpv",
+      "file2": "healthy87_.jpg",
+      "dist": 0
+    },
+    {
+      "class1": "maize_northern_leaf_blight",
+      "source1": "Mendeley_bwh3zbpkpv",
+      "file1": "leaf blight58_.jpg",
+      "class2": "maize_healthy",
+      "source2": "Mendeley_bwh3zbpkpv",
+      "file2": "healthy88_.jpg",
+      "dist": 0
+    },
+    {
+      "class1": "maize_northern_leaf_blight",
+      "source1": "Mendeley_bwh3zbpkpv",
+      "file1": "leaf blight590_.jpg",
+      "class2": "maize_healthy",
+      "source2": "Mendeley_bwh3zbpkpv",
+      "file2": "healthy189_.jpg",
+      "dist": 0
+    },
+    {
+      "class1": "maize_northern_leaf_blight",
+      "source1": "Mendeley_bwh3zbpkpv",
+      "file1": "leaf blight590_.jpg",
+      "class2": "maize_healthy",
+      "source2": "Mendeley_bwh3zbpkpv",
+      "file2": "healthy18_.jpg",
+      "dist": 0
+    },
+    {
+      "class1": "maize_northern_leaf_blight",
+      "source1": "Mendeley_bwh3zbpkpv",
+      "file1": "leaf blight590_.jpg",
+      "class2": "maize_healthy",
+      "source2": "Mendeley_bwh3zbpkpv",
+      "file2": "healthy87_.jpg",
+      "dist": 0
+    },
+    {
+      "class1": "maize_northern_leaf_blight",
+      "source1": "Mendeley_bwh3zbpkpv",
+      "file1": "leaf blight590_.jpg",
+      "class2": "maize_healthy",
+      "source2": "Mendeley_bwh3zbpkpv",
+      "file2": "healthy88_.jpg",
+      "dist": 0
+    },
+    {
+      "class1": "maize_northern_leaf_blight",
+      "source1": "Mendeley_bwh3zbpkpv",
+      "file1": "leaf blight666_.jpg",
+      "class2": "maize_healthy",
+      "source2": "Mendeley_bwh3zbpkpv",
+      "file2": "healthy189_.jpg",
+      "dist": 0
+    },
+    {
+      "class1": "maize_northern_leaf_blight",
+      "source1": "Mendeley_bwh3zbpkpv",
+      "file1": "leaf blight666_.jpg",
+      "class2": "maize_healthy",
+      "source2": "Mendeley_bwh3zbpkpv",
+      "file2": "healthy18_.jpg",
+      "dist": 0
+    },
+    {
+      "class1": "maize_northern_leaf_blight",
+      "source1": "Mendeley_bwh3zbpkpv",
+      "file1": "leaf blight666_.jpg",
+      "class2": "maize_healthy",
+      "source2": "Mendeley_bwh3zbpkpv",
+      "file2": "healthy87_.jpg",
+      "dist": 0
+    },
+    {
+      "class1": "maize_northern_leaf_blight",
+      "source1": "Mendeley_bwh3zbpkpv",
+      "file1": "leaf blight666_.jpg",
+      "class2": "maize_healthy",
+      "source2": "Mendeley_bwh3zbpkpv",
+      "file2": "healthy88_.jpg",
+      "dist": 0
+    },
+    {
+      "class1": "maize_northern_leaf_blight",
+      "source1": "Mendeley_bwh3zbpkpv",
+      "file1": "leaf blight667_.jpg",
+      "class2": "maize_healthy",
+      "source2": "Mendeley_bwh3zbpkpv",
+      "file2": "healthy189_.jpg",
+      "dist": 0
+    },
+    {
+      "class1": "maize_northern_leaf_blight",
+      "source1": "Mendeley_bwh3zbpkpv",
+      "file1": "leaf blight667_.jpg",
+      "class2": "maize_healthy",
+      "source2": "Mendeley_bwh3zbpkpv",
+      "file2": "healthy18_.jpg",
+      "dist": 0
+    },
+    {
+      "class1": "maize_northern_leaf_blight",
+      "source1": "Mendeley_bwh3zbpkpv",
+      "file1": "leaf blight667_.jpg",
+      "class2": "maize_healthy",
+      "source2": "Mendeley_bwh3zbpkpv",
+      "file2": "healthy87_.jpg",
+      "dist": 0
+    },
+    {
+      "class1": "maize_northern_leaf_blight",
+      "source1": "Mendeley_bwh3zbpkpv",
+      "file1": "leaf blight667_.jpg",
+      "class2": "maize_healthy",
+      "source2": "Mendeley_bwh3zbpkpv",
+      "file2": "healthy88_.jpg",
+      "dist": 0
+    },
+    {
+      "class1": "maize_northern_leaf_blight",
+      "source1": "Mendeley_bwh3zbpkpv",
+      "file1": "leaf blight745_.jpg",
+      "class2": "maize_healthy",
+      "source2": "Mendeley_bwh3zbpkpv",
+      "file2": "healthy189_.jpg",
+      "dist": 0
+    },
+    {
+      "class1": "maize_northern_leaf_blight",
+      "source1": "Mendeley_bwh3zbpkpv",
+      "file1": "leaf blight745_.jpg",
+      "class2": "maize_healthy",
+      "source2": "Mendeley_bwh3zbpkpv",
+      "file2": "healthy18_.jpg",
+      "dist": 0
+    },
+    {
+      "class1": "maize_northern_leaf_blight",
+      "source1": "Mendeley_bwh3zbpkpv",
+      "file1": "leaf blight745_.jpg",
+      "class2": "maize_healthy",
+      "source2": "Mendeley_bwh3zbpkpv",
+      "file2": "healthy87_.jpg",
+      "dist": 0
+    },
+    {
+      "class1": "maize_northern_leaf_blight",
+      "source1": "Mendeley_bwh3zbpkpv",
+      "file1": "leaf blight745_.jpg",
+      "class2": "maize_healthy",
+      "source2": "Mendeley_bwh3zbpkpv",
+      "file2": "healthy88_.jpg",
+      "dist": 0
+    },
+    {
+      "class1": "maize_northern_leaf_blight",
+      "source1": "Mendeley_bwh3zbpkpv",
+      "file1": "leaf blight746_.jpg",
+      "class2": "maize_healthy",
+      "source2": "Mendeley_bwh3zbpkpv",
+      "file2": "healthy189_.jpg",
+      "dist": 0
+    },
+    {
+      "class1": "maize_northern_leaf_blight",
+      "source1": "Mendeley_bwh3zbpkpv",
+      "file1": "leaf blight746_.jpg",
+      "class2": "maize_healthy",
+      "source2": "Mendeley_bwh3zbpkpv",
+      "file2": "healthy18_.jpg",
+      "dist": 0
+    },
+    {
+      "class1": "maize_northern_leaf_blight",
+      "source1": "Mendeley_bwh3zbpkpv",
+      "file1": "leaf blight746_.jpg",
+      "class2": "maize_healthy",
+      "source2": "Mendeley_bwh3zbpkpv",
+      "file2": "healthy87_.jpg",
+      "dist": 0
+    },
+    {
+      "class1": "maize_northern_leaf_blight",
+      "source1": "Mendeley_bwh3zbpkpv",
+      "file1": "leaf blight746_.jpg",
+      "class2": "maize_healthy",
+      "source2": "Mendeley_bwh3zbpkpv",
+      "file2": "healthy88_.jpg",
+      "dist": 0
+    },
+    {
+      "class1": "maize_northern_leaf_blight",
+      "source1": "Mendeley_bwh3zbpkpv",
+      "file1": "leaf blight82_.jpg",
+      "class2": "maize_healthy",
+      "source2": "Mendeley_bwh3zbpkpv",
+      "file2": "healthy189_.jpg",
+      "dist": 0
+    },
+    {
+      "class1": "maize_northern_leaf_blight",
+      "source1": "Mendeley_bwh3zbpkpv",
+      "file1": "leaf blight82_.jpg",
+      "class2": "maize_healthy",
+      "source2": "Mendeley_bwh3zbpkpv",
+      "file2": "healthy18_.jpg",
+      "dist": 0
+    },
+    {
+      "class1": "maize_northern_leaf_blight",
+      "source1": "Mendeley_bwh3zbpkpv",
+      "file1": "leaf blight82_.jpg",
+      "class2": "maize_healthy",
+      "source2": "Mendeley_bwh3zbpkpv",
+      "file2": "healthy87_.jpg",
+      "dist": 0
+    },
+    {
+      "class1": "maize_northern_leaf_blight",
+      "source1": "Mendeley_bwh3zbpkpv",
+      "file1": "leaf blight82_.jpg",
+      "class2": "maize_healthy",
+      "source2": "Mendeley_bwh3zbpkpv",
+      "file2": "healthy88_.jpg",
+      "dist": 0
+    },
+    {
+      "class1": "maize_northern_leaf_blight",
+      "source1": "Mendeley_bwh3zbpkpv",
+      "file1": "leaf blight830_.jpg",
+      "class2": "maize_healthy",
+      "source2": "Mendeley_bwh3zbpkpv",
+      "file2": "healthy189_.jpg",
+      "dist": 0
+    },
+    {
+      "class1": "maize_northern_leaf_blight",
+      "source1": "Mendeley_bwh3zbpkpv",
+      "file1": "leaf blight830_.jpg",
+      "class2": "maize_healthy",
+      "source2": "Mendeley_bwh3zbpkpv",
+      "file2": "healthy18_.jpg",
+      "dist": 0
+    },
+    {
+      "class1": "maize_northern_leaf_blight",
+      "source1": "Mendeley_bwh3zbpkpv",
+      "file1": "leaf blight830_.jpg",
+      "class2": "maize_healthy",
+      "source2": "Mendeley_bwh3zbpkpv",
+      "file2": "healthy87_.jpg",
+      "dist": 0
+    },
+    {
+      "class1": "maize_northern_leaf_blight",
+      "source1": "Mendeley_bwh3zbpkpv",
+      "file1": "leaf blight830_.jpg",
+      "class2": "maize_healthy",
+      "source2": "Mendeley_bwh3zbpkpv",
+      "file2": "healthy88_.jpg",
+      "dist": 0
+    },
+    {
+      "class1": "maize_northern_leaf_blight",
+      "source1": "Mendeley_bwh3zbpkpv",
+      "file1": "leaf blight912_.jpg",
+      "class2": "maize_healthy",
+      "source2": "Mendeley_bwh3zbpkpv",
+      "file2": "healthy189_.jpg",
+      "dist": 0
+    },
+    {
+      "class1": "maize_northern_leaf_blight",
+      "source1": "Mendeley_bwh3zbpkpv",
+      "file1": "leaf blight912_.jpg",
+      "class2": "maize_healthy",
+      "source2": "Mendeley_bwh3zbpkpv",
+      "file2": "healthy18_.jpg",
+      "dist": 0
+    },
+    {
+      "class1": "maize_northern_leaf_blight",
+      "source1": "Mendeley_bwh3zbpkpv",
+      "file1": "leaf blight912_.jpg",
+      "class2": "maize_healthy",
+      "source2": "Mendeley_bwh3zbpkpv",
+      "file2": "healthy87_.jpg",
+      "dist": 0
+    },
+    {
+      "class1": "maize_northern_leaf_blight",
+      "source1": "Mendeley_bwh3zbpkpv",
+      "file1": "leaf blight912_.jpg",
+      "class2": "maize_healthy",
+      "source2": "Mendeley_bwh3zbpkpv",
+      "file2": "healthy88_.jpg",
+      "dist": 0
+    },
+    {
+      "class1": "maize_northern_leaf_blight",
+      "source1": "Mendeley_bwh3zbpkpv",
+      "file1": "leaf blight913_.jpg",
+      "class2": "maize_healthy",
+      "source2": "Mendeley_bwh3zbpkpv",
+      "file2": "healthy189_.jpg",
+      "dist": 0
+    },
+    {
+      "class1": "maize_northern_leaf_blight",
+      "source1": "Mendeley_bwh3zbpkpv",
+      "file1": "leaf blight913_.jpg",
+      "class2": "maize_healthy",
+      "source2": "Mendeley_bwh3zbpkpv",
+      "file2": "healthy18_.jpg",
+      "dist": 0
+    },
+    {
+      "class1": "maize_northern_leaf_blight",
+      "source1": "Mendeley_bwh3zbpkpv",
+      "file1": "leaf blight913_.jpg",
+      "class2": "maize_healthy",
+      "source2": "Mendeley_bwh3zbpkpv",
+      "file2": "healthy87_.jpg",
+      "dist": 0
+    },
+    {
+      "class1": "maize_northern_leaf_blight",
+      "source1": "Mendeley_bwh3zbpkpv",
+      "file1": "leaf blight913_.jpg",
+      "class2": "maize_healthy",
+      "source2": "Mendeley_bwh3zbpkpv",
+      "file2": "healthy88_.jpg",
+      "dist": 0
+    },
+    {
+      "class1": "maize_northern_leaf_blight",
+      "source1": "Mendeley_bwh3zbpkpv",
+      "file1": "leaf blight98_.jpg",
+      "class2": "maize_healthy",
+      "source2": "Mendeley_bwh3zbpkpv",
+      "file2": "healthy189_.jpg",
+      "dist": 0
+    },
+    {
+      "class1": "maize_northern_leaf_blight",
+      "source1": "Mendeley_bwh3zbpkpv",
+      "file1": "leaf blight98_.jpg",
+      "class2": "maize_healthy",
+      "source2": "Mendeley_bwh3zbpkpv",
+      "file2": "healthy18_.jpg",
+      "dist": 0
+    },
+    {
+      "class1": "maize_northern_leaf_blight",
+      "source1": "Mendeley_bwh3zbpkpv",
+      "file1": "leaf blight98_.jpg",
+      "class2": "maize_healthy",
+      "source2": "Mendeley_bwh3zbpkpv",
+      "file2": "healthy87_.jpg",
+      "dist": 0
+    },
+    {
+      "class1": "maize_northern_leaf_blight",
+      "source1": "Mendeley_bwh3zbpkpv",
+      "file1": "leaf blight98_.jpg",
+      "class2": "maize_healthy",
+      "source2": "Mendeley_bwh3zbpkpv",
+      "file2": "healthy88_.jpg",
+      "dist": 0
+    }
+  ]
+}
