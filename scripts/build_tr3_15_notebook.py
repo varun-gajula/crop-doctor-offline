@@ -168,7 +168,8 @@ IMAGE_EXTS = {".jpg", ".jpeg", ".png", ".bmp", ".webp"}
 os.system("pip install -q imagehash Pillow numpy")
 
 import numpy as np
-from PIL import Image, ImageOps
+from PIL import Image, ImageOps, ImageFile
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 import imagehash
 
 random.seed(SEED)
@@ -185,6 +186,11 @@ torch.manual_seed(SEED)
 if torch.cuda.is_available():
     torch.cuda.manual_seed_all(SEED)
     torch.backends.cudnn.benchmark = True
+    try:
+        torch.backends.cuda.matmul.allow_tf32 = True
+        torch.backends.cudnn.allow_tf32 = True
+    except Exception:
+        pass
 
 num_gpus = torch.cuda.device_count()
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -639,7 +645,9 @@ train_loader = DataLoader(
     batch_size=BATCH_SIZE,
     sampler=sampler,
     num_workers=NUM_WORKERS,
-    pin_memory=True,
+    pin_memory=torch.cuda.is_available(),
+    persistent_workers=True if NUM_WORKERS > 0 else False,
+    prefetch_factor=2 if NUM_WORKERS > 0 else None,
     drop_last=True
 )
 
@@ -648,7 +656,9 @@ val_loader = DataLoader(
     batch_size=BATCH_SIZE,
     shuffle=False,
     num_workers=NUM_WORKERS,
-    pin_memory=True
+    pin_memory=torch.cuda.is_available(),
+    persistent_workers=True if NUM_WORKERS > 0 else False,
+    prefetch_factor=2 if NUM_WORKERS > 0 else None
 )
 
 # Model: MobileNetV3-Large with 15 classes
@@ -1318,8 +1328,41 @@ print("You can download this zip directly from Kaggle's '/kaggle/working' output
     out_path.parent.mkdir(parents=True, exist_ok=True)
     with open(out_path, "w", encoding="utf-8") as f:
         json.dump(nb, f, indent=1)
+    print(f"✓ 11-Cell Modular Notebook generated at: {out_path} ({len(nb['cells'])} cells)")
 
-    print(f"✓ Notebook generated successfully at: {out_path} ({len(nb['cells'])} cells)")
+    # Also generate single-cell MaxGPU notebook (Crop_Doctor_15Class_Kaggle_MaxGPU.ipynb)
+    all_code_blocks = [
+        cell_1_code,
+        cell_2_code,
+        cell_3_code,
+        cell_4_code,
+        cell_5_code,
+        cell_6_code,
+        cell_7_code,
+        cell_8_code,
+        cell_9_code,
+        cell_10_code,
+    ]
+    single_code = "\n\n".join(all_code_blocks)
+    maxgpu_nb = {
+        "cells": [
+            nb["cells"][0], # Markdown overview
+            {
+                "cell_type": "code",
+                "execution_count": None,
+                "metadata": {},
+                "outputs": [],
+                "source": single_code.splitlines(keepends=True)
+            }
+        ],
+        "metadata": nb["metadata"],
+        "nbformat": 4,
+        "nbformat_minor": 4
+    }
+    maxgpu_path = Path("notebooks/Crop_Doctor_15Class_Kaggle_MaxGPU.ipynb")
+    with open(maxgpu_path, "w", encoding="utf-8") as f:
+        json.dump(maxgpu_nb, f, indent=1)
+    print(f"✓ Single-Cell MaxGPU Notebook generated at: {maxgpu_path} (2 cells)")
 
 if __name__ == "__main__":
     build_notebook()
