@@ -1,6 +1,41 @@
 # Project Progress - Crop Doctor Offline
 
-## Current Status: Task DIAG1 Complete (Diagnosis of 15-Class Held-Out Source Failure)
+## Current Status: Task DATA-FIX + TR4 Complete (Zero-Confound Dataset Rebuild & Kaggle Retraining Prepared)
+
+### Done in Task DATA-FIX + TR4: Zero-Confound Dataset Rebuild & Kaggle Retraining Preparation (Rules H1-H15, R1-R10, R14)
+1. **Rebuilt Unified 15-Class Dataset (`C:\crop-data\crop_doctor_15_v2`)**:
+   - Integrated ALL available sources into training and validation: PaddyDoctor, AgML, Mendeley 74j, Mendeley T9h, Mendeley B3j, MLD, CCMT, Rust, Krishna, Archive2, and AgriData.
+   - Total of 9,792 class photos across all 15 classes + 174 stress-test photos (9,966 files total).
+   - PlantDoc Corn leaf blight (174 photos) strictly separated into `plantdoc_corn_leaf_blight_noisy/` for out-of-distribution stress testing only; never trained on.
+2. **Letterbox Bar Detection & Complete Trimming (Rule 5)**:
+   - Evaluated all 9,966 images for artificial single-color/gray letterbox bars.
+   - Detected and trimmed 1,085 photos with legacy letterbox bars (MendeleyT9h: 374, Rust: 368, AgML: 198, MendeleyB3j: 49, Archive2: 30, MLD: 24, PlantDoc: 19, PaddyDoctor: 13, CCMT: 8, Mendeley74j: 2).
+   - Trimmed photos cleanly to content bounding box and resized directly to 512x512 via Lanczos.
+   - Verified on contact sheet (`benchmarks/data_fix_contact_sheet.jpg`, 217.7 KB) and edge audit: zero residual bars.
+3. **Source Balancing & Confound Mitigation**:
+   - `rice_leaf_blast` & `rice_healthy`: Perfectly balanced 50/50 (400 PaddyDoctor + 400 AgML = 800 photos each).
+   - `maize_fall_armyworm`: Both agronomic views balanced at exactly 50/50 equal counts (285 MLD leaf-blade punctures + 285 CCMT whorl/frass/larvae = 570 photos).
+   - Maize CCMT proportions: CCMT contributes comparable 50% proportions across all maize classes: 259 blight (49.9%), 206 healthy (49.8%), 285 fall armyworm (50.0%).
+   - Cotton: Balanced across Mendeley 74j, T9h, and B3j for both bacterial blight (119 + 200 + 200 = 519) and healthy (266 + 266 + 257 = 789).
+4. **Packaged Deliverable (`C:\crop-data\crop_doctor_15_v2.zip`)**:
+   - Packaged cleanly into `C:\crop-data\crop_doctor_15_v2.zip` (974.11 MB).
+   - Target dataset name for Kaggle: `crop-doctor-15-v2`.
+5. **Configured TR4 Kaggle Notebooks**:
+   - Generated `notebooks/Crop_Doctor_15Class_Kaggle_MaxGPU.ipynb` (single-cell MaxGPU format) and `notebooks/Crop_Doctor_15Class_Kaggle_20ep.ipynb` (modular 11-cell format).
+   - 8-stage augmentation pipeline: RandomResizedCrop (0.5 to 1.0), HorizontalFlip, Rotation 20 deg, ColorJitter, RandomGrayscale (p=0.1), GaussianBlur, RandomDownscaleUpscale (p=0.3), RandomJPEGCompression (p=0.3).
+   - Removed filename-regex held-out logic; full grouped 80/20 cluster split (Hamming <= 8 default, <= 10 tomato).
+   - Per-class AND per-source validation recall auditing; flags any source > 10 points below class average.
+   - 20 epochs, checkpoint every epoch with resume, ExecuTorch 0.6.0 pinned.
+   - Estimated training time on 2x Tesla T4 GPUs: ~344 s/epoch (~1 hour 55 minutes for 20 epochs).
+6. **Verification & Audit Artifacts**:
+   - `benchmarks/data_fix_source_table.md`: Complete source-by-class matrix, confound analysis, and bar stats.
+   - `benchmarks/data_fix_stats.json`: Raw photo counts and bar counts.
+   - `benchmarks/data_fix_contact_sheet.jpg`: Visual proof of zero letterbox bars.
+   - All 141 Gradle unit tests pass (`testDebugUnitTest` green).
+
+---
+
+## Previous Status: Task DIAG1 Complete (Diagnosis of 15-Class Held-Out Source Failure)
 
 ### Done in Task DIAG1: Diagnosis of 15-Class Held-Out Generalization Failure (Report Only)
 1. **Full Held-Out Model Inference**:

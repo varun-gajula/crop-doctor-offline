@@ -1,0 +1,79 @@
+{
+  "bar_counts_by_source": {
+    "PaddyDoctor": {
+      "total": 2400,
+      "had_bars": 13
+    },
+    "AgML": {
+      "total": 800,
+      "had_bars": 198
+    },
+    "Mendeley74j": {
+      "total": 385,
+      "had_bars": 2
+    },
+    "MendeleyT9h": {
+      "total": 466,
+      "had_bars": 374
+    },
+    "MendeleyB3j": {
+      "total": 457,
+      "had_bars": 49
+    },
+    "Krishna": {
+      "total": 881,
+      "had_bars": 0
+    },
+    "MLD": {
+      "total": 753,
+      "had_bars": 24
+    },
+    "CCMT": {
+      "total": 750,
+      "had_bars": 8
+    },
+    "Rust": {
+      "total": 500,
+      "had_bars": 368
+    },
+    "Archive2": {
+      "total": 1600,
+      "had_bars": 30
+    },
+    "AgriData": {
+      "total": 800,
+      "had_bars": 0
+    },
+    "PlantDoc": {
+      "total": 174,
+      "had_bars": 19
+    }
+  },
+  "photos_by_source_class": {
+    "PaddyDoctor::rice_leaf_blast": 400,
+    "AgML::rice_leaf_blast": 400,
+    "PaddyDoctor::rice_healthy": 400,
+    "AgML::rice_healthy": 400,
+    "Mendeley74j::cotton_bacterial_blight": 119,
+    "MendeleyT9h::cotton_bacterial_blight": 200,
+    "MendeleyB3j::cotton_bacterial_blight": 200,
+    "Mendeley74j::cotton_healthy": 266,
+    "MendeleyT9h::cotton_healthy": 266,
+    "MendeleyB3j::cotton_healthy": 257,
+    "Krishna::chilli_leaf_curl_virus": 423,
+    "Krishna::chilli_healthy": 458,
+    "MLD::maize_northern_leaf_blight": 260,
+    "CCMT::maize_northern_leaf_blight": 259,
+    "Rust::maize_common_rust": 500,
+    "CCMT::maize_healthy": 206,
+    "MLD::maize_healthy": 208,
+    "CCMT::maize_fall_armyworm": 285,
+    "MLD::maize_fall_armyworm": 285,
+    "PaddyDoctor::rice_stem_borer": 800,
+    "PaddyDoctor::rice_hispa": 800,
+    "Archive2::tomato_healthy": 800,
+    "Archive2::tomato_septoria_leaf_spot": 800,
+    "AgriData::other_not_a_crop": 800,
+    "PlantDoc::plantdoc_corn_leaf_blight_noisy": 174
+  }
+}
