@@ -1329,7 +1329,24 @@ with zipfile.ZipFile(FINAL_ZIP_PATH, "r") as zf:
     for info in zf.infolist():
         print(f"  - {info.filename:26s} ({info.file_size / 1024:8.1f} KB)")
 print("=" * 80)
-print("You can download this zip directly from Kaggle's '/kaggle/working' output panel!")"""
+print("You can download this zip directly from Kaggle's '/kaggle/working' output panel!")
+
+# Display direct one-click browser download button and FileLink
+try:
+    from IPython.display import FileLink, HTML, display
+    display(HTML(f'''
+        <div style="margin:20px 0; padding:15px; background:#e8f5e9; border:2px solid #4caf50; border-radius:8px;">
+            <h3 style="color:#2e7d32; margin-top:0;">🎉 Training & Packaging Complete!</h3>
+            <p>Click below to download your complete deliverables zip directly to your computer:</p>
+            <a href="{FINAL_ZIP_PATH.name}" download="{FINAL_ZIP_PATH.name}" 
+               style="display:inline-block; padding:12px 24px; background:#2e7d32; color:white; font-size:16px; font-weight:bold; border-radius:6px; text-decoration:none;">
+               ⬇️ Click Here to Download {FINAL_ZIP_PATH.name}
+            </a>
+        </div>
+    '''))
+    display(FileLink(FINAL_ZIP_PATH.name))
+except Exception:
+    pass"""
 
     nb["cells"].append({
         "cell_type": "code",
