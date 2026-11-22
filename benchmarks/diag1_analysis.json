@@ -1,0 +1,110 @@
+{
+  "rice_leaf_blast": {
+    "held_out_source": "AgML (Synthetic/Augmented Leaf Scans)",
+    "train_source": "PaddyDoctor (Tamil Nadu Field Smartphone)",
+    "total_held_out": 634,
+    "correct_held_out": 174,
+    "accuracy": 0.2744,
+    "distribution": {
+      "maize_northern_leaf_blight": 382,
+      "rice_leaf_blast": 174,
+      "maize_common_rust": 61,
+      "rice_healthy": 10,
+      "tomato_septoria_leaf_spot": 3,
+      "rice_stem_borer": 3,
+      "rice_hispa": 1
+    },
+    "total_train_available": 800
+  },
+  "rice_healthy": {
+    "held_out_source": "AgML (Synthetic/Augmented Healthy Scans)",
+    "train_source": "PaddyDoctor (Tamil Nadu Field Smartphone)",
+    "total_held_out": 653,
+    "correct_held_out": 273,
+    "accuracy": 0.4181,
+    "distribution": {
+      "rice_healthy": 273,
+      "rice_hispa": 138,
+      "rice_leaf_blast": 88,
+      "maize_northern_leaf_blight": 79,
+      "tomato_septoria_leaf_spot": 37,
+      "tomato_healthy": 17,
+      "maize_common_rust": 9,
+      "maize_healthy": 7,
+      "rice_stem_borer": 4,
+      "chilli_leaf_curl_virus": 1
+    },
+    "total_train_available": 800
+  },
+  "maize_northern_leaf_blight": {
+    "held_out_source": "PlantDoc (Wild Web In-Field Whole Plants)",
+    "train_source": "MLD (Controlled 4:3 Leaf Cuts)",
+    "total_held_out": 174,
+    "correct_held_out": 54,
+    "accuracy": 0.3103,
+    "distribution": {
+      "maize_common_rust": 87,
+      "maize_northern_leaf_blight": 54,
+      "rice_leaf_blast": 24,
+      "rice_hispa": 4,
+      "rice_stem_borer": 3,
+      "rice_healthy": 1,
+      "other_not_a_crop": 1
+    },
+    "total_train_available": 489
+  },
+  "maize_healthy": {
+    "held_out_source": "CCMT Ghana (Farm Canopy 1:1 Crops)",
+    "train_source": "MLD (Controlled 4:3 Leaf Cuts)",
+    "total_held_out": 206,
+    "correct_held_out": 62,
+    "accuracy": 0.301,
+    "distribution": {
+      "maize_northern_leaf_blight": 140,
+      "maize_healthy": 62,
+      "cotton_bacterial_blight": 1,
+      "tomato_healthy": 1,
+      "rice_healthy": 1,
+      "chilli_healthy": 1
+    },
+    "total_train_available": 427
+  },
+  "maize_fall_armyworm": {
+    "held_out_source": "CCMT Ghana (Farm Canopy 1:1 Crops)",
+    "train_source": "MLD (Controlled 4:3 Leaf Cuts)",
+    "total_held_out": 285,
+    "correct_held_out": 7,
+    "accuracy": 0.0246,
+    "distribution": {
+      "maize_northern_leaf_blight": 243,
+      "tomato_septoria_leaf_spot": 21,
+      "maize_fall_armyworm": 7,
+      "cotton_bacterial_blight": 6,
+      "tomato_healthy": 5,
+      "maize_common_rust": 3
+    },
+    "total_train_available": 525
+  },
+  "cotton_bacterial_blight": {
+    "held_out_source": "Mendeley T9h (Field Leaf Close-ups)",
+    "train_source": "Mendeley B3j (Field Leaf Close-ups)",
+    "total_held_out": 218,
+    "correct_held_out": 218,
+    "accuracy": 1.0,
+    "distribution": {
+      "cotton_bacterial_blight": 218
+    },
+    "total_train_available": 250
+  },
+  "cotton_healthy": {
+    "held_out_source": "Mendeley B3j (Field Leaf Close-ups)",
+    "train_source": "Mendeley 74j (Field Leaf Close-ups)",
+    "total_held_out": 257,
+    "correct_held_out": 257,
+    "accuracy": 1.0,
+    "distribution": {
+      "cotton_healthy": 257
+    },
+    "total_train_available": 789
+  }
+}

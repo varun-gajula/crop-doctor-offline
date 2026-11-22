@@ -1,6 +1,30 @@
 # Project Progress - Crop Doctor Offline
 
-## Current Status: Task KB15 Complete (14-Class Knowledge Base Coverage & Agronomic Source Verification)
+## Current Status: Task DIAG1 Complete (Diagnosis of 15-Class Held-Out Source Failure)
+
+### Done in Task DIAG1: Diagnosis of 15-Class Held-Out Generalization Failure (Report Only)
+1. **Full Held-Out Model Inference**:
+   - Evaluated `best_model.pth` on all held-out source images across all classes with held-out sources from Task D7.
+   - Identified and audited exact predicted-class distributions for the 5 failing held-out classes:
+     - `rice_leaf_blast` (AgML, 634 photos): 27.44% recall (174/634 correct). 60.3% misclassified as `maize_northern_leaf_blight` (382 photos).
+     - `rice_healthy` (AgML, 653 photos): 41.81% recall (273/653 correct). 21.1% misclassified as `rice_hispa` (138 photos), 13.5% as `rice_leaf_blast` (88 photos), 12.1% as `maize_northern_leaf_blight` (79 photos).
+     - `maize_northern_leaf_blight` (PlantDoc, 174 photos): 31.03% recall (54/174 correct). 50.0% misclassified as `maize_common_rust` (87 photos), 13.8% as `rice_leaf_blast` (24 photos).
+     - `maize_healthy` (CCMT Ghana, 206 photos): 30.10% recall (62/206 correct). 67.96% misclassified as `maize_northern_leaf_blight` (140 photos).
+     - `maize_fall_armyworm` (CCMT Ghana, 285 photos): 2.46% recall (7/285 correct). 85.26% misclassified as `maize_northern_leaf_blight` (243 photos).
+   - Audited the 2 cotton classes designated in D7 table (`cotton_bacterial_blight` and `cotton_healthy`); verified 100% recall (218/218 and 257/257) because filename prefix discrepancy in the Kaggle notebook left them in the grouped training pool rather than the isolated held-out split.
+2. **Visual Contact Sheet Deliverable**:
+   - Built comprehensive comparison sheet at `benchmarks/diag1_heldout_vs_train.jpg` (1.92 MB, 1460x4150 px).
+   - Displays 24 held-out photos directly adjacent to 24 training photos across all 7 evaluated classes (336 total photo thumbnails).
+   - Features color-coded borders on all held-out thumbnails (green = correct, red = incorrect) with embedded prediction labels proving individual failure modes.
+3. **Agronomic & Concept Discrepancy Analysis**:
+   - Documented visual domain shifts (camera sensor, padding, lighting, extreme macro vs wide-angle web scrape).
+   - Documented `maize_fall_armyworm` concept mismatch: flat leaf blade feeding punctures in MLD training vs 3D plant whorl / frass / caterpillar in CCMT held-out.
+   - Identified dataset-level cross-class leakage shortcut: 795 photos from the same CCMT Ghana maize dataset were included in `maize_northern_leaf_blight` training pool, causing MobileNetV3 to associate the CCMT camera/soil/canopy domain directly with blight.
+   - Audited label definitions: confirmed ambiguous generic scraping in PlantDoc `Corn leaf blight` mixing multiple blight/spot pathogens.
+
+---
+
+## Previous Status: Task KB15 Complete (14-Class Knowledge Base Coverage & Agronomic Source Verification)
 
 ### Done in Task KB15: 14-Class Knowledge Base Coverage & Official Agronomic Sourcing (Rules H4, H6, R11, F6)
 1. **Target 14-Class Audit & Knowledge Base Expansion**:
