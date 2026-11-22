@@ -1327,16 +1327,37 @@ try:
     display(HTML(f'''
         <div style="margin:20px 0; padding:15px; background:#e8f5e9; border:2px solid #4caf50; border-radius:8px;">
             <h3 style="color:#2e7d32; margin-top:0;">🎉 Training & Packaging Complete!</h3>
-            <p>Click below to download your complete deliverables zip directly to your computer:</p>
-            <a href="{FINAL_ZIP_PATH.name}" download="{FINAL_ZIP_PATH.name}" 
+            <p style="font-size:15px; color:#1b5e20;"><b>Auto-Download Active:</b> The final deliverables zip is downloading directly to your computer without your interference.</p>
+            <p>If your browser blocked the automatic download popup, click the button below:</p>
+            <a id="cropdoc_auto_download_btn" href="{FINAL_ZIP_PATH.name}" download="{FINAL_ZIP_PATH.name}" 
                style="display:inline-block; padding:12px 24px; background:#2e7d32; color:white; font-size:16px; font-weight:bold; border-radius:6px; text-decoration:none;">
                ⬇️ Click Here to Download {FINAL_ZIP_PATH.name}
             </a>
         </div>
+        <script>
+        (function() {{
+            console.log("Initiating automatic download for {FINAL_ZIP_PATH.name} without user interference...");
+            function triggerDownload() {{
+                var btn = document.getElementById("cropdoc_auto_download_btn");
+                if (btn) {{
+                    btn.click();
+                }} else {{
+                    var a = document.createElement("a");
+                    a.href = "{FINAL_ZIP_PATH.name}";
+                    a.download = "{FINAL_ZIP_PATH.name}";
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                }}
+            }}
+            setTimeout(triggerDownload, 1000);
+            setTimeout(triggerDownload, 3000);
+        }})();
+        </script>
     '''))
     display(FileLink(FINAL_ZIP_PATH.name))
-except Exception:
-    pass"""
+except Exception as e:
+    print(f"Auto-download note: {e}")"""
 
     nb["cells"].append({
         "cell_type": "code",
