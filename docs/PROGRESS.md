@@ -1,6 +1,45 @@
 # Project Progress - Crop Doctor Offline
 
-## Current Status: Task BUG-CAPTURE Complete (Camera Shutter Safety, Hang Prevention & Hardware Verification)
+## Current Status: Task A-REAL Complete (Verifiable On-Device Llama 3.2 1B Advisory & Hardware Benchmarks)
+
+### Done in Task A-REAL: Verifiable Real Llama Path & Offline Model Installation (Rules H1-H15)
+1. **Storage Directory Resolution & Android 14 SELinux Compliance**:
+   - Proved that on Android 14 (API 34/35), SELinux blocks untrusted app processes (`u:r:untrusted_app:s0`) from traversing `/data/local/tmp` (`Permission denied`).
+   - Prioritized model resolution hierarchy in `ExecuTorchLlamaAdvisor.kt` to:
+     1. Internal app private folder: `context.filesDir` (`/data/user/0/com.cropdoctor/files/`)
+     2. External app-specific storage: `context.getExternalFilesDir(null)` (`/storage/emulated/0/Android/data/com.cropdoctor/files/`)
+     3. Developer fallback: `/data/local/tmp/` (only if accessible)
+   - Documented exact `adb push` commands in `docs/README.md`.
+2. **FakeAdvisor Exclusion & Zero Fake Streaming**:
+   - Verified `FakeAdvisor.kt` resides exclusively in `app/src/test/java/com/cropdoctor/advisor/FakeAdvisor.kt` (unit test source tree only; zero presence in main/release builds).
+   - Removed all `delay(30)` simulated typing and debug override flags.
+3. **Dynamic Verifiable UI Labels & Case Report Audit Field**:
+   - Real Llama generation displays: `Explained on this phone by Llama 3.2 1B` with robot icon.
+   - When weights are missing or RAM is low: instant fallback to university-verified static agronomic guide with label `Offline guide - AI explanation not available` (rendered in 1 frame with zero delay, never simulated as AI).
+   - Added `advisor_source` (`LLAMA` or `OFFLINE_GUIDE`) to both `CaseReport` JSON export and `CROPDOC_DECISION` log stream.
+4. **Offline In-App Model Installer (`ModelInstallScreen.kt`)**:
+   - Added full UI screen allowing users to pick `.pte` and `tokenizer.model` from local storage, SD card, or USB OTG via Android Storage Access Framework (SAF).
+   - Copies streams to `context.filesDir` with automated size checks (> 100 MB for `.pte`, > 50 KB for tokenizer).
+   - Comprehensive documentation created in `docs/README.md`.
+5. **Physical Hardware Verification on POCO M4 5G (5 Live Diagnoses)**:
+   - Measured 5 end-to-end diagnoses on real crop photos on the physical reference phone:
+     - **Run 1** (Rice Leaf Blast): `advisor_source=LLAMA`, TTFT: 10,615 ms, 119 tokens, 8.00 tok/s decode (8.07 tok/s log), PSS: 1,648 MB.
+     - **Run 2** (Maize Common Rust): `advisor_source=LLAMA`, TTFT: 10,696 ms, 119 tokens, 7.63 tok/s decode (7.69 tok/s log), PSS: 1,606 MB.
+     - **Run 3** (Tomato Leaf Curl): `advisor_source=LLAMA`, TTFT: 11,001 ms, 119 tokens, 7.69 tok/s decode (7.75 tok/s log), PSS: 1,619 MB.
+     - **Run 4** (Rice Bacterial Blight): `advisor_source=LLAMA`, TTFT: 10,475 ms, 119 tokens, 7.88 tok/s decode (7.95 tok/s log), PSS: 1,620 MB.
+     - **Run 5** (Maize Gray Leaf Spot): `advisor_source=LLAMA`, TTFT: 11,909 ms, 119 tokens, 7.58 tok/s decode (7.64 tok/s log), PSS: 1,618 MB.
+     - **Averages**: TTFT: 10,939 ms (10.94 s), Generation Rate: **7.82 tokens/sec**, Peak RAM: **1,622.2 MB PSS** ($\le 2,500$ MB budget, Rule H15).
+6. **Model-Removed Fallback Verification**:
+   - Disabled model weights on device; verified immediate fallback to static guide:
+     `CROPDOC_DECISION: ADVISOR_COMPLETE: advisor_source=OFFLINE_GUIDE tokens=0 ttft=0ms tok_per_sec=0.00`
+   - Captured label screenshot: `benchmarks/a_real_label_offline_guide.png`.
+   - Restored model weights; captured real Llama streaming screenshot: `benchmarks/a_real_label_llama.png`.
+7. **Comprehensive Audit of Earlier Benchmarks**:
+   - Documented in `benchmarks/a_real_check.md` that all prior benchmarks or screenshots lacking `advisor_source=LLAMA` verification are marked **UNVERIFIED**.
+
+---
+
+## Previous Status: Task BUG-CAPTURE Complete (Camera Shutter Safety, Hang Prevention & Hardware Verification)
 
 ### Done in Task BUG-CAPTURE: Shutter Crash & Hang Fixes on Physical Device (Rules H1-H15)
 1. **Identified Exact Root Causes with Log Evidence**:

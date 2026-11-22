@@ -143,7 +143,7 @@ class MainActivity : ComponentActivity() {
                     var isGeneratingAdvice by remember { mutableStateOf(false) }
                     var capturedLeafBitmap by remember { mutableStateOf<Bitmap?>(null) }
                     var currentFieldSpread by remember { mutableStateOf<com.cropdoctor.domain.RulesEngine.FieldSpread?>(null) }
-                    var debugAdvisorSourceOverride by remember { mutableStateOf<String?>(null) }
+                    var currentAdvisorSource by remember { mutableStateOf((application as CropDoctorApplication).advisor.advisorSource) }
 
                     val app = application as CropDoctorApplication
 
@@ -179,7 +179,8 @@ class MainActivity : ComponentActivity() {
                                 region = selectedRegion,
                                 crop = classifierResult?.selectedCrop ?: selectedCrop,
                                 onUpdate = { advisoryText = it },
-                                onStateChange = { isGeneratingAdvice = it }
+                                onStateChange = { isGeneratingAdvice = it },
+                                onAdvisorSourceChange = { currentAdvisorSource = it }
                             )
                         }
                     }
@@ -197,7 +198,8 @@ class MainActivity : ComponentActivity() {
                                 region = newRegion,
                                 crop = classifierResult?.selectedCrop ?: selectedCrop,
                                 onUpdate = { advisoryText = it },
-                                onStateChange = { isGeneratingAdvice = it }
+                                onStateChange = { isGeneratingAdvice = it },
+                                onAdvisorSourceChange = { currentAdvisorSource = it }
                             )
                         }
                     }
@@ -385,7 +387,8 @@ class MainActivity : ComponentActivity() {
                                             language = selectedLanguage,
                                             crop = result.selectedCrop ?: effectiveCropFilter,
                                             onUpdate = { advisoryText = it },
-                                            onStateChange = { isGeneratingAdvice = it }
+                                            onStateChange = { isGeneratingAdvice = it },
+                                            onAdvisorSourceChange = { currentAdvisorSource = it }
                                         )
                                     }
                                 }
@@ -570,7 +573,8 @@ class MainActivity : ComponentActivity() {
                                                 language = selectedLanguage,
                                                 crop = result.selectedCrop ?: effectiveCropFilter,
                                                 onUpdate = { advisoryText = it },
-                                                onStateChange = { isGeneratingAdvice = it }
+                                                onStateChange = { isGeneratingAdvice = it },
+                                                onAdvisorSourceChange = { currentAdvisorSource = it }
                                             )
                                         }
                                     }
@@ -641,10 +645,6 @@ class MainActivity : ComponentActivity() {
                                 val filePath = intent.getStringExtra("file_path")
                                 val source = intent.getStringExtra("image_source") ?: "gallery"
                                 val cropHint = intent.getStringExtra("crop_hint") ?: "auto"
-                                val forceAdv = intent.getStringExtra("force_advisor_source")
-                                if (forceAdv != null) {
-                                    debugAdvisorSourceOverride = forceAdv
-                                }
                                 if (filePath != null) {
                                     try {
                                         val file = File(filePath)
@@ -703,7 +703,8 @@ class MainActivity : ComponentActivity() {
                                         kbEntry = kb,
                                         language = "en",
                                         onUpdate = { advisoryText = it },
-                                        onStateChange = { isGeneratingAdvice = it }
+                                        onStateChange = { isGeneratingAdvice = it },
+                                        onAdvisorSourceChange = { currentAdvisorSource = it }
                                     )
                                 }
                                 "show_disease" -> {
@@ -1417,7 +1418,7 @@ class MainActivity : ComponentActivity() {
                                     },
                                     advisoryText = advisoryText,
                                     isGeneratingAdvice = isGeneratingAdvice,
-                                    advisorSource = debugAdvisorSourceOverride ?: (application as CropDoctorApplication).advisor.advisorSource,
+                                    advisorSource = currentAdvisorSource,
                                     capturedBitmap = capturedLeafBitmap,
                                     onBackClick = { navigateTo(AppScreen.HOME) },
                                     onChangeLanguageClick = { newLang -> switchLanguage(newLang) },
@@ -1433,7 +1434,8 @@ class MainActivity : ComponentActivity() {
                                                 region = selectedRegion,
                                                 crop = classifierResult!!.selectedCrop ?: selectedCrop,
                                                 onUpdate = { advisoryText = it },
-                                                onStateChange = { isGeneratingAdvice = it }
+                                                onStateChange = { isGeneratingAdvice = it },
+                                                onAdvisorSourceChange = { currentAdvisorSource = it }
                                             )
                                         }
                                     },
@@ -1469,7 +1471,7 @@ class MainActivity : ComponentActivity() {
                                     language = selectedLanguage,
                                     region = selectedRegion,
                                     capturedBitmap = capturedLeafBitmap,
-                                    advisorSource = debugAdvisorSourceOverride ?: (application as CropDoctorApplication).advisor.advisorSource,
+                                    advisorSource = currentAdvisorSource,
                                     onBackClick = { navigateTo(AppScreen.RESULT) },
                                     onViewSavedCases = { navigateTo(AppScreen.SCAN_HISTORY) }
                                 )
@@ -1574,11 +1576,13 @@ class MainActivity : ComponentActivity() {
         region: String = "telangana",
         crop: String? = null,
         onUpdate: (String) -> Unit,
-        onStateChange: (Boolean) -> Unit
+        onStateChange: (Boolean) -> Unit,
+        onAdvisorSourceChange: ((String) -> Unit)? = null
     ) {
         currentAdviceJob?.cancel()
         onUpdate("")
         onStateChange(true)
+        onAdvisorSourceChange?.invoke(app.advisor.advisorSource)
 
         val spreadStr = when (fieldSpread) {
             com.cropdoctor.domain.RulesEngine.FieldSpread.FEW_PLANTS -> "a few plants"
@@ -1605,10 +1609,12 @@ class MainActivity : ComponentActivity() {
                 ) { token ->
                     sb.append(token)
                     onUpdate(sb.toString())
+                    onAdvisorSourceChange?.invoke(app.advisor.advisorSource)
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
             } finally {
+                onAdvisorSourceChange?.invoke(app.advisor.advisorSource)
                 onStateChange(false)
             }
         }
