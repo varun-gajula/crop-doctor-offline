@@ -1,6 +1,31 @@
 # Project Progress - Crop Doctor Offline
 
-## Current Status: Task D7 Complete (15-Class Pre-Training Verification & Tomato Audit Checkpoint)
+## Current Status: Task TR3-15 Complete (15-Class Kaggle Training Pipeline & Notebook Prepared)
+
+### Done in Task TR3-15: 15-Class 30-Epoch Training Notebook Prepared (Rules H2, H3, H4, H9, H11, H14)
+1. **Prepared Production Kaggle Notebook (`notebooks/Crop_Doctor_15Class_Kaggle_30ep.ipynb`)**:
+   - Replicated exact TR2 high-throughput pipeline for the audited 15-class roster.
+   - Pinned ExecuTorch 0.6.0 with XNNPACK export and automated Python 3.11 fallback if host environment uses Python >= 3.13.
+   - Preserves 30-epoch training schedule with CosineAnnealingLR, label smoothing (0.05), mixed-precision (FP16), and per-epoch checkpointing with automatic resume.
+2. **15 Classes in Canonical Order (Cap 800 per class)**:
+   - `rice_leaf_blast`, `rice_healthy`, `cotton_bacterial_blight`, `cotton_healthy`, `chilli_leaf_curl_virus`, `chilli_healthy`, `maize_northern_leaf_blight`, `maize_common_rust`, `maize_healthy`, `maize_fall_armyworm`, `rice_stem_borer`, `rice_hispa`, `tomato_healthy`, `tomato_septoria_leaf_spot`, `other_not_a_crop`.
+3. **Dedicated Held-Out Sources Partitioning**:
+   - Strictly isolates held-out sources (Project-AgML, Mendeley t9h, Mendeley b3j, PlantDoc, CCMT) into a separate test set before clustering or training.
+   - Evaluates and logs held-out recall per class; marks the 9 source-limited classes `"grouped split only"` in `metrics.json`.
+4. **Automated 4-Gate Evaluation**:
+   - Gate 1: Every class recall $\ge 85\%$ on the grouped split.
+   - Gate 2: Every class with a held-out source $\ge 70\%$ on its held-out test set.
+   - Gate 3: No more than 3 classes below $90\%$ grouped recall.
+   - Gate 4: Numerical parity error $< 1\times 10^{-3}$ on 10 validation photos (PyTorch vs ExecuTorch `.pte`).
+5. **Kaggle Execution Timing Computed from Historical Log**:
+   - Source: `benchmarks/final/training_history.json` (measured on 20 classes, 15 epochs, 2x Tesla T4 GPUs: mean 213.1 s/epoch for 9,288 images).
+   - Estimated 15-class training run (~6,200 training images): ~142 s/epoch $\times$ 30 epochs $\approx$ **71 minutes (~1.2 hours)** of training + ~10 minutes clustering/export $\approx$ **~80 minutes total** on Kaggle 2x T4.
+6. **Local Dataset Assembly Script**:
+   - Created `scripts/prepare_15class_dataset.py` to assemble `C:\crop-data\crop_doctor_15class` and build `crop_doctor_15class.zip` for instant Kaggle upload.
+
+---
+
+## Previous Status: Task D7 Complete (15-Class Pre-Training Verification & Tomato Audit Checkpoint)
 
 ### Done in Task D7: Tomato Classes Audit, Verification & Final 15-Class Roster (Rules H2, H3, H4, H9, H11, H14)
 1. **Added Two Tomato Classes & Within-Class Clustering at Hamming $\le 10$ (Rule 1)**:
