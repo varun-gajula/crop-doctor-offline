@@ -24,7 +24,8 @@ import time
 import zipfile
 import shutil
 from pathlib import Path
-from PIL import Image, ImageOps
+from PIL import Image, ImageOps, ImageFile
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 TARGET_DIR = Path(r"C:\crop-data\crop_doctor_15class")
 TARGET_ZIP = Path(r"C:\crop-data\crop_doctor_15class.zip")
@@ -47,21 +48,24 @@ def process_and_save(src_img, out_path):
     if out_path.exists():
         return
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    if isinstance(src_img, (str, Path)):
-        with Image.open(src_img) as im:
-            if im.size == (512, 512):
-                shutil.copy2(src_img, out_path)
-            else:
-                padded = resize_and_pad(im)
-                padded.save(out_path, "JPEG", quality=95)
-    elif isinstance(src_img, bytes):
-        with Image.open(io.BytesIO(src_img)) as im:
-            if im.size == (512, 512):
-                with open(out_path, "wb") as f:
-                    f.write(src_img)
-            else:
-                padded = resize_and_pad(im)
-                padded.save(out_path, "JPEG", quality=95)
+    try:
+        if isinstance(src_img, (str, Path)):
+            with Image.open(src_img) as im:
+                if im.size == (512, 512):
+                    shutil.copy2(src_img, out_path)
+                else:
+                    padded = resize_and_pad(im)
+                    padded.save(out_path, "JPEG", quality=95)
+        elif isinstance(src_img, bytes):
+            with Image.open(io.BytesIO(src_img)) as im:
+                if im.size == (512, 512):
+                    with open(out_path, "wb") as f:
+                        f.write(src_img)
+                else:
+                    padded = resize_and_pad(im)
+                    padded.save(out_path, "JPEG", quality=95)
+    except Exception as e:
+        print(f"  Warning: Skipping unreadable/corrupted photo {out_path.name}: {e}")
 
 def main():
     print("=" * 80)
