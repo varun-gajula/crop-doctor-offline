@@ -6,14 +6,13 @@ import torch.nn as nn
 from torch.utils.data import DataLoader
 from torchvision import models
 
-# Ensure paths match Kaggle environment
+# 1. Locate directories and best_model.pth
 WORKING_DIR = Path("/kaggle/working")
 if (WORKING_DIR / "artifacts_15class").exists():
     ARTIFACT_DIR = WORKING_DIR / "artifacts_15class"
 else:
     ARTIFACT_DIR = WORKING_DIR
 
-# Find best_model.pth
 BEST_MODEL_PATH = None
 candidates = [
     ARTIFACT_DIR / "best_model.pth",
@@ -28,25 +27,41 @@ for c in candidates:
         break
 
 if BEST_MODEL_PATH is None:
-    # Fallback to any model file found
     for c in candidates:
         if c.exists():
             BEST_MODEL_PATH = c
             break
 
 print("=" * 80)
-print(f"FOUND TRAINED MODEL: {BEST_MODEL_PATH}")
+print(f"FOUND MODEL: {BEST_MODEL_PATH}")
 print(f"ARTIFACT DIRECTORY: {ARTIFACT_DIR}")
 print("=" * 80)
 
 FINAL_ZIP_PATH = WORKING_DIR / "crop_doctor_final_15class_20ep.zip"
 FINAL_ZIP_PATH_LEGACY = WORKING_DIR / "crop_doctor_final_15class_30ep.zip"
 
+# 2. Install setuptools in /tmp/py311
+os.system("uv pip install --python /tmp/py311 'setuptools<70' wheel")
 EXPORT_PY = "/tmp/py311/bin/python" if Path("/tmp/py311/bin/python").exists() else sys.executable
 
-# Step 2: Prepare export script with fallback
-export_script_content = f"""import sys, os, json, random, shutil
+# 3. Create export script with built-in pkg_resources polyfill
+export_script_content = f"""import sys, os, types, json, random, shutil
 from pathlib import Path
+
+# Polyfill pkg_resources so ExecuTorch never fails to import
+try:
+    import pkg_resources
+except ImportError:
+    pr = types.ModuleType("pkg_resources")
+    def resource_filename(package, resource):
+        import importlib.util
+        spec = importlib.util.find_spec(package)
+        if spec and spec.origin:
+            return os.path.join(os.path.dirname(spec.origin), resource)
+        return ""
+    pr.resource_filename = resource_filename
+    sys.modules["pkg_resources"] = pr
+
 import numpy as np
 import torch
 import torchvision.models as models
@@ -59,7 +74,7 @@ model_path = Path(r'{BEST_MODEL_PATH}')
 output_pte = Path(r'{ARTIFACT_DIR / "vision.pte"}')
 parity_json = Path(r'{ARTIFACT_DIR / "parity_samples.json"}')
 
-print("Loading PyTorch best_model.pth for export...")
+print("Loading PyTorch model for export...")
 ckpt = torch.load(model_path, map_location="cpu", weights_only=False)
 model = models.mobilenet_v3_large(weights=None)
 model.classifier[3] = torch.nn.Linear(model.classifier[3].in_features, {len(CLASS_NAMES)})
@@ -69,37 +84,29 @@ model.eval()
 example_input = (torch.randn(1, 3, 512, 512),)
 
 # Lower to ExecuTorch
-exported_ok = False
 try:
     from executorch.backends.xnnpack.partition.xnnpack_partitioner import XnnpackPartitioner
     from executorch.exir import to_edge_transform_and_lower
     print("Lowering to ExecuTorch XNNPACK via to_edge_transform_and_lower...")
     edge_prog = to_edge_transform_and_lower(torch.export.export(model, example_input), partitioner=[XnnpackPartitioner()])
     et_prog = edge_prog.to_executorch()
-    with open(output_pte, "wb") as f:
-        f.write(et_prog.buffer)
-    exported_ok = True
-    print(f"✓ ExecuTorch XNNPACK export SUCCESS: {{output_pte}} ({{output_pte.stat().st_size / (1024*1024):.2f}} MB)")
 except Exception as e1:
-    print(f"XNNPACK note: {{e1}}. Trying standard to_edge...")
+    print(f"XNNPACK transform failed ({{e1}}). Trying standard to_edge...")
+    from executorch.exir import to_edge
+    edge_prog = to_edge(torch.export.export(model, example_input))
     try:
-        from executorch.exir import to_edge
-        edge_prog = to_edge(torch.export.export(model, example_input))
-        try:
-            from executorch.backends.xnnpack.partition.xnnpack_partitioner import XnnpackPartitioner
-            et_prog = edge_prog.to_backend(XnnpackPartitioner()).to_executorch()
-        except Exception as e_back:
-            print(f"Backend lower note: {{e_back}}. Falling back to standard edge...")
-            et_prog = edge_prog.to_executorch()
-        with open(output_pte, "wb") as f:
-            f.write(et_prog.buffer)
-        exported_ok = True
-        print(f"✓ Standard ExecuTorch export SUCCESS: {{output_pte}} ({{output_pte.stat().st_size / (1024*1024):.2f}} MB)")
+        from executorch.backends.xnnpack.partition.xnnpack_partitioner import XnnpackPartitioner
+        et_prog = edge_prog.to_backend(XnnpackPartitioner()).to_executorch()
     except Exception as e2:
-        print(f"❌ ERROR: ExecuTorch export failed: {{e2}}")
-        sys.exit(1)
+        print(f"XNNPACK backend failed ({{e2}}). Falling back to standard edge export...")
+        et_prog = edge_prog.to_executorch()
 
-# Parity Verification
+with open(output_pte, "wb") as f:
+    f.write(et_prog.buffer)
+print(f"✓ ExecuTorch export SUCCESS: {{output_pte}} ({{output_pte.stat().st_size / (1024*1024):.2f}} MB)")
+
+# 10-Sample Parity Verification
+print("Testing numerical parity on 10 validation samples...")
 parity_records = []
 max_err_all = 0.0
 with torch.no_grad():
@@ -127,7 +134,6 @@ export_ret = os.system(f"{EXPORT_PY} {script_path}")
 if export_ret != 0 or not (ARTIFACT_DIR / "vision.pte").exists():
     raise RuntimeError(f"ExecuTorch export failed with return code {export_ret}!")
 
-# Also copy vision.pte to WORKING_DIR for easy access
 shutil.copy(ARTIFACT_DIR / "vision.pte", WORKING_DIR / "vision.pte")
 
 print("\n>>> Step 3: Computing Metrics & 4 Gates...")
@@ -191,7 +197,7 @@ parity_err = json.load(open(parity_file)).get("max_error_across_all_samples", 0.
 gate_4_pass = parity_err < 1e-3
 all_gates_pass = gate_1_pass and gate_2_pass and gate_3_pass and gate_4_pass
 
-print(f"Grouped Macro Accuracy: {macro_grouped_acc*100:.2f}% | Overall: {overall_grouped_acc*100:.2f}%")
+print(f"\nGrouped Macro Accuracy: {macro_grouped_acc*100:.2f}% | Overall: {overall_grouped_acc*100:.2f}%")
 print(f"Gates Verdict: G1={'PASS' if gate_1_pass else 'FAIL'}, G2={'PASS' if gate_2_pass else 'FAIL'}, G3={'PASS' if gate_3_pass else 'FAIL'}, G4={'PASS' if gate_4_pass else 'FAIL'}")
 
 # Save metrics.json & confusion_matrix.csv
