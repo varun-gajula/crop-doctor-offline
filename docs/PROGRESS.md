@@ -1,6 +1,44 @@
 # Project Progress - Crop Doctor Offline
 
-## Current Status: Task A-REAL Complete (Verifiable On-Device Llama 3.2 1B Advisory & Hardware Benchmarks)
+## Current Status: Task KB15 Complete (14-Class Knowledge Base Coverage & Agronomic Source Verification)
+
+### Done in Task KB15: 14-Class Knowledge Base Coverage & Official Agronomic Sourcing (Rules H4, H6, R11, F6)
+1. **Target 14-Class Audit & Knowledge Base Expansion**:
+   - Verified and completed entries across all 14 target classes:
+     1. `rice_leaf_blast` (disease)
+     2. `rice_healthy` (healthy)
+     3. `cotton_bacterial_blight` (disease)
+     4. `cotton_healthy` (healthy)
+     5. `chilli_leaf_curl_virus` (disease)
+     6. `chilli_healthy` (healthy)
+     7. `maize_northern_leaf_blight` (disease)
+     8. `maize_common_rust` (disease)
+     9. `maize_healthy` (healthy)
+     10. `maize_fall_armyworm` (pest)
+     11. `rice_stem_borer` (pest - newly compiled & added)
+     12. `rice_hispa` (pest - newly compiled & added)
+     13. `tomato_healthy` (healthy)
+     14. `tomato_septoria_leaf_spot` (disease - newly compiled & added)
+   - Knowledge Base expanded from 21 to 24 classes, preserving all pre-existing classes while guaranteeing 100% coverage of the 14-class taxonomy.
+2. **Strict Agronomic Governance & Provenance (Rule H4)**:
+   - Every single entry cites verified official agricultural authorities (ICAR-IIRR, ICAR-CICR, ICAR-IIHR, ICAR-IIMR, ICAR-NBAIR, NIPHM, PJTSAU, ANGRAU, TNAU, CIB&RC).
+   - Top-level `source`, `source_url`, and `date_read: 2026-11-22` added across all entries.
+   - Pests (`rice_stem_borer`, `rice_hispa`, `maize_fall_armyworm`) strictly enforce IPM hierarchy: minimum 2 biological/cultural controls before chemical, and explicit pest keywords (`monitoring`, `threshold`, `biological`, `chemical`) in field practices.
+   - Zero invented doses: all chemical treatments state `"follow the product label"` and cite registered active ingredients from CIB&RC "Major Uses of Pesticides".
+   - Healthy classes have zero chemical treatments (`[]`).
+3. **Reviewed Multilingual Completeness (Rule H6 & R4)**:
+   - Fully populated English, Hindi, and reviewed Telugu for all entries: names, explanations, symptoms across MILD, MODERATE, SEVERE, prevention practices, immediate actions, and emergency referrals.
+   - Emergency referral across all classes integrates the national Kisan Call Centre toll-free helpline `1800-180-1551`.
+   - All entries marked `needs_expert_review: true`.
+4. **Validation & Unit Test Suite Parity**:
+   - Updated `scripts/validate_kb.py` to validate all 24 classes; passed with 0 errors.
+   - Updated unit tests (`CropGuideTest.kt`, `PestVsDiseaseTest.kt`, `RegionalAdviceTest.kt`) to reflect 24 total classes (4 pest classes, 5 healthy classes, 15 disease classes, 19 crop problems across 5 crops).
+   - All 141 Gradle unit tests pass (`BUILD SUCCESSFUL in 35s`).
+   - Binary APK compilation verified (`./gradlew assembleDebug` BUILD SUCCESSFUL in 15s).
+5. **Documentation Deliverable**:
+   - Generated `benchmarks/kb15_sources.md` detailing all 14 classes, exact source authorities, URLs, dates read, and source counts (14 with source, 0 without source).
+
+---
 
 ### Done in Task A-REAL: Verifiable Real Llama Path & Offline Model Installation (Rules H1-H15)
 1. **Storage Directory Resolution & Android 14 SELinux Compliance**:

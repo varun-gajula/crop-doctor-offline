@@ -42,8 +42,8 @@ class RegionalAdviceTest {
     }
 
     @Test
-    fun testAll21ClassesHaveRegionalBlocks() {
-        assertEquals("Must contain 21 classes", 21, kbRoot.classes.size)
+    fun testAll24ClassesHaveRegionalBlocks() {
+        assertEquals("Must contain 24 classes", 24, kbRoot.classes.size)
         val requiredRegions = listOf("telangana", "andhra_pradesh", "other")
 
         for (entry in kbRoot.classes) {

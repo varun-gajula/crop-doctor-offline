@@ -63,10 +63,10 @@ class CropGuideTest {
     @Test
     fun testAllFiveCropsHaveDocumentedProblems() {
         val expectedCounts = mapOf(
-            "rice" to 4,
+            "rice" to 6,
             "cotton" to 2,
             "chilli" to 2,
-            "tomato" to 4,
+            "tomato" to 5,
             "maize" to 4
         )
         var totalProblems = 0
@@ -75,7 +75,7 @@ class CropGuideTest {
             assertEquals("Problem count mismatch for crop $crop", expectedCount, problems.size)
             totalProblems += problems.size
         }
-        assertEquals("Total problems across 5 crops must be 16", 16, totalProblems)
+        assertEquals("Total problems across 5 crops must be 19", 19, totalProblems)
     }
 
     @Test
@@ -99,7 +99,9 @@ class CropGuideTest {
             "cotton_bacterial_blight" to "Vegetative",
             "chilli_leaf_curl_virus" to "Flowering",
             "tomato_yellow_leaf_curl_virus" to "Seedling",
-            "maize_fall_armyworm" to "Vegetative"
+            "maize_fall_armyworm" to "Vegetative",
+            "rice_stem_borer" to "Vegetative",
+            "rice_hispa" to "Vegetative"
         )
 
         for ((classId, expectedStage) in expectedStages) {
@@ -122,6 +124,7 @@ class CropGuideTest {
             "tomato_early_blight",
             "tomato_late_blight",
             "tomato_spider_mites",
+            "tomato_septoria_leaf_spot",
             "maize_gray_leaf_spot",
             "maize_common_rust",
             "maize_northern_leaf_blight"
@@ -140,7 +143,7 @@ class CropGuideTest {
         for (cid in unconstrainedClasses) {
             assertTrue("Class $cid must be grouped under 'Any stage'", anyStageList.contains(cid))
         }
-        assertEquals("Any stage group must contain exactly 9 unconstrained classes", 9, anyStageList.size)
+        assertEquals("Any stage group must contain exactly 10 unconstrained classes", 10, anyStageList.size)
     }
 
     @Test

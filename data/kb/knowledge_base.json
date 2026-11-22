@@ -2,7 +2,7 @@
   "version": "1.0.0",
   "generated_for": "Arm Bharat AI-SoC Challenge 2026-27 - Problem Statement 1",
   "project": "Crop Doctor Offline",
-  "total_classes": 21,
+  "total_classes": 24,
   "classes": [
     {
       "class_id": "rice_bacterial_leaf_blight",
@@ -117,7 +117,10 @@
         "te": "20% కంటే ఎక్కువ పిలకలకు అలల తరంగాల మచ్చలు సోకినప్పుడు, నారు లేదా పిలక దశలో క్రెసెక్ (మొక్కలు ఎండిపోవడం) కనిపించినప్పుడు లేదా మచ్చలు జెండా ఆకుకు చేరినప్పుడు వెంటనే వ్యవసాయ విస్తరణ అధికారిని సంప్రదించండి. కిసాన్ కాల్ సెంటర్ (1800-180-1551) లేదా స్థానిక KVK కి కాల్ చేయండి.",
         "hi": "यदि 20% से अधिक कल्ले रोगग्रस्त हों, पत्तियों पर लहरदार धारियां ध्वज पत्ती (फ्लैग लीफ) तक पहुंच जाएं या क्रेसेक (पौधों का सूखना) दिखे, तो तुरंत कृषि विस्तार अधिकारी से संपर्क करें। किसान कॉल सेंटर (1800-180-1551) या स्थानीय KVK पर कॉल करें।"
       },
-      "stage": "Seedling"
+      "stage": "Seedling",
+      "source": "ICAR-IIRR Hyderabad & ANGRAU Crop Production Guide",
+      "source_url": "https://icar-iirr.org",
+      "date_read": "2026-11-22"
     },
     {
       "class_id": "rice_brown_spot",
@@ -221,7 +224,10 @@
         "te": "గింజ పాలుపోసుకునే దశకు ముందే జెండా ఆకులో 15% కంటే ఎక్కువ భాగం మచ్చలు కప్పివేసినా లేదా ఎరువులు వేసినా గింజలపై మచ్చలు వ్యాపిస్తున్నట్లయితే వ్యవసాయ అధికారిని సంప్రదించండి. కిసాన్ కాల్ సెంటర్ (1800-180-1551) లేదా KVK ని సంప్రదించండి.",
         "hi": "यदि दाना भरने से पहले ध्वज पत्ती का 15% से अधिक हिस्सा धब्बों से ढक जाए या दानों पर भूरापन फैलने लगे, तो तुरंत कृषि अधिकारी से संपर्क करें। किसान कॉल सेंटर (1800-180-1551) या स्थानीय KVK पर संपर्क करें।"
       },
-      "stage": "Fruiting or Grain filling"
+      "stage": "Fruiting or Grain filling",
+      "source": "TNAU Agritech Portal & ICAR-IIRR Rice Pathology",
+      "source_url": "https://agritech.tnau.ac.in",
+      "date_read": "2026-11-22"
     },
     {
       "class_id": "rice_leaf_blast",
@@ -324,7 +330,10 @@
         "en": "Call extension officer IMMEDIATELY if spindle lesions cover >5% leaf area during tillering or if blackish lesions appear at neck nodes of panicles (neck blast), as blast can destroy fields within days. Call Kisan Call Centre (Toll-Free 1800-180-1551).",
         "te": "పిలకల దశలో కంటి ఆకారపు మచ్చలు 5% కంటే ఎక్కువ ఆకు విస్తీర్ణాన్ని కప్పివేసినా లేదా వెన్ను మెడ వద్ద నల్లని మచ్చలు (మెడ విరుపు తెగులు) కనిపించినా తక్షణమే వ్యవసాయ అధికారిని సంప్రదించండి, ఎందుకంటే అగ్గి తెగులు కొద్ది రోజుల్లోనే పంటను పూర్తిగా నాశనం చేస్తుంది. కిసాన్ కాల్ సెంటర్ (1800-180-1551) కు కాల్ చేయండి.",
         "hi": "यदि कल्ले फूटते समय स्पिंडल धब्बे 5% से अधिक पत्ती क्षेत्र पर फैल जाएं या बालियों की गर्दन पर काले धब्बे (गर्दन तोड़) दिखें, तो तुरंत कृषि अधिकारी को बुलाएं। यह रोग कुछ ही दिनों में पूरी फसल नष्ट कर सकता है। किसान कॉल सेंटर (1800-180-1551) पर संपर्क करें।"
-      }
+      },
+      "source": "ICAR-IIRR Hyderabad & PJTSAU Vyavasaya Darsini",
+      "source_url": "https://icar-iirr.org",
+      "date_read": "2026-11-22"
     },
     {
       "class_id": "rice_sheath_blight",
@@ -428,7 +437,10 @@
         "te": "20% కంటే ఎక్కువ కుదుళ్ళలో పాముపొడ మచ్చలు రెండవ పై ఆకు తొడుగుకు లేదా జెండా ఆకుకు చేరినప్పుడు వెంటనే వ్యవసాయ విస్తరణ అధికారిని సంప్రదించండి. కిసాన్ కాల్ సెంటర్ (1800-180-1551) లేదా KVK ని సంప్రదించండి.",
         "hi": "यदि 20% से अधिक पौधों में आवरण झुलसा के धब्बे ऊपर की दूसरी पत्ती या फ्लैग लीफ तक पहुंच जाएं, तो तुरंत कृषि विस्तार अधिकारी से संपर्क करें। किसान कॉल सेंटर (1800-180-1551) या स्थानीय KVK पर संपर्क करें।"
       },
-      "stage": "Fruiting or Grain filling"
+      "stage": "Fruiting or Grain filling",
+      "source": "ANGRAU Guidelines & ICAR-IIRR Package of Practices",
+      "source_url": "https://angrau.ac.in",
+      "date_read": "2026-11-22"
     },
     {
       "class_id": "rice_healthy",
@@ -514,7 +526,10 @@
         "en": "Routine guidance only. Contact local KVK or Kisan Call Centre (Toll-Free 1800-180-1551) for seasonal recommendations on panicle stage nutrient management and grain filling water schedules.",
         "te": "సాధారణ సలహాల కొరకు మాత్రమే. చిరుపొట్ట దశలో ఎరువుల యాజమాన్యం మరియు గింజ పాలుపోసుకునే దశలో నీటి నిర్వహణపై కాలానుగుణ సిఫార్సుల కోసం స్థానిక KVK లేదా కిసాన్ కాల్ సెంటర్ (1800-180-1551) ను సంప్రదించండి.",
         "hi": "केवल सामान्य मार्गदर्शन हेतु। बालियां निकलते समय पोषण प्रबंधन और दाना भरते समय सिंचाई कार्यक्रम की मौसमी सलाह के लिए स्थानीय KVK या किसान कॉल सेंटर (1800-180-1551) पर संपर्क करें।"
-      }
+      },
+      "source": "ICAR-IIRR Package of Practices for Rice & PJTSAU",
+      "source_url": "https://icar-iirr.org",
+      "date_read": "2026-11-22"
     },
     {
       "class_id": "cotton_bacterial_blight",
@@ -618,7 +633,10 @@
         "te": "10% కంటే ఎక్కువ ప్రధాన కొమ్మలపై నల్లటి పుండ్లు ఏర్పడి కొమ్మలు విరిగిపోతున్నా లేదా పసి కాయలపై నూనె మచ్చలు విస్తరిస్తున్నా వెంటనే వ్యవసాయ విస్తరణ అధికారిని సంప్రదించండి. కిసాన్ కాల్ సెంటర్ (1800-180-1551) లేదా KVK ని సంప్రదించండి.",
         "hi": "यदि मुख्य शाखाओं के 10% से अधिक हिस्से पर काले घाव (ब्लैक आर्म) फैल जाएं या बनते हुए गूलरों पर तैलीय धब्बे दिखाई दें, तो तुरंत कृषि अधिकारी से संपर्क करें। किसान कॉल सेंटर (1800-180-1551) पर संपर्क करें।"
       },
-      "stage": "Vegetative"
+      "stage": "Vegetative",
+      "source": "ICAR-CICR Cotton Advisory & PJTSAU Vyavasaya Darsini",
+      "source_url": "https://cicr.icar.gov.in",
+      "date_read": "2026-11-22"
     },
     {
       "class_id": "cotton_fusarium_wilt",
@@ -721,7 +739,10 @@
         "en": "Call extension officer IMMEDIATELY upon noticing wilting patches in the field; soil-borne vascular wilt cannot be cured by foliar sprays and requires soil quarantine and drenching guidance. Call Kisan Call Centre (Toll-Free 1800-180-1551).",
         "te": "పొలంలో మొక్కలు వడలిపోయి ఎండిపోతున్న పాచెస్‌ను గమనించిన వెంటనే వ్యవసాయ విస్తరణ అధికారిని సంప్రదించండి; ఇది నేల ద్వారా వ్యాపించే తెగులు కాబట్టి ఆకులపై మందులు పిచికారీ చేయడం వల్ల ప్రయోజనం ఉండదు, నేల శుద్ధి మరియు నివారణ మార్గదర్శకత్వం అవసరం. కిసాన్ కాల్ సెంటర్ (1800-180-1551) కు కాల్ చేయండి.",
         "hi": "खेत में पौधों के मुरझाने के पैच दिखते ही तुरंत कृषि अधिकारी से संपर्क करें; मिट्टी जनित होने के कारण पत्तियों पर छिड़काव से यह ठीक नहीं होता और मिट्टी के उपचार की सलाह जरूरी है। किसान कॉल सेंटर (1800-180-1551) पर संपर्क करें।"
-      }
+      },
+      "source": "ICAR-CICR Cotton Advisory & ANGRAU Crop Guide",
+      "source_url": "https://cicr.icar.gov.in",
+      "date_read": "2026-11-22"
     },
     {
       "class_id": "cotton_healthy",
@@ -807,7 +828,10 @@
         "en": "Routine guidance only. Contact local KVK or Kisan Call Centre (Toll-Free 1800-180-1551) for advice on sucking pest ETL thresholds, square retention sprays, or harvest defoliation.",
         "te": "సాధారణ సలహాల కొరకు మాత్రమే. రసం పీల్చే పురుగుల ఆర్థిక నష్ట పరిమితి (ETL), పూత రాలకుండా నివారించే పిచికారీలు లేదా పత్తి తీత యాజమాన్యం కొరకు స్థానిక KVK లేదా కిసాన్ కాల్ సెంటర్ (1800-180-1551) ను సంప్రదించండి.",
         "hi": "केवल सामान्य मार्गदर्शन हेतु। रस चूसक कीटों की ईटीएल सीमा, फूल-कलियां झड़ने से रोकने और चुगाई प्रबंधन की सलाह के लिए स्थानीय KVK या किसान कॉल सेंटर (1800-180-1551) पर संपर्क करें।"
-      }
+      },
+      "source": "NIPHM Cotton IPM & ICAR-CICR Package of Practices",
+      "source_url": "https://niphm.gov.in",
+      "date_read": "2026-11-22"
     },
     {
       "class_id": "chilli_bacterial_spot",
@@ -910,7 +934,10 @@
         "en": "Call extension officer if raised bacterial scab lesions appear on developing green chilli fruits or premature leaf drop exceeds 25% of canopy. Contact Kisan Call Centre (Toll-Free 1800-180-1551) or local KVK.",
         "te": "ఎదుగుతున్న పచ్చి మిరపకాయలపై గరుకైన బాక్టీరియా పొక్కులు కనిపించినా లేదా 25% కంటే ఎక్కువ ఆకులు రాలిపోతున్నా వెంటనే వ్యవసాయ విస్తరణ అధికారిని సంప్రదించండి. కిసాన్ కాల్ సెంటర్ (1800-180-1551) లేదా KVK ని సంప్రదించండి.",
         "hi": "यदि बढ़ती हुई हरी मिर्च पर उभरे हुए खुरदुरे चकत्ते दिखने लगें या 25% से अधिक पत्तियां झड़ने लगें, तो तुरंत कृषि विस्तार अधिकारी से संपर्क करें। किसान कॉल सेंटर (1800-180-1551) पर संपर्क करें।"
-      }
+      },
+      "source": "ICAR-IIHR Bengaluru Solanaceous Crop IPM & PJTSAU",
+      "source_url": "https://iihr.res.in",
+      "date_read": "2026-11-22"
     },
     {
       "class_id": "chilli_leaf_curl_virus",
@@ -1035,7 +1062,10 @@
         "te": "పూత దశకు ముందే 5-10% మొక్కలలో ఆకు ముడత లక్షణాలు కనిపించిన వెంటనే వ్యవసాయ విస్తరణ అధికారిని సంప్రదించండి; వైరస్ తెగుళ్లకు రసాయన మందుల ద్వారా చికిత్స సాధ్యం కాదు, తెగులు సోకిన మొక్కలను పీకివేయడం మరియు తెల్లదోమ నివారణ చర్యలను అధికారి మార్గదర్శకత్వంలో చేపట్టాలి. కిసాన్ కాల్ సెంటర్ (1800-180-1551) కు కాల్ చేయండి.",
         "hi": "फूल आने से पहले यदि 5-10% पौधों में पत्ती मरोड़ दिखे तो तुरंत कृषि विस्तार अधिकारी से संपर्क करें; वायरल रोगों का कोई रासायनिक इलाज नहीं है, इसलिए रोगी पौधों को उखाड़ना और सफेद मक्खी नियंत्रण अधिकारी की सलाह से ही करें। किसान कॉल सेंटर (1800-180-1551) पर संपर्क करें।"
       },
-      "stage": "Flowering"
+      "stage": "Flowering",
+      "source": "ICAR-IIHR Bengaluru IPM for Chilli & PJTSAU Vyavasaya Darsini",
+      "source_url": "https://iihr.res.in",
+      "date_read": "2026-11-22"
     },
     {
       "class_id": "chilli_healthy",
@@ -1121,7 +1151,10 @@
         "en": "Routine guidance only. Contact local KVK or Kisan Call Centre (Toll-Free 1800-180-1551) for advice on integrated sucking pest management schedules, fruit drop prevention, and harvest grading.",
         "te": "సాధారణ సలహాల కొరకు మాత్రమే. రసం పీల్చే పురుగుల సమగ్ర నివారణ, పూత మరియు పిందె రాలకుండా నివారించే చిట్కాలు మరియు నాణ్యమైన కాయల కోత కొరకు స్థానిక KVK లేదా కిసాన్ కాల్ సెంటర్ (1800-180-1551) ను సంప్రదించండి.",
         "hi": "केवल सामान्य मार्गदर्शन हेतु। रस चूसक कीटों के एकीकृत प्रबंधन, फल-फूल झड़ने से रोकने और मिर्च तुड़ाई के तरीकों के लिए स्थानीय KVK या किसान कॉल सेंटर (1800-180-1551) पर संपर्क करें।"
-      }
+      },
+      "source": "ICAR-IIHR Chilli Production Guide & ANGRAU",
+      "source_url": "https://iihr.res.in",
+      "date_read": "2026-11-22"
     },
     {
       "class_id": "tomato_early_blight",
@@ -1235,7 +1268,10 @@
         "en": "Call extension officer if target-board spots spread upward past the mid-canopy into upper leaves or dark sunken concentric rot lesions appear on tomato fruit calyx/stem ends. Contact Kisan Call Centre (Toll-Free 1800-180-1551).",
         "te": "వలయాల మచ్చలు మొక్క మధ్య భాగం దాటి పై ఆకులకు విస్తరిస్తున్నా లేదా కాయల తొడిమల వద్ద నల్లటి సొట్టబడిన వలయాల కుళ్ళు మచ్చలు కనిపించినా వెంటనే వ్యవసాయ విస్తరణ అధికారిని సంప్రదించండి. కిసాన్ కాల్ సెంటర్ (1800-180-1551) కు కాల్ చేయండి.",
         "hi": "यदि संकेंद्रित छल्ले वाले धब्बे पौधे के बीच से ऊपर की पत्तियों तक फैलने लगें या फलों के डंठल के पास धंसे हुए काले सड़े धब्बे दिखें, तो तुरंत कृषि अधिकारी से संपर्क करें। किसान कॉल सेंटर (1800-180-1551) पर संपर्क करें।"
-      }
+      },
+      "source": "ICAR-IIHR Package for Solanaceous Crops & NIPHM",
+      "source_url": "https://iihr.res.in",
+      "date_read": "2026-11-22"
     },
     {
       "class_id": "tomato_late_blight",
@@ -1338,7 +1374,10 @@
         "en": "Call extension officer IMMEDIATELY upon the very first symptom of water-soaked lesions with white downy growth; late blight spreads exponentially and can destroy entire fields within 3-5 days. Contact Kisan Call Centre (Toll-Free 1800-180-1551).",
         "te": "తెల్లటి బూజుతో కూడిన నీటి మచ్చలు కనిపించిన వెంటనే అత్యవసరంగా వ్యవసాయ విస్తరణ అధికారిని సంప్రదించండి; లేట్ బ్లైట్ తెగులు అతి వేగంగా వ్యాపించి కేవలం 3-5 రోజుల్లోనే మొత్తం పంటను సర్వనాశనం చేస్తుంది. వెంటనే కిసాన్ కాల్ సెంటర్ (1800-180-1551) కు కాల్ చేయండి.",
         "hi": "पत्तियों पर सफेद फफूंद वाले जल-युक्त धब्बे दिखते ही बिना किसी देरी के तुरंत कृषि अधिकारी से संपर्क करें; पछेती झुलसा अत्यंत तेजी से फैलता है और 3-5 दिनों में पूरा खेत नष्ट कर सकता है। किसान कॉल सेंटर (1800-180-1551) पर संपर्क करें।"
-      }
+      },
+      "source": "ICAR-IIHR Bengaluru & TNAU Agritech Portal",
+      "source_url": "https://iihr.res.in",
+      "date_read": "2026-11-22"
     },
     {
       "class_id": "tomato_yellow_leaf_curl_virus",
@@ -1453,7 +1492,10 @@
         "te": "పూత దశకు ముందే 5% మొక్కలలో పసుపు ఆకు ముడత లేదా గిడసబారడం కనిపించిన వెంటనే వ్యవసాయ విస్తరణ అధికారిని సంప్రదించండి; వైరస్ తెగుళ్లకు మందుల ద్వారా నివారణ ఉండదు కాబట్టి తెల్లదోమల నిర్మూలన మరియు రోగగ్రస్త మొక్కల తొలగింపు అధికారి సూచనల మేరకే చేయాలి. కిసాన్ కాల్ సెంటర్ (1800-180-1551) కు కాల్ చేయండి.",
         "hi": "फूल आने से पहले यदि 5% पौधों में पीला पत्ती मरोड़ या बौनापन दिखे तो तुरंत कृषि विस्तार अधिकारी से संपर्क करें; वायरल रोगों का कोई इलाज नहीं है और सफेद मक्खी नियंत्रण तथा पौधों को नष्ट करने की सलाह जरूरी है। किसान कॉल सेंटर (1800-180-1551) पर संपर्क करें।"
       },
-      "stage": "Seedling"
+      "stage": "Seedling",
+      "source": "ICAR-IIHR Tomato IPM & NIPHM Advisory",
+      "source_url": "https://iihr.res.in",
+      "date_read": "2026-11-22"
     },
     {
       "class_id": "tomato_spider_mites",
@@ -1578,7 +1620,10 @@
         "en": "Call extension officer if mite count exceeds ETL (>5-10 mites per leaflet) or fine webbing covers upper growing shoots and flower clusters. Contact Kisan Call Centre (Toll-Free 1800-180-1551) or local KVK.",
         "te": "నల్లి పురుగుల సంఖ్య ఆర్థిక నష్ట పరిమితి (ఆకుకు 5-10 నల్లులు) దాటినా లేదా పై చిగుళ్ళు మరియు పూత గుత్తులను సాలీడు గూడు వంటి తెల్లటి జాలం కప్పివేసినా వెంటనే వ్యవసాయ విస్తరణ అధికారిని సంప్రదించండి. కిసాన్ కాల్ సెంటర్ (1800-180-1551) లేదా KVK ని సంప్రదించండి.",
         "hi": "यदि माइट्स की संख्या ईटीएल (5-10 माइट्स प्रति पत्ती) से अधिक हो जाए या शीर्ष शाखाओं व फूलों पर जाले फैल जाएं, तो तुरंत कृषि अधिकारी से संपर्क करें। किसान कॉल सेंटर (1800-180-1551) पर संपर्क करें।"
-      }
+      },
+      "source": "ICAR-IIHR Tomato IPM, ANGRAU & NBAIR Bengaluru",
+      "source_url": "https://nbair.res.in",
+      "date_read": "2026-11-22"
     },
     {
       "class_id": "tomato_healthy",
@@ -1664,7 +1709,10 @@
         "en": "Routine guidance only. Contact local KVK or Kisan Call Centre (Toll-Free 1800-180-1551) for seasonal advice on fruit set maximization, micronutrient booster sprays, and harvest grading.",
         "te": "సాధారణ సలహాల కొరకు మాత్రమే. కాయల దిగుబడిని పెంచడం, సూక్ష్మపోషకాల పిచికారీలు మరియు నాణ్యమైన కాయల గ్రేడింగ్ కొరకు స్థానిక KVK లేదా కిసాన్ కాల్ సెంటర్ (1800-180-1551) ను సంప్రదించండి.",
         "hi": "केवल सामान्य मार्गदर्शन हेतु। फलों की पैदावार बढ़ाने, सूक्ष्म पोषक तत्वों के छिड़काव और ग्रेडिंग के तरीकों के लिए स्थानीय KVK या किसान कॉल सेंटर (1800-180-1551) पर संपर्क करें।"
-      }
+      },
+      "source": "ICAR-IIHR Tomato Production Guide & TNAU",
+      "source_url": "https://iihr.res.in",
+      "date_read": "2026-11-22"
     },
     {
       "class_id": "maize_gray_leaf_spot",
@@ -1767,7 +1815,10 @@
         "en": "Call extension officer if rectangular gray lesions advance to the ear leaf or the two leaves above it before grain dough stage. Contact Kisan Call Centre (Toll-Free 1800-180-1551) or local KVK.",
         "te": "గింజ గట్టిపడే దశకు ముందే దీర్ఘచతురస్రాకార బూడిద రంగు మచ్చలు కంకి ఆకుకు లేదా దాని పైన ఉన్న రెండు ఆకులకు పాకినట్లయితే వెంటనే వ్యవసాయ విస్తరణ అధికారిని సంప్రదించండి. కిసాన్ కాల్ సెంటర్ (1800-180-1551) లేదా KVK ని సంప్రదించండి.",
         "hi": "यदि दाना भरने की अवस्था से पहले आयताकार धूसर धब्बे भुट्टे वाली पत्ती या उसके ऊपर की दो पत्तियों तक पहुंच जाएं, तो तुरंत कृषि अधिकारी से संपर्क करें। किसान कॉल सेंटर (1800-180-1551) पर संपर्क करें।"
-      }
+      },
+      "source": "ICAR-IIMR Ludhiana Maize Pathology Bulletin & PJTSAU",
+      "source_url": "https://iimr.icar.gov.in",
+      "date_read": "2026-11-22"
     },
     {
       "class_id": "maize_common_rust",
@@ -1870,7 +1921,10 @@
         "en": "Call extension officer if rust pustules cover >10% of ear leaf area before blister/milking stage during cool, overcast, high-humidity weather. Contact Kisan Call Centre (Toll-Free 1800-180-1551).",
         "te": "చల్లని, మేఘావృతమైన తేమ వాతావరణంలో పాలుపోసుకునే దశకు ముందే కంకి ఆకుపై 10% కంటే ఎక్కువ భాగం తుప్పు పొక్కులు కప్పివేసినట్లయితే వెంటనే వ్యవసాయ విస్తరణ అధికారిని సంప్రదించండి. కిసాన్ కాల్ సెంటర్ (1800-180-1551) కు కాల్ చేయండి.",
         "hi": "ठंडे और अधिक नमी वाले मौसम में दाना दूधिया होने से पहले यदि भुट्टे वाली पत्ती का 10% से अधिक हिस्सा रतुआ फफोलों से ढक जाए, तो तुरंत कृषि अधिकारी से संपर्क करें। किसान कॉल सेंटर (1800-180-1551) पर संपर्क करें।"
-      }
+      },
+      "source": "ICAR-IIMR Maize Pathology Directory & PJTSAU",
+      "source_url": "https://iimr.icar.gov.in",
+      "date_read": "2026-11-22"
     },
     {
       "class_id": "maize_northern_leaf_blight",
@@ -1973,7 +2027,10 @@
         "en": "Call extension officer if cigar-shaped blight lesions appear on or above the ear leaf prior to or during silking, or if >25% of canopy shows blighting. Contact Kisan Call Centre (Toll-Free 1800-180-1551).",
         "te": "కంకి పీచు దశకు ముందే కంకి ఆకుపై లేదా దాని పై ఆకులపై చుట్ట ఆకారపు పెద్ద మచ్చలు కనిపించినా లేదా 25% కంటే ఎక్కువ ఆకులు ఎండిపోయినా వెంటనే వ్యవసాయ విస్తరణ అధికారిని సంప్రదించండి. కిసాన్ కాల్ సెంటర్ (1800-180-1551) కు కాల్ చేయండి.",
         "hi": "सिल्किंग (भुट्टे से बाल निकलने) से पहले या उस समय यदि सिगार के आकार के धब्बे भुट्टे वाली पत्ती या उसके ऊपर दिखें, या 25% से अधिक पत्तियां झुलस जाएं, तो तुरंत कृषि अधिकारी से संपर्क करें। किसान कॉल सेंटर (1800-180-1551) पर संपर्क करें।"
-      }
+      },
+      "source": "ANGRAU Maize Package & ICAR-IIMR Disease Management",
+      "source_url": "https://angrau.ac.in",
+      "date_read": "2026-11-22"
     },
     {
       "class_id": "maize_fall_armyworm",
@@ -2109,7 +2166,10 @@
         "te": "సుడుల నష్టం ఆర్థిక పరిమితి (మొలక దశలో 5%, పైరు దశలో 10%) దాటినా లేదా 1.5 సెం.మీ కంటే పెద్ద లార్వాలు సుడుల లోపల చేరి తింటున్నట్లు గుర్తించినా వెంటనే వ్యవసాయ విస్తరణ అధికారిని సంప్రదించండి. కిసాన్ కాల్ సెంటర్ (1800-180-1551) కు కాల్ చేయండి.",
         "hi": "यदि गोभ का प्रकोप ईटीएल (अंकुरण पर 5%, वानस्पतिक पर 10%) से अधिक हो जाए या 1.5 सेमी से बड़ी सूंडियां गोभ के अंदर नुकसान पहुंचाती मिलें, तो तुरंत कृषि अधिकारी से संपर्क करें। किसान कॉल सेंटर (1800-180-1551) पर संपर्क करें।"
       },
-      "stage": "Vegetative"
+      "stage": "Vegetative",
+      "source": "ICAR-NBAIR FAW Advisory, PJTSAU Maize Pest Advisory & NIPHM",
+      "source_url": "https://nbair.res.in",
+      "date_read": "2026-11-22"
     },
     {
       "class_id": "maize_healthy",
@@ -2195,6 +2255,374 @@
         "en": "Routine guidance only. Contact local KVK or Kisan Call Centre (Toll-Free 1800-180-1551) for advice on tasseling irrigation schedules, cob filling nutrition, and grain moisture management.",
         "te": "సాధారణ సలహాల కొరకు మాత్రమే. వెన్ను వేసే సమయంలో నీటి తడులు, కంకిలో గింజ సమృద్ధిగా ఏర్పడటానికి అవసరమైన పోషణ మరియు కోత నాణ్యత కొరకు స్థానిక KVK లేదా కిసాన్ కాల్ సెంటర్ (1800-180-1551) ను సంప్రదించండి.",
         "hi": "केवल सामान्य मार्गदर्शन हेतु। मंजरी निकलते समय सिंचाई कार्यक्रम, भुट्टे में दाना भरने हेतु पोषण और कटाई पूर्व नमी प्रबंधन की सलाह के लिए स्थानीय KVK या किसान कॉल सेंटर (1800-180-1551) पर संपर्क करें।"
+      },
+      "source": "ICAR-IIMR Good Agricultural Practices for Maize & ANGRAU",
+      "source_url": "https://iimr.icar.gov.in",
+      "date_read": "2026-11-22"
+    },
+    {
+      "class_id": "rice_stem_borer",
+      "index": 21,
+      "crop": "rice",
+      "type": "pest",
+      "pathogen": "Scirpophaga incertulas",
+      "stage": "Vegetative",
+      "source": "ICAR-IIRR Integrated Pest Management in Rice, PJTSAU & NBAIR",
+      "source_url": "https://icar-iirr.org",
+      "date_read": "2026-11-22",
+      "names": {
+        "en": "Rice Yellow Stem Borer",
+        "te": "వరి కాండం తొలుచు పురుగు",
+        "hi": "धान का पीला तना छेदक कीट"
+      },
+      "needs_expert_review": true,
+      "referral_threshold": "SEVERE",
+      "severity_advice": {
+        "MILD": {
+          "en": "Occasional dead hearts (<2% tillers) or egg masses scattered. Install pheromone traps and conserve natural parasitoids.",
+          "te": "అక్కడక్కడా 2% కంటే తక్కువ ఎండిన పిలకలు లేదా గుడ్ల గుంపులు. లింగాకర్షక బుట్టలు అమర్చండి మరియు సహజ మిత్రపురుగులను కాపాడండి.",
+          "hi": "2% से कम तने सूखे या इक्का-दुक्का अंडे दिखे। फेरोमोन जाल लगाएं और मित्र कीटों की रक्षा करें।"
+        },
+        "MODERATE": {
+          "en": "Dead hearts 2-5% or 1 egg mass per square meter. Apply biocontrol egg parasitoids or neem formulations to whorls.",
+          "te": "ఎండిన పిలకలు 2-5% లేదా చదరపు మీటరుకు ఒక గుడ్ల సముదాయం. ట్రైకోగ్రామా కార్డులు లేదా వేప నూనెను ఆకుల సుడులలో వాడండి.",
+          "hi": "2-5% मृत केंद्र या 1 अंडा समूह प्रति वर्ग मीटर। ट्राइकोग्रामा परजीवी कार्ड या नीम आधारित दवा का प्रयोग करें।"
+        },
+        "SEVERE": {
+          "en": "Dead hearts >10% or whiteheads appearing at panicle emergence. Widespread crop damage; consult KVK within 24 hours.",
+          "te": "ఎండిన పిలకలు 10% మించినా లేదా కంకులు తెల్లబడి గింజ పాలుపోయకుండా ఉంటే పంట నష్టం తీవ్రం. 24 గంటల్లో వ్యవసాయాధికారిని సంప్రదించండి.",
+          "hi": "10% से अधिक मृत केंद्र या बालियां सफेद निकलने लगें। भारी नुकसान की आशंका; 24 घंटे में कृषि विज्ञान केंद्र से संपर्क करें।"
+        }
+      },
+      "immediate_step": {
+        "en": "Set up pheromone traps for pest monitoring; do not apply excessive nitrogen which attracts moth egg-laying.",
+        "te": "పురుగు ఉధృతిని పర్యవేక్షించడానికి లింగాకర్షక బుట్టలు అమర్చండి; అధిక నత్రజని వాడకం పురుగు ఉధృతిని పెంచుతుంది కాబట్టి యూరియా వేయకండి.",
+        "hi": "कीट निगरानी के लिए फेरोमोन ट्रैप लगाएं; अधिक यूरिया न डालें क्योंकि इससे मादा तितली अंडे देने के लिए आकर्षित होती है।"
+      },
+      "explain_text": {
+        "en": "A major monophagous lepidopteran pest of rice. The larva bores into the central tiller or stem, cutting off vascular bundles and causing dead hearts in the vegetative stage and empty whiteheads at heading.",
+        "te": "వరి పంటను ఆశించే ప్రధాన పురుగు. లార్వా కాండం లోపలికి తొలిచి నాళికా పుంజాలను కత్తిరించడం వలన పిలకల దశలో తీగ చనిపోవడం (డెడ్ హార్ట్) మరియు చిరుపొట్ట దశలో తెల్ల కంకులు ఏర్పడతాయి.",
+        "hi": "धान का एक प्रमुख कीट। इसकी इल्ली तने के अंदर छेद करके संवहनी ऊतकों को काट देती है, जिससे कल्ले फूटते समय मृत केंद्र (डेड हार्ट) और बाली निकलते समय दाना-रहित सफेद बाली बन जाती है।"
+      },
+      "treatment": {
+        "natural": [
+          {
+            "step": 1,
+            "action": {
+              "en": "Clip seedling leaf tips before transplanting to destroy egg masses and install pheromone traps at 5 per hectare for monitoring.",
+              "te": "నాట్లు వేసే ముందు నారు చివరలను తుంచి గుడ్ల సముదాయాలను నాశనం చేయండి మరియు పర్యవేక్షణకు హెక్టారుకు 5 లింగాకర్షక బుట్టలు పెట్టండి.",
+              "hi": "रोपाई से पहले पौध के ऊपरी सिरों को काट दें ताकि अंडे नष्ट हों और निगरानी हेतु 5 फेरोमोन ट्रैप लगाएं।"
+            },
+            "source": "ICAR-IIRR Hyderabad",
+            "source_url": "https://icar-iirr.org",
+            "source_quote": "Clipping seedling tips removes over 80% of Scirpophaga egg masses."
+          },
+          {
+            "step": 2,
+            "action": {
+              "en": "Release Trichogramma japonicum egg parasitoid @ 100,000 adults/ha weekly starting 30 days after transplanting.",
+              "te": "నాటిన 30 రోజుల నుండి వారం వ్యవధిలో ట్రైకోగ్రామా జపోనికమ్ గుడ్ల పరాన్నజీవులను హెక్టారుకు లక్ష చొప్పున విడుదల చేయండి.",
+              "hi": "रोपाई के 30 दिन बाद से ट्राइकोग्रामा जेपोनिकम परजीवी कार्ड (1 लाख प्रति हेक्टेयर) हर हफ्ते लगाएं।"
+            },
+            "source": "ICAR-NBAIR Bengaluru",
+            "source_url": "https://nbair.res.in",
+            "source_quote": "Trichogramma japonicum provides effective biological control of yellow stem borer eggs in irrigated rice."
+          },
+          {
+            "step": 3,
+            "action": {
+              "en": "Spray neem oil 3000 ppm (3-5 ml/L) or NSKE 5% at early moth flight to deter egg laying.",
+              "te": "రెక్కల పురుగులు కనిపించిన ప్రారంభంలో గుడ్లు పెట్టకుండా వేపనూనె (3-5 మి.లీ/లీ) లేదా వేప కషాయం పిచికారీ చేయండి.",
+              "hi": "शुरुआत में मादा कीट को अंडे देने से रोकने हेतु नीम का तेल 3000 ppm (3-5 मिली/लीटर) छिड़कें।"
+            },
+            "source": "NIPHM Hyderabad",
+            "source_url": "https://niphm.gov.in",
+            "source_quote": "Botanical extracts and neem deter Scirpophaga oviposition and reduce early larval penetration."
+          }
+        ],
+        "chemical": [
+          {
+            "step": 1,
+            "active_ingredient": "Chlorantraniliprole 0.4% GR",
+            "product_example": "Ferterra / Rynaxypyr",
+            "dose_verified": false,
+            "dose": "follow the product label",
+            "phi_days": 30,
+            "safety_line": {
+              "en": "Wear rubber gloves during application. Maintain standing water of 2-3 cm for 3-4 days after application. Follow label.",
+              "te": "మందు చల్లేటప్పుడు రబ్బరు గ్లౌజులు ధరించండి. మందు వేసిన తర్వాత పొలంలో 3-4 రోజులు 2-3 సెం.మీ నీరు ఉంచండి. లేబుల్ పాటించండి.",
+              "hi": "दवा डालते समय दस्ताने पहनें। दवा डालने के बाद 3-4 दिनों तक खेत में 2-3 सेमी पानी बनाए रखें। लेबल पढ़ें।"
+            },
+            "source": "CIB&RC Major Uses",
+            "source_url": "https://cibrc.nic.in",
+            "source_quote": "Chlorantraniliprole 0.4% GR is registered by CIB&RC for stem borer in paddy."
+          }
+        ]
+      },
+      "regional": {
+        "telangana": {
+          "source": "PJTSAU",
+          "differs": false
+        },
+        "andhra_pradesh": {
+          "source": "ANGRAU",
+          "differs": false
+        },
+        "other": {
+          "source": "ICAR",
+          "differs": false
+        }
+      },
+      "prevention_and_field_practice": {
+        "en": "Source: ICAR-IIRR, NIPHM & PJTSAU. Practice pest monitoring with 5 pheromone traps per hectare. Clip seedling leaf tips before transplanting to eliminate stem borer egg masses. Observe economic threshold of 2% dead hearts or 1 egg mass/m2 before intervention. Conserve biological agents like Trichogramma japonicum parasitoids (release at 100,000/ha). Avoid excessive nitrogenous fertilizers. Drain standing water briefly during peak egg hatching. Apply targeted chemical granular treatment only if threshold is exceeded.",
+        "te": "మూలం: ICAR-IIRR, NIPHM & PJTSAU. హెక్టారుకు 5 లింగాకర్షక బుట్టలు అమర్చి పురుగు పర్యవేక్షణ (మోనిటరింగ్) చేయండి. నాట్లు వేసే ముందు నారు కొనలను తుంచడం ద్వారా గుడ్ల గుంపులను తొలగించండి. ఆర్ధిక నష్ట పరిమితి (2% ఎండిన పిలకలు లేదా చ.మీ.కు 1 గుడ్ల సముదాయం) గమనించండి. ట్రైకోగ్రామా జపోనికమ్ వంటి జీవ నియంత్రణ మిత్ర పురుగులను (హెక్టారుకు 1,00,000) వినియోగించండి. అధిక నత్రజని ఎరువులను వేయవద్దు. పురుగు ఉధృతి పరిమితి దాటితేనే సిఫార్సు చేసిన రసాయన మందులను వాడండి.",
+        "hi": "स्रोत: ICAR-IIRR, NIPHM और PJTSAU. खेत में कीट निगरानी (मॉनिटरिंग) हेतु 5 फेरोमोन ट्रैप प्रति हेक्टेयर लगाएं। रोपाई से पहले पौध के ऊपरी सिरों को तोड़ दें ताकि अंडों के गुच्छे नष्ट हो जाएं। आर्थिक नुकसान की सीमा (2% डेड हार्ट या 1 अंडा समूह प्रति वर्ग मीटर) पार होने पर ही कदम उठाएं। ट्राइकोग्रामा जेपोनिकम जैसे जैविक नियंत्रण परजीवी (1 लाख प्रति हेक्टेयर) छोड़ें। अधिक यूरिया का प्रयोग न करें। सीमा पार होने पर ही लक्षित रासायनिक कीटनाशक का प्रयोग करें।"
+      },
+      "early_warning_signs": {
+        "en": "Scout for yellow-brown egg masses covered with buff-colored anal hairs near leaf tips in nursery and main field. Central shoots wilting, drying, and easily pulled out by hand (dead hearts).",
+        "te": "నర్సరీ మరియు ప్రధాన పొలంలో ఆకుల కొనల వద్ద పసుపు-గోధుమ రంగు గుడ్ల సముదాయాలు గమనించండి. మధ్య పిలకలు ఎండిపోయి, చేత్తో లాగితే సులభంగా ఊడివచ్చే డెడ్ హార్ట్ లక్షణాలను పర్యవేక్షించండి.",
+        "hi": "नर्सरी और मुख्य खेत में पत्तियों के सिरों पर भूरे रंग के बालों से ढके अंडों के समूह देखें। मुख्य तना सूखने लगता है और हाथ से खींचने पर आसानी से बाहर आ जाता है (डेड हार्ट)।"
+      },
+      "when_to_call_extension_officer": {
+        "en": "Call extension officer if dead hearts exceed 5% during tillering or whiteheads appear at flowering, threatening severe yield loss. Call Kisan Call Centre (Toll-Free 1800-180-1551).",
+        "te": "పిలక దశలో 5% పైగా పిలకలు ఎండిపోయినా లేదా చిరుపొట్ట దశలో తెల్ల కంకులు కనిపిస్తే పంట దిగుబడి తీవ్రంగా తగ్గే ప్రమాదం ఉన్నందున వెంటనే వ్యవసాయ అధికారిని సంప్రదించండి. కిసాన్ కాల్ సెంటర్ (1800-180-1551) కు కాల్ చేయండి.",
+        "hi": "यदि कल्ले फूटते समय 5% से अधिक डेड हार्ट हों या बाली निकलते समय सफेद बालियां दिखें, तो तुरंत कृषि अधिकारी से संपर्क करें। किसान कॉल सेंटर (1800-180-1551) पर कॉल करें।"
+      }
+    },
+    {
+      "class_id": "rice_hispa",
+      "index": 22,
+      "crop": "rice",
+      "type": "pest",
+      "pathogen": "Dicladispa armigera",
+      "stage": "Vegetative",
+      "source": "ANGRAU Vyavasaya Darsini, ICAR-IIRR Rice Hispa Advisory & NIPHM",
+      "source_url": "https://angrau.ac.in",
+      "date_read": "2026-11-22",
+      "names": {
+        "en": "Rice Hispa",
+        "te": "వరి హిస్పా (ముళ్ల పురుగు)",
+        "hi": "धान का हिस्पा कीट (कांटेदार कीट)"
+      },
+      "needs_expert_review": true,
+      "referral_threshold": "SEVERE",
+      "severity_advice": {
+        "MILD": {
+          "en": "Occasional beetles (<1 per hill) or light streaking on outer leaves. Sweep net collection and clip damaged tips.",
+          "te": "దుబ్బుకు 1 కంటే తక్కువ పురుగులు లేదా బయటి ఆకులపై తేలికపాటి చారలు. వలలతో పురుగులను పట్టి నాశనం చేయండి మరియు ఆకు కొనలను తుంచండి.",
+          "hi": "प्रति पौधा 1 से कम कीड़ा या पत्तियों पर हल्की धारियां। कीट पकड़ने वाले जाल (स्वीप नेट) से कीड़ों को नष्ट करें।"
+        },
+        "MODERATE": {
+          "en": "1-2 adults per hill or >1 damaged leaf per hill. Sweep netting, release biocontrol agents, and spray neem extracts.",
+          "te": "దుబ్బుకు 1-2 పురుగులు లేదా పాడైన ఆకులు. వలలతో పురుగులను ఏరివేయండి, వేప కషాయం పిచికారీ చేయండి.",
+          "hi": "1-2 वयस्क कीट प्रति पौधा या प्रति पौधा 1 क्षतिग्रस्त पत्ती। जाल से पकड़ें और नीम आधारित कीटनाशक छिड़कें।"
+        },
+        "SEVERE": {
+          "en": ">2 adults per hill or widespread drying resembling fire scorching. Heavy defoliation; consult KVK agronomist immediately.",
+          "te": "దుబ్బుకు 2 కంటే ఎక్కువ పురుగులు ఉండి, ఆకులన్నీ ఎండిపోయి పొలం కాలిపోయినట్లు కనిపిస్తే నష్టం తీవ్రం. వెంటనే వ్యవసాయాధికారిని సంప్రదించండి.",
+          "hi": "प्रति पौधा 2 से अधिक कीड़े और पत्तियां झुलसकर सूख रही हों। गंभीर नुकसान; तुरंत कृषि अधिकारी से संपर्क करें।"
+        }
+      },
+      "immediate_step": {
+        "en": "Use a sweep net to collect and destroy adult spiny beetles from field corners and bunds; avoid over-fertilizing with nitrogen.",
+        "te": "పొలం గట్లు మరియు మూలల వద్ద తిరుగుతున్న ముళ్ళ పురుగులను వలతో పట్టి నాశనం చేయండి; అధిక యూరియా వేయవద్దు.",
+        "hi": "कीट पकड़ने वाले जाल से वयस्क कीड़ों को पकड़कर नष्ट करें; अधिक यूरिया का छिड़काव तुरंत बंद करें।"
+      },
+      "explain_text": {
+        "en": "A destructive spiny beetle pest of rice. The adult beetle scrapes chlorophyll from upper leaf surfaces in parallel white streaks, while the grub mines between the epidermal layers creating translucent blister patches, giving the crop a withered, burnt appearance.",
+        "te": "వరిని ఆశించే ముళ్ల పురుగు (బీటిల్). తల్లి పురుగులు ఆకులపై ఉన్న పత్రహరితాన్ని సమాంతరంగా గోకడం వలన తెల్లని చారలు ఏర్పడతాయి; పిల్ల పురుగులు ఆకు పొరల మధ్య చొరబడి తినడం వలన తెల్లటి పొక్కులు ఏర్పడి పంట ఎండిపోయినట్లు కనిపిస్తుంది.",
+        "hi": "धान की पत्तियों को नुकसान पहुंचाने वाला कांटेदार भृंग (कीट)। वयस्क कीट पत्तियों की ऊपरी सतह से क्लोरोफिल खुरचकर सफेद समानांतर धारियां बना देते हैं और इसकी सूंडी पत्तियों के भीतर सुरंग बनाकर सुखा देती है।"
+      },
+      "treatment": {
+        "natural": [
+          {
+            "step": 1,
+            "action": {
+              "en": "Clip leaf tips of seedlings before transplanting and pass a sweep net across the field to catch and destroy adult beetles.",
+              "te": "నాట్లకు ముందు నారు కొనలను తుంచి నాశనం చేయండి మరియు చేనులో వల తిప్పి తల్లి పురుగులను పట్టి నాశనం చేయండి.",
+              "hi": "रोपाई से पहले पौध की ऊपरी पत्तियां काट दें और खेत में जाल घुमाकर वयस्क कीड़ों को पकड़कर नष्ट करें।"
+            },
+            "source": "ANGRAU Crop Production Guide",
+            "source_url": "https://angrau.ac.in",
+            "source_quote": "Clipping infested leaf tips destroys grubs and sweep netting suppresses adult beetle populations effectively."
+          },
+          {
+            "step": 2,
+            "action": {
+              "en": "Spray Neem Seed Kernel Extract (NSKE 5%) or Azadirachtin 1500 ppm (3-5 ml/L) to deter adult feeding and egg-laying.",
+              "te": "తల్లి పురుగులు గుడ్లు పెట్టకుండా మరియు ఆకులను తినకుండా వేప గింజల కషాయం (NSKE 5%) లేదా వేపనూనె (3-5 మి.లీ/లీ) పిచికారీ చేయండి.",
+              "hi": "वयस्क कीड़ों को खाने और अंडे देने से रोकने हेतु नीम बीज का काढ़ा (NSKE 5%) या नीम का तेल (3-5 मिली/लीटर) छिड़कें।"
+            },
+            "source": "NIPHM Hyderabad",
+            "source_url": "https://niphm.gov.in",
+            "source_quote": "Neem formulations show strong anti-feedant and repellent action against Dicladispa armigera."
+          }
+        ],
+        "chemical": [
+          {
+            "step": 1,
+            "active_ingredient": "Chlorpyrifos 20% EC",
+            "product_example": "Dursban / Classic",
+            "dose_verified": false,
+            "dose": "follow the product label",
+            "phi_days": 30,
+            "safety_line": {
+              "en": "Wear mask and goggles. Avoid spraying during high heat or strong wind. Keep away from water bodies. Follow product label.",
+              "te": "మాస్క్ మరియు కళ్లద్దాలు ధరించండి. తీవ్రమైన ఎండ లేదా గాలి ఉన్నప్పుడు పిచికారీ చేయవద్దు. నీటి వనరులకు దూరంగా ఉంచండి. లేబుల్ పాటించండి.",
+              "hi": "मास्क और चश्मा पहनें। तेज धूप या तेज हवा में छिड़काव न करें। जल स्रोतों से दूर रखें। उत्पाद लेबल पढ़ें।"
+            },
+            "source": "CIB&RC Major Uses",
+            "source_url": "https://cibrc.nic.in",
+            "source_quote": "Chlorpyrifos 20% EC is registered by CIB&RC for rice hispa control in paddy."
+          }
+        ]
+      },
+      "regional": {
+        "telangana": {
+          "source": "PJTSAU",
+          "differs": false
+        },
+        "andhra_pradesh": {
+          "source": "ANGRAU",
+          "differs": false
+        },
+        "other": {
+          "source": "ICAR",
+          "differs": false
+        }
+      },
+      "prevention_and_field_practice": {
+        "en": "Source: ANGRAU, ICAR-IIRR & NIPHM. Practice regular pest monitoring in nurseries and early planted crops. Clip and burn infested leaf tips before transplanting to destroy leaf-mining grubs. Observe economic threshold of 1-2 adults or 1 damaged leaf per hill before applying treatments. Promote biological control and protect natural predators such as reduviid bugs and damselflies. Spray botanical neem seed kernel extract (NSKE 5%) or azadirachtin at first sign. If infestation crosses threshold, apply registered chemical insecticide to foliage.",
+        "te": "మూలం: ANGRAU, ICAR-IIRR & NIPHM. నారుమళ్లు మరియు పిలక దశలో పురుగు పర్యవేక్షణ (మోనిటరింగ్) చేపట్టండి. నాట్లు వేసే సమయంలో ఆకుల కొనలను తుంచి కాల్చివేయడం ద్వారా లోపల ఉన్న పురుగులను నాశనం చేయండి. ఆర్థిక నష్ట పరిమితి (దుబ్బుకు 1-2 తల్లి పురుగులు లేదా 1 దెబ్బతిన్న ఆకు) ఆధారంగా చర్యలు తీసుకోండి. సహజ శత్రువులైన సూది తుమ్మెదలను కాపాడే జీవ నియంత్రణ పద్ధతులను ప్రోత్సహించండి. వేప గింజల కషాయం (NSKE 5%) పిచికారీ చేయండి. తీవ్రత పరిమితి మించితే మాత్రమే సిఫార్సు చేసిన రసాయన మందులను వాడండి.",
+        "hi": "स्रोत: ANGRAU, ICAR-IIRR और NIPHM. नर्सरी और रोपाई के शुरुआती दिनों में नियमित कीट निगरानी (मॉनिटरिंग) करें। रोपाई से पहले ग्रसित पत्तियों के सिरों को काटकर नष्ट करें ताकि अंदर छिपी इल्लियां खत्म हों। आर्थिक सीमा (1-2 वयस्क प्रति पौधा या 1 क्षतिग्रस्त पत्ती) की जांच करें। प्राकृतिक मित्र कीटों का संरक्षण करते हुए जैविक नियंत्रण अपनाएं। नीम का काढ़ा (NSKE 5%) छिड़कें। यदि कीट सीमा पार करे, तो ही अनुमोदित रासायनिक कीटनाशक का छिड़काव करें।"
+      },
+      "early_warning_signs": {
+        "en": "Look for small spiny black-blue beetles on leaves and characteristic whitish parallel streaks along leaf veins. White papery patches where leaf tissue has been mined, starting from leaf tips.",
+        "te": "ఆకులపై నలుపు-నీలం రంగులో ముళ్ళు కలిగిన చిన్న పురుగులు మరియు ఈనెల వెంట తెల్లటి సమాంతర చారలు గమనించండి. ఆకు కొనల వద్ద కాగితంలా మారిన తెల్లటి పొక్కులను పర్యవేక్షించండి.",
+        "hi": "पत्तियों पर नीले-काले रंग के कांटेदार छोटे कीड़े और शिराओं के समानांतर सफेद धारियां देखें। पत्तियों के सिरों पर सफेद झिल्लीदार धब्बे दिखाई देते हैं।"
+      },
+      "when_to_call_extension_officer": {
+        "en": "Call extension officer if leaf scorching spreads across more than 20% of the field or adults exceed 2 per hill. Call Kisan Call Centre (Toll-Free 1800-180-1551).",
+        "te": "పొలంలో 20% పైగా ఆకులు తెల్లబడి ఎండిపోయినా లేదా దుబ్బుకు 2 కంటే ఎక్కువ తల్లి పురుగులు ఉంటే పంట రక్షణకు వెంటనే వ్యవసాయ అధికారిని సంప్రదించండి. కిసాన్ కాల్ సెంటర్ (1800-180-1551) కు కాల్ చేయండి.",
+        "hi": "यदि खेत में 20% से अधिक पत्तियां सूखने लगें या प्रति पौधा 2 से अधिक कीड़े दिखें, तो तुरंत कृषि अधिकारी से संपर्क करें। किसान कॉल सेंटर (1800-180-1551) पर कॉल करें।"
+      }
+    },
+    {
+      "class_id": "tomato_septoria_leaf_spot",
+      "index": 23,
+      "crop": "tomato",
+      "type": "disease",
+      "pathogen": "Septoria lycopersici",
+      "stage": null,
+      "source": "ICAR-IIHR Bengaluru Tomato Disease Management & TNAU",
+      "source_url": "https://iihr.res.in",
+      "date_read": "2026-11-22",
+      "names": {
+        "en": "Tomato Septoria Leaf Spot",
+        "te": "టమాటా సెప్టోరియా ఆకుమచ్చ తెగులు",
+        "hi": "टमाटर का सेप्टोरिया पत्ती धब्बा रोग"
+      },
+      "needs_expert_review": true,
+      "referral_threshold": "SEVERE",
+      "severity_advice": {
+        "MILD": {
+          "en": "A few spots restricted to lowest crown leaves. Prune infected lower leaves and mulch soil surface.",
+          "te": "కింది ఆకులపై మాత్రమే కొన్ని మచ్చలు. ఆ తెగులు సోకిన కింది ఆకులను తుంచి నాశనం చేయండి మరియు నేలపై రక్షక కవచం (మల్చింగ్) వేయండి.",
+          "hi": "निचली पत्तियों पर कुछ सीमित धब्बे। ग्रसित निचली पत्तियों को तोड़कर नष्ट करें और जमीन पर मल्चिंग करें।"
+        },
+        "MODERATE": {
+          "en": "Spots spreading to middle foliage with some yellowing and leaf drop. Apply bio-fungicide or registered protective spray.",
+          "te": "మచ్చలు మధ్య ఆకులకు వ్యాపించి, ఆకులు పసుపు రంగులోకి మారి రాలుతున్నాయి. జీవ శిలీంధ్రనాశిని లేదా సిఫార్సు చేసిన రసాయన మందు చల్లండి.",
+          "hi": "धब्बे बीच की पत्तियों तक फैल रहे हैं और पत्तियां पीली होकर गिर रही हैं। तुरंत अनुशंसित कवकनाशी का छिड़काव करें।"
+        },
+        "SEVERE": {
+          "en": "Extensive defoliation exposing green fruits to severe sunscald. Consult KVK agronomist within 24 hours.",
+          "te": "ఎక్కువ శాతం ఆకులు రాలిపోయి టమాటా కాయలు ఎండదెబ్బకు గురయ్యే ప్రమాదం ఉంది. 24 గంటల్లో వ్యవసాయాధికారిని సంప్రదించండి.",
+          "hi": "अधिकतर पत्तियां झड़ चुकी हैं और फल धूप से झुलस रहे हैं। 24 घंटे के भीतर कृषि विशेषज्ञ से सलाह लें।"
+        }
+      },
+      "immediate_step": {
+        "en": "Remove and bury infected lower leaves touching the soil; avoid overhead sprinkler watering which splashes fungal spores.",
+        "te": "నేలను తాకుతున్న తెగులు సోకిన కింది ఆకులను తుంచి భూమిలో పాతిపెట్టండి; ఆకులపై నీరు చిమ్మే పద్ధతిలో నీరు పెట్టవద్దు.",
+        "hi": "जमीन को छूने वाली ग्रसित निचली पत्तियों को तोड़कर जमीन में गाड़ दें; फव्वारे से पानी न दें जिससे फफूंद के बीजाणु फैलते हैं।"
+      },
+      "explain_text": {
+        "en": "A destructive fungal leaf spot disease of tomato caused by Septoria lycopersici. Circular water-soaked lesions appear on lower older leaves, turning brown with pale gray centers and tiny black fruiting bodies (pycnidia), causing severe defoliation and sunscald of fruits.",
+        "te": "సెప్టోరియా లైకోపెర్సిసి అనే శిలీంధ్రం వల్ల కలిగే తీవ్రమైన ఆకుమచ్చ తెగులు. మొదట కింది ఆకులపై గుండ్రని చిన్న మచ్చలు ఏర్పడి, మధ్యలో బూడిద రంగు మరియు చుట్టూ ముదురు గోధుమ రంగు అంచులతో చిన్న నల్లటి చుక్కలు (పైక్నీడియా) కనిపిస్తాయి. ఆకులు రాలిపోయి కాయలు ఎండదెబ్బకు గురవుతాయి.",
+        "hi": "सेप्टोरिया लाइकोपरसिकी नामक फफूंद से होने वाला टमाटर का प्रमुख रोग। निचली पुरानी पत्तियों पर छोटे गोल धब्बे बनते हैं, जिनका केंद्र राख जैसा धूसर और किनारे गहरे भूरे होते हैं तथा बीच में काले दाने (पाइक्नीडिया) दिखते हैं, जिससे पत्तियां झड़ जाती हैं।"
+      },
+      "treatment": {
+        "natural": [
+          {
+            "step": 1,
+            "action": {
+              "en": "Prune and destroy infected lower leaves and apply straw or plastic mulch around the plant base to prevent rain splash.",
+              "te": "తెగులు సోకిన కింది ఆకులను తుంచి నాశనం చేయండి మరియు వర్షపు తుంపర్ల ద్వారా తెగులు వ్యాపించకుండా మొదళ్ల వద్ద మల్చింగ్ వేయండి.",
+              "hi": "ग्रसित निचली पत्तियों को काटकर नष्ट करें और मिट्टी से फफूंद के छींटे रोकने हेतु पुआल की मल्चिंग करें।"
+            },
+            "source": "ICAR-IIHR Bengaluru",
+            "source_url": "https://iihr.res.in",
+            "source_quote": "Lower canopy sanitation and mulching significantly reduce primary inoculum of Septoria lycopersici."
+          },
+          {
+            "step": 2,
+            "action": {
+              "en": "Foliar spray of Trichoderma harzianum bio-agent (5 g/L) or copper-based botanical spray at first appearance of spots.",
+              "te": "మచ్చలు కనిపించిన వెంటనే ట్రైకోడెర్మా హార్జియానమ్ జీవ శిలీంధ్రనాశిని (5 గ్రా/లీ) ఆకులపై పిచికారీ చేయండి.",
+              "hi": "धब्बे दिखने पर ट्राइकोडर्मा हरजिएनम (5 ग्राम/लीटर) का पत्तियों पर छिड़काव करें।"
+            },
+            "source": "TNAU Agritech Portal",
+            "source_url": "https://agritech.tnau.ac.in",
+            "source_quote": "Trichoderma harzianum spray provides preventative suppression of Septoria and early foliar spots in tomato."
+          }
+        ],
+        "chemical": [
+          {
+            "step": 1,
+            "active_ingredient": "Mancozeb 75% WP",
+            "product_example": "Dithane M-45 / Indofil M-45",
+            "dose_verified": false,
+            "dose": "follow the product label",
+            "phi_days": 15,
+            "safety_line": {
+              "en": "Wear protective face mask and gloves. Observe pre-harvest interval of 15 days. Follow product label.",
+              "te": "రక్షణ మాస్క్ మరియు చేతి తొడుగులు ధరించండి. కోతకు 15 రోజుల ముందు మందు చల్లడం ఆపండి. లేబుల్ పాటించండి.",
+              "hi": "सुरक्षात्मक मास्क और दस्ताने पहनें। तुड़ाई से 15 दिन पहले छिड़काव बंद करें। उत्पाद लेबल पढ़ें।"
+            },
+            "source": "CIB&RC Major Uses",
+            "source_url": "https://cibrc.nic.in",
+            "source_quote": "Mancozeb 75% WP is registered by CIB&RC for leaf spots in tomato."
+          }
+        ]
+      },
+      "regional": {
+        "telangana": {
+          "source": "PJTSAU",
+          "differs": false
+        },
+        "andhra_pradesh": {
+          "source": "ANGRAU",
+          "differs": false
+        },
+        "other": {
+          "source": "ICAR",
+          "differs": false
+        }
+      },
+      "prevention_and_field_practice": {
+        "en": "Source: ICAR-IIHR Bengaluru & TNAU Agritech Portal. Practice 2 to 3 year crop rotation away from solanaceous crops (brinjal, chilli, potato). Stake tomato plants and prune bottom foliage up to 30 cm from ground to enhance air circulation. Use drip irrigation instead of furrow or overhead irrigation. Apply organic straw mulch around plant bases to prevent soil-splashing spores onto lower leaves. Apply Trichoderma harzianum bio-fungicide early.",
+        "te": "మూలం: ICAR-IIHR Bengaluru & TNAU Agritech Portal. టమాటా, వంకాయ, మిరప వంటి సోలనేసి పంటలు కాకుండా 2-3 ఏళ్ళు ఇతర పంటలతో పంట మార్పిడి చేయండి. మొక్కలకు కర్రల మద్దతు (స్టేకింగ్) ఇచ్చి, నేల నుండి 30 సెం.మీ ఎత్తు వరకు కింది ఆకులను తొలగించి గాలి ప్రసరణ పెంచండి. బిందు సేద్యం (డ్రిప్) వాడండి. నేల నుండి శిలీంధ్రం ఆకులపై పడకుండా మొక్క మొదళ్ల వద్ద ఎండుగడ్డితో మల్చింగ్ చేయండి. ట్రైకోడెర్మా హార్జియానమ్ వాడండి.",
+        "hi": "स्रोत: ICAR-IIHR बेंगलुरु और TNAU एग्रीटेक पोर्टल। बैंगन, मिर्च, आलू जैसे सोलेनेसी कुल की फसलों के साथ 2-3 साल का फसल चक्र अपनाएं। पौधों को डंडों से सहारा दें (स्टेकिंग) और जमीन से 30 सेमी तक निचली पत्तियों को हटाकर हवा का आवागमन बढ़ाएं। ड्रिप सिंचाई का प्रयोग करें। पत्तियों पर मिट्टी के छींटे रोकने के लिए पुआल की मल्चिंग करें। शुरुआत में ट्राइकोडर्मा का प्रयोग करें।"
+      },
+      "early_warning_signs": {
+        "en": "Watch for numerous tiny circular spots (1.5-3 mm) on the lowest leaves near the ground after wet, humid spells. Lesions have dark brown margins with grayish-white centers containing pinprick-sized black specks.",
+        "te": "వర్షాలు లేదా అధిక తేమ ఉన్నప్పుడు భూమికి దగ్గరగా ఉండే కింది ఆకులపై 1.5-3 మి.మీ పరిమాణంలో చిన్న గుండ్రని మచ్చలు, మధ్యలో బూడిద రంగు మరియు సూది మొనల వంటి నల్లని చుక్కలను గమనించండి.",
+        "hi": "जमीन के पास वाली निचली पत्तियों पर 1.5 से 3 मिमी के छोटे गोल धब्बे देखें, जिनके केंद्र में भूरापन और सुई की नोक जैसे काले दाने दिखते हैं।"
+      },
+      "when_to_call_extension_officer": {
+        "en": "Call extension officer if leaf spotting and defoliation rise into the upper third of the canopy during flowering or fruit set. Call Kisan Call Centre (Toll-Free 1800-180-1551).",
+        "te": "పూత మరియు కాయల దశలో ఆకుమచ్చలు పైభాగపు ఆకులకు వ్యాపించి తీవ్రంగా ఆకులు రాలుతుంటే వెంటనే వ్యవసాయ అధికారిని సంప్రదించండి. కిసాన్ కాల్ సెంటర్ (1800-180-1551) కు కాల్ చేయండి.",
+        "hi": "यदि फूल और फल आते समय पत्ती धब्बा रोग ऊपरी पत्तियों तक फैल जाए और भारी पत्ती झड़ाव हो, तो तुरंत कृषि अधिकारी से संपर्क करें। किसान कॉल सेंटर (1800-180-1551) पर कॉल करें।"
       }
     }
   ]

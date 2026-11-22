@@ -50,7 +50,7 @@ class PestVsDiseaseTest {
 
     @Test
     fun testEveryClassHasValidType() {
-        assertEquals("Expected exactly 21 classes in knowledge base", 21, kbRoot.classes.size)
+        assertEquals("Expected exactly 24 classes in knowledge base", 24, kbRoot.classes.size)
         val validTypes = setOf("disease", "pest", "healthy")
 
         for (entry in kbRoot.classes) {
@@ -68,12 +68,14 @@ class PestVsDiseaseTest {
         val healthyClasses = kbRoot.classes.filter { it.type == "healthy" }.map { it.classId }.toSet()
         val diseaseClasses = kbRoot.classes.filter { it.type == "disease" }.map { it.classId }.toSet()
 
-        assertEquals("Expected exactly 2 pest classes", 2, pestClasses.size)
+        assertEquals("Expected exactly 4 pest classes", 4, pestClasses.size)
         assertTrue("Expected tomato_spider_mites in pest classes", pestClasses.contains("tomato_spider_mites"))
         assertTrue("Expected maize_fall_armyworm in pest classes", pestClasses.contains("maize_fall_armyworm"))
+        assertTrue("Expected rice_stem_borer in pest classes", pestClasses.contains("rice_stem_borer"))
+        assertTrue("Expected rice_hispa in pest classes", pestClasses.contains("rice_hispa"))
 
         assertEquals("Expected exactly 5 healthy classes", 5, healthyClasses.size)
-        assertEquals("Expected exactly 14 disease classes", 14, diseaseClasses.size)
+        assertEquals("Expected exactly 15 disease classes", 15, diseaseClasses.size)
     }
 
     @Test
@@ -153,7 +155,7 @@ class PestVsDiseaseTest {
     @Test
     fun testPestEntriesHaveRequiredPestManagementSteps() {
         val pestEntries = kbRoot.classes.filter { it.type == "pest" }
-        assertEquals(2, pestEntries.size)
+        assertEquals(4, pestEntries.size)
 
         for (pest in pestEntries) {
             assertTrue("${pest.classId}: needs_expert_review must be true", pest.needsExpertReview)

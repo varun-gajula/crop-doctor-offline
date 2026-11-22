@@ -31,7 +31,10 @@ REQUIRED_CLASS_IDS = [
     "maize_common_rust",
     "maize_northern_leaf_blight",
     "maize_fall_armyworm",
-    "maize_healthy"
+    "maize_healthy",
+    "rice_stem_borer",
+    "rice_hispa",
+    "tomato_septoria_leaf_spot"
 ]
 
 def check_localized_text(obj, path, errors):
@@ -56,8 +59,8 @@ def validate_kb(kb_path):
         return [f"Invalid JSON: {e}"]
     
     classes = data.get("classes", [])
-    if len(classes) != 21:
-        errors.append(f"Expected exactly 21 classes, found {len(classes)}")
+    if len(classes) != len(REQUIRED_CLASS_IDS):
+        errors.append(f"Expected exactly {len(REQUIRED_CLASS_IDS)} classes, found {len(classes)}")
     
     found_ids = []
     for idx, item in enumerate(classes):
