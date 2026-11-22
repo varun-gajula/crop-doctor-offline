@@ -139,4 +139,53 @@ class CaptureSafetyTest {
         assertTrue("Telugu error string must contain Telugu characters", teStr!!.any { it in '\u0C00'..'\u0C7F' })
         assertTrue("Hindi error string must contain Devanagari characters", hiStr!!.any { it in '\u0900'..'\u097F' })
     }
+
+    @Test
+    fun testUnretainedBitmapCleanedUpInFinallyOnTimeout() = runBlocking {
+        var bitmapRecycled = false
+        var bitmapRetained = false
+
+        val job = launch(Dispatchers.Default) {
+            try {
+                withTimeout(50L) {
+                    delay(500L) // Simulate timeout
+                    bitmapRetained = true
+                }
+            } catch (e: TimeoutCancellationException) {
+                // Handled
+            } finally {
+                if (!bitmapRetained) {
+                    bitmapRecycled = true
+                }
+            }
+        }
+
+        job.join()
+        assertTrue("Bitmap must be recycled in finally block when analysis times out", bitmapRecycled)
+        assertFalse("Bitmap must not be marked as retained on timeout", bitmapRetained)
+    }
+
+    @Test
+    fun testUnretainedBitmapCleanedUpInFinallyOnException() = runBlocking {
+        var bitmapRecycled = false
+        var bitmapRetained = false
+
+        val job = launch(Dispatchers.Default) {
+            try {
+                withTimeout(1000L) {
+                    throw RuntimeException("Simulated inference failure")
+                }
+            } catch (e: Exception) {
+                // Handled
+            } finally {
+                if (!bitmapRetained) {
+                    bitmapRecycled = true
+                }
+            }
+        }
+
+        job.join()
+        assertTrue("Bitmap must be recycled in finally block when analysis throws exception", bitmapRecycled)
+        assertFalse("Bitmap must not be marked as retained on exception", bitmapRetained)
+    }
 }

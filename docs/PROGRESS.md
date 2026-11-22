@@ -1,6 +1,35 @@
 # Project Progress - Crop Doctor Offline
 
-## Current Status: Task TR3-15 Complete (15-Class Kaggle Training Pipeline & Notebook Prepared)
+## Current Status: Task BUG-CAPTURE Complete (Camera Shutter Safety, Hang Prevention & Hardware Verification)
+
+### Done in Task BUG-CAPTURE: Shutter Crash & Hang Fixes on Physical Device (Rules H1-H15)
+1. **Identified Exact Root Causes with Log Evidence**:
+   - **Crash Cause 1A**: Uncaught `RejectedExecutionException` on Main UI thread caused by `cameraExecutor.shutdown()` executed inside `DisposableEffect(lifecycleOwner)` during transient navigation/lifecycle changes while `cameraExecutor` was remembered.
+   - **Crash Cause 1B**: Native `Fatal signal 11 (SIGSEGV)` in `re2::Regexp::Destroy()+188` inside `libexecutorch_jni.so` when `LlmModule.resetNative()` was called in `ExecuTorchLlamaAdvisor.scheduleIdleRelease()` after 60s idle.
+   - **Hang Cause 2A**: Suspending `withContext(Dispatchers.Main)` inside `finally` block of a cancelled coroutine threw `CancellationException`, aborting `isProcessingImage = false` and leaving the UI stuck.
+   - **Hang Cause 2B**: Missing watchdog and timeout on CameraX capture and analysis pipeline.
+   - **Hang Cause 2C**: Concurrent native forward passes in `ExecuTorchClassifier` triggering `ExecuTorch: Inputs can not be set mid execution` (status 0x2).
+2. **Implemented All 6 Robustness & Safety Fixes**:
+   - Busy state cleared with `withContext(NonCancellable + Dispatchers.Main) { isProcessingImage = false }` in `finally` blocks across all paths.
+   - Added immediate `isShutterBusy` lock with 4.0s watchdog in `MainCameraScreen`.
+   - `ImageProxy` closed in `finally` and all intermediate/abandoned bitmaps recycled.
+   - Wrapped entire analysis pipeline in 10-second timeout (`withTimeout(10_000L)`), routing cleanly to `DiagnosisOutcome.CANT_TELL` with message "Could not read the photo. Please try again." and "Take another photo" button.
+   - All exceptions in decode, preprocessing, and inference caught gracefully without crashing.
+   - Immediately stop Llama generation on new shutter tap.
+   - Camera bound once with `DisposableEffect(Unit)`, protected by `forwardMutex` in `ExecuTorchClassifier`, and removed unsafe `resetNative()` in `ExecuTorchLlamaAdvisor`.
+3. **Hardware Stress Verification on Physical Reference Phone (Xiaomi POCO M4 5G `22041219PI`)**:
+   - Executed 120 live camera captures (30 fast taps @ 300 ms x 2 runs + 30 slow captures @ 2000 ms x 2 runs).
+   - **Crashes**: 0 across all 4 runs.
+   - **ANRs**: 0 across all 4 runs.
+   - **Longest Spinner Duration**: 1.268 s (Run 1), 0.892 s (Run 2), 1.069 s (Run 3), 1.097 s (Run 4) — all strictly under 1.5 s budget (Rule U2).
+   - **Peak PSS Memory**: 235.0 MB (budget: 500 MB without Llama, Rule H15).
+   - Detailed evidence and logs saved in `benchmarks/bug_capture_fix.md` and `benchmarks/shutter_stress_results.json`.
+4. **All 141 Unit Tests Passing**:
+   - Added `CaptureSafetyTest` verifying timeout, cancellation, and bitmap recycling.
+
+---
+
+## Previous Status: Task TR3-15 Complete (15-Class Kaggle Training Pipeline & Notebook Prepared)
 
 ### Done in Task TR3-15: 15-Class 30-Epoch Training Notebook Prepared (Rules H2, H3, H4, H9, H11, H14)
 1. **Prepared Production Kaggle Notebook (`notebooks/Crop_Doctor_15Class_Kaggle_30ep.ipynb`)**:

@@ -16,6 +16,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.sync.withLock
 import org.json.JSONArray
 import org.json.JSONObject
 import org.pytorch.executorch.EValue
@@ -343,6 +344,7 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
     }
 
     private var reusableTensorBuffer: java.nio.FloatBuffer? = null
+    private val forwardMutex = kotlinx.coroutines.sync.Mutex()
 
     @Synchronized
     fun getReusableBuffer(): java.nio.FloatBuffer {
@@ -441,13 +443,14 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
         }
 
         try {
-            // Forward pass reusing native tensor buffer (Rule P2.3)
-            val inputTensor = Tensor.fromBlob(
-                preprocessed.tensorBuffer,
-                longArrayOf(1, 3, inputSize.toLong(), inputSize.toLong())
-            )
-
-            val outputs = module!!.forward(EValue.from(inputTensor))
+            // Forward pass reusing native tensor buffer (Rule P2.3) protected by forwardMutex against concurrent native execution
+            val outputs = forwardMutex.withLock {
+                val inputTensor = Tensor.fromBlob(
+                    preprocessed.tensorBuffer,
+                    longArrayOf(1, 3, inputSize.toLong(), inputSize.toLong())
+                )
+                module!!.forward(EValue.from(inputTensor))
+            }
             val outputTensor = outputs[0].toTensor()
             val rawLogits = outputTensor.dataAsFloatArray
 

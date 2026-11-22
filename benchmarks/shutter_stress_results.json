@@ -1,0 +1,50 @@
+[
+  {
+    "run": 1,
+    "pattern": "Fast Taps (Run 1)",
+    "spacing_ms": 300,
+    "total_taps": 30,
+    "crashes": 0,
+    "anrs": 0,
+    "longest_spinner_s": 1.268,
+    "peak_pss_mb": 225.3,
+    "initial_pss_mb": 147.9,
+    "status": "PASS"
+  },
+  {
+    "run": 2,
+    "pattern": "Fast Taps (Run 2)",
+    "spacing_ms": 300,
+    "total_taps": 30,
+    "crashes": 0,
+    "anrs": 0,
+    "longest_spinner_s": 0.892,
+    "peak_pss_mb": 229.8,
+    "initial_pss_mb": 218.8,
+    "status": "PASS"
+  },
+  {
+    "run": 3,
+    "pattern": "Slow Taps (Run 3)",
+    "spacing_ms": 2000,
+    "total_taps": 30,
+    "crashes": 0,
+    "anrs": 0,
+    "longest_spinner_s": 1.069,
+    "peak_pss_mb": 235.0,
+    "initial_pss_mb": 222.0,
+    "status": "PASS"
+  },
+  {
+    "run": 4,
+    "pattern": "Slow Taps (Run 4)",
+    "spacing_ms": 2000,
+    "total_taps": 30,
+    "crashes": 0,
+    "anrs": 0,
+    "longest_spinner_s": 1.097,
+    "peak_pss_mb": 230.3,
+    "initial_pss_mb": 216.8,
+    "status": "PASS"
+  }
+]

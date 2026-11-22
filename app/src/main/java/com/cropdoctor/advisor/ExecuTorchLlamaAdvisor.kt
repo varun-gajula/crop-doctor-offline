@@ -196,7 +196,9 @@ class ExecuTorchLlamaAdvisor(private val context: Context) : Advisor {
             delay(60_000L) // 60 seconds idle release (Rule H15)
             synchronized(modelLock) {
                 try {
-                    llamaModule?.resetNative()
+                    try {
+                        llamaModule?.stop()
+                    } catch (_: Throwable) {}
                     llamaModule = null
                     isModelLoaded = false
                     System.runFinalization()
@@ -537,7 +539,9 @@ class ExecuTorchLlamaAdvisor(private val context: Context) : Advisor {
         synchronized(modelLock) {
             try {
                 idleJob?.cancel()
-                llamaModule?.resetNative()
+                try {
+                    llamaModule?.stop()
+                } catch (_: Throwable) {}
                 llamaModule = null
                 isModelLoaded = false
                 System.runFinalization()

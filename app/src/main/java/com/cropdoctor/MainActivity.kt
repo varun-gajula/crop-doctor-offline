@@ -148,10 +148,18 @@ class MainActivity : ComponentActivity() {
                     val app = application as CropDoctorApplication
 
                     fun navigateTo(screen: AppScreen) {
-                        if (currentScreen == AppScreen.CAMERA && screen != AppScreen.RESULT) {
+                        if (screen == AppScreen.CAMERA) {
                             currentRequestId.incrementAndGet()
                             currentDiagnosisJob?.cancel()
                             currentAdviceJob?.cancel()
+                            (app.advisor as? ExecuTorchLlamaAdvisor)?.stop()
+                            isProcessingImage = false
+                            isGeneratingAdvice = false
+                        } else if (currentScreen == AppScreen.CAMERA && screen != AppScreen.RESULT) {
+                            currentRequestId.incrementAndGet()
+                            currentDiagnosisJob?.cancel()
+                            currentAdviceJob?.cancel()
+                            (app.advisor as? ExecuTorchLlamaAdvisor)?.stop()
                             isProcessingImage = false
                         }
                         previousScreen = currentScreen
@@ -196,24 +204,16 @@ class MainActivity : ComponentActivity() {
 
                     // Handle system back button smoothly
                     BackHandler(enabled = currentScreen != AppScreen.HOME && currentScreen != AppScreen.FIRST_LAUNCH) {
-                        if (currentScreen == AppScreen.RESULT) {
-                            currentScreen = AppScreen.HOME
-                        } else if (currentScreen == AppScreen.CAMERA) {
-                            currentScreen = AppScreen.CROP_SELECTION
-                        } else if (currentScreen == AppScreen.CROP_SELECTION) {
-                            currentScreen = AppScreen.HOME
-                        } else if (currentScreen == AppScreen.CROP_GUIDE_SELECT) {
-                            currentScreen = AppScreen.HOME
-                        } else if (currentScreen == AppScreen.KNOWLEDGE_BASE) {
-                            currentScreen = AppScreen.CROP_GUIDE_SELECT
-                        } else if (currentScreen == AppScreen.DISEASE_DETAILS) {
-                            currentScreen = AppScreen.KNOWLEDGE_BASE
-                        } else if (currentScreen == AppScreen.SAVE_CASE_REPORT) {
-                            currentScreen = AppScreen.RESULT
-                        } else if (currentScreen == AppScreen.INSTALL_MODEL) {
-                            currentScreen = previousScreen
-                        } else {
-                            currentScreen = previousScreen
+                        when (currentScreen) {
+                            AppScreen.RESULT -> navigateTo(AppScreen.HOME)
+                            AppScreen.CAMERA -> navigateTo(AppScreen.CROP_SELECTION)
+                            AppScreen.CROP_SELECTION -> navigateTo(AppScreen.HOME)
+                            AppScreen.CROP_GUIDE_SELECT -> navigateTo(AppScreen.HOME)
+                            AppScreen.KNOWLEDGE_BASE -> navigateTo(AppScreen.CROP_GUIDE_SELECT)
+                            AppScreen.DISEASE_DETAILS -> navigateTo(AppScreen.KNOWLEDGE_BASE)
+                            AppScreen.SAVE_CASE_REPORT -> navigateTo(AppScreen.RESULT)
+                            AppScreen.INSTALL_MODEL -> navigateTo(previousScreen)
+                            else -> navigateTo(previousScreen)
                         }
                     }
 
@@ -229,9 +229,14 @@ class MainActivity : ComponentActivity() {
                         currentAdviceJob?.cancel()
                         (app.advisor as? ExecuTorchLlamaAdvisor)?.stop()
                         isProcessingImage = true
+                        if (pendingCapturedBitmap != null && !pendingCapturedBitmap!!.isRecycled) {
+                            pendingCapturedBitmap?.recycle()
+                            pendingCapturedBitmap = null
+                        }
 
                         currentDiagnosisJob = lifecycleScope.launch(Dispatchers.Default) {
                             var preprocessedImage: ImagePreprocessor.PreprocessedImage? = null
+                            var bitmapRetained = false
                             try {
                                 withTimeout(10_000L) {
                                     val reusableBuf = (app.classifier as? ExecuTorchClassifier)?.getReusableBuffer()
@@ -258,10 +263,13 @@ class MainActivity : ComponentActivity() {
                                     if (!skipSoftWarning && !preprocessed.leafValidation.isLikelyCrop) {
                                         withContext(NonCancellable + Dispatchers.Main) {
                                             if (thisRequestId != currentRequestId.get()) {
-                                                preprocessed.bitmap512.recycle()
                                                 return@withContext
                                             }
+                                            if (pendingCapturedBitmap != null && pendingCapturedBitmap != preprocessed.bitmap512 && !pendingCapturedBitmap!!.isRecycled) {
+                                                pendingCapturedBitmap?.recycle()
+                                            }
                                             pendingCapturedBitmap = preprocessed.bitmap512
+                                            bitmapRetained = true
                                             pendingCropFilter = effectiveCropFilter
                                             pendingMetadata = meta
                                             showSoftCropWarningDialog = true
@@ -357,13 +365,13 @@ class MainActivity : ComponentActivity() {
 
                                 withContext(NonCancellable + Dispatchers.Main) {
                                     if (thisRequestId != currentRequestId.get()) {
-                                        preprocessed.bitmap512.recycle()
                                         return@withContext
                                     }
                                     if (capturedLeafBitmap != null && capturedLeafBitmap != preprocessed.bitmap512 && !capturedLeafBitmap!!.isRecycled) {
                                         capturedLeafBitmap?.recycle()
                                     }
                                     capturedLeafBitmap = preprocessed.bitmap512
+                                    bitmapRetained = true
                                     classifierResult = result
                                     activeKbEntry = kb
                                     isProcessingImage = false
@@ -384,7 +392,6 @@ class MainActivity : ComponentActivity() {
                             }
                             } catch (e: TimeoutCancellationException) {
                                 Log.e("MainActivity", "Diagnosis timed out after 10s", e)
-                                preprocessedImage?.bitmap512?.recycle()
                                 val effectiveCropFilter = cropFilter ?: selectedCrop
                                 val timeoutResult = ClassifierResult(
                                     classId = "unknown",
@@ -406,7 +413,6 @@ class MainActivity : ComponentActivity() {
                                     }
                                 }
                             } catch (e: Exception) {
-                                preprocessedImage?.bitmap512?.recycle()
                                 if (e !is CancellationException) {
                                     Log.e("MainActivity", "Diagnosis error", e)
                                     val effectiveCropFilter = cropFilter ?: selectedCrop
@@ -431,6 +437,9 @@ class MainActivity : ComponentActivity() {
                                     }
                                 }
                             } finally {
+                                if (!bitmapRetained) {
+                                    preprocessedImage?.bitmap512?.recycle()
+                                }
                                 withContext(NonCancellable + Dispatchers.Main) {
                                     if (thisRequestId == currentRequestId.get()) {
                                         isProcessingImage = false
@@ -453,6 +462,7 @@ class MainActivity : ComponentActivity() {
                         isProcessingImage = true
 
                         currentDiagnosisJob = lifecycleScope.launch(Dispatchers.Default) {
+                            var bitmapRetained = false
                             try {
                                 withTimeout(10_000L) {
                                     val effectiveCropFilter = cropFilter ?: selectedCrop
@@ -546,6 +556,7 @@ class MainActivity : ComponentActivity() {
                                             capturedLeafBitmap?.recycle()
                                         }
                                         capturedLeafBitmap = bitmap
+                                        bitmapRetained = true
                                         classifierResult = result
                                         activeKbEntry = kb
                                         isProcessingImage = false
@@ -611,6 +622,9 @@ class MainActivity : ComponentActivity() {
                                     }
                                 }
                             } finally {
+                                if (!bitmapRetained && capturedLeafBitmap != bitmap && !bitmap.isRecycled) {
+                                    bitmap.recycle()
+                                }
                                 withContext(NonCancellable + Dispatchers.Main) {
                                     if (thisRequestId == currentRequestId.get()) {
                                         isProcessingImage = false
@@ -1214,6 +1228,7 @@ class MainActivity : ComponentActivity() {
                         AlertDialog(
                             onDismissRequest = {
                                 showSoftCropWarningDialog = false
+                                pendingCapturedBitmap?.recycle()
                                 pendingCapturedBitmap = null
                             },
                             title = {
@@ -1232,6 +1247,7 @@ class MainActivity : ComponentActivity() {
                             dismissButton = {
                                 OutlinedButton(onClick = {
                                     showSoftCropWarningDialog = false
+                                    pendingCapturedBitmap?.recycle()
                                     pendingCapturedBitmap = null
                                 }) {
                                     Text(stringResource(R.string.btn_take_again))
@@ -1337,6 +1353,11 @@ class MainActivity : ComponentActivity() {
                                 language = selectedLanguage,
                                 selectedCrop = selectedCrop,
                                 isProcessing = isProcessingImage,
+                                onShutterClick = {
+                                    currentAdviceJob?.cancel()
+                                    (app.advisor as? ExecuTorchLlamaAdvisor)?.stop()
+                                    isGeneratingAdvice = false
+                                },
                                 onImageBytesCaptured = { bytes, cropFilter, source ->
                                     val effectiveCropFilter = cropFilter ?: selectedCrop
                                     processImageBytes(bytes, source, effectiveCropFilter)

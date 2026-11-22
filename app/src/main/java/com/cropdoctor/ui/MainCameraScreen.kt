@@ -42,6 +42,7 @@ import com.cropdoctor.vision.ImageAnalysisMetadata
 import java.io.InputStream
 import java.util.concurrent.Executors
 import kotlin.math.max
+import kotlinx.coroutines.delay
 
 data class CropChipItem(
     val key: String,
@@ -57,6 +58,7 @@ fun MainCameraScreen(
     onImageBytesCaptured: ((ByteArray, String?, String) -> Unit)? = null,
     onImageCaptured: (Bitmap, String?) -> Unit,
     onImageCapturedWithMetadata: ((Bitmap, String?, ImageAnalysisMetadata) -> Unit)? = null,
+    onShutterClick: () -> Unit = {},
     onBackClick: () -> Unit,
     onChangeCropClick: () -> Unit = {},
     onChangeLanguageClick: (String) -> Unit = {}
@@ -71,6 +73,20 @@ fun MainCameraScreen(
     val isBusy = isProcessing || isShutterBusy
 
     val cameraExecutor = remember { Executors.newSingleThreadExecutor() }
+
+    LaunchedEffect(Unit) {
+        isShutterBusy = false
+    }
+
+    LaunchedEffect(isShutterBusy) {
+        if (isShutterBusy) {
+            delay(4000L)
+            if (isShutterBusy) {
+                Log.w("MainCameraScreen", "Watchdog: resetting stuck isShutterBusy after 4s")
+                isShutterBusy = false
+            }
+        }
+    }
 
     fun dispatchCapturedImage(bitmap: Bitmap, crop: String?, meta: ImageAnalysisMetadata) {
         if (onImageCapturedWithMetadata != null) {
@@ -300,8 +316,9 @@ fun MainCameraScreen(
                             .clickable(enabled = !isBusy) {
                                 if (isBusy) return@clickable
                                 val capture = imageCapture
-                                if (capture != null) {
+                                if (capture != null && !cameraExecutor.isShutdown) {
                                     isShutterBusy = true
+                                    onShutterClick()
                                     try {
                                         capture.takePicture(
                                             cameraExecutor,
@@ -350,7 +367,7 @@ fun MainCameraScreen(
                                         isShutterBusy = false
                                     }
                                 } else {
-                                    Log.w("MainCameraScreen", "imageCapture is null; cannot take photo")
+                                    Log.w("MainCameraScreen", "imageCapture is null or executor shutdown; cannot take photo")
                                     isShutterBusy = false
                                 }
                             },
