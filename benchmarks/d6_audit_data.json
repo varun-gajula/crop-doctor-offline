@@ -190,6 +190,19 @@
         "Kaggle_agri_data": 800
       },
       "source_limited": true
+    },
+    "maize_common_rust": {
+      "raw_count": 500,
+      "unique_clusters": 500,
+      "internal_duplicates": 0,
+      "capped_count": 500,
+      "sources": [
+        "crop_doctor_512"
+      ],
+      "source_breakdown": {
+        "crop_doctor_512": 500
+      },
+      "source_limited": true
     }
   },
   "cross_class_conflicts": [
