@@ -1,5 +1,10 @@
 package com.cropdoctor.ui
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
@@ -11,6 +16,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -19,16 +25,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import com.cropdoctor.advisor.Advisor
 import com.cropdoctor.chat.ChatEngine
 import com.cropdoctor.chat.PassageStore
 import com.cropdoctor.chat.QuestionKeywordMatcher
 import com.cropdoctor.ui.theme.FarmGreenDark
 import com.cropdoctor.ui.theme.FarmGreenPrimary
+import com.cropdoctor.voice.VoskVoiceRecognizer
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
@@ -69,6 +78,8 @@ fun ResultChatSection(
 ) {
     val coroutineScope = rememberCoroutineScope()
     val focusManager = LocalFocusManager.current
+    val context = LocalContext.current
+    val voiceRecognizer = remember { VoskVoiceRecognizer(context) }
 
     var messages by rememberSaveable { mutableStateOf<List<UiChatMessage>>(emptyList()) }
     var inputText by rememberSaveable { mutableStateOf("") }
@@ -76,11 +87,51 @@ fun ResultChatSection(
     var currentJob by remember { mutableStateOf<Job?>(null) }
     var expanded by rememberSaveable { mutableStateOf(true) }
 
-    // Cancel running generation when leaving screen or component disposed (Requirement 6)
+    var isRecording by remember { mutableStateOf(false) }
+    var recordingStatusText by remember { mutableStateOf("") }
+    var voiceNotice by remember { mutableStateOf<String?>(null) }
+
+    // Cancel running generation and voice recording when leaving screen or component disposed (Requirement 6)
     DisposableEffect(Unit) {
         onDispose {
             currentJob?.cancel()
             advisor.stop()
+            voiceRecognizer.cancel()
+        }
+    }
+
+    // Microphone permission launcher (Requirement 6: asked only when mic button pressed)
+    val recordAudioLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            startVoiceRecording(
+                language = language,
+                voiceRecognizer = voiceRecognizer,
+                onRecordingStateChange = { isRecording = it },
+                onStatusChange = { recordingStatusText = it },
+                onNoticeChange = { voiceNotice = it },
+                onRecognized = { recognizedText ->
+                    inputText = recognizedText
+                    if (language.lowercase() == "te") {
+                        val matched = QuestionKeywordMatcher.matchSection(recognizedText, "te")
+                        if (matched == null) {
+                            // Requirement 4: Say honestly in the UI when recognition is uncertain
+                            voiceNotice = "గుర్తించడం అస్పష్టంగా ఉండవచ్చు. దయచేసి క్రింది ప్రశ్నలను ఎంచుకోండి లేదా సరిదిద్దండి."
+                        }
+                    }
+                }
+            )
+        } else {
+            Toast.makeText(
+                context,
+                when (language.lowercase()) {
+                    "te" -> "వాయిస్ ప్రశ్నల కోసం మైక్రోఫోన్ అనుమతి అవసరం"
+                    "hi" -> "आवाज से पूछने के लिए माइक्रोफ़ोन अनुमति आवश्यक है"
+                    else -> "Microphone permission is required for voice questions"
+                },
+                Toast.LENGTH_SHORT
+            ).show()
         }
     }
 
@@ -90,6 +141,14 @@ fun ResultChatSection(
 
         focusManager.clearFocus()
         inputText = ""
+
+        // Rule H15 & Requirement 3: Ensure speech model is completely released before Llama runs
+        if (isRecording) {
+            voiceRecognizer.stopListening()
+            isRecording = false
+        }
+        voiceRecognizer.releaseModel()
+        voiceNotice = null
 
         // Cancel previous generation if still active
         currentJob?.cancel()
@@ -137,6 +196,40 @@ fun ResultChatSection(
                 messages = messages + errorMsg
             } finally {
                 isGenerating = false
+            }
+        }
+    }
+
+    fun toggleVoiceRecording() {
+        if (isRecording) {
+            voiceRecognizer.stopListening()
+            isRecording = false
+        } else {
+            val hasPermission = ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.RECORD_AUDIO
+            ) == PackageManager.PERMISSION_GRANTED
+
+            if (hasPermission) {
+                startVoiceRecording(
+                    language = language,
+                    voiceRecognizer = voiceRecognizer,
+                    onRecordingStateChange = { isRecording = it },
+                    onStatusChange = { recordingStatusText = it },
+                    onNoticeChange = { voiceNotice = it },
+                    onRecognized = { recognizedText ->
+                        inputText = recognizedText
+                        if (language.lowercase() == "te") {
+                            val matched = QuestionKeywordMatcher.matchSection(recognizedText, "te")
+                            if (matched == null) {
+                                // Requirement 4: Say honestly in the UI when recognition is uncertain
+                                voiceNotice = "గుర్తించడం అస్పష్టంగా ఉండవచ్చు. దయచేసి క్రింది ప్రశ్నలను ఎంచుకోండి లేదా సరిదిద్దండి."
+                            }
+                        }
+                    }
+                )
+            } else {
+                recordAudioLauncher.launch(Manifest.permission.RECORD_AUDIO)
             }
         }
     }
@@ -451,7 +544,60 @@ fun ResultChatSection(
 
                         Spacer(modifier = Modifier.height(8.dp))
 
-                        // Input Field Row
+                        // Voice Recognition Live Status / Uncertainty Notice (Requirement 3 & 4)
+                        if (isRecording) {
+                            Surface(
+                                shape = RoundedCornerShape(10.dp),
+                                color = Color(0xFFFFEBEE),
+                                border = BorderStroke(1.dp, Color(0xFFEF9A9A)),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(bottom = 6.dp)
+                            ) {
+                                Row(
+                                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(10.dp)
+                                            .clip(CircleShape)
+                                            .background(Color(0xFFC62828))
+                                    )
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text(
+                                        text = recordingStatusText.ifBlank { "Listening..." },
+                                        fontSize = 13.sp,
+                                        fontWeight = FontWeight.SemiBold,
+                                        color = Color(0xFFC62828)
+                                    )
+                                }
+                            }
+                        }
+
+                        if (voiceNotice != null && !isRecording) {
+                            Surface(
+                                shape = RoundedCornerShape(10.dp),
+                                color = Color(0xFFFFF3CD),
+                                border = BorderStroke(1.dp, Color(0xFFFFEEBA)),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(bottom = 6.dp)
+                            ) {
+                                Row(
+                                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = "ℹ️ $voiceNotice",
+                                        fontSize = 13.sp,
+                                        color = Color(0xFF856404)
+                                    )
+                                }
+                            }
+                        }
+
+                        // Input Field Row with Mic Button (Requirement 3 & 6)
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             verticalAlignment = Alignment.CenterVertically
@@ -468,7 +614,26 @@ fun ResultChatSection(
                                     unfocusedBorderColor = Color(0xFFBDBDBD)
                                 )
                             )
-                            Spacer(modifier = Modifier.width(8.dp))
+                            Spacer(modifier = Modifier.width(6.dp))
+                            // Mic Button
+                            IconButton(
+                                onClick = { toggleVoiceRecording() },
+                                enabled = !isGenerating,
+                                modifier = Modifier
+                                    .size(46.dp)
+                                    .clip(CircleShape)
+                                    .background(
+                                        if (isRecording) Color(0xFFC62828) else Color(0xFFE8F5E9)
+                                    )
+                            ) {
+                                Icon(
+                                    imageVector = if (isRecording) Icons.Default.Stop else Icons.Default.Mic,
+                                    contentDescription = if (isRecording) "Stop voice" else "Record question",
+                                    tint = if (isRecording) Color.White else FarmGreenDark,
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(6.dp))
                             IconButton(
                                 onClick = { submitQuestion(inputText) },
                                 enabled = inputText.isNotBlank() && !isGenerating,
@@ -480,7 +645,7 @@ fun ResultChatSection(
                                     )
                             ) {
                                 Icon(
-                                    imageVector = Icons.Default.Send,
+                                    imageVector = Icons.AutoMirrored.Filled.Send,
                                     contentDescription = "Send",
                                     tint = if (inputText.isNotBlank() && !isGenerating) Color.White else Color.Gray,
                                     modifier = Modifier.size(22.dp)
@@ -492,4 +657,49 @@ fun ResultChatSection(
             }
         }
     }
+}
+
+private fun startVoiceRecording(
+    language: String,
+    voiceRecognizer: VoskVoiceRecognizer,
+    onRecordingStateChange: (Boolean) -> Unit,
+    onStatusChange: (String) -> Unit,
+    onNoticeChange: (String?) -> Unit,
+    onRecognized: (String) -> Unit
+) {
+    onNoticeChange(null)
+    onRecordingStateChange(true)
+    val prompt = when (language.lowercase()) {
+        "te" -> "వినబడుతోంది... మాట్లాడండి"
+        "hi" -> "सुन रहे हैं... बोलिए"
+        else -> "Listening... Speak your question"
+    }
+    onStatusChange(prompt)
+    voiceRecognizer.startListening(
+        language = language,
+        onPartial = { partial ->
+            onStatusChange(partial)
+        },
+        onFinal = { result ->
+            onRecordingStateChange(false)
+            onStatusChange("")
+            val recognized = result.text.trim()
+            if (recognized.isNotBlank()) {
+                onRecognized(recognized)
+            } else {
+                onNoticeChange(
+                    when (language.lowercase()) {
+                        "te" -> "మాట స్పష్టంగా రాలేదు. దయచేసి మళ్లీ ప్రయత్నించండి లేదా క్రింది ప్రశ్నలను వాడండి."
+                        "hi" -> "आवाज़ स्पष्ट नहीं आई। कृपया पुनः प्रयास करें।"
+                        else -> "Could not recognize speech. Please try again or use the chips."
+                    }
+                )
+            }
+        },
+        onError = { err ->
+            onRecordingStateChange(false)
+            onStatusChange("")
+            onNoticeChange(err)
+        }
+    )
 }

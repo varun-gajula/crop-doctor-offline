@@ -1,6 +1,52 @@
 # Project Progress - Crop Doctor Offline
 
-## Current Status: Task CHAT Complete (Offline Result Screen Chat Box, SQLite FTS5 Retrieval, Guardrail Validation, Telugu Isolation & POCO Benchmarks)
+## Current Status: Task VOICE Complete (Offline Speech Recognition via Vosk, Zero-Internet, Rule H15 Memory Decoupling & Multilingual Benchmark)
+
+### Done in Task VOICE: Offline Voice Questions for Chat (PS1, Rules H1, H3, H6, H8, H15)
+1. **Model Verification & Sourcing (Apache 2.0 Licenced)**:
+   - Verified current offline models from live upstream AlphaCephei repository (`https://alphacephei.com/vosk/models`):
+     - **Indian English**: `vosk-model-small-en-in-0.4` (35.8 MiB zip, 38.6 MiB uncompressed, Apache 2.0)
+     - **US English (Fallback)**: `vosk-model-small-en-us-0.15` (39.3 MiB zip, 43.1 MiB uncompressed, Apache 2.0)
+     - **Hindi**: `vosk-model-small-hi-0.22` (42.4 MiB zip, 44.7 MiB uncompressed, Apache 2.0, 14.93% WER on Fleurs)
+     - **Telugu**: `vosk-model-small-te-0.42` (57.7 MiB zip, 59.8 MiB uncompressed, Apache 2.0, 87.9% WER on Fleurs)
+   - Downloaded and verified all three target language model archives on laptop in `C:\crop-data\vosk_models\`.
+2. **Storage Architecture & Zero-Internet Permission Audit (Rule H1)**:
+   - Added dependencies in `app/build.gradle.kts`: `com.alphacephei:vosk-android:0.3.47` and `net.java.dev.jna:jna:5.13.0@aar`.
+   - Verified zero `INTERNET` permissions via `aapt2 dump permissions app/build/outputs/apk/debug/app-debug.apk`:
+     `uses-permission: name='android.permission.CAMERA'`
+     `uses-permission: name='android.permission.RECORD_AUDIO'`
+     (Zero network or internet permissions present; Rule H1 strictly verified).
+   - Saved permission check log to `benchmarks/voice_permissions_check.txt`.
+   - Built offline SAF model installer in `ModelInstallScreen.kt` for speech model zip archives into app storage (`context.filesDir/vosk/<lang>`).
+3. **Decoupled Memory Lifecycle (Rule H15)**:
+   - Created `VoskVoiceRecognizer.kt`: loads speech model strictly on-demand during audio capture at 16kHz mono PCM.
+   - When recording stops or a question is sent, `releaseModel()` explicitly closes JNI recognizers and Kaldi models (`recognizer.close()`, `model.close()`) and invokes `System.gc()`.
+   - **Vosk and Llama 3.2 1B NEVER co-exist in memory.**
+4. **Chat Box UI Integration & Microphone Permission (Requirement 3 & 6)**:
+   - Added interactive Mic button with pulse indicator in `ResultChatSection.kt`.
+   - Runtime microphone permission (`android.permission.RECORD_AUDIO`) requested ONLY upon tapping the mic button; handles denials gracefully with localized toast notifications.
+   - Displays real-time listening prompt and transcribed text in the editable chat input box, allowing farmers to review and modify their question before submitting.
+5. **Telugu Strategy & Honest Uncertainty Notice (Requirement 4 & Rule H6)**:
+   - High WER (~87.9%) of the small Telugu acoustic model is acknowledged honestly in the UI.
+   - Speech recognized Telugu text is matched to question chips via `QuestionKeywordMatcher`.
+   - When intent matching is uncertain, the UI displays an explicit honesty badge:
+     `"గుర్తించడం అస్పష్టంగా ఉండవచ్చు. దయచేసి క్రింది ప్రశ్నలను ఎంచుకోండి లేదా సరిదిద్దండి."`
+     and displays the 8 reviewed Telugu question chips as the guaranteed accurate offline path.
+6. **Benchmark & Test Suite**:
+   - Created `VoiceRecognitionTest.kt` verifying:
+     - Model folder name and language normalization (`testLanguageCodeNormalization`, `testModelFolderNames`).
+     - Directory validation (`testModelDirectoryValidation`).
+     - Telugu voice keyword chip mapping (`testTeluguVoiceKeywordChipMapping`).
+     - Uncertainty fallback triggering on garbled speech (`testTeluguUncertainRecognitionTriggersFallback`).
+     - Levenshtein Word Error Rate computation logic (`testWordErrorRateComputationLogic`).
+   - Enhanced `scripts/eval_voice_wer.py` and created ground truth test directories `C:\crop-data\voice_test\<en|hi|te>\questions.txt` with 10 agricultural questions per language.
+   - Documented benchmark deliverable in `benchmarks/voice_samples.md`.
+   - Total unit test count: **156 tests passing** (`testDebugUnitTest` green, 0 failures, 0 errors).
+   - Clean debug APK build verified (`assembleDebug` BUILD SUCCESSFUL).
+
+---
+
+## Previous Status: Task CHAT Complete (Offline Result Screen Chat Box, SQLite FTS5 Retrieval, Guardrail Validation, Telugu Isolation & POCO Benchmarks)
 
 ### Done in Task CHAT: Offline Result Screen Chat Assistant (PS1, Rules H1-H15, R1-R8)
 1. **Offline Passage Retrieval via SQLite FTS5**:

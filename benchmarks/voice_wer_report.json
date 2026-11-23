@@ -1,0 +1,17 @@
+{
+  "en": {
+    "ground_truth_count": 10,
+    "wav_count": 0,
+    "status": "pending_audio"
+  },
+  "hi": {
+    "ground_truth_count": 10,
+    "wav_count": 0,
+    "status": "pending_audio"
+  },
+  "te": {
+    "ground_truth_count": 10,
+    "wav_count": 0,
+    "status": "pending_audio"
+  }
+}

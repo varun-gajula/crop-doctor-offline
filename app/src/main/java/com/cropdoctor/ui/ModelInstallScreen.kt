@@ -32,6 +32,7 @@ import com.cropdoctor.R
 import com.cropdoctor.advisor.ExecuTorchLlamaAdvisor
 import com.cropdoctor.ui.theme.FarmGreenDark
 import com.cropdoctor.ui.theme.FarmGreenPrimary
+import com.cropdoctor.voice.VoiceModelManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -91,6 +92,45 @@ fun ModelInstallScreen(
         tokenizerFileExternal?.exists() == true && tokenizerFileExternal.length() > 50_000L -> tokenizerFileExternal.length() / 1024
         tokenizerFileTmp.exists() && tokenizerFileTmp.canRead() && tokenizerFileTmp.length() > 50_000L -> tokenizerFileTmp.length() / 1024
         else -> 0L
+    }
+
+    // Voice recognition models (Vosk)
+    val hasVoiceEn = remember(refreshTrigger) { VoiceModelManager.isModelInstalled(context, "en") }
+    val hasVoiceHi = remember(refreshTrigger) { VoiceModelManager.isModelInstalled(context, "hi") }
+    val hasVoiceTe = remember(refreshTrigger) { VoiceModelManager.isModelInstalled(context, "te") }
+    val voiceEnSizeMb = remember(refreshTrigger) { VoiceModelManager.getInstalledModelSizeMb(context, "en") }
+    val voiceHiSizeMb = remember(refreshTrigger) { VoiceModelManager.getInstalledModelSizeMb(context, "hi") }
+    val voiceTeSizeMb = remember(refreshTrigger) { VoiceModelManager.getInstalledModelSizeMb(context, "te") }
+
+    var pendingVoiceLang by remember { mutableStateOf("en") }
+
+    val voiceModelPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenDocument()
+    ) { uri: Uri? ->
+        if (uri != null) {
+            coroutineScope.launch(Dispatchers.IO) {
+                isCopying = true
+                copyStatusText = "Extracting Vosk speech model zip for $pendingVoiceLang..."
+                try {
+                    val ok = VoiceModelManager.installModelFromZip(context, uri, pendingVoiceLang)
+                    withContext(Dispatchers.Main) {
+                        if (ok) {
+                            Toast.makeText(context, "Voice model for $pendingVoiceLang installed successfully!", Toast.LENGTH_SHORT).show()
+                        } else {
+                            Toast.makeText(context, "Failed to extract voice model for $pendingVoiceLang", Toast.LENGTH_LONG).show()
+                        }
+                    }
+                } catch (e: Exception) {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(context, "Voice install error: ${e.message}", Toast.LENGTH_LONG).show()
+                    }
+                } finally {
+                    isCopying = false
+                    copyStatusText = ""
+                    refreshTrigger++
+                }
+            }
+        }
     }
 
     // SAF file picker for .pte
@@ -448,6 +488,68 @@ fun ModelInstallScreen(
                 }
             }
 
+            // Voice Recognition Models (Vosk Offline - Task VOICE)
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(containerColor = Color.White),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text(
+                        text = "🎙️ Offline Speech Models (Vosk)",
+                        fontSize = 17.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = FarmGreenDark
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "Apache 2.0 open-source offline speech models for voice questions in Chat.",
+                        fontSize = 12.sp,
+                        color = Color(0xFF616161)
+                    )
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 10.dp))
+
+                    // English
+                    VoiceModelRow(
+                        name = "Indian English (vosk-model-small-en-in-0.4)",
+                        isInstalled = hasVoiceEn,
+                        sizeMb = voiceEnSizeMb,
+                        onSelect = {
+                            pendingVoiceLang = "en"
+                            voiceModelPickerLauncher.launch(arrayOf("*/*"))
+                        },
+                        isCopying = isCopying
+                    )
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    // Hindi
+                    VoiceModelRow(
+                        name = "हिन्दी (vosk-model-small-hi-0.22)",
+                        isInstalled = hasVoiceHi,
+                        sizeMb = voiceHiSizeMb,
+                        onSelect = {
+                            pendingVoiceLang = "hi"
+                            voiceModelPickerLauncher.launch(arrayOf("*/*"))
+                        },
+                        isCopying = isCopying
+                    )
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    // Telugu
+                    VoiceModelRow(
+                        name = "తెలుగు (vosk-model-small-te-0.42)",
+                        isInstalled = hasVoiceTe,
+                        sizeMb = voiceTeSizeMb,
+                        onSelect = {
+                            pendingVoiceLang = "te"
+                            voiceModelPickerLauncher.launch(arrayOf("*/*"))
+                        },
+                        isCopying = isCopying
+                    )
+                }
+            }
+
             // ADB push instructions card
             Card(
                 modifier = Modifier.fillMaxWidth(),
@@ -476,6 +578,39 @@ fun ModelInstallScreen(
             }
 
             Spacer(modifier = Modifier.height(16.dp))
+        }
+    }
+}
+
+@Composable
+private fun VoiceModelRow(
+    name: String,
+    isInstalled: Boolean,
+    sizeMb: Long,
+    onSelect: () -> Unit,
+    isCopying: Boolean
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            Text(text = name, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = Color(0xFF212121))
+            Text(
+                text = if (isInstalled) "Installed (~$sizeMb MB)" else "Not Installed",
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Bold,
+                color = if (isInstalled) Color(0xFF2E7D32) else Color(0xFFD97706)
+            )
+        }
+        OutlinedButton(
+            onClick = onSelect,
+            shape = RoundedCornerShape(8.dp),
+            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp),
+            enabled = !isCopying
+        ) {
+            Text(text = if (isInstalled) "Reinstall (.zip)" else "Install (.zip)", fontSize = 12.sp)
         }
     }
 }

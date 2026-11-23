@@ -66,10 +66,15 @@ object QuestionKeywordMatcher {
     /**
      * Identifies the primary section matching the user's question keywords.
      * Returns null if no recognized keywords match.
+     * Selects the pattern with the longest matching keyword to prevent short keywords
+     * from shadowing specific compound phrases.
      */
     fun matchSection(query: String, language: String): String? {
         val q = query.lowercase().trim()
         if (q.isBlank()) return null
+
+        var bestSection: String? = null
+        var maxMatchLength = 0
 
         for (p in PATTERNS) {
             val keywords = when (language.lowercase()) {
@@ -77,11 +82,14 @@ object QuestionKeywordMatcher {
                 "hi" -> p.hindiKeywords + p.englishKeywords
                 else -> p.englishKeywords
             }
-            if (keywords.any { kw -> q.contains(kw) }) {
-                return p.section
+            for (kw in keywords) {
+                if (q.contains(kw) && kw.length > maxMatchLength) {
+                    maxMatchLength = kw.length
+                    bestSection = p.section
+                }
             }
         }
-        return null
+        return bestSection
     }
 
     /**
