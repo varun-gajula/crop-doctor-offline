@@ -6,6 +6,9 @@ import android.content.Context
 import android.util.Log
 import com.cropdoctor.advisor.Advisor
 import com.cropdoctor.advisor.ExecuTorchLlamaAdvisor
+import com.cropdoctor.chat.AndroidSqlitePassageDatabase
+import com.cropdoctor.chat.KnowledgeBasePassageIndexer
+import com.cropdoctor.chat.PassageStore
 import com.cropdoctor.knowledge.KnowledgeBase
 import com.cropdoctor.vision.Classifier
 import com.cropdoctor.vision.ExecuTorchClassifier
@@ -24,6 +27,12 @@ class CropDoctorApplication : Application() {
     lateinit var advisor: Advisor
         private set
 
+    lateinit var passageStore: PassageStore
+        private set
+
+    fun getAdvisorIfInitialized(): Advisor? = if (::advisor.isInitialized) advisor else null
+    fun getPassageStoreIfInitialized(): PassageStore? = if (::passageStore.isInitialized) passageStore else null
+
     var totalRamGb: Long = 4
         private set
 
@@ -35,8 +44,17 @@ class CropDoctorApplication : Application() {
         // Immediate Knowledge Base initialization (~15 ms)
         KnowledgeBase.initialize(this)
 
+        passageStore = AndroidSqlitePassageDatabase(this)
+
         // Asynchronous background initialization for vision & advisory engines
         applicationScope.launch {
+            val root = KnowledgeBase.getRoot()
+            if (root != null && passageStore.countPassages() == 0) {
+                val passages = KnowledgeBasePassageIndexer.buildAllPassages(root)
+                passageStore.indexPassages(passages)
+                Log.i("CropDoctorApp", "Indexed ${passages.size} passages into SQLite FTS5 database.")
+            }
+
             classifier = ExecuTorchClassifier(this@CropDoctorApplication)
 
             // On-device ExecuTorch Llama 3.2 Advisor

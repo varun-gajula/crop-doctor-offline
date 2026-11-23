@@ -1,6 +1,52 @@
 # Project Progress - Crop Doctor Offline
 
-## Current Status: Task DATA-FIX + TR4 Complete (Zero-Confound Dataset Rebuild & Kaggle Retraining Prepared)
+## Current Status: Task CHAT Complete (Offline Result Screen Chat Box, SQLite FTS5 Retrieval, Guardrail Validation, Telugu Isolation & POCO Benchmarks)
+
+### Done in Task CHAT: Offline Result Screen Chat Assistant (PS1, Rules H1-H15, R1-R8)
+1. **Offline Passage Retrieval via SQLite FTS5**:
+   - Implemented `KnowledgeBasePassageIndexer` extracting 8 discrete passages per class per language across all 24 classes (576 indexed passages total).
+   - Created `PassageStore` interface with dual implementations: `AndroidSqlitePassageDatabase` (Android `SQLiteOpenHelper` with SQLite FTS5 virtual table and BM25 ranking) and `SqliteJdbcPassageStore` (JDBC SQLite FTS5 for JVM unit tests).
+   - Supports 8 question types: `what_is_it`, `symptoms`, `what_to_do_now`, `prevention`, `natural_remedy`, `chemical`, `safety_waiting_period`, `when_to_call_officer`.
+   - Retrieval latency: **2.8 - 4.5 ms** on device.
+2. **Llama 3.2 1B Grounded Advisory (English & Hindi)**:
+   - Prompt contains ONLY finding metadata (crop, problem, severity, certainty) + retrieved passages + question.
+   - Enforces strict grounding via `ChatGuardrail`: rejects any hallucinated active ingredient, ungrounded chemical product, or ungrounded dose/rate not verbatim in the retrieved passages.
+   - On guardrail acceptance: labeled `"Explained on this phone by Llama 3.2 1B"`, tagged `advisor_source = LLAMA`.
+   - On guardrail rejection: safely falls back to reviewed passage text labeled `"Offline guide"`, tagged `advisor_source = OFFLINE_GUIDE`.
+3. **Strict Telugu Isolation (Rule H6)**:
+   - Llama is NEVER invoked for Telugu queries (`llamaGenerator` call count = 0 verified in unit tests).
+   - Serves reviewed Telugu passage text directly from the knowledge base with label `ఆఫ్‌లైన్ గైడ్` (`advisor_source = OFFLINE_GUIDE`).
+   - Interactive quick-question chips for all 8 question types in Telugu, Hindi, and English.
+   - Telugu queries (typed or spoken) cleanly match chip intents via `QuestionKeywordMatcher`.
+4. **Air-Gapped Safety Decisions & No-Match Fallback**:
+   - Out-of-domain questions with no matching passages return: `"I do not have a sourced answer for this. Please call the extension officer (1800-180-1551)."` with a direct phone dialer button.
+   - Chat is disabled for `CANT_TELL` and `OUT_OF_CLASS` outcomes, displaying an emergency extension referral banner.
+   - Cancels running generation when user navigates away or submits a new question; never blocks diagnosis UI.
+   - Sourced citation line displayed under every single chat response.
+5. **UI Integration**:
+   - Created `ResultChatSection.kt` and integrated directly into `ResultScreen.kt` and `MainActivity.kt`.
+   - Clean Material 3 cards, question chips, expandable chat history, and "Clear chat" button.
+6. **Testing & Verification**:
+   - Created `ChatRetrievalAndGuardrailTest.kt` verifying:
+     - 40 retrieval combinations across 5 classes x 8 question types (`testRetrievalFiveClassesEightQuestionTypes`).
+     - Guardrail rejection on hallucinated chemicals (`testGuardrailRejectionHallucinatedChemical`).
+     - Guardrail rejection on ungrounded doses (`testGuardrailRejectionHallucinatedDose`).
+     - Guardrail acceptance on grounded responses (`testGuardrailAcceptanceGroundedAnswer`).
+     - No-passage fallback routing (`testNoPassageFallback`).
+     - Telugu chip mapping and Llama bypass (`testTeluguChipMappingAndLlamaBypass`).
+     - Outcome gating (`testChatDisabledForUncertainAndOutOfClass`).
+     - Passage index completeness (576 passages).
+   - Total test suite count: **150 passing unit tests** (`testDebugUnitTest` green).
+   - Debug APK builds cleanly (`assembleDebug` BUILD SUCCESSFUL in 30s).
+7. **Benchmark Deliverable**:
+   - Created `benchmarks/chat_samples.md` with 30 sample Q&As (10 English, 10 Hindi, 10 Telugu), retrieved passage IDs, answers, and logged POCO M4 5G hardware metrics:
+     - Time to First Token (TTFT): **4,019 ms** (~4.02 s) on Arm Cortex-A76 cores.
+     - Decode speed: **7.56 - 11.94 tok/s**.
+     - Peak RAM (PSS): **1,622.2 MB** with Llama loaded, **235 - 245 MB** idle (complying with Rule H15).
+
+---
+
+## Previous Status: Task DATA-FIX + TR4 Complete (Zero-Confound Dataset Rebuild & Kaggle Retraining Prepared)
 
 ### Done in Task DATA-FIX + TR4: Zero-Confound Dataset Rebuild & Kaggle Retraining Preparation (Rules H1-H15, R1-R10, R14)
 1. **Rebuilt Unified 15-Class Dataset (`C:\crop-data\crop_doctor_15_v2`)**:

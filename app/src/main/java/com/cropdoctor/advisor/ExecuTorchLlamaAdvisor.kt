@@ -526,6 +526,29 @@ class ExecuTorchLlamaAdvisor(private val context: Context) : Advisor {
         }
     }
 
+    override suspend fun answerChatPrompt(prompt: String): String = withContext(Dispatchers.Default) {
+        if (!checkMemoryBudget()) return@withContext ""
+        if (!ensureModelLoaded() || llamaModule == null) return@withContext ""
+
+        scheduleIdleRelease()
+        val responseBuilder = StringBuilder()
+        val callback = object : LlmCallback {
+            override fun onResult(token: String?) {
+                if (!token.isNullOrEmpty()) {
+                    responseBuilder.append(token)
+                    if (responseBuilder.length >= 800) stop()
+                }
+            }
+            override fun onStats(stats: Float) {}
+        }
+        try {
+            llamaModule?.generate(prompt, callback)
+        } catch (e: Exception) {
+            Log.e(TAG, "Error generating chat answer: ${e.message}")
+        }
+        return@withContext responseBuilder.toString().trim()
+    }
+
     override fun stop() {
         try {
             llamaModule?.stop()

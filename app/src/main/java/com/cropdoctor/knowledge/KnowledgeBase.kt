@@ -7,6 +7,7 @@ import java.io.InputStreamReader
 object KnowledgeBase {
 
     private var entriesMap: Map<String, KbEntry> = emptyMap()
+    private var rootObj: KnowledgeBaseRoot? = null
     private var isLoaded: Boolean = false
 
     private val json = Json {
@@ -26,6 +27,7 @@ object KnowledgeBase {
                 InputStreamReader(inputStream, Charsets.UTF_8).use { reader ->
                     val content = reader.readText()
                     val root = json.decodeFromString<KnowledgeBaseRoot>(content)
+                    rootObj = root
                     entriesMap = root.classes.associateBy { it.classId }
                     isLoaded = true
                 }
@@ -41,6 +43,10 @@ object KnowledgeBase {
 
     fun getAllEntries(): List<KbEntry> {
         return entriesMap.values.toList()
+    }
+
+    fun getRoot(): KnowledgeBaseRoot? {
+        return rootObj
     }
 }
 

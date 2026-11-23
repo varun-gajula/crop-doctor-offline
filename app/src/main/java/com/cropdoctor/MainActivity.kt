@@ -1456,7 +1456,9 @@ class MainActivity : ComponentActivity() {
                                     },
                                     onChangeCropClick = { navigateTo(AppScreen.CROP_SELECTION) },
                                     onTakeAnotherPhoto = { navigateTo(AppScreen.CAMERA) },
-                                    onInstallModelClick = { navigateTo(AppScreen.INSTALL_MODEL) }
+                                    onInstallModelClick = { navigateTo(AppScreen.INSTALL_MODEL) },
+                                    advisor = app.getAdvisorIfInitialized(),
+                                    passageStore = app.getPassageStoreIfInitialized()
                                 )
                             } else {
                                 navigateTo(AppScreen.HOME)

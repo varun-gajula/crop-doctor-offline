@@ -24,6 +24,10 @@ interface Advisor {
         onToken: (String) -> Unit
     )
 
+    suspend fun answerChatPrompt(
+        prompt: String
+    ): String = ""
+
     fun stop() {}
 
     fun close()

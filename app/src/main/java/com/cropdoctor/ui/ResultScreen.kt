@@ -35,10 +35,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.cropdoctor.CropDoctorApplication
 import com.cropdoctor.R
+import com.cropdoctor.advisor.Advisor
 import com.cropdoctor.advisor.AudioPlayItem
 import com.cropdoctor.advisor.OfflineAudioAdvisor
 import com.cropdoctor.advisor.OfflineTtsHelper
+import com.cropdoctor.chat.PassageStore
 import com.cropdoctor.domain.CertaintyBand
 import com.cropdoctor.domain.ClassifierResult
 import com.cropdoctor.domain.CropMapping
@@ -72,7 +75,9 @@ fun ResultScreen(
     onCancelAdvice: () -> Unit = {},
     onChangeCropClick: () -> Unit = {},
     onTakeAnotherPhoto: () -> Unit = {},
-    onInstallModelClick: () -> Unit = {}
+    onInstallModelClick: () -> Unit = {},
+    advisor: Advisor? = null,
+    passageStore: PassageStore? = null
 ) {
     val context = LocalContext.current
     val scrollState = rememberScrollState()
@@ -806,6 +811,25 @@ fun ResultScreen(
                             color = Color.White
                         )
                     }
+
+                    // Task CHAT: Offline chat disabled for CANT_TELL
+                    val app = context.applicationContext as? CropDoctorApplication
+                    val effectiveAdvisor = advisor ?: app?.getAdvisorIfInitialized()
+                    val effectivePassageStore = passageStore ?: app?.getPassageStoreIfInitialized()
+                    if (effectiveAdvisor != null && effectivePassageStore != null) {
+                        ResultChatSection(
+                            classId = result.classId,
+                            crop = kbEntry.crop,
+                            problemName = cropDisplayName,
+                            severity = result.severityBand.name,
+                            certainty = result.certaintyBand.name,
+                            language = language,
+                            passageStore = effectivePassageStore,
+                            advisor = effectiveAdvisor,
+                            isUncertainOrOutOfClass = true,
+                            onCallOfficer = { showHelplineDialog = true }
+                        )
+                    }
                 }
 
                 DiagnosisOutcome.OUT_OF_CLASS -> {
@@ -897,6 +921,25 @@ fun ResultScreen(
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color.White
+                        )
+                    }
+
+                    // Task CHAT: Offline chat disabled for CANT_TELL
+                    val app = context.applicationContext as? CropDoctorApplication
+                    val effectiveAdvisor = advisor ?: app?.getAdvisorIfInitialized()
+                    val effectivePassageStore = passageStore ?: app?.getPassageStoreIfInitialized()
+                    if (effectiveAdvisor != null && effectivePassageStore != null) {
+                        ResultChatSection(
+                            classId = result.classId,
+                            crop = kbEntry.crop,
+                            problemName = cropDisplayName,
+                            severity = result.severityBand.name,
+                            certainty = result.certaintyBand.name,
+                            language = language,
+                            passageStore = effectivePassageStore,
+                            advisor = effectiveAdvisor,
+                            isUncertainOrOutOfClass = true,
+                            onCallOfficer = { showHelplineDialog = true }
                         )
                     }
                 }
@@ -1286,6 +1329,25 @@ fun ResultScreen(
                         audioAdvisor = audioAdvisor,
                         onCancel = onCancelAdvice
                     )
+
+                    // Task CHAT: Offline chat box on the result screen about the detected problem
+                    val app = context.applicationContext as? CropDoctorApplication
+                    val effectiveAdvisor = advisor ?: app?.getAdvisorIfInitialized()
+                    val effectivePassageStore = passageStore ?: app?.getPassageStoreIfInitialized()
+                    if (effectiveAdvisor != null && effectivePassageStore != null) {
+                        ResultChatSection(
+                            classId = result.classId,
+                            crop = kbEntry.crop,
+                            problemName = kbEntry.names.forLanguage(language),
+                            severity = result.severityBand.name,
+                            certainty = result.certaintyBand.name,
+                            language = language,
+                            passageStore = effectivePassageStore,
+                            advisor = effectiveAdvisor,
+                            isUncertainOrOutOfClass = isUncertain || result.outcome == DiagnosisOutcome.OUT_OF_CLASS,
+                            onCallOfficer = { showHelplineDialog = true }
+                        )
+                    }
 
                     // Requirement 3: Clear "Call extension officer" button for severe cases
                     if (shouldRefer) {

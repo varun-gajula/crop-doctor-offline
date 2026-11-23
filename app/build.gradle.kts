@@ -63,6 +63,7 @@ dependencies {
     // ExecuTorch – official Maven Central artifact (0.6.0 for EO8 SpinQuant & LlmModule)
     implementation("org.pytorch:executorch-android:0.6.0")
     testImplementation(libs.junit)
+    testImplementation("org.xerial:sqlite-jdbc:3.45.1.0")
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     debugImplementation(libs.androidx.ui.tooling)
