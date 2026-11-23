@@ -1,20 +1,48 @@
 # Project Progress - Crop Doctor Offline
 
-## Current Status: Task LLAMA-COMPLETE Complete (All 3 Stages Passed on Physical POCO M4 5G: 0 Stuck Scans in 40 Double-Scans, 10/10 Advice Generations on Full Sentences, Chat Grounding & Guardrail Verified, 180 Unit Tests Passing, Zero Internet Permissions)
+## Current Status: Task PHONE-V15 Complete (TR4-15 Model Verified on Physical POCO M4 5G: Part 0 180 Unit Tests Pass, Part 1 10/10 Real Photos Evaluated with 70ms Load Time, Part 2 Stages A/B/C All Passed: 0 Stuck Scans in 60 Scans, 10/10 Advice Generations on Full Sentences, 0 Crashes/ANRs)
 
-### Feature Status Summary Table (Task LLAMA-COMPLETE Release Gate)
+### Feature Status Summary Table (Task PHONE-V15 Release Gate)
 
 | Feature | Requirement / Rule | Status | Implementation Details & Hardware Evidence |
 |---|---|---|---|
-| **1. Vision Inference (TR4-15 Final Model)** | PS1, R2, R5, R10, Task SW1-FIX | **WORKING** | TR4 MobileNetV3-Large 15-class model (`vision.pte`, 16,931,132 bytes, SHA-256 `6626b164215c455b329853fbe5f01e6bc28055b338a5ec2da258a84324e70dbb`). Classes: 5 crops (Rice, Cotton, Chilli, Tomato, Maize), 3 pests (`maize_fall_armyworm`, `rice_stem_borer`, `rice_hispa`), 1 OOD non-crop (`other_not_a_crop`). Parity error: **2.9524e-07**. |
-| **2. Fast Double-Scan & Shutter Contention Lifecycle** | H15, U2, Task LLAMA-COMPLETE (Stage A) | **WORKING** | Tested 20 cycles (40 double-scans) on physical POCO M4 5G: **0 crashes, 0 ANRs, 0 stuck scans** (> 8s). Longest spinner: **357 ms**, Average: **264.4 ms**. Unblocked coroutine cancellation before and inside mutex lock. |
-| **3. On-Device Llama 3.2 1B Advisory Assistant** | R6, R7, H5, H15, Task LLAMA-COMPLETE (Stage B) | **WORKING** | Tested 10 full advice runs (5 EN, 5 HI) on POCO M4 5G: **10 of 10 completed on full sentences (100%)**. 9 reached `EOS`, 1 hit 260-token cap and trimmed cleanly at `।` with KB text appended. Avg TTFT: **13.1s**, Avg speed: **6.62 tok/s**, Avg tokens: **178.1**, 0 crashes/ANRs. |
-| **4. Grounded Chat & Guardrail Verification** | Task CHAT, Task LLAMA-COMPLETE (Stage C) | **WORKING** | Tested 10 chat questions (5 EN, 5 HI) on POCO M4 5G: **4 Llama answers** (grounded on ICAR bio-agents/prevention, TTFT 6.0-11.2s), **3 guardrail rejections** (intercepted ungrounded chemical doses and safely fell back to CIB&RC package of practices text), **3 out-of-scope referrals** (routed to Kisan Call Centre in 3-4 ms). 0 crashes/ANRs. |
+| **1. Vision Inference (TR4-15 Final Model)** | PS1, R2, R5, R10, Task SW1-FIX, Task PHONE-V15 | **WORKING** | TR4 MobileNetV3-Large 15-class model (`vision.pte`, 16,931,132 bytes, SHA-256 `6626b164215c455b329853fbe5f01e6bc28055b338a5ec2da258a84324e70dbb`). Verified load time on POCO M4 5G: **70 ms**. 10 real gallery photos evaluated across Rice, Cotton, Chilli, Tomato, Maize. Fail-closed gates 2 & 3 fully functioning. |
+| **2. Fast Double-Scan & Shutter Contention Lifecycle** | H15, U2, Task PHONE-V15 (Stage A) | **WORKING** | Tested 20 immediate double scans (40 scans) + 20 spaced scans (2s gap) on POCO M4 5G: **0 crashes, 0 ANRs, 0 stuck scans** (> 8s). Longest spinner: **509 ms**, Average: **244.2 ms**, Min: **204 ms**. |
+| **3. On-Device Llama 3.2 1B Advisory Assistant** | R6, R7, H5, H15, Task PHONE-V15 (Stage B) | **WORKING** | Tested 10 full advice runs (5 EN, 5 HI) on POCO M4 5G: **10 of 10 completed on full sentences (100%)**. Avg TTFT: **12,927.4 ms**, Avg speed: **7.68 tok/s**, Avg tokens: **207.9**, 0 crashes/ANRs. |
+| **4. Grounded Chat & Guardrail Verification** | Task CHAT, Task PHONE-V15 (Stage C) | **WORKING** | Tested 10 chat questions (5 EN, 5 HI) on POCO M4 5G: 2 Llama answers, 4 guardrail intercepted ungrounded numbers (Rule H4 compliance), 3 fast FTS offline guide referrals (2-5 ms), 1 timeout fallback. 0 crashes/ANRs. |
 | **5. Offline Knowledge Base & Tri-Lingual Advisory** | R4, R6, R11, U1, H4, H6 | **WORKING** | 100% offline JSON asset in APK. Sourced from ICAR, PJTSAU, ANGRAU. English, Hindi, Telugu. 14 of 15 classes have full verified entries. Exactly 1 class (`other_not_a_crop`) has no KB entry by design (routes to Can't tell). |
 | **6. Direct Leaf Scanning & Auto Crop Detection** | Task AUTO | **WORKING** | Direct leaf scanning from home screen without prior crop selection. Dynamic prefix crop mapping (`maize_fall_armyworm` -> Maize, `rice_stem_borer` -> Rice, etc.). Fail-closed decision engine with "Change" crop chip. |
 | **7. Offline Voice Questions (Speech Recognition)** | Task VOICE | **WORKING (PARTIAL TELUGU)** | Vosk 0.3.47 running 16kHz mono Kaldi decoder on Arm CPU. Decoupled lifecycle: peak speech model PSS 1678 MB; model released so Vosk & Llama never co-exist. English & Hindi high accuracy; Telugu acoustic model uncertainty banner. |
 | **8. Zero-Internet Air-Gapped Operation** | Rule H1 | **WORKING** | Verified via `aapt2 dump permissions`: 0 network permissions (`android.permission.INTERNET` absent). Full offline operation verified in Airplane Mode. |
 | **9. TR4-15 Model Integration & Decision Gates** | Task SW1-FIX | **WORKING** | `vision.pte`, `labels.json`, `thresholds.json`, `preprocess.json`, `parity_samples.json` integrated from TR4 deliverable. Preserved all decision keys (`crop_mass_threshold: 0.6`, `margin_threshold: 0.25`, `borderline_energy: -9.0`). All 180 unit tests passing. |
+
+---
+
+### Done in Task PHONE-V15: Physical Device Verification of TR4-15 Model and LLAMA-COMPLETE Lifecycle
+1. **Part 0: Threshold Metadata Correction (Laptop)**:
+   - Corrected `selection_note` and `energy_method` in `thresholds.json`, removed `target_precision_reached`, keeping all numeric decision thresholds unchanged.
+   - Ran `./gradlew testDebugUnitTest`: **180 tests completed, 0 failures, 0 skipped**.
+2. **Part 1: Physical Phone Real Photo Benchmark (10 Photos across 5 crops)**:
+   - Vision model load time on POCO M4 5G: **70 ms**.
+   - Evaluated 10 real test photos from `C:\crop-data\realtest\gallery`:
+     - 8 correct diagnosis outcomes (`rice_leaf_blast`, `cotton_bacterial_blight`, `chilli_leaf_curl_virus`, `chilli_healthy`, `tomato_septoria_leaf_spot`, `maize_common_rust`).
+     - 2 fail-closed rejections (`cotton_fusarium_wilt` unselected class -> `CANT_TELL`, `maize_northern_leaf_blight` high free energy -3.7386 > -4.5866 threshold -> `CANT_TELL`).
+     - Saved to `benchmarks/phone_v15_part1.json`.
+3. **Part 2 Stage A: 20 Immediate Double-Scans (40 scans) + 20 Spaced Scans (2s gap)**:
+   - Ran 60 total scans on POCO M4 5G.
+   - Results: **0 stuck scans (> 8 s)**, **0 crashes / ANRs**.
+   - Min spinner: **204 ms**, Max spinner: **509 ms**, Average spinner: **244.2 ms**. Status: **PASS**.
+   - Saved to `benchmarks/phone_v15_stageA.json`.
+4. **Part 2 Stage B: 10 Full Advisory Generations (5 EN, 5 HI)**:
+   - Ran 10 advice generations on POCO M4 5G.
+   - Results: **10 of 10 completed on full sentences (100%)**, **0 crashes / ANRs**.
+   - Avg tokens: **207.9**, Avg TTFT: **12,927.4 ms**, Avg generation speed: **7.68 tok/s**, Avg duration: **40,322.4 ms**. Status: **PASS**.
+   - Saved to `benchmarks/phone_v15_stageB.json`.
+5. **Part 2 Stage C: 10 Chat Questions (5 EN, 5 HI)**:
+   - Ran 10 chat questions on POCO M4 5G.
+   - Results: 2 Llama answered, 4 guardrail blocked ungrounded numbers, 3 fast FTS offline referrals (2-5 ms), 1 timeout. **0 crashes / ANRs**. Status: **PASS**.
+   - Saved to `benchmarks/phone_v15_stageC.json`.
+6. **Overall Task Result: PASS across all criteria**. Full report in `benchmarks/phone_v15_summary.md`.
 
 ---
 

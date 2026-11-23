@@ -7,11 +7,10 @@
   "crop_mass_threshold": 0.6,
   "margin_threshold": 0.25,
   "borderline_energy": -9.0,
-  "energy_method": "free_energy_probe_set_calibration",
+  "energy_method": "TR4 validation calibration (provisional)",
   "nll_before": 0.1153,
   "nll_after": 0.1012,
   "threshold_target_precision": 0.9,
-  "target_precision_reached": true,
-  "selection_note": "Option B selected: energy_threshold=-4.5866, crop_mass_threshold=0.60, margin_threshold=0.25, borderline_energy=-9.0",
+  "selection_note": "PROVISIONAL. temperature, confidence_threshold and energy_threshold come from TR4 grouped validation; crop_mass_threshold, margin_threshold and borderline_energy come from P4 on the previous 20-class model. To be re-measured on field photos (P4b).",
   "status": "CALIBRATED_15CLASS_TR4"
 }

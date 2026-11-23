@@ -335,8 +335,10 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
 
             if (targetPath != null) {
                 try {
+                    val loadStart = System.currentTimeMillis()
                     module = Module.load(targetPath, Module.LOAD_MODE_FILE)
-                    Log.e(TAG, "Successfully loaded ExecuTorch vision model from $targetPath: module=$module")
+                    val loadDurationMs = System.currentTimeMillis() - loadStart
+                    Log.i(TAG, "Successfully loaded ExecuTorch vision model in ${loadDurationMs}ms from $targetPath: module=$module")
                 } catch (t: Throwable) {
                     Log.e(TAG, "FATAL: Module.load($targetPath) threw: ${t.message}", t)
                     module = null

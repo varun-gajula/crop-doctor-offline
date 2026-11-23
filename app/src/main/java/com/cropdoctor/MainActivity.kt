@@ -399,6 +399,7 @@ class MainActivity : ComponentActivity() {
                                     classifierResult = result
                                     activeKbEntry = kb
                                     isProcessingImage = false
+                                    Log.i("CROPDOC_BENCHMARK_PHOTO", "PHOTO_RESULT: classId=${result.classId} outcome=${result.outcome} conf=${result.confidence} energy=${result.freeEnergy} cropMass=${result.cropMass} detectedCrop=${result.detectedCrop}")
                                     navigateTo(AppScreen.RESULT)
 
                                     if (autoStartAdvisor && result.outcome == DiagnosisOutcome.DIAGNOSE) {

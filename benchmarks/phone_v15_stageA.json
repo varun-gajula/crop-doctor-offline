@@ -1,0 +1,662 @@
+{
+  "stage": "A",
+  "description": "20 cycles of immediate double scans (40 scans) + 20 spaced scans (2s gap)",
+  "device": "POCO M4 5G (22041219PI)",
+  "start_time": "2026-11-23T23:06:43",
+  "immediate_cycles": [
+    {
+      "cycle": 1,
+      "type": "immediate_double",
+      "scans_completed_in_cycle": 2,
+      "request_ids": [
+        8,
+        9
+      ],
+      "durations_ms": [
+        217,
+        223
+      ],
+      "stuck": false,
+      "crashes": false,
+      "cycle_elapsed_s": 3.05
+    },
+    {
+      "cycle": 2,
+      "type": "immediate_double",
+      "scans_completed_in_cycle": 1,
+      "request_ids": [
+        11
+      ],
+      "durations_ms": [
+        257
+      ],
+      "stuck": false,
+      "crashes": false,
+      "cycle_elapsed_s": 3.08
+    },
+    {
+      "cycle": 3,
+      "type": "immediate_double",
+      "scans_completed_in_cycle": 2,
+      "request_ids": [
+        12,
+        13
+      ],
+      "durations_ms": [
+        218,
+        219
+      ],
+      "stuck": false,
+      "crashes": false,
+      "cycle_elapsed_s": 3.06
+    },
+    {
+      "cycle": 4,
+      "type": "immediate_double",
+      "scans_completed_in_cycle": 2,
+      "request_ids": [
+        14,
+        15
+      ],
+      "durations_ms": [
+        221,
+        220
+      ],
+      "stuck": false,
+      "crashes": false,
+      "cycle_elapsed_s": 3.07
+    },
+    {
+      "cycle": 5,
+      "type": "immediate_double",
+      "scans_completed_in_cycle": 1,
+      "request_ids": [
+        17
+      ],
+      "durations_ms": [
+        269
+      ],
+      "stuck": false,
+      "crashes": false,
+      "cycle_elapsed_s": 3.12
+    },
+    {
+      "cycle": 6,
+      "type": "immediate_double",
+      "scans_completed_in_cycle": 2,
+      "request_ids": [
+        18,
+        19
+      ],
+      "durations_ms": [
+        252,
+        209
+      ],
+      "stuck": false,
+      "crashes": false,
+      "cycle_elapsed_s": 3.1
+    },
+    {
+      "cycle": 7,
+      "type": "immediate_double",
+      "scans_completed_in_cycle": 2,
+      "request_ids": [
+        20,
+        21
+      ],
+      "durations_ms": [
+        260,
+        211
+      ],
+      "stuck": false,
+      "crashes": false,
+      "cycle_elapsed_s": 3.11
+    },
+    {
+      "cycle": 8,
+      "type": "immediate_double",
+      "scans_completed_in_cycle": 2,
+      "request_ids": [
+        22,
+        23
+      ],
+      "durations_ms": [
+        257,
+        220
+      ],
+      "stuck": false,
+      "crashes": false,
+      "cycle_elapsed_s": 3.07
+    },
+    {
+      "cycle": 9,
+      "type": "immediate_double",
+      "scans_completed_in_cycle": 1,
+      "request_ids": [
+        25
+      ],
+      "durations_ms": [
+        281
+      ],
+      "stuck": false,
+      "crashes": false,
+      "cycle_elapsed_s": 3.17
+    },
+    {
+      "cycle": 10,
+      "type": "immediate_double",
+      "scans_completed_in_cycle": 2,
+      "request_ids": [
+        26,
+        27
+      ],
+      "durations_ms": [
+        225,
+        242
+      ],
+      "stuck": false,
+      "crashes": false,
+      "cycle_elapsed_s": 3.05
+    },
+    {
+      "cycle": 11,
+      "type": "immediate_double",
+      "scans_completed_in_cycle": 2,
+      "request_ids": [
+        28,
+        29
+      ],
+      "durations_ms": [
+        206,
+        211
+      ],
+      "stuck": false,
+      "crashes": false,
+      "cycle_elapsed_s": 3.06
+    },
+    {
+      "cycle": 12,
+      "type": "immediate_double",
+      "scans_completed_in_cycle": 2,
+      "request_ids": [
+        30,
+        31
+      ],
+      "durations_ms": [
+        208,
+        210
+      ],
+      "stuck": false,
+      "crashes": false,
+      "cycle_elapsed_s": 3.06
+    },
+    {
+      "cycle": 13,
+      "type": "immediate_double",
+      "scans_completed_in_cycle": 2,
+      "request_ids": [
+        32,
+        33
+      ],
+      "durations_ms": [
+        282,
+        207
+      ],
+      "stuck": false,
+      "crashes": false,
+      "cycle_elapsed_s": 3.08
+    },
+    {
+      "cycle": 14,
+      "type": "immediate_double",
+      "scans_completed_in_cycle": 1,
+      "request_ids": [
+        35
+      ],
+      "durations_ms": [
+        245
+      ],
+      "stuck": false,
+      "crashes": false,
+      "cycle_elapsed_s": 3.15
+    },
+    {
+      "cycle": 15,
+      "type": "immediate_double",
+      "scans_completed_in_cycle": 1,
+      "request_ids": [
+        37
+      ],
+      "durations_ms": [
+        249
+      ],
+      "stuck": false,
+      "crashes": false,
+      "cycle_elapsed_s": 3.1
+    },
+    {
+      "cycle": 16,
+      "type": "immediate_double",
+      "scans_completed_in_cycle": 1,
+      "request_ids": [
+        39
+      ],
+      "durations_ms": [
+        228
+      ],
+      "stuck": false,
+      "crashes": false,
+      "cycle_elapsed_s": 3.13
+    },
+    {
+      "cycle": 17,
+      "type": "immediate_double",
+      "scans_completed_in_cycle": 2,
+      "request_ids": [
+        40,
+        41
+      ],
+      "durations_ms": [
+        249,
+        214
+      ],
+      "stuck": false,
+      "crashes": false,
+      "cycle_elapsed_s": 3.11
+    },
+    {
+      "cycle": 18,
+      "type": "immediate_double",
+      "scans_completed_in_cycle": 2,
+      "request_ids": [
+        42,
+        43
+      ],
+      "durations_ms": [
+        208,
+        221
+      ],
+      "stuck": false,
+      "crashes": false,
+      "cycle_elapsed_s": 3.09
+    },
+    {
+      "cycle": 19,
+      "type": "immediate_double",
+      "scans_completed_in_cycle": 2,
+      "request_ids": [
+        44,
+        45
+      ],
+      "durations_ms": [
+        204,
+        237
+      ],
+      "stuck": false,
+      "crashes": false,
+      "cycle_elapsed_s": 3.06
+    },
+    {
+      "cycle": 20,
+      "type": "immediate_double",
+      "scans_completed_in_cycle": 2,
+      "request_ids": [
+        46,
+        47
+      ],
+      "durations_ms": [
+        212,
+        206
+      ],
+      "stuck": false,
+      "crashes": false,
+      "cycle_elapsed_s": 3.06
+    }
+  ],
+  "spaced_scans": [
+    {
+      "scan_index": 1,
+      "type": "spaced_2s",
+      "scans_completed": 1,
+      "request_ids": [
+        48
+      ],
+      "durations_ms": [
+        252
+      ],
+      "stuck": false,
+      "crashes": false,
+      "elapsed_s": 4.33
+    },
+    {
+      "scan_index": 2,
+      "type": "spaced_2s",
+      "scans_completed": 1,
+      "request_ids": [
+        49
+      ],
+      "durations_ms": [
+        206
+      ],
+      "stuck": false,
+      "crashes": false,
+      "elapsed_s": 4.37
+    },
+    {
+      "scan_index": 3,
+      "type": "spaced_2s",
+      "scans_completed": 1,
+      "request_ids": [
+        50
+      ],
+      "durations_ms": [
+        258
+      ],
+      "stuck": false,
+      "crashes": false,
+      "elapsed_s": 4.34
+    },
+    {
+      "scan_index": 4,
+      "type": "spaced_2s",
+      "scans_completed": 1,
+      "request_ids": [
+        51
+      ],
+      "durations_ms": [
+        353
+      ],
+      "stuck": false,
+      "crashes": false,
+      "elapsed_s": 4.34
+    },
+    {
+      "scan_index": 5,
+      "type": "spaced_2s",
+      "scans_completed": 1,
+      "request_ids": [
+        52
+      ],
+      "durations_ms": [
+        208
+      ],
+      "stuck": false,
+      "crashes": false,
+      "elapsed_s": 4.34
+    },
+    {
+      "scan_index": 6,
+      "type": "spaced_2s",
+      "scans_completed": 1,
+      "request_ids": [
+        53
+      ],
+      "durations_ms": [
+        217
+      ],
+      "stuck": false,
+      "crashes": false,
+      "elapsed_s": 4.34
+    },
+    {
+      "scan_index": 7,
+      "type": "spaced_2s",
+      "scans_completed": 1,
+      "request_ids": [
+        54
+      ],
+      "durations_ms": [
+        307
+      ],
+      "stuck": false,
+      "crashes": false,
+      "elapsed_s": 4.34
+    },
+    {
+      "scan_index": 8,
+      "type": "spaced_2s",
+      "scans_completed": 1,
+      "request_ids": [
+        55
+      ],
+      "durations_ms": [
+        206
+      ],
+      "stuck": false,
+      "crashes": false,
+      "elapsed_s": 4.33
+    },
+    {
+      "scan_index": 9,
+      "type": "spaced_2s",
+      "scans_completed": 1,
+      "request_ids": [
+        56
+      ],
+      "durations_ms": [
+        250
+      ],
+      "stuck": false,
+      "crashes": false,
+      "elapsed_s": 4.4
+    },
+    {
+      "scan_index": 10,
+      "type": "spaced_2s",
+      "scans_completed": 1,
+      "request_ids": [
+        57
+      ],
+      "durations_ms": [
+        212
+      ],
+      "stuck": false,
+      "crashes": false,
+      "elapsed_s": 4.38
+    },
+    {
+      "scan_index": 11,
+      "type": "spaced_2s",
+      "scans_completed": 1,
+      "request_ids": [
+        58
+      ],
+      "durations_ms": [
+        297
+      ],
+      "stuck": false,
+      "crashes": false,
+      "elapsed_s": 4.36
+    },
+    {
+      "scan_index": 12,
+      "type": "spaced_2s",
+      "scans_completed": 1,
+      "request_ids": [
+        59
+      ],
+      "durations_ms": [
+        208
+      ],
+      "stuck": false,
+      "crashes": false,
+      "elapsed_s": 4.32
+    },
+    {
+      "scan_index": 13,
+      "type": "spaced_2s",
+      "scans_completed": 1,
+      "request_ids": [
+        60
+      ],
+      "durations_ms": [
+        213
+      ],
+      "stuck": false,
+      "crashes": false,
+      "elapsed_s": 4.35
+    },
+    {
+      "scan_index": 14,
+      "type": "spaced_2s",
+      "scans_completed": 1,
+      "request_ids": [
+        61
+      ],
+      "durations_ms": [
+        509
+      ],
+      "stuck": false,
+      "crashes": false,
+      "elapsed_s": 4.35
+    },
+    {
+      "scan_index": 15,
+      "type": "spaced_2s",
+      "scans_completed": 1,
+      "request_ids": [
+        62
+      ],
+      "durations_ms": [
+        417
+      ],
+      "stuck": false,
+      "crashes": false,
+      "elapsed_s": 4.34
+    },
+    {
+      "scan_index": 16,
+      "type": "spaced_2s",
+      "scans_completed": 1,
+      "request_ids": [
+        63
+      ],
+      "durations_ms": [
+        258
+      ],
+      "stuck": false,
+      "crashes": false,
+      "elapsed_s": 4.33
+    },
+    {
+      "scan_index": 17,
+      "type": "spaced_2s",
+      "scans_completed": 1,
+      "request_ids": [
+        64
+      ],
+      "durations_ms": [
+        210
+      ],
+      "stuck": false,
+      "crashes": false,
+      "elapsed_s": 4.33
+    },
+    {
+      "scan_index": 18,
+      "type": "spaced_2s",
+      "scans_completed": 1,
+      "request_ids": [
+        65
+      ],
+      "durations_ms": [
+        225
+      ],
+      "stuck": false,
+      "crashes": false,
+      "elapsed_s": 4.35
+    },
+    {
+      "scan_index": 19,
+      "type": "spaced_2s",
+      "scans_completed": 1,
+      "request_ids": [
+        66
+      ],
+      "durations_ms": [
+        300
+      ],
+      "stuck": false,
+      "crashes": false,
+      "elapsed_s": 4.32
+    },
+    {
+      "scan_index": 20,
+      "type": "spaced_2s",
+      "scans_completed": 1,
+      "request_ids": [
+        67
+      ],
+      "durations_ms": [
+        281
+      ],
+      "stuck": false,
+      "crashes": false,
+      "elapsed_s": 4.34
+    }
+  ],
+  "total_scans_requested": 60,
+  "stuck_count": 0,
+  "crashes_anrs": 0,
+  "all_durations_ms": [
+    217,
+    223,
+    257,
+    218,
+    219,
+    221,
+    220,
+    269,
+    252,
+    209,
+    260,
+    211,
+    257,
+    220,
+    281,
+    225,
+    242,
+    206,
+    211,
+    208,
+    210,
+    282,
+    207,
+    245,
+    249,
+    228,
+    249,
+    214,
+    208,
+    221,
+    204,
+    237,
+    212,
+    206,
+    252,
+    206,
+    258,
+    353,
+    208,
+    217,
+    307,
+    206,
+    250,
+    212,
+    297,
+    208,
+    213,
+    509,
+    417,
+    258,
+    210,
+    225,
+    300,
+    281
+  ],
+  "min_spinner_ms": 204,
+  "max_spinner_ms": 509,
+  "avg_spinner_ms": 244.2,
+  "elapsed_seconds": 148.75,
+  "status": "PASS"
+}

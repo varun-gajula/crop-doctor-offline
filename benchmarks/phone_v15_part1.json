@@ -1,0 +1,118 @@
+{
+  "device": "POCO M4 5G (22041219PI)",
+  "model_load_time_ms": 70,
+  "total_photos": 10,
+  "photos": [
+    {
+      "index": 1,
+      "crop": "rice",
+      "label": "Rice Blight 1",
+      "filename": "gallery_01_rice_bacterial_leaf_blight_000001_Rice_20231006_164208.jpg",
+      "decision": "DIAGNOSE",
+      "top1_class": "rice_leaf_blast",
+      "confidence": 0.8932353,
+      "energy": -4.9854046257290365,
+      "crop_mass": 0.96286625
+    },
+    {
+      "index": 2,
+      "crop": "rice",
+      "label": "Rice Blast 2",
+      "filename": "gallery_02_rice_leaf_blast_000001_Rice_aug_0_101.jpg",
+      "decision": "DIAGNOSE",
+      "top1_class": "rice_leaf_blast",
+      "confidence": 0.9652284,
+      "energy": -5.391789062407772,
+      "crop_mass": 0.97185594
+    },
+    {
+      "index": 3,
+      "crop": "cotton",
+      "label": "Cotton Blight 1",
+      "filename": "gallery_05_cotton_bacterial_blight_000003_Cotton_bact0.jpg",
+      "decision": "DIAGNOSE",
+      "top1_class": "cotton_bacterial_blight",
+      "confidence": 0.9471367,
+      "energy": -5.131083107570518,
+      "crop_mass": 0.9489049
+    },
+    {
+      "index": 4,
+      "crop": "cotton",
+      "label": "Cotton Wilt 2",
+      "filename": "gallery_06_cotton_fusarium_wilt_000003_Cotton_done1.jpg",
+      "decision": "CANT_TELL",
+      "top1_class": "unknown",
+      "confidence": 0.94452363,
+      "energy": -5.200916825187188,
+      "crop_mass": 0.0
+    },
+    {
+      "index": 5,
+      "crop": "chilli",
+      "label": "Chilli Leaf Curl 1",
+      "filename": "gallery_09_chilli_leaf_curl_virus_000005_Curl_Virus00005.jpg",
+      "decision": "DIAGNOSE",
+      "top1_class": "chilli_leaf_curl_virus",
+      "confidence": 0.95069,
+      "energy": -5.007504247614092,
+      "crop_mass": 0.95523316
+    },
+    {
+      "index": 6,
+      "crop": "chilli",
+      "label": "Chilli Healthy 2",
+      "filename": "gallery_11_chilli_healthy_000006_Healthy_Leaf00006.jpg",
+      "decision": "DIAGNOSE",
+      "top1_class": "chilli_healthy",
+      "confidence": 0.95909286,
+      "energy": -5.376185264247214,
+      "crop_mass": 0.967817
+    },
+    {
+      "index": 7,
+      "crop": "tomato",
+      "label": "Tomato Leaf Curl 1",
+      "filename": "gallery_13_tomato_yellow_leaf_curl_virus_000007_101tomato_train_leaf_curl.jpg",
+      "decision": "DIAGNOSE",
+      "top1_class": "tomato_septoria_leaf_spot",
+      "confidence": 0.9676591,
+      "energy": -5.272853653825337,
+      "crop_mass": 0.96881384
+    },
+    {
+      "index": 8,
+      "crop": "tomato",
+      "label": "Tomato Septoria 2",
+      "filename": "gallery_14_tomato_septoria_leaf_spot_000007_1050tomato_train_septoria_leaf_spot.jpg",
+      "decision": "DIAGNOSE",
+      "top1_class": "tomato_septoria_leaf_spot",
+      "confidence": 0.95677346,
+      "energy": -4.987333161838478,
+      "crop_mass": 0.9596565
+    },
+    {
+      "index": 9,
+      "crop": "maize",
+      "label": "Maize Rust 1",
+      "filename": "gallery_17_maize_common_rust_000009_Corn_Corn_Common_Rust__1041_.jpg",
+      "decision": "DIAGNOSE",
+      "top1_class": "maize_common_rust",
+      "confidence": 0.95855737,
+      "energy": -5.305243289607168,
+      "crop_mass": 0.96646625
+    },
+    {
+      "index": 10,
+      "crop": "maize",
+      "label": "Maize Blight 2",
+      "filename": "gallery_19_maize_northern_leaf_blight_000010_Corn_Corn_Blight__1010_.jpg",
+      "decision": "CANT_TELL",
+      "top1_class": "unknown",
+      "confidence": 0.56226623,
+      "energy": -3.738550942949135,
+      "crop_mass": 0.8757154
+    }
+  ],
+  "timestamp": "2026-11-23T22:47:16"
+}
