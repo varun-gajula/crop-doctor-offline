@@ -1,0 +1,321 @@
+{
+  "stage": "A",
+  "description": "20 cycles of immediate double scans (40 scans total)",
+  "device": "POCO M4 5G (22041219PI)",
+  "start_time": "2026-11-23T21:50:58",
+  "cycles": [
+    {
+      "cycle": 1,
+      "scans_completed_in_cycle": 1,
+      "request_ids": [
+        2
+      ],
+      "durations_ms": [
+        333
+      ],
+      "stuck": false,
+      "crashes": false,
+      "cycle_elapsed_s": 3.0
+    },
+    {
+      "cycle": 2,
+      "scans_completed_in_cycle": 1,
+      "request_ids": [
+        4
+      ],
+      "durations_ms": [
+        357
+      ],
+      "stuck": false,
+      "crashes": false,
+      "cycle_elapsed_s": 3.06
+    },
+    {
+      "cycle": 3,
+      "scans_completed_in_cycle": 1,
+      "request_ids": [
+        6
+      ],
+      "durations_ms": [
+        257
+      ],
+      "stuck": false,
+      "crashes": false,
+      "cycle_elapsed_s": 2.99
+    },
+    {
+      "cycle": 4,
+      "scans_completed_in_cycle": 1,
+      "request_ids": [
+        8
+      ],
+      "durations_ms": [
+        311
+      ],
+      "stuck": false,
+      "crashes": false,
+      "cycle_elapsed_s": 2.99
+    },
+    {
+      "cycle": 5,
+      "scans_completed_in_cycle": 1,
+      "request_ids": [
+        10
+      ],
+      "durations_ms": [
+        309
+      ],
+      "stuck": false,
+      "crashes": false,
+      "cycle_elapsed_s": 3.0
+    },
+    {
+      "cycle": 6,
+      "scans_completed_in_cycle": 1,
+      "request_ids": [
+        12
+      ],
+      "durations_ms": [
+        304
+      ],
+      "stuck": false,
+      "crashes": false,
+      "cycle_elapsed_s": 2.95
+    },
+    {
+      "cycle": 7,
+      "scans_completed_in_cycle": 2,
+      "request_ids": [
+        13,
+        14
+      ],
+      "durations_ms": [
+        218,
+        246
+      ],
+      "stuck": false,
+      "crashes": false,
+      "cycle_elapsed_s": 2.91
+    },
+    {
+      "cycle": 8,
+      "scans_completed_in_cycle": 2,
+      "request_ids": [
+        15,
+        16
+      ],
+      "durations_ms": [
+        290,
+        272
+      ],
+      "stuck": false,
+      "crashes": false,
+      "cycle_elapsed_s": 3.05
+    },
+    {
+      "cycle": 9,
+      "scans_completed_in_cycle": 1,
+      "request_ids": [
+        18
+      ],
+      "durations_ms": [
+        350
+      ],
+      "stuck": false,
+      "crashes": false,
+      "cycle_elapsed_s": 2.96
+    },
+    {
+      "cycle": 10,
+      "scans_completed_in_cycle": 1,
+      "request_ids": [
+        20
+      ],
+      "durations_ms": [
+        278
+      ],
+      "stuck": false,
+      "crashes": false,
+      "cycle_elapsed_s": 2.96
+    },
+    {
+      "cycle": 11,
+      "scans_completed_in_cycle": 1,
+      "request_ids": [
+        22
+      ],
+      "durations_ms": [
+        242
+      ],
+      "stuck": false,
+      "crashes": false,
+      "cycle_elapsed_s": 3.01
+    },
+    {
+      "cycle": 12,
+      "scans_completed_in_cycle": 1,
+      "request_ids": [
+        24
+      ],
+      "durations_ms": [
+        278
+      ],
+      "stuck": false,
+      "crashes": false,
+      "cycle_elapsed_s": 2.96
+    },
+    {
+      "cycle": 13,
+      "scans_completed_in_cycle": 1,
+      "request_ids": [
+        26
+      ],
+      "durations_ms": [
+        352
+      ],
+      "stuck": false,
+      "crashes": false,
+      "cycle_elapsed_s": 3.06
+    },
+    {
+      "cycle": 14,
+      "scans_completed_in_cycle": 1,
+      "request_ids": [
+        28
+      ],
+      "durations_ms": [
+        202
+      ],
+      "stuck": false,
+      "crashes": false,
+      "cycle_elapsed_s": 3.0
+    },
+    {
+      "cycle": 15,
+      "scans_completed_in_cycle": 1,
+      "request_ids": [
+        30
+      ],
+      "durations_ms": [
+        271
+      ],
+      "stuck": false,
+      "crashes": false,
+      "cycle_elapsed_s": 2.95
+    },
+    {
+      "cycle": 16,
+      "scans_completed_in_cycle": 2,
+      "request_ids": [
+        31,
+        32
+      ],
+      "durations_ms": [
+        238,
+        204
+      ],
+      "stuck": false,
+      "crashes": false,
+      "cycle_elapsed_s": 2.93
+    },
+    {
+      "cycle": 17,
+      "scans_completed_in_cycle": 2,
+      "request_ids": [
+        33,
+        34
+      ],
+      "durations_ms": [
+        259,
+        268
+      ],
+      "stuck": false,
+      "crashes": false,
+      "cycle_elapsed_s": 2.94
+    },
+    {
+      "cycle": 18,
+      "scans_completed_in_cycle": 2,
+      "request_ids": [
+        35,
+        36
+      ],
+      "durations_ms": [
+        209,
+        214
+      ],
+      "stuck": false,
+      "crashes": false,
+      "cycle_elapsed_s": 2.92
+    },
+    {
+      "cycle": 19,
+      "scans_completed_in_cycle": 2,
+      "request_ids": [
+        37,
+        38
+      ],
+      "durations_ms": [
+        204,
+        205
+      ],
+      "stuck": false,
+      "crashes": false,
+      "cycle_elapsed_s": 2.9
+    },
+    {
+      "cycle": 20,
+      "scans_completed_in_cycle": 2,
+      "request_ids": [
+        39,
+        40
+      ],
+      "durations_ms": [
+        242,
+        225
+      ],
+      "stuck": false,
+      "crashes": false,
+      "cycle_elapsed_s": 2.95
+    }
+  ],
+  "total_cycles": 20,
+  "total_scans_requested": 40,
+  "completed_scans": 27,
+  "stuck_count": 0,
+  "crashes_anrs": 0,
+  "all_durations_ms": [
+    333,
+    357,
+    257,
+    311,
+    309,
+    304,
+    218,
+    246,
+    290,
+    272,
+    350,
+    278,
+    242,
+    278,
+    352,
+    202,
+    271,
+    238,
+    204,
+    259,
+    268,
+    209,
+    214,
+    204,
+    205,
+    242,
+    225
+  ],
+  "min_spinner_ms": 202,
+  "max_spinner_ms": 357,
+  "avg_spinner_ms": 264.4,
+  "elapsed_seconds": 60.98,
+  "status": "PASS"
+}
