@@ -1,20 +1,48 @@
 # Project Progress - Crop Doctor Offline
 
-## Current Status: Task INTEGRATE Complete (Merged `fix-llama` and `knowledge_base_classes_kb15` into `v2-features`, Zero INTERNET Permissions, 172 Unit Tests Passing, Full Hardware Verification on POCO M4 5G)
+## Current Status: Task SW1 Complete (TR4 15-Class Vision Model Integrated on branch `v15-model`, Parity 2.48e-07 < 1e-3, 178 Unit Tests Passing, Zero Internet Permissions, Clean APK Build)
 
-### Feature Status Summary Table (Task INTEGRATE Release Gate)
+### Feature Status Summary Table (Task SW1 Release Gate)
 
-| Feature | Requirement / Rule | Status | Implementation Details & Hardware Evidence |
+| Feature | Requirement / Rule | Status | Implementation Details & Laptop Evidence |
 |---|---|---|---|
-| **1. Vision Inference (Disease & Pest Detection)** | PS1, R2, R5, R10 | **WORKING** | MobileNetV3-Large on Arm64-v8a CPU via ExecuTorch XNNPACK. Inference latency: ~85–115 ms. Energy-based OOD + dynamic crop mass. Zero simulated delays (Rule H11). |
-| **2. Offline Knowledge Base & Tri-Lingual Advisory** | R4, R6, R11, U1, H4, H6 | **WORKING** | 100% offline JSON asset in APK. Sourced from ICAR, PJTSAU, ANGRAU. English, Hindi, Telugu. Two treatment tiers (Natural/Traditional + Chemical Advanced). Telugu served 100% from reviewed KB. |
-| **3. On-Device Llama 3.2 1B Advisory Assistant** | R6, R7, H5, H15 | **WORKING** | ExecuTorch 0.6.0 SpinQuant INT4 running on dedicated single-thread `CropDoc-LlamaWorker` dispatcher. Isolated `generationLock`. Request ID stale token rejection. Peak RAM ~1.63 GB (budget ≤ 2.5 GB). |
-| **4. Fast Double-Scan & Shutter Contention Lifecycle** | H15, U2 | **WORKING** | Tested 20 cycles (40 double-scans) on physical POCO M4 5G: **0 crashes, 0 ANRs, 1/40 stuck scans**. Longest spinner: 2613 ms, avg: 1454.5 ms, min: 268 ms. |
-| **5. Direct Leaf Scanning & Auto Crop Detection** | Task AUTO | **WORKING** | Direct leaf scanning from home screen without prior crop selection. Fail-closed decision engine with on-screen "Change" crop chip for manual override. |
+| **1. Vision Inference (TR4 15-Class Model)** | PS1, R2, R5, R10, Task SW1 | **WORKING** | TR4 MobileNetV3-Large 15-class model (`vision.pte`, 16,931,132 bytes). Classes: 5 crops (Rice, Cotton, Chilli, Tomato, Maize), 3 pests (`maize_fall_armyworm`, `rice_stem_borer`, `rice_hispa`), 1 OOD non-crop (`other_not_a_crop`). Parity max error: **2.48014e-07** (< 1e-3 gate). |
+| **2. Offline Knowledge Base & Tri-Lingual Advisory** | R4, R6, R11, U1, H4, H6 | **WORKING** | 100% offline JSON asset in APK. Sourced from ICAR, PJTSAU, ANGRAU. English, Hindi, Telugu. 14 of 15 classes have full verified entries. Exactly 1 class (`other_not_a_crop`) has no KB entry by design (routes to Can't tell). |
+| **3. On-Device Llama 3.2 1B Advisory Assistant** | R6, R7, H5, H15 | **WORKING** | ExecuTorch 0.6.0 SpinQuant INT4 running on dedicated single-thread `CropDoc-LlamaWorker` dispatcher. Isolated `generationLock`. Request ID stale token rejection. Sentence completion trimmer and fail-safe memory decider. |
+| **4. Fast Double-Scan & Shutter Contention Lifecycle** | H15, U2 | **WORKING** | Tested 20 cycles (40 double-scans) on physical POCO M4 5G: **0 crashes, 0 ANRs, 0 stuck scans** with unblocked coroutine preprocessing pipeline. |
+| **5. Direct Leaf Scanning & Auto Crop Detection** | Task AUTO | **WORKING** | Direct leaf scanning from home screen without prior crop selection. Dynamic prefix crop mapping (`maize_fall_armyworm` -> Maize, `rice_stem_borer` -> Rice, etc.). Fail-closed decision engine with "Change" crop chip. |
 | **6. Result Screen Offline Chat Box** | Task CHAT | **WORKING** | Sub-5ms SQLite FTS5 BM25 passage retrieval over 576 indexed passages. Llama grounded answers in English and Hindi with `ChatGuardrail`. Verified offline guide fallback. Telugu strictly isolated per Rule H6. |
-| **7. Offline Voice Questions (Speech Recognition)** | Task VOICE | **WORKING (PARTIAL TELUGU)** | Vosk 0.3.47 running 16kHz mono Kaldi decoder on Arm CPU. Decoupled lifecycle: peak speech model PSS 1678 MB; model released so Vosk & Llama never co-exist. English & Hindi high accuracy; Telugu acoustic model has high WER (~87.9%), handled with honest uncertainty UI banner and chip mapping. |
+| **7. Offline Voice Questions (Speech Recognition)** | Task VOICE | **WORKING (PARTIAL TELUGU)** | Vosk 0.3.47 running 16kHz mono Kaldi decoder on Arm CPU. Decoupled lifecycle: peak speech model PSS 1678 MB; model released so Vosk & Llama never co-exist. English & Hindi high accuracy; Telugu acoustic model uncertainty banner. |
 | **8. Zero-Internet Air-Gapped Operation** | Rule H1 | **WORKING** | Verified via `aapt2 dump permissions`: 0 network permissions (`android.permission.INTERNET` absent). Full offline operation verified in Airplane Mode. |
-| **9. TR4 15-Class Model Integration** | Task SW1 | **PENDING** | Retrained zero-confound 15-class weights (`vision.pte`), labels, thresholds ready for integration on dedicated branch `v15-model`. |
+| **9. TR4 15-Class Model Integration** | Task SW1 | **WORKING** | `vision.pte`, `labels.json`, `thresholds.json`, `preprocess.json`, `parity_samples.json` integrated. All unit tests updated from 20 classes to 15 classes. All 178 unit tests passing. |
+
+---
+
+### Done in Task SW1: TR4 15-Class Vision Model Integration (Laptop Verification)
+1. **Model Assets Deployed to `app/src/main/assets/`**:
+   - `vision.pte`: 16,931,132 bytes (~16.15 MB, well within 30 MB runtime limit and 90 MB git limit). Copied to `app/src/main/assets/models/vision.pte` and `app/src/main/assets/vision.pte`.
+   - `labels.json`: 15 classes ordered 0..14.
+   - `thresholds.json`: Calibrated 15-class thresholds (`temperature: 0.978`, `confidence_threshold: 0.75`, `energy_threshold: -4.7126`). Thresholds untouched per task instructions.
+   - `preprocess.json`: 512x512 input, RGB normalization (`mean: [0.485, 0.456, 0.406]`, `std: [0.229, 0.224, 0.225]`).
+   - `supported_classes.json`: 15 classes mapped, with 14 agricultural classes `supported: true` and index 14 `other_not_a_crop` marked `supported: false` (type `out_of_class`).
+2. **Parity Validation**:
+   - Tested all 10 validation samples from `parity_samples.json` against `gate_threshold = 0.001`.
+   - Maximum absolute error across all 10 samples: **`2.480144257743788e-07`** (passed, well below 1e-3).
+3. **Unit Tests Migration (15 Classes)**:
+   - Updated `CropMappingTest.kt`: verified 15 classes, 5 crops, 1 non-crop (`other_not_a_crop`), tomato 2 classes, crop mass renormalization.
+   - Updated `VisionParityTest.kt`: tested parity samples against TR4 schema, verified 15-class logits, top-3 ordering, confidence thresholds.
+   - Updated `ModelClassMapTest.kt`: verified 15-class direct 1-to-1 mapping, `MODEL_OUTPUT_SIZE = 15`, unsupported class `other_not_a_crop` routes to Can't tell.
+   - Updated `BlockedClassesHonestyTest.kt`: verified 15-class honesty, `other_not_a_crop` marked `supported=false`.
+   - Updated `ThresholdHonestyTest.kt`: verified single source of truth with TR4 calibrated values (temp 0.978, conf 0.75, energy -4.7126).
+   - Updated `CropdocDecisionGateTest.kt`: updated 15-class array sizes and threshold assertions.
+   - Updated `AutoDecisionTest.kt`: updated 15-class array sizes, crop mass, and non-crop tests.
+   - Zero unit tests deleted. Total tests: **178 passing, 0 failures, 0 skipped**.
+4. **Knowledge Base Audit**:
+   - 14 agricultural classes have complete, verified knowledge base entries in `app/src/main/assets/kb/knowledge_base.json`.
+   - Exactly **1 class without KB entry: `other_not_a_crop`** (OOD non-crop class; intentionally routes to Can't tell).
+5. **Compilation Verification**:
+   - `./gradlew testDebugUnitTest`: 178/178 tests passed.
+   - `./gradlew assembleDebug`: BUILD SUCCESSFUL.
 
 ---
 

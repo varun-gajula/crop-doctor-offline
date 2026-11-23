@@ -287,7 +287,7 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
 
     private fun initializeModule() {
         try {
-            val candidateAssets = listOf("models/vision.pte", "vision/vision.pte")
+            val candidateAssets = listOf("models/vision.pte", "vision.pte", "vision/vision.pte")
             var resolvedAsset: String? = null
 
             for (candidate in candidateAssets) {
@@ -300,13 +300,13 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
 
             val modelFile = File(context.filesDir, "vision.pte")
             val versionFile = File(context.filesDir, "vision_model_version.txt")
-            val currentModelVersion = "20261120_512_v2"
+            val currentModelVersion = "20261122_15class_tr4"
             if (resolvedAsset != null) {
                 try {
                     val needsExtract = !modelFile.exists() ||
                             !versionFile.exists() ||
                             versionFile.readText().trim() != currentModelVersion ||
-                            modelFile.length() != 16_956_752L
+                            modelFile.length() != 16_931_132L
 
                     if (needsExtract) {
                         context.assets.open(resolvedAsset).use { input ->
@@ -539,8 +539,8 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
             }
             val isBelowThreshold = top1 == null || top1.probability < requiredThreshold
 
-            // Gate 4: Weeds class & unsupported classes
-            val isWeeds = top1 != null && top1.classId == "weeds_not_a_crop"
+            // Gate 4: Non-crop class (weeds_not_a_crop, other_not_a_crop) & unsupported classes
+            val isWeeds = top1 != null && (top1.classId == "weeds_not_a_crop" || top1.classId == "other_not_a_crop")
             val isUnsupported = top1 != null && unsupportedClasses.contains(top1.classId)
             val gate4Pass = !isWeeds && !isUnsupported
 

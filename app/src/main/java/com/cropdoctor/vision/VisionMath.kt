@@ -23,7 +23,7 @@ data class DiagnosisEvaluation(
 
 object VisionMath {
 
-    const val MODEL_OUTPUT_SIZE = 20
+    const val MODEL_OUTPUT_SIZE = 15
 
     /**
      * Applies temperature scaling to raw logits: z'_i = z_i / T
@@ -211,7 +211,7 @@ object VisionMath {
         val top2Prob = top2?.probability ?: 0.0f
         val margin = top1Prob - top2Prob
 
-        val isWeeds = top1 != null && top1.classId == "weeds_not_a_crop"
+        val isWeeds = top1 != null && (top1.classId == "weeds_not_a_crop" || top1.classId == "other_not_a_crop")
         val isUnsupportedClass = top1 != null && unsupportedClasses.contains(top1.classId)
         val isOOD = if (energyThreshold != null) freeEnergy > energyThreshold else false
         val requiredThreshold = if (top1 != null) {

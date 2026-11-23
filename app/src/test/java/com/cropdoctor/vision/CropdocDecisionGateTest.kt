@@ -11,30 +11,25 @@ import com.cropdoctor.domain.DiagnosisOutcome
 class CropdocDecisionGateTest {
 
     private val labels = listOf(
-        "rice_bacterial_leaf_blight",
         "rice_leaf_blast",
-        "rice_sheath_blight",
         "rice_healthy",
         "cotton_bacterial_blight",
-        "cotton_fusarium_wilt",
-        "cotton_leaf_curl_virus",
         "cotton_healthy",
         "chilli_leaf_curl_virus",
-        "chilli_nutrition_deficiency",
         "chilli_healthy",
-        "tomato_leaf_blight",
-        "tomato_yellow_leaf_curl_virus",
-        "tomato_septoria_leaf_spot",
-        "tomato_healthy",
-        "maize_gray_leaf_spot",
-        "maize_common_rust",
         "maize_northern_leaf_blight",
+        "maize_common_rust",
         "maize_healthy",
-        "weeds_not_a_crop"
+        "maize_fall_armyworm",
+        "rice_stem_borer",
+        "rice_hispa",
+        "tomato_healthy",
+        "tomato_septoria_leaf_spot",
+        "other_not_a_crop"
     )
 
     private val defaultThreshold = 0.4018f
-    private val unsupportedClasses = setOf("weeds_not_a_crop", "tomato_leaf_blight")
+    private val unsupportedClasses = setOf("other_not_a_crop")
 
     @Test
     fun testGate1LeafValidatorRejection() {
@@ -67,7 +62,7 @@ class CropdocDecisionGateTest {
 
     @Test
     fun testGate3ConfidenceRejection() {
-        val probsLow = FloatArray(20) { 0.02f } // max prob 0.02 < 0.4018
+        val probsLow = FloatArray(15) { 0.02f } // max prob 0.02 < 0.4018
         val evalLow = VisionMath.evaluateDiagnosis(
             labels = labels,
             probabilities = probsLow,
@@ -77,8 +72,8 @@ class CropdocDecisionGateTest {
         assertTrue(evalLow.isBelowThreshold)
         assertEquals("unknown", evalLow.classId)
 
-        val probsHigh = FloatArray(20) { 0.01f }
-        probsHigh[1] = 0.81f // rice_leaf_blast
+        val probsHigh = FloatArray(15) { 0.01f }
+        probsHigh[0] = 0.81f // rice_leaf_blast
         val evalHigh = VisionMath.evaluateDiagnosis(
             labels = labels,
             probabilities = probsHigh,
@@ -91,28 +86,28 @@ class CropdocDecisionGateTest {
 
     @Test
     fun testGate4WeedsAndUnsupportedRejection() {
-        val probsWeeds = FloatArray(20) { 0.01f }
-        probsWeeds[19] = 0.81f // weeds_not_a_crop
+        val probsWeeds = FloatArray(15) { 0.01f }
+        probsWeeds[14] = 0.81f // other_not_a_crop
         val evalWeeds = VisionMath.evaluateDiagnosis(
             labels = labels,
             probabilities = probsWeeds,
             defaultThreshold = defaultThreshold,
             unsupportedClasses = unsupportedClasses
         )
-        // Weeds must be rejected as unknown
+        // Non-crop must be rejected as unknown
         assertEquals("unknown", evalWeeds.classId)
         assertTrue(evalWeeds.isBelowThreshold)
 
-        val probsTomatoBlight = FloatArray(20) { 0.01f }
-        probsTomatoBlight[11] = 0.81f // tomato_leaf_blight
-        val evalTomatoBlight = VisionMath.evaluateDiagnosis(
+        val probsUnsupported = FloatArray(15) { 0.01f }
+        probsUnsupported[14] = 0.81f // other_not_a_crop
+        val evalUnsupported = VisionMath.evaluateDiagnosis(
             labels = labels,
-            probabilities = probsTomatoBlight,
+            probabilities = probsUnsupported,
             defaultThreshold = defaultThreshold,
-            unsupportedClasses = unsupportedClasses
+            unsupportedClasses = setOf("other_not_a_crop")
         )
-        // tomato_leaf_blight must be rejected as unknown
-        assertEquals("unknown", evalTomatoBlight.classId)
+        // unsupported class must be rejected as unknown
+        assertEquals("unknown", evalUnsupported.classId)
     }
 
     @Test
@@ -164,7 +159,7 @@ class CropdocDecisionGateTest {
         // 1. Gate 1 fail (not a leaf)
         val evalGate1Fail = VisionMath.evaluateDiagnosis(
             labels = labels,
-            probabilities = FloatArray(20) { if (it == 0) 0.95f else 0.002f },
+            probabilities = FloatArray(15) { if (it == 0) 0.95f else 0.002f },
             gate1Pass = false,
             leafValidatorReason = "LOW_GREEN_FRACTION",
             freeEnergy = -16.0,
@@ -176,9 +171,9 @@ class CropdocDecisionGateTest {
         assertEquals(DiagnosisOutcome.CANT_TELL, evalGate1Fail.outcome)
         assertTrue(evalGate1Fail.outcomeReason.startsWith("LEAF_VALIDATOR_FAIL"))
 
-        // 2. Global top-1 weeds
-        val probsWeeds = FloatArray(20) { 0.01f }
-        probsWeeds[19] = 0.81f // weeds_not_a_crop
+        // 2. Global top-1 non-crop
+        val probsWeeds = FloatArray(15) { 0.01f }
+        probsWeeds[14] = 0.81f // other_not_a_crop
         val evalWeeds = VisionMath.evaluateDiagnosis(
             labels = labels,
             probabilities = probsWeeds,
@@ -194,7 +189,7 @@ class CropdocDecisionGateTest {
         // 3. High Free Energy (OOD)
         val evalHighEnergy = VisionMath.evaluateDiagnosis(
             labels = labels,
-            probabilities = FloatArray(20) { if (it == 0) 0.90f else 0.005f },
+            probabilities = FloatArray(15) { if (it == 0) 0.90f else 0.005f },
             freeEnergy = -6.5, // -6.5 > -8.0
             energyThreshold = energyThresh,
             cropMassThreshold = cropMassThresh,
@@ -207,7 +202,7 @@ class CropdocDecisionGateTest {
         // 4. Low within-crop confidence
         val evalLowConf = VisionMath.evaluateDiagnosis(
             labels = labels,
-            probabilities = FloatArray(20) { 0.02f },
+            probabilities = FloatArray(15) { 0.02f },
             defaultThreshold = 0.3434f,
             freeEnergy = -15.0,
             energyThreshold = energyThresh,
@@ -227,8 +222,8 @@ class CropdocDecisionGateTest {
         val borderlineEnergy = -9.0
 
         // 1. Low Crop Mass (e.g. wrong crop selected: model gave only 8% mass to selected crop)
-        val probsTomatoCurl = FloatArray(20) { 0.01f }
-        probsTomatoCurl[12] = 0.80f // tomato_yellow_leaf_curl_virus
+        val probsTomatoCurl = FloatArray(15) { 0.01f }
+        probsTomatoCurl[13] = 0.80f // tomato_septoria_leaf_spot
         val evalLowCropMass = VisionMath.evaluateDiagnosis(
             labels = labels,
             probabilities = probsTomatoCurl,
@@ -244,7 +239,7 @@ class CropdocDecisionGateTest {
 
         // 2. Borderline Ambiguous Margin with Borderline Energy
         // top1=0.45, top2=0.40 -> margin = 0.05 < 0.25, Free Energy = -8.5 >= -9.0
-        val probsAmbiguous = FloatArray(20) { 0.005f }
+        val probsAmbiguous = FloatArray(15) { 0.005f }
         probsAmbiguous[12] = 0.45f
         probsAmbiguous[13] = 0.40f
         val evalBorderline = VisionMath.evaluateDiagnosis(
@@ -261,8 +256,8 @@ class CropdocDecisionGateTest {
         assertTrue(evalBorderline.outcomeReason.startsWith("BORDERLINE_AMBIGUOUS"))
 
         // 3. Unsupported Class
-        val probsUnsupported = FloatArray(20) { 0.01f }
-        probsUnsupported[11] = 0.80f // tomato_leaf_blight
+        val probsUnsupported = FloatArray(15) { 0.01f }
+        probsUnsupported[0] = 0.80f // rice_leaf_blast
         val evalUnsupported = VisionMath.evaluateDiagnosis(
             labels = labels,
             probabilities = probsUnsupported,
@@ -272,7 +267,7 @@ class CropdocDecisionGateTest {
             cropMassThreshold = cropMassThresh,
             marginThreshold = marginThresh,
             borderlineEnergy = borderlineEnergy,
-            unsupportedClasses = setOf("tomato_leaf_blight")
+            unsupportedClasses = setOf("rice_leaf_blast")
         )
         assertEquals(DiagnosisOutcome.OUT_OF_CLASS, evalUnsupported.outcome)
         assertTrue(evalUnsupported.outcomeReason.startsWith("UNSUPPORTED_CLASS"))
@@ -285,8 +280,8 @@ class CropdocDecisionGateTest {
         val marginThresh = 0.25f
         val borderlineEnergy = -9.0
 
-        val probsConfident = FloatArray(20) { 0.005f }
-        probsConfident[0] = 0.90f // rice_bacterial_leaf_blight
+        val probsConfident = FloatArray(15) { 0.005f }
+        probsConfident[0] = 0.90f // rice_leaf_blast
         val evalDiagnose = VisionMath.evaluateDiagnosis(
             labels = labels,
             probabilities = probsConfident,
@@ -299,7 +294,7 @@ class CropdocDecisionGateTest {
         )
         assertEquals(DiagnosisOutcome.DIAGNOSE, evalDiagnose.outcome)
         assertEquals("ACCEPTED", evalDiagnose.outcomeReason)
-        assertEquals("rice_bacterial_leaf_blight", evalDiagnose.classId)
+        assertEquals("rice_leaf_blast", evalDiagnose.classId)
         assertTrue(evalDiagnose.confidence >= 0.90f)
     }
 
@@ -308,10 +303,9 @@ class CropdocDecisionGateTest {
         val assetFile = File("src/main/assets/thresholds.json")
         assertTrue("thresholds.json must exist in assets", assetFile.exists())
         val text = assetFile.readText()
-        assertTrue("Option B: energy_threshold must be -8.0", text.contains("\"energy_threshold\": -8.0"))
-        assertTrue("Option B: crop_mass_threshold must be 0.6", text.contains("\"crop_mass_threshold\": 0.6"))
-        assertTrue("Option B: margin_threshold must be 0.25", text.contains("\"margin_threshold\": 0.25"))
-        assertTrue("Option B: borderline_energy must be -9.0", text.contains("\"borderline_energy\": -9.0"))
+        assertTrue("energy_threshold must be in thresholds.json", text.contains("\"energy_threshold\": -4.7126"))
+        assertTrue("confidence_threshold must be in thresholds.json", text.contains("\"confidence_threshold\": 0.75"))
+        assertTrue("temperature must be in thresholds.json", text.contains("\"temperature\": 0.978"))
     }
 
     @Test

@@ -1,87 +1,57 @@
 {
-  "backend": "XNNPACK",
-  "input_shape": [
-    1,
-    3,
-    512,
-    512
-  ],
-  "output_shape": [
-    1,
-    20
-  ],
-  "tolerance": 0.001,
   "samples_tested": 10,
+  "max_error_across_all_samples": 2.480144257743788e-07,
+  "gate_threshold": 0.001,
   "all_pass": true,
-  "results": [
+  "records": [
     {
-      "image": "maize_northern_leaf_blight/000084_Corn_Corn_Blight (1143).jpg",
-      "true_class": "maize_northern_leaf_blight",
-      "max_absolute_error": 2.1457672119140625e-05,
-      "mean_absolute_error": 1.0485947314009536e-05,
+      "sample_id": 1,
+      "max_abs_error": 2.299992451770816e-07,
       "pass": true
     },
     {
-      "image": "maize_healthy/000081_Corn_Corn_Health (132).jpg",
-      "true_class": "maize_healthy",
-      "max_absolute_error": 1.430511474609375e-05,
-      "mean_absolute_error": 5.3100288823770825e-06,
+      "sample_id": 2,
+      "max_abs_error": 1.03150474606295e-07,
       "pass": true
     },
     {
-      "image": "maize_northern_leaf_blight/000167_Corn_Corn_Blight (294).jpg",
-      "true_class": "maize_northern_leaf_blight",
-      "max_absolute_error": 1.1444091796875e-05,
-      "mean_absolute_error": 4.506111054070061e-06,
+      "sample_id": 3,
+      "max_abs_error": 2.2408676292329233e-07,
       "pass": true
     },
     {
-      "image": "maize_healthy/000042_Corn_Corn_Health (1098).jpg",
-      "true_class": "maize_healthy",
-      "max_absolute_error": 2.4318695068359375e-05,
-      "mean_absolute_error": 7.603689937241143e-06,
+      "sample_id": 4,
+      "max_abs_error": 1.6094991345250165e-07,
       "pass": true
     },
     {
-      "image": "chilli_healthy/000370_Healthy Leaf00370.jpg",
-      "true_class": "chilli_healthy",
-      "max_absolute_error": 1.9073486328125e-05,
-      "mean_absolute_error": 5.173683348402847e-06,
+      "sample_id": 5,
+      "max_abs_error": 2.313487512672907e-07,
       "pass": true
     },
     {
-      "image": "maize_healthy/000412_Corn_Corn_Health (813).jpg",
-      "true_class": "maize_healthy",
-      "max_absolute_error": 1.1444091796875e-05,
-      "mean_absolute_error": 5.161762146599358e-06,
+      "sample_id": 6,
+      "max_abs_error": 2.0059297112240415e-07,
       "pass": true
     },
     {
-      "image": "rice_bacterial_leaf_blight/000616_Rice_IMG_20231014_173723.jpg",
-      "true_class": "rice_bacterial_leaf_blight",
-      "max_absolute_error": 9.059906005859375e-06,
-      "mean_absolute_error": 3.991276116721565e-06,
+      "sample_id": 7,
+      "max_abs_error": 2.480144257743788e-07,
       "pass": true
     },
     {
-      "image": "cotton_bacterial_blight/000321_Cotton_bact393.jpg",
-      "true_class": "cotton_bacterial_blight",
-      "max_absolute_error": 3.147125244140625e-05,
-      "mean_absolute_error": 8.031725883483887e-06,
+      "sample_id": 8,
+      "max_abs_error": 1.904498052596182e-07,
       "pass": true
     },
     {
-      "image": "maize_northern_leaf_blight/000189_Corn_Corn_Blight (325).jpg",
-      "true_class": "maize_northern_leaf_blight",
-      "max_absolute_error": 5.7220458984375e-06,
-      "mean_absolute_error": 2.6941299893223913e-06,
+      "sample_id": 9,
+      "max_abs_error": 1.7079962710830898e-07,
       "pass": true
     },
     {
-      "image": "rice_healthy/000353_Rice_aug_0_8846.jpg",
-      "true_class": "rice_healthy",
-      "max_absolute_error": 1.0013580322265625e-05,
-      "mean_absolute_error": 3.909319730155403e-06,
+      "sample_id": 10,
+      "max_abs_error": 1.9137990481254974e-07,
       "pass": true
     }
   ]
