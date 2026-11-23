@@ -13,23 +13,39 @@ class AndroidSqlitePassageDatabase(context: Context) :
 
     companion object {
         const val DB_NAME = "cropdoctor_passages.db"
-        const val DB_VERSION = 1
+        const val DB_VERSION = 2
         private const val TABLE_FTS = "passages_fts"
     }
 
     override fun onCreate(db: SQLiteDatabase) {
-        db.execSQL(
-            """
-            CREATE VIRTUAL TABLE IF NOT EXISTS $TABLE_FTS USING fts5(
-                id UNINDEXED,
-                class_id,
-                section,
-                language,
-                text,
-                source
-            );
-            """.trimIndent()
-        )
+        try {
+            db.execSQL(
+                """
+                CREATE VIRTUAL TABLE IF NOT EXISTS $TABLE_FTS USING fts5(
+                    id UNINDEXED,
+                    class_id,
+                    section,
+                    language,
+                    text,
+                    source
+                );
+                """.trimIndent()
+            )
+        } catch (e: Exception) {
+            // Fallback to standard FTS4 if FTS5 module is not available in OEM SQLite build
+            db.execSQL(
+                """
+                CREATE VIRTUAL TABLE IF NOT EXISTS $TABLE_FTS USING fts4(
+                    id,
+                    class_id,
+                    section,
+                    language,
+                    text,
+                    source
+                );
+                """.trimIndent()
+            )
+        }
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
@@ -119,10 +135,17 @@ class AndroidSqlitePassageDatabase(context: Context) :
         if (cleanTokens.isNotEmpty()) {
             val ftsQuery = cleanTokens.joinToString(" OR ") { if (it.length >= 4) "$it*" else it }
             try {
-                val cursor = db.rawQuery(
-                    "SELECT id, class_id, section, language, text, source FROM $TABLE_FTS WHERE class_id = ? AND language = ? AND $TABLE_FTS MATCH ? ORDER BY rank LIMIT ?",
-                    arrayOf(detectedClass, language, ftsQuery, limit.toString())
-                )
+                val cursor = try {
+                    db.rawQuery(
+                        "SELECT id, class_id, section, language, text, source FROM $TABLE_FTS WHERE class_id = ? AND language = ? AND $TABLE_FTS MATCH ? ORDER BY rank LIMIT ?",
+                        arrayOf(detectedClass, language, ftsQuery, limit.toString())
+                    )
+                } catch (_: Exception) {
+                    db.rawQuery(
+                        "SELECT id, class_id, section, language, text, source FROM $TABLE_FTS WHERE class_id = ? AND language = ? AND $TABLE_FTS MATCH ? LIMIT ?",
+                        arrayOf(detectedClass, language, ftsQuery, limit.toString())
+                    )
+                }
                 cursor.use { c ->
                     while (c.moveToNext()) {
                         val p = Passage(
