@@ -95,6 +95,21 @@ def validate_kb(kb_path):
         
         if item.get("needs_expert_review") is not True:
             errors.append(f"{cid}: 'needs_expert_review' must be True")
+
+        # Task KB15: Provenance and source verification
+        src = item.get("source")
+        surl = item.get("source_url")
+        sdate = item.get("date_read")
+        if not src or not str(src).strip():
+            # Entries without a source must show "Advice not available, ask an extension officer"
+            immed_en = item.get("immediate_step", {}).get("en", "")
+            if "Advice not available, ask an extension officer" not in immed_en and "Advice for this problem is not available yet" not in immed_en:
+                errors.append(f"{cid}: entry without source must show 'Advice not available, ask an extension officer'")
+        else:
+            if not surl or not str(surl).startswith("http"):
+                errors.append(f"{cid}: source present but missing valid 'source_url' ({surl})")
+            if not sdate or not re.match(r"^\d{4}-\d{2}-\d{2}$", str(sdate)):
+                errors.append(f"{cid}: source present but missing valid 'date_read' YYYY-MM-DD ({sdate})")
             
         # Names
         check_localized_text(item.get("names"), f"{cid}.names", errors)
