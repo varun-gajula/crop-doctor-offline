@@ -1,6 +1,42 @@
 # Project Progress - Crop Doctor Offline
 
-## Current Status: Task VOICE Complete (Offline Speech Recognition via Vosk, Zero-Internet, Rule H15 Memory Decoupling & Multilingual Benchmark)
+## Current Status: Task AUTO Complete (Direct Leaf Scan, Fail-Closed Decision Engine, Dynamic Crop Mask Rerun & Wrong-Crop Error Evaluation)
+
+### Done in Task AUTO: Automatic Crop Detection & Decision Engine (PS1, Rules H1, H3, H5, H8, H11, H15)
+1. **Direct Leaf Scanning & Dynamic Crop Mass (Requirements 1 & 2)**:
+   - "Scan leaf" on `HomeScreen` opens `MainCameraScreen` directly without requiring pre-selection of crop (`selectedCrop = null`).
+   - Dynamic crop detection from model's top class using generic prefix extraction (`label.substringBefore("_")`), excluding `weeds_not_a_crop` and `other_not_a_crop`. Compatible with present 20-class and future 15-class models without code changes.
+   - Implemented `CropMapping.computeCropMasses(labels, probabilities)` summing class probabilities per crop family.
+2. **Fail-Closed Auto Decision Rules (Requirement 2 & Rule H11)**:
+   - Implemented `VisionMath.evaluateDiagnosisAuto()` enforcing fail-closed gates with thresholds from `thresholds.json`:
+     - `CANT_TELL` (`NOT_A_CROP`) if top class is `weeds_not_a_crop`, `other_not_a_crop`, or has no crop mapping.
+     - `CANT_TELL` (`HIGH_FREE_ENERGY`) if `freeEnergy > energyThreshold` (-8.0).
+     - `CANT_TELL` (`LOW_CROP_MASS`) if top crop's aggregated probability mass < `autoCropMassThreshold` (0.60).
+     - `CANT_TELL` (`CROSS_CROP_MARGIN`) if top-2 classes belong to different crops and `margin < autoMarginThreshold` (0.25).
+     - `CANT_TELL` (`LOW_CONFIDENCE`) if top-1 probability < class or default threshold (0.3434).
+     - `CANT_TELL` (`LEAF_VALIDATOR_FAIL`) if plant pixel fraction validation fails.
+3. **UI Integration & Crop Mask Override Dialog (Requirement 3 & 5)**:
+   - Added multilingual strings in 3 languages (`values/`, `values-te/`, `values-hi/`):
+     - `detected_crop_format`: "Detected crop: %s" / "గుర్తించిన పంట: %s" / "पहचानी गई फसल: %s"
+     - `change_chip`: "Change" / "మార్చండి" / "बदलें"
+     - `select_crop_dialog_title`: "Select Crop" / "పంటను ఎంచుకోండి" / "फसल चुनें"
+   - On `ResultScreen`, displays `"🌱 " + detected_crop_format` with an interactive "Change" chip.
+   - Tapping "Change" opens `CropPickerDialog` reusing the 5 verified crop tiles (Rice, Cotton, Chilli, Tomato, Maize).
+   - Selecting a new crop reruns diagnosis with that crop as a mask using existing P3/P4 `evaluateDiagnosis` logic.
+4. **Empirical Wrong-Crop Error Evaluation (Requirement 4 & Rule H3)**:
+   - Measured with `tools/eval_decision.py` on 298 probe photos across 5 benchmark probe sets (`supported`, `unsupported`, `othercrop`, `nocrop`, `screen`).
+   - Detailed logs and comparisons saved to `benchmarks/auto_wrong_crop_comparison.md` and `benchmarks/auto_wrong_crop_stats.json`.
+   - **Key Finding**: On crop leaves (`supported` + `unsupported` + `screen` = 220 photos), Picker mode produced **0 wrong-crop errors (0.0%)**, whereas Auto detection produced **22 wrong-crop errors (10.0%)**, particularly on unmodeled diseases (`unsupported`: 19 wrong-crop errors).
+   - Recommended keeping the Crop Picker as an available/default flow, with Auto providing the immediate "Change" chip to allow farmers to easily correct false auto-classifications.
+5. **Testing & Security Compliance (Rule H1, H14)**:
+   - Created `AutoDecisionTest.kt` with 12 comprehensive unit test cases testing every outcome reason, every threshold key in `thresholds.json`, dynamic crop prefixing, crop mass computation, and masked picker override.
+   - All **168 unit tests pass** (`./gradlew.bat testDebugUnitTest` BUILD SUCCESSFUL).
+   - Clean APK build (`./gradlew.bat assembleDebug` BUILD SUCCESSFUL).
+   - Zero `INTERNET` permissions verified via `aapt2 dump permissions`:
+     `uses-permission: name='android.permission.CAMERA'`
+     `uses-permission: name='android.permission.RECORD_AUDIO'`
+
+---
 
 ### Done in Task VOICE: Offline Voice Questions for Chat (PS1, Rules H1, H3, H6, H8, H15)
 1. **Model Verification & Sourcing (Apache 2.0 Licenced)**:

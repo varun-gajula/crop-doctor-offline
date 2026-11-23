@@ -128,7 +128,7 @@ class MainActivity : ComponentActivity() {
                     var currentScreen by remember { mutableStateOf(initialScreen) }
                     var previousScreen by remember { mutableStateOf(initialScreen) }
 
-                    var selectedCrop by remember { mutableStateOf("rice") }
+                    var selectedCrop by remember { mutableStateOf<String?>(null) }
                     var classifierResult by remember { mutableStateOf<ClassifierResult?>(null) }
                     var activeKbEntry by remember { mutableStateOf<KbEntry?>(null) }
                     var selectedDetailEntry by remember { mutableStateOf<KbEntry?>(null) }
@@ -208,7 +208,7 @@ class MainActivity : ComponentActivity() {
                     BackHandler(enabled = currentScreen != AppScreen.HOME && currentScreen != AppScreen.FIRST_LAUNCH) {
                         when (currentScreen) {
                             AppScreen.RESULT -> navigateTo(AppScreen.HOME)
-                            AppScreen.CAMERA -> navigateTo(AppScreen.CROP_SELECTION)
+                            AppScreen.CAMERA -> navigateTo(if (selectedCrop != null) AppScreen.CROP_SELECTION else AppScreen.HOME)
                             AppScreen.CROP_SELECTION -> navigateTo(AppScreen.HOME)
                             AppScreen.CROP_GUIDE_SELECT -> navigateTo(AppScreen.HOME)
                             AppScreen.KNOWLEDGE_BASE -> navigateTo(AppScreen.CROP_GUIDE_SELECT)
@@ -991,7 +991,7 @@ class MainActivity : ComponentActivity() {
                                     val kb = KbEntry(
                                         classId = "out_of_class",
                                         index = -1,
-                                        crop = selectedCrop,
+                                        crop = selectedCrop ?: "crop",
                                         type = "out_of_class",
                                         pathogen = "Unsupported / Out of Class",
                                         names = LocalizedText("Out of class", "గుర్తించిన పంట సమస్య కాదు", "समर्थित वर्ग से बाहर"),
@@ -1026,7 +1026,7 @@ class MainActivity : ComponentActivity() {
                                     val kb = KbEntry(
                                         classId = "out_of_class",
                                         index = -1,
-                                        crop = selectedCrop,
+                                        crop = selectedCrop ?: "crop",
                                         type = "out_of_class",
                                         pathogen = "Unsupported / Out of Class",
                                         names = LocalizedText("Out of class", "గుర్తించిన పంట సమస్య కాదు", "समर्थित वर्ग से बाहर"),
@@ -1061,7 +1061,7 @@ class MainActivity : ComponentActivity() {
                                     val kb = KbEntry(
                                         classId = "out_of_class",
                                         index = -1,
-                                        crop = selectedCrop,
+                                        crop = selectedCrop ?: "crop",
                                         type = "out_of_class",
                                         pathogen = "Unsupported / Out of Class",
                                         names = LocalizedText("Out of class", "గుర్తించిన పంట సమస్య కాదు", "समर्थित वर्ग से बाहर"),
@@ -1305,7 +1305,10 @@ class MainActivity : ComponentActivity() {
                         AppScreen.HOME -> {
                             HomeScreen(
                                 language = selectedLanguage,
-                                onScanClick = { navigateTo(AppScreen.CROP_SELECTION) },
+                                onScanClick = {
+                                    selectedCrop = null
+                                    navigateTo(AppScreen.CAMERA)
+                                },
                                 onBrowseDiseasesClick = { navigateTo(AppScreen.CROP_GUIDE_SELECT) },
                                 onFarmingTipsClick = { navigateTo(AppScreen.FARMING_TIPS) },
                                 onChangeLanguageClick = { newLang -> switchLanguage(newLang) },
@@ -1400,7 +1403,7 @@ class MainActivity : ComponentActivity() {
                                         processDiagnosis(bitmap, effectiveCropFilter, metadata = enrichedMeta)
                                     }
                                 },
-                                onBackClick = { navigateTo(AppScreen.CROP_SELECTION) },
+                                onBackClick = { navigateTo(if (selectedCrop != null) AppScreen.CROP_SELECTION else AppScreen.HOME) },
                                 onChangeCropClick = { navigateTo(AppScreen.CROP_SELECTION) },
                                 onChangeLanguageClick = { newLang -> switchLanguage(newLang) }
                             )
@@ -1455,6 +1458,13 @@ class MainActivity : ComponentActivity() {
                                         isGeneratingAdvice = false
                                     },
                                     onChangeCropClick = { navigateTo(AppScreen.CROP_SELECTION) },
+                                    onChangeCropSelected = { newCrop ->
+                                        selectedCrop = newCrop
+                                        val bmp = capturedLeafBitmap
+                                        if (bmp != null && !bmp.isRecycled) {
+                                            processDiagnosis(bmp, cropFilter = newCrop)
+                                        }
+                                    },
                                     onTakeAnotherPhoto = { navigateTo(AppScreen.CAMERA) },
                                     onInstallModelClick = { navigateTo(AppScreen.INSTALL_MODEL) },
                                     advisor = app.getAdvisorIfInitialized(),
@@ -1494,7 +1504,7 @@ class MainActivity : ComponentActivity() {
 
                         AppScreen.KNOWLEDGE_BASE -> {
                             KnowledgeBaseScreen(
-                                crop = selectedCrop,
+                                crop = selectedCrop ?: "rice",
                                 language = selectedLanguage,
                                 onBackClick = { navigateTo(AppScreen.CROP_GUIDE_SELECT) },
                                 onChangeCropClick = { navigateTo(AppScreen.CROP_GUIDE_SELECT) },

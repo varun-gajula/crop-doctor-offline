@@ -76,6 +76,10 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
         private set
     var borderlineEnergy: Double = -9.0
         private set
+    var autoCropMassThreshold: Float = 0.60f
+        private set
+    var autoMarginThreshold: Float = 0.25f
+        private set
     val classThresholds: MutableMap<String, Float> = mutableMapOf()
     val unsupportedClasses: MutableSet<String> = mutableSetOf()
     var isThresholdsLoaded: Boolean = false
@@ -175,10 +179,12 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
                 null
             }
 
-            // Task P4 thresholds (Option B values)
+            // Task P4 & Task AUTO thresholds
             cropMassThreshold = if (json.has("crop_mass_threshold")) json.getDouble("crop_mass_threshold").toFloat() else 0.60f
             marginThreshold = if (json.has("margin_threshold")) json.getDouble("margin_threshold").toFloat() else 0.25f
             borderlineEnergy = if (json.has("borderline_energy")) json.getDouble("borderline_energy") else -9.0
+            autoCropMassThreshold = if (json.has("auto_crop_mass_threshold")) json.getDouble("auto_crop_mass_threshold").toFloat() else cropMassThreshold
+            autoMarginThreshold = if (json.has("auto_margin_threshold")) json.getDouble("auto_margin_threshold").toFloat() else marginThreshold
 
             classThresholds.clear()
             if (json.has("class_thresholds")) {
@@ -454,17 +460,12 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
             val outputTensor = outputs[0].toTensor()
             val rawLogits = outputTensor.dataAsFloatArray
 
-            // 3. Evaluate 20 direct model outputs against labels.json
+            // 3. Evaluate model outputs against labels.json (Task AUTO / Picker)
             val scaledLogits = VisionMath.applyTemperature(rawLogits.take(labels.size).toFloatArray(), temperature)
             val freeEnergy = VisionMath.computeFreeEnergy(scaledLogits, temperature)
             val isFilteredCrop = cropHint != null && cropHint.isNotBlank() && cropHint != "all" && cropHint != "auto"
-            val maskResult = if (isFilteredCrop) {
-                VisionMath.maskAndRenormalizeWithMass(labels, scaledLogits, cropHint)
-            } else {
-                VisionMath.CropMaskResult(VisionMath.softmax(scaledLogits), 1.0f)
-            }
-            val probabilities = maskResult.probabilities
-            val cropMass = maskResult.cropMass
+            val globalProbs = VisionMath.softmax(scaledLogits)
+            val cropMasses = com.cropdoctor.domain.CropMapping.computeCropMasses(labels, globalProbs)
 
             // Gate 1: Leaf Validator (Task P1 & P4)
             val gate1Validation = if (metadata != null) {
@@ -478,21 +479,44 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
             }
             val gate1Pass = gate1Validation.isLikelyCrop
 
-            val eval = VisionMath.evaluateDiagnosis(
-                labels = labels,
-                probabilities = probabilities,
-                thresholds = classThresholds,
-                defaultThreshold = curDefaultThresh,
-                freeEnergy = freeEnergy,
-                energyThreshold = curEnergyThresh,
-                unsupportedClasses = unsupportedClasses,
-                cropMass = cropMass,
-                cropMassThreshold = cropMassThreshold,
-                marginThreshold = marginThreshold,
-                borderlineEnergy = borderlineEnergy,
-                gate1Pass = gate1Pass,
-                leafValidatorReason = gate1Validation.reason
-            )
+            val (eval, effectiveCropMass, detectedCrop) = if (isFilteredCrop) {
+                val maskResult = VisionMath.maskAndRenormalizeWithMass(labels, scaledLogits, cropHint)
+                val probabilities = maskResult.probabilities
+                val cropMass = maskResult.cropMass
+                val res = VisionMath.evaluateDiagnosis(
+                    labels = labels,
+                    probabilities = probabilities,
+                    thresholds = classThresholds,
+                    defaultThreshold = curDefaultThresh,
+                    freeEnergy = freeEnergy,
+                    energyThreshold = curEnergyThresh,
+                    unsupportedClasses = unsupportedClasses,
+                    cropMass = cropMass,
+                    cropMassThreshold = cropMassThreshold,
+                    marginThreshold = marginThreshold,
+                    borderlineEnergy = borderlineEnergy,
+                    gate1Pass = gate1Pass,
+                    leafValidatorReason = gate1Validation.reason
+                )
+                Triple(res, cropMass, cropHint)
+            } else {
+                val res = VisionMath.evaluateDiagnosisAuto(
+                    labels = labels,
+                    probabilities = globalProbs,
+                    thresholds = classThresholds,
+                    defaultThreshold = curDefaultThresh,
+                    freeEnergy = freeEnergy,
+                    energyThreshold = curEnergyThresh,
+                    cropMassThreshold = autoCropMassThreshold,
+                    marginThreshold = autoMarginThreshold,
+                    gate1Pass = gate1Pass,
+                    leafValidatorReason = gate1Validation.reason
+                )
+                val top1Class = res.top3.firstOrNull()?.classId
+                val top1Crop = if (top1Class != null) com.cropdoctor.domain.CropMapping.getCropForClass(top1Class) else null
+                val mass = if (top1Crop != null) cropMasses[top1Crop] ?: 0.0f else 0.0f
+                Triple(res, mass, top1Crop)
+            }
 
             // CROPDOC_DECISION Gate Diagnostic Logging (Task P1 & P4)
             val bitmapConfig = preprocessed.bitmap512.config?.name ?: "UNKNOWN"
@@ -554,13 +578,13 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
                 append("gate2_energy=$gate2Str ")
                 append("gate3_confidence=$gate3Str ")
                 append("gate4_weeds=$gate4Str | ")
-                append("cropMass=${String.format(Locale.US, "%.4f", cropMass)} ")
+                append("cropMass=${String.format(Locale.US, "%.4f", effectiveCropMass)} ")
                 append("margin=${String.format(Locale.US, "%.4f", eval.margin)} | ")
                 append("outcome=${eval.outcome} code=${eval.outcomeReason}")
             }
             Log.i("CROPDOC_DECISION", logDecisionLine)
 
-            Log.e(TAG, "classify(): eval result -> outcome=${eval.outcome}, classId=${eval.classId}, displayName=${eval.displayName}, conf=${eval.confidence}, cropMass=$cropMass, margin=${eval.margin}, top3=${eval.top3.map { "${it.classId}:${String.format("%.3f", it.probability)}" }}")
+            Log.e(TAG, "classify(): eval result -> outcome=${eval.outcome}, classId=${eval.classId}, displayName=${eval.displayName}, conf=${eval.confidence}, cropMass=$effectiveCropMass, margin=${eval.margin}, top3=${eval.top3.map { "${it.classId}:${String.format("%.3f", it.probability)}" }}")
 
             val elapsed = SystemClock.elapsedRealtime() - startTime
             val memoryMb = getProcessMemoryMb()
@@ -591,11 +615,14 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
                 isDemoMode = false,
                 top3 = eval.top3,
                 selectedCrop = if (isFilteredCrop) cropHint else null,
-                cropMass = cropMass,
+                cropMass = effectiveCropMass,
                 outcome = eval.outcome,
                 outcomeReason = eval.outcomeReason,
                 margin = eval.margin,
-                freeEnergy = freeEnergy
+                freeEnergy = freeEnergy,
+                detectedCrop = detectedCrop,
+                isAutoCrop = !isFilteredCrop,
+                cropMassPerCrop = cropMasses
             )
         } catch (e: Throwable) {
             Log.e(TAG, "Vision inference error caught: ${e.message}", e)
@@ -614,7 +641,10 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
                 selectedCrop = cropHint,
                 cropMass = 1.0f,
                 outcome = DiagnosisOutcome.CANT_TELL,
-                outcomeReason = "EXCEPTION: ${e.message}"
+                outcomeReason = "EXCEPTION: ${e.message}",
+                detectedCrop = cropHint,
+                isAutoCrop = cropHint == null,
+                cropMassPerCrop = emptyMap()
             )
         }
     }

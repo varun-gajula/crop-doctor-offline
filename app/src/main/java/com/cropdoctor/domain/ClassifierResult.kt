@@ -43,5 +43,8 @@ data class ClassifierResult(
     val outcome: DiagnosisOutcome = DiagnosisOutcome.DIAGNOSE,
     val outcomeReason: String = "",
     val margin: Float = 0.0f,
-    val freeEnergy: Double = 0.0
+    val freeEnergy: Double = 0.0,
+    val detectedCrop: String? = null,
+    val isAutoCrop: Boolean = false,
+    val cropMassPerCrop: Map<String, Float> = emptyMap()
 )

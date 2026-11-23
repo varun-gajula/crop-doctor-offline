@@ -74,6 +74,7 @@ fun ResultScreen(
     onSaveCaseReport: () -> Unit = {},
     onCancelAdvice: () -> Unit = {},
     onChangeCropClick: () -> Unit = {},
+    onChangeCropSelected: ((String) -> Unit)? = null,
     onTakeAnotherPhoto: () -> Unit = {},
     onInstallModelClick: () -> Unit = {},
     advisor: Advisor? = null,
@@ -106,6 +107,7 @@ fun ResultScreen(
     var showJudgeDialog by remember { mutableStateOf(false) }
     var showMeasurementDetails by remember { mutableStateOf(false) }
     var showHelplineDialog by remember { mutableStateOf(false) }
+    var showCropPickerDialog by remember { mutableStateOf(false) }
 
     // Offline Audio Advisor (Opus clips + TTS fallback + speed control)
     val audioAdvisor = remember { OfflineAudioAdvisor(context) }
@@ -250,6 +252,18 @@ fun ResultScreen(
                     Text(stringResource(R.string.close))
                 }
             }
+        )
+    }
+
+    // Crop Selection Dialog when farmer taps "Change" chip (Task AUTO)
+    if (showCropPickerDialog) {
+        CropPickerDialog(
+            language = language,
+            onCropSelected = { newCrop ->
+                showCropPickerDialog = false
+                onChangeCropSelected?.invoke(newCrop)
+            },
+            onDismiss = { showCropPickerDialog = false }
         )
     }
 
@@ -478,23 +492,59 @@ fun ResultScreen(
                         .fillMaxWidth()
                         .padding(16.dp)
                 ) {
-                    // Crop Badge / Name
+                    // Crop Badge / Name with "Change" chip (Task AUTO Requirement 3)
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween,
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Surface(
-                            shape = RoundedCornerShape(8.dp),
-                            color = Color(0xFFE8F5E9)
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            Text(
-                                text = "🌱 $cropDisplayName",
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = FarmGreenDark,
-                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
-                            )
+                            val cropLabel = if (result.isAutoCrop) {
+                                "🌱 " + stringResource(R.string.detected_crop_format, cropDisplayName)
+                            } else {
+                                "🌱 $cropDisplayName"
+                            }
+                            Surface(
+                                shape = RoundedCornerShape(8.dp),
+                                color = Color(0xFFE8F5E9)
+                            ) {
+                                Text(
+                                    text = cropLabel,
+                                    fontSize = 15.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = FarmGreenDark,
+                                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
+                                )
+                            }
+
+                            Surface(
+                                shape = RoundedCornerShape(8.dp),
+                                color = Color.White,
+                                border = BorderStroke(1.dp, FarmGreenPrimary),
+                                modifier = Modifier.clickable { showCropPickerDialog = true }
+                            ) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Edit,
+                                        contentDescription = stringResource(R.string.change_chip),
+                                        tint = FarmGreenPrimary,
+                                        modifier = Modifier.size(14.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    Text(
+                                        text = stringResource(R.string.change_chip),
+                                        fontSize = 13.sp,
+                                        fontWeight = FontWeight.SemiBold,
+                                        color = FarmGreenPrimary
+                                    )
+                                }
+                            }
                         }
 
                         if (result.outcome == DiagnosisOutcome.DIAGNOSE) {

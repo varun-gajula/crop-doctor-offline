@@ -61,6 +61,9 @@
     <string name="select_crop_title">Select Crop</string>
     <string name="select_crop_sub">Choose your crop before scanning for accurate diagnosis</string>
     <string name="btn_change_crop">Change crop</string>
+    <string name="change_chip">Change</string>
+    <string name="detected_crop_format">Detected crop: %1$s</string>
+    <string name="select_crop_dialog_title">Select crop</string>
     <string name="analyzing_leaf">Analyzing leaf…</string>
 
     <!-- Soft Warning Dialog -->
