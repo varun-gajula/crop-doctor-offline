@@ -1,57 +1,57 @@
 {
   "samples_tested": 10,
-  "max_error_across_all_samples": 2.480144257743788e-07,
+  "max_error_across_all_samples": 2.952428092006798e-07,
   "gate_threshold": 0.001,
   "all_pass": true,
   "records": [
     {
       "sample_id": 1,
-      "max_abs_error": 2.299992451770816e-07,
+      "max_abs_error": 1.9000703233018612e-07,
       "pass": true
     },
     {
       "sample_id": 2,
-      "max_abs_error": 1.03150474606295e-07,
+      "max_abs_error": 1.7870280710763353e-07,
       "pass": true
     },
     {
       "sample_id": 3,
-      "max_abs_error": 2.2408676292329233e-07,
+      "max_abs_error": 1.4097861988915383e-07,
       "pass": true
     },
     {
       "sample_id": 4,
-      "max_abs_error": 1.6094991345250165e-07,
+      "max_abs_error": 2.82578643859277e-07,
       "pass": true
     },
     {
       "sample_id": 5,
-      "max_abs_error": 2.313487512672907e-07,
+      "max_abs_error": 1.8538560042635766e-07,
       "pass": true
     },
     {
       "sample_id": 6,
-      "max_abs_error": 2.0059297112240415e-07,
+      "max_abs_error": 2.312617590760624e-07,
       "pass": true
     },
     {
       "sample_id": 7,
-      "max_abs_error": 2.480144257743788e-07,
+      "max_abs_error": 2.952428092006798e-07,
       "pass": true
     },
     {
       "sample_id": 8,
-      "max_abs_error": 1.904498052596182e-07,
+      "max_abs_error": 1.3499600237665277e-07,
       "pass": true
     },
     {
       "sample_id": 9,
-      "max_abs_error": 1.7079962710830898e-07,
+      "max_abs_error": 2.0706179015839155e-07,
       "pass": true
     },
     {
       "sample_id": 10,
-      "max_abs_error": 1.9137990481254974e-07,
+      "max_abs_error": 2.1741629629978831e-07,
       "pass": true
     }
   ]

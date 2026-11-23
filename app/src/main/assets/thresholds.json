@@ -1,8 +1,17 @@
 {
-  "temperature": 0.978,
+  "calibration_method": "single_scalar_temperature_scaling",
+  "temperature": 0.9433,
   "confidence_threshold": 0.75,
-  "energy_threshold": -4.7126,
-  "status": "CALIBRATED_15CLASS",
-  "nll_before": 0.1159,
-  "nll_after": 0.111
+  "default_threshold": 0.75,
+  "energy_threshold": -4.5866,
+  "crop_mass_threshold": 0.6,
+  "margin_threshold": 0.25,
+  "borderline_energy": -9.0,
+  "energy_method": "free_energy_probe_set_calibration",
+  "nll_before": 0.1153,
+  "nll_after": 0.1012,
+  "threshold_target_precision": 0.9,
+  "target_precision_reached": true,
+  "selection_note": "Option B selected: energy_threshold=-4.5866, crop_mass_threshold=0.60, margin_threshold=0.25, borderline_energy=-9.0",
+  "status": "CALIBRATED_15CLASS_TR4"
 }

@@ -2,7 +2,9 @@ package com.cropdoctor.vision
 
 import com.cropdoctor.domain.CertaintyBand
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.float
 import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import org.junit.Assert.*
 import org.junit.Test
@@ -80,6 +82,20 @@ class ModelClassMapTest {
         }
     }
 
+    private val defaultThreshold: Float
+        get() = try {
+            val file = findAsset("thresholds.json")
+            val obj = Json.parseToJsonElement(file.readText()).jsonObject
+            (obj["default_threshold"] ?: obj["confidence_threshold"])!!.jsonPrimitive.float
+        } catch (_: Exception) { 0.75f }
+
+    private val temperature: Float
+        get() = try {
+            val file = findAsset("thresholds.json")
+            val obj = Json.parseToJsonElement(file.readText()).jsonObject
+            obj["temperature"]!!.jsonPrimitive.float
+        } catch (_: Exception) { 0.9433f }
+
     @Test
     fun testUnsupportedClassesGiveCantTell() {
         val labels = loadLabels()
@@ -93,14 +109,14 @@ class ModelClassMapTest {
             val logits = FloatArray(15) { -5.0f }
             logits[idx] = 10.0f
 
-            val scaledLogits = VisionMath.applyTemperature(logits, 1.3302f)
+            val scaledLogits = VisionMath.applyTemperature(logits, temperature)
             val probs = VisionMath.softmax(scaledLogits)
 
             val eval = VisionMath.evaluateDiagnosis(
                 labels = labels,
                 probabilities = probs,
                 thresholds = emptyMap(),
-                defaultThreshold = 0.4018f,
+                defaultThreshold = defaultThreshold,
                 freeEnergy = -5.0,
                 energyThreshold = null,
                 unsupportedClasses = unsupported
@@ -124,12 +140,12 @@ class ModelClassMapTest {
         val rustLogits = FloatArray(15) { -5.0f }
         rustLogits[rustIdx] = 8.0f
 
-        val rustProbs = VisionMath.softmax(VisionMath.applyTemperature(rustLogits, 1.3302f))
+        val rustProbs = VisionMath.softmax(VisionMath.applyTemperature(rustLogits, temperature))
         val evalRust = VisionMath.evaluateDiagnosis(
             labels = labels,
             probabilities = rustProbs,
             thresholds = emptyMap(),
-            defaultThreshold = 0.4018f,
+            defaultThreshold = defaultThreshold,
             freeEnergy = -5.0,
             energyThreshold = null,
             unsupportedClasses = setOf("other_not_a_crop")
@@ -146,12 +162,12 @@ class ModelClassMapTest {
         val blastLogits = FloatArray(15) { -5.0f }
         blastLogits[blastIdx] = 8.0f
 
-        val blastProbs = VisionMath.softmax(VisionMath.applyTemperature(blastLogits, 1.3302f))
+        val blastProbs = VisionMath.softmax(VisionMath.applyTemperature(blastLogits, temperature))
         val evalBlast = VisionMath.evaluateDiagnosis(
             labels = labels,
             probabilities = blastProbs,
             thresholds = emptyMap(),
-            defaultThreshold = 0.4018f,
+            defaultThreshold = defaultThreshold,
             freeEnergy = -5.0,
             energyThreshold = null,
             unsupportedClasses = setOf("other_not_a_crop")

@@ -4,6 +4,7 @@ import com.cropdoctor.domain.CertaintyBand
 import com.cropdoctor.domain.RulesEngine
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.boolean
+import kotlinx.serialization.json.float
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import org.junit.Assert.*
@@ -78,6 +79,16 @@ class BlockedClassesHonestyTest {
         }
     }
 
+    private val defaultThreshold: Float
+        get() = try {
+            val f = findFile(listOf(
+                "app/src/main/assets/thresholds.json",
+                "src/main/assets/thresholds.json"
+            ))
+            val obj = Json.parseToJsonElement(f.readText()).jsonObject
+            (obj["default_threshold"] ?: obj["confidence_threshold"])!!.jsonPrimitive.float
+        } catch (_: Exception) { 0.75f }
+
     @Test
     fun testSimulatedUnsupportedClassIsTreatedAsCantTell() {
         for (unsupportedClass in unsupportedClassIds) {
@@ -91,7 +102,7 @@ class BlockedClassesHonestyTest {
                 labels = all15Labels,
                 probabilities = probs,
                 thresholds = emptyMap(),
-                defaultThreshold = 0.4018f,
+                defaultThreshold = defaultThreshold,
                 freeEnergy = -5.0,
                 energyThreshold = null,
                 unsupportedClasses = unsupportedClassIds
@@ -114,7 +125,7 @@ class BlockedClassesHonestyTest {
             labels = all15Labels,
             probabilities = probsRice,
             thresholds = emptyMap(),
-            defaultThreshold = 0.4018f,
+            defaultThreshold = defaultThreshold,
             freeEnergy = -5.0,
             energyThreshold = null,
             unsupportedClasses = unsupportedClassIds
@@ -131,7 +142,7 @@ class BlockedClassesHonestyTest {
             labels = all15Labels,
             probabilities = probsTomato,
             thresholds = emptyMap(),
-            defaultThreshold = 0.4018f,
+            defaultThreshold = defaultThreshold,
             freeEnergy = -5.0,
             energyThreshold = null,
             unsupportedClasses = unsupportedClassIds

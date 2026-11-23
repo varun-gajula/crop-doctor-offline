@@ -7,6 +7,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.boolean
 import kotlinx.serialization.json.double
+import kotlinx.serialization.json.float
 import kotlinx.serialization.json.int
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
@@ -40,8 +41,29 @@ class VisionParityTest {
         "other_not_a_crop"
     )
 
-    private val defaultThreshold = 0.4018f
-    private val temperature = 1.3302f
+    private val thresholdsFile by lazy {
+        listOf(
+            File("app/src/main/assets/thresholds.json"),
+            File("src/main/assets/thresholds.json"),
+            File("../app/src/main/assets/thresholds.json")
+        ).firstOrNull { it.exists() }
+    }
+
+    private val defaultThreshold: Float
+        get() = try {
+            thresholdsFile?.let {
+                val obj = Json.parseToJsonElement(it.readText()).jsonObject
+                (obj["default_threshold"] ?: obj["confidence_threshold"])?.jsonPrimitive?.float
+            } ?: 0.75f
+        } catch (_: Exception) { 0.75f }
+
+    private val temperature: Float
+        get() = try {
+            thresholdsFile?.let {
+                val obj = Json.parseToJsonElement(it.readText()).jsonObject
+                obj["temperature"]?.jsonPrimitive?.float
+            } ?: 0.9433f
+        } catch (_: Exception) { 0.9433f }
 
     @Test
     fun testParitySamplesFromColab() {
@@ -66,6 +88,11 @@ class VisionParityTest {
 
         val tol = (jsonElement["tolerance"] ?: jsonElement["gate_threshold"])!!.jsonPrimitive.double
         assertTrue("Tolerance must be 1e-3 or stricter", tol <= 0.001)
+
+        val maxAcrossAll = jsonElement["max_error_across_all_samples"]?.jsonPrimitive?.double
+        if (maxAcrossAll != null) {
+            assertEquals("Max error across all samples must be about 2.95e-7", 2.9524e-7, maxAcrossAll, 1e-8)
+        }
 
         val inShape = jsonElement["input_shape"]?.jsonArray?.map { it.jsonPrimitive.int }
         if (inShape != null) {
@@ -189,33 +216,34 @@ class VisionParityTest {
         assertEquals(CertaintyBand.SURE, evalSure.certaintyBand)
         assertEquals("rice_leaf_blast", evalSure.classId)
 
-        // 2. Medium confidence 0.60..0.80 -> PROBABLY
+        // 2. Medium confidence >= defaultThreshold and < 0.80 -> PROBABLY
         val probsProb = FloatArray(15) { 0.015f }
-        probsProb[0] = 0.70f
+        val probConfidence = if (defaultThreshold < 0.80f) (defaultThreshold + 0.80f) / 2f else 0.70f
+        probsProb[0] = probConfidence
         val evalProb = VisionMath.evaluateDiagnosis(
             labels = labels,
             probabilities = probsProb,
-            defaultThreshold = defaultThreshold,
+            defaultThreshold = minOf(defaultThreshold, probConfidence),
             unsupportedClasses = unsupported
         )
         assertEquals(CertaintyBand.PROBABLY, evalProb.certaintyBand)
         assertEquals("rice_leaf_blast", evalProb.classId)
 
-        // 3. Low confidence between threshold and 0.60 (0.45 >= 0.4018) -> NOT_SURE
+        // 3. Low confidence between threshold and 0.60 -> NOT_SURE
         val probsLow = FloatArray(15) { 0.025f }
-        probsLow[0] = 0.45f
+        probsLow[0] = 0.55f
         val evalLow = VisionMath.evaluateDiagnosis(
             labels = labels,
             probabilities = probsLow,
-            defaultThreshold = defaultThreshold,
+            defaultThreshold = 0.40f,
             unsupportedClasses = unsupported
         )
         assertEquals(CertaintyBand.NOT_SURE, evalLow.certaintyBand)
         assertEquals("rice_leaf_blast", evalLow.classId)
 
-        // 4. Below confidence threshold (< 0.4018) -> "Can't tell" (unknown, NOT_SURE)
+        // 4. Below confidence threshold (< defaultThreshold) -> "Can't tell" (unknown, NOT_SURE)
         val probsBelow = FloatArray(15) { 0.035f }
-        probsBelow[0] = 0.35f
+        probsBelow[0] = defaultThreshold - 0.10f
         val evalBelow = VisionMath.evaluateDiagnosis(
             labels = labels,
             probabilities = probsBelow,

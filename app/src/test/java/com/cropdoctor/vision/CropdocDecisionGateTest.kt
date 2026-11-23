@@ -2,13 +2,51 @@ package com.cropdoctor.vision
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.io.File
 import java.util.Locale
 import com.cropdoctor.domain.DiagnosisOutcome
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.double
+import kotlinx.serialization.json.float
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 
 class CropdocDecisionGateTest {
+
+    private fun findAsset(name: String): File {
+        val candidates = listOf(
+            File("app/src/main/assets/$name"),
+            File("src/main/assets/$name"),
+            File("../app/src/main/assets/$name")
+        )
+        val f = candidates.firstOrNull { it.exists() }
+        assertNotNull("Could not find asset $name", f)
+        return f!!
+    }
+
+    private val thresholdsJson by lazy {
+        val file = findAsset("thresholds.json")
+        Json.parseToJsonElement(file.readText()).jsonObject
+    }
+
+    private val defaultThreshold: Float
+        get() = (thresholdsJson["default_threshold"] ?: thresholdsJson["confidence_threshold"])!!.jsonPrimitive.float
+
+    private val energyThreshold: Double
+        get() = thresholdsJson["energy_threshold"]!!.jsonPrimitive.double
+
+    private val cropMassThreshold: Float
+        get() = thresholdsJson["crop_mass_threshold"]!!.jsonPrimitive.float
+
+    private val marginThreshold: Float
+        get() = thresholdsJson["margin_threshold"]!!.jsonPrimitive.float
+
+    private val borderlineEnergy: Double
+        get() = thresholdsJson["borderline_energy"]!!.jsonPrimitive.double
 
     private val labels = listOf(
         "rice_leaf_blast",
@@ -28,7 +66,6 @@ class CropdocDecisionGateTest {
         "other_not_a_crop"
     )
 
-    private val defaultThreshold = 0.4018f
     private val unsupportedClasses = setOf("other_not_a_crop")
 
     @Test
@@ -49,12 +86,12 @@ class CropdocDecisionGateTest {
 
     @Test
     fun testGate2EnergyRejectionWhenEnergyThresholdSet() {
-        val energyThreshold = -9.3050
-        val freeEnergyAbove = -5.0 // -5.0 > -9.3050 -> OOD
-        val freeEnergyNormal = -12.0 // -12.0 <= -9.3050 -> In distribution
+        val energyThresh = energyThreshold
+        val freeEnergyAbove = energyThresh + 1.0 // above threshold -> OOD
+        val freeEnergyNormal = energyThresh - 2.0 // below threshold -> In distribution
 
-        val isOOD = freeEnergyAbove > energyThreshold
-        val isNotOOD = freeEnergyNormal > energyThreshold
+        val isOOD = freeEnergyAbove > energyThresh
+        val isNotOOD = freeEnergyNormal > energyThresh
 
         assertTrue(isOOD)
         assertFalse(isNotOOD)
@@ -124,7 +161,7 @@ class CropdocDecisionGateTest {
         val freeEnergy = -5.1234
         val top1Class = "rice_leaf_blast"
         val top1Prob = 0.9250f
-        val thresh = 0.4018f
+        val thresh = defaultThreshold
 
         val logLine = buildString {
             append("CROPDOC_DECISION: ")
@@ -151,10 +188,10 @@ class CropdocDecisionGateTest {
 
     @Test
     fun testTaskP4ThreeClearOutcomes_CantTell() {
-        val energyThresh = -8.0
-        val cropMassThresh = 0.60f
-        val marginThresh = 0.25f
-        val borderlineEnergy = -9.0
+        val energyThresh = energyThreshold
+        val cropMassThresh = cropMassThreshold
+        val marginThresh = marginThreshold
+        val borderlineEnergyVal = borderlineEnergy
 
         // 1. Gate 1 fail (not a leaf)
         val evalGate1Fail = VisionMath.evaluateDiagnosis(
@@ -166,7 +203,7 @@ class CropdocDecisionGateTest {
             energyThreshold = energyThresh,
             cropMassThreshold = cropMassThresh,
             marginThreshold = marginThresh,
-            borderlineEnergy = borderlineEnergy
+            borderlineEnergy = borderlineEnergyVal
         )
         assertEquals(DiagnosisOutcome.CANT_TELL, evalGate1Fail.outcome)
         assertTrue(evalGate1Fail.outcomeReason.startsWith("LEAF_VALIDATOR_FAIL"))
@@ -181,7 +218,7 @@ class CropdocDecisionGateTest {
             energyThreshold = energyThresh,
             cropMassThreshold = cropMassThresh,
             marginThreshold = marginThresh,
-            borderlineEnergy = borderlineEnergy
+            borderlineEnergy = borderlineEnergyVal
         )
         assertEquals(DiagnosisOutcome.CANT_TELL, evalWeeds.outcome)
         assertEquals("GLOBAL_TOP1_WEEDS", evalWeeds.outcomeReason)
@@ -190,11 +227,11 @@ class CropdocDecisionGateTest {
         val evalHighEnergy = VisionMath.evaluateDiagnosis(
             labels = labels,
             probabilities = FloatArray(15) { if (it == 0) 0.90f else 0.005f },
-            freeEnergy = -6.5, // -6.5 > -8.0
+            freeEnergy = energyThresh + 1.0, // above energy threshold -> OOD
             energyThreshold = energyThresh,
             cropMassThreshold = cropMassThresh,
             marginThreshold = marginThresh,
-            borderlineEnergy = borderlineEnergy
+            borderlineEnergy = borderlineEnergyVal
         )
         assertEquals(DiagnosisOutcome.CANT_TELL, evalHighEnergy.outcome)
         assertTrue(evalHighEnergy.outcomeReason.startsWith("HIGH_FREE_ENERGY"))
@@ -203,12 +240,12 @@ class CropdocDecisionGateTest {
         val evalLowConf = VisionMath.evaluateDiagnosis(
             labels = labels,
             probabilities = FloatArray(15) { 0.02f },
-            defaultThreshold = 0.3434f,
+            defaultThreshold = defaultThreshold,
             freeEnergy = -15.0,
             energyThreshold = energyThresh,
             cropMassThreshold = cropMassThresh,
             marginThreshold = marginThresh,
-            borderlineEnergy = borderlineEnergy
+            borderlineEnergy = borderlineEnergyVal
         )
         assertEquals(DiagnosisOutcome.CANT_TELL, evalLowConf.outcome)
         assertTrue(evalLowConf.outcomeReason.startsWith("LOW_INCROP_CONFIDENCE"))
@@ -216,10 +253,10 @@ class CropdocDecisionGateTest {
 
     @Test
     fun testTaskP4ThreeClearOutcomes_OutOfClass() {
-        val energyThresh = -8.0
-        val cropMassThresh = 0.60f
-        val marginThresh = 0.25f
-        val borderlineEnergy = -9.0
+        val energyThresh = energyThreshold
+        val cropMassThresh = cropMassThreshold
+        val marginThresh = marginThreshold
+        val borderlineEnergyVal = borderlineEnergy
 
         // 1. Low Crop Mass (e.g. wrong crop selected: model gave only 8% mass to selected crop)
         val probsTomatoCurl = FloatArray(15) { 0.01f }
@@ -229,28 +266,28 @@ class CropdocDecisionGateTest {
             probabilities = probsTomatoCurl,
             freeEnergy = -15.0,
             energyThreshold = energyThresh,
-            cropMass = 0.08f, // 0.08 < 0.60
+            cropMass = 0.08f, // 0.08 < cropMassThresh (0.60)
             cropMassThreshold = cropMassThresh,
             marginThreshold = marginThresh,
-            borderlineEnergy = borderlineEnergy
+            borderlineEnergy = borderlineEnergyVal
         )
         assertEquals(DiagnosisOutcome.OUT_OF_CLASS, evalLowCropMass.outcome)
         assertTrue(evalLowCropMass.outcomeReason.startsWith("LOW_CROP_MASS"))
 
         // 2. Borderline Ambiguous Margin with Borderline Energy
-        // top1=0.45, top2=0.40 -> margin = 0.05 < 0.25, Free Energy = -8.5 >= -9.0
+        // top1=0.45, top2=0.40 -> margin = 0.05 < marginThresh (0.25), Free Energy = -8.5 >= borderlineEnergyVal (-9.0)
         val probsAmbiguous = FloatArray(15) { 0.005f }
         probsAmbiguous[12] = 0.45f
         probsAmbiguous[13] = 0.40f
         val evalBorderline = VisionMath.evaluateDiagnosis(
             labels = labels,
             probabilities = probsAmbiguous,
-            freeEnergy = -8.5,
+            freeEnergy = borderlineEnergyVal + 0.5,
             energyThreshold = energyThresh,
             cropMass = 0.85f,
             cropMassThreshold = cropMassThresh,
             marginThreshold = marginThresh,
-            borderlineEnergy = borderlineEnergy
+            borderlineEnergy = borderlineEnergyVal
         )
         assertEquals(DiagnosisOutcome.OUT_OF_CLASS, evalBorderline.outcome)
         assertTrue(evalBorderline.outcomeReason.startsWith("BORDERLINE_AMBIGUOUS"))
@@ -266,7 +303,7 @@ class CropdocDecisionGateTest {
             cropMass = 0.90f,
             cropMassThreshold = cropMassThresh,
             marginThreshold = marginThresh,
-            borderlineEnergy = borderlineEnergy,
+            borderlineEnergy = borderlineEnergyVal,
             unsupportedClasses = setOf("rice_leaf_blast")
         )
         assertEquals(DiagnosisOutcome.OUT_OF_CLASS, evalUnsupported.outcome)
@@ -275,37 +312,47 @@ class CropdocDecisionGateTest {
 
     @Test
     fun testTaskP4ThreeClearOutcomes_Diagnose() {
-        val energyThresh = -8.0
-        val cropMassThresh = 0.60f
-        val marginThresh = 0.25f
-        val borderlineEnergy = -9.0
+        val energyThresh = energyThreshold
+        val cropMassThresh = cropMassThreshold
+        val marginThresh = marginThreshold
+        val borderlineEnergyVal = borderlineEnergy
 
         val probsConfident = FloatArray(15) { 0.005f }
-        probsConfident[0] = 0.90f // rice_leaf_blast
+        probsConfident[0] = 0.90f // rice_leaf_blast (0.90 >= defaultThreshold 0.75)
         val evalDiagnose = VisionMath.evaluateDiagnosis(
             labels = labels,
             probabilities = probsConfident,
-            freeEnergy = -16.5,
+            freeEnergy = energyThresh - 5.0, // well in-distribution
             energyThreshold = energyThresh,
             cropMass = 0.95f,
             cropMassThreshold = cropMassThresh,
             marginThreshold = marginThresh,
-            borderlineEnergy = borderlineEnergy
+            borderlineEnergy = borderlineEnergyVal
         )
         assertEquals(DiagnosisOutcome.DIAGNOSE, evalDiagnose.outcome)
         assertEquals("ACCEPTED", evalDiagnose.outcomeReason)
         assertEquals("rice_leaf_blast", evalDiagnose.classId)
-        assertTrue(evalDiagnose.confidence >= 0.90f)
+        assertTrue(evalDiagnose.confidence >= defaultThreshold)
     }
 
     @Test
     fun testTaskP4OptionBThresholdValuesInAssets() {
-        val assetFile = File("src/main/assets/thresholds.json")
+        val assetFile = findAsset("thresholds.json")
         assertTrue("thresholds.json must exist in assets", assetFile.exists())
-        val text = assetFile.readText()
-        assertTrue("energy_threshold must be in thresholds.json", text.contains("\"energy_threshold\": -4.7126"))
-        assertTrue("confidence_threshold must be in thresholds.json", text.contains("\"confidence_threshold\": 0.75"))
-        assertTrue("temperature must be in thresholds.json", text.contains("\"temperature\": 0.978"))
+        val json = thresholdsJson
+        assertTrue("energy_threshold must be in thresholds.json", json.containsKey("energy_threshold"))
+        assertTrue("confidence_threshold must be in thresholds.json", json.containsKey("confidence_threshold"))
+        assertTrue("temperature must be in thresholds.json", json.containsKey("temperature"))
+        assertTrue("crop_mass_threshold must be in thresholds.json", json.containsKey("crop_mass_threshold"))
+        assertTrue("margin_threshold must be in thresholds.json", json.containsKey("margin_threshold"))
+        assertTrue("borderline_energy must be in thresholds.json", json.containsKey("borderline_energy"))
+
+        assertEquals(energyThreshold, json["energy_threshold"]!!.jsonPrimitive.double, 0.001)
+        assertEquals(defaultThreshold.toDouble(), json["confidence_threshold"]!!.jsonPrimitive.double, 0.001)
+        assertEquals(0.9433, json["temperature"]!!.jsonPrimitive.double, 0.001)
+        assertEquals(cropMassThreshold.toDouble(), json["crop_mass_threshold"]!!.jsonPrimitive.double, 0.001)
+        assertEquals(marginThreshold.toDouble(), json["margin_threshold"]!!.jsonPrimitive.double, 0.001)
+        assertEquals(borderlineEnergy, json["borderline_energy"]!!.jsonPrimitive.double, 0.001)
     }
 
     @Test

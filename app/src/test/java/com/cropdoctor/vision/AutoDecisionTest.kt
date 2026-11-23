@@ -5,6 +5,7 @@ import com.cropdoctor.domain.CropMapping
 import com.cropdoctor.domain.DiagnosisOutcome
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.double
+import kotlinx.serialization.json.float
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import org.junit.Assert.assertEquals
@@ -19,6 +20,34 @@ import java.io.File
  * fail-closed gates, thresholds, and outcome handling.
  */
 class AutoDecisionTest {
+
+    private fun findAsset(name: String): File {
+        val candidates = listOf(
+            File("app/src/main/assets/$name"),
+            File("src/main/assets/$name"),
+            File("../app/src/main/assets/$name")
+        )
+        val f = candidates.firstOrNull { it.exists() }
+        assertNotNull("Could not find asset $name", f)
+        return f!!
+    }
+
+    private val thresholdsJson by lazy {
+        val file = findAsset("thresholds.json")
+        Json.parseToJsonElement(file.readText()).jsonObject
+    }
+
+    private val defaultThreshold: Float
+        get() = (thresholdsJson["default_threshold"] ?: thresholdsJson["confidence_threshold"])!!.jsonPrimitive.float
+
+    private val energyThreshold: Double
+        get() = thresholdsJson["energy_threshold"]!!.jsonPrimitive.double
+
+    private val cropMassThreshold: Float
+        get() = thresholdsJson["crop_mass_threshold"]!!.jsonPrimitive.float
+
+    private val marginThreshold: Float
+        get() = thresholdsJson["margin_threshold"]!!.jsonPrimitive.float
 
     private val labels = listOf(
         "rice_leaf_blast",
@@ -38,26 +67,27 @@ class AutoDecisionTest {
         "other_not_a_crop"
     )
 
-    private val defaultThreshold = 0.3434087f
-    private val energyThreshold = -8.0
-    private val cropMassThreshold = 0.60f
-    private val marginThreshold = 0.25f
-
     @Test
     fun testThresholdsJsonKeyPresenceAndValues() {
-        val thresholdsFile = File("src/main/assets/thresholds.json")
+        val thresholdsFile = findAsset("thresholds.json")
         assertTrue("thresholds.json must exist in assets", thresholdsFile.exists())
-        val json = Json.parseToJsonElement(thresholdsFile.readText()).jsonObject
+        val json = thresholdsJson
 
         assertTrue("Must contain default_threshold or confidence_threshold",
             json.containsKey("default_threshold") || json.containsKey("confidence_threshold"))
         assertTrue("Must contain energy_threshold", json.containsKey("energy_threshold"))
+        assertTrue("Must contain crop_mass_threshold", json.containsKey("crop_mass_threshold"))
+        assertTrue("Must contain margin_threshold", json.containsKey("margin_threshold"))
 
         val defThresh = (json["default_threshold"] ?: json["confidence_threshold"])?.jsonPrimitive?.double ?: 0.0
         val eThresh = json["energy_threshold"]?.jsonPrimitive?.double ?: 0.0
+        val cmThresh = json["crop_mass_threshold"]?.jsonPrimitive?.double ?: 0.0
+        val mThresh = json["margin_threshold"]?.jsonPrimitive?.double ?: 0.0
 
         assertTrue("Confidence threshold should be between 0.2 and 0.8", defThresh in 0.2..0.8)
         assertTrue("Energy threshold should be negative", eThresh < 0.0)
+        assertTrue("Crop mass threshold should be >= 0.5", cmThresh >= 0.5)
+        assertTrue("Margin threshold should be >= 0.1", mThresh >= 0.1)
     }
 
     @Test
@@ -113,7 +143,7 @@ class AutoDecisionTest {
             labels = labels,
             probabilities = probs,
             defaultThreshold = defaultThreshold,
-            freeEnergy = -5.0, // -5.0 > -8.0 -> OOD
+            freeEnergy = energyThreshold + 2.0, // above energy threshold -> OOD
             energyThreshold = energyThreshold,
             cropMassThreshold = cropMassThreshold,
             marginThreshold = marginThreshold,
@@ -128,7 +158,7 @@ class AutoDecisionTest {
     @Test
     fun testLowConfidenceBelowThresholdGivesCantTell() {
         val probs = FloatArray(labels.size) { 0.04f }
-        probs[0] = 0.20f // 0.20 < 0.3434
+        probs[0] = defaultThreshold / 2.0f // strictly below threshold
 
         val eval = VisionMath.evaluateDiagnosisAuto(
             labels = labels,
@@ -159,7 +189,7 @@ class AutoDecisionTest {
         val eval = VisionMath.evaluateDiagnosisAuto(
             labels = labels,
             probabilities = probs,
-            defaultThreshold = defaultThreshold,
+            defaultThreshold = 0.35f, // isolate crop mass gate
             freeEnergy = -12.0,
             energyThreshold = energyThreshold,
             cropMassThreshold = cropMassThreshold,
@@ -185,7 +215,7 @@ class AutoDecisionTest {
         val eval = VisionMath.evaluateDiagnosisAuto(
             labels = labels,
             probabilities = probs,
-            defaultThreshold = defaultThreshold,
+            defaultThreshold = 0.35f, // isolate cross-crop margin gate
             freeEnergy = -12.0,
             energyThreshold = energyThreshold,
             cropMassThreshold = cropMassThreshold,
@@ -211,7 +241,7 @@ class AutoDecisionTest {
         val eval = VisionMath.evaluateDiagnosisAuto(
             labels = labels,
             probabilities = probs,
-            defaultThreshold = defaultThreshold,
+            defaultThreshold = 0.35f, // isolate same-crop margin gate
             freeEnergy = -12.0,
             energyThreshold = energyThreshold,
             cropMassThreshold = cropMassThreshold,
@@ -281,7 +311,7 @@ class AutoDecisionTest {
     @Test
     fun testPickerMaskOverrideRerunsWithP3P4Logic() {
         val logits = FloatArray(labels.size) { -10.0f }
-        logits[0] = 2.0f // rice_leaf_blast
+        logits[0] = 4.0f // rice_leaf_blast
         logits[2] = 1.8f // cotton_bacterial_blight
         logits[1] = 1.0f // rice_healthy
         logits[10] = 0.0f // rice_stem_borer

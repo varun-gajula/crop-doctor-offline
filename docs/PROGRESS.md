@@ -1,12 +1,12 @@
 # Project Progress - Crop Doctor Offline
 
-## Current Status: Task SW1 Complete (TR4 15-Class Vision Model Integrated on branch `v15-model`, Parity 2.48e-07 < 1e-3, 178 Unit Tests Passing, Zero Internet Permissions, Clean APK Build)
+## Current Status: Task SW1-FIX Complete (TR4-15 Correct Deliverable Integrated on `v15-model`, Parity 2.9524e-07 < 1e-3, 178 Unit Tests Passing, Zero Internet Permissions, Clean APK Build)
 
-### Feature Status Summary Table (Task SW1 Release Gate)
+### Feature Status Summary Table (Task SW1-FIX Release Gate)
 
 | Feature | Requirement / Rule | Status | Implementation Details & Laptop Evidence |
 |---|---|---|---|
-| **1. Vision Inference (TR4 15-Class Model)** | PS1, R2, R5, R10, Task SW1 | **WORKING** | TR4 MobileNetV3-Large 15-class model (`vision.pte`, 16,931,132 bytes). Classes: 5 crops (Rice, Cotton, Chilli, Tomato, Maize), 3 pests (`maize_fall_armyworm`, `rice_stem_borer`, `rice_hispa`), 1 OOD non-crop (`other_not_a_crop`). Parity max error: **2.48014e-07** (< 1e-3 gate). |
+| **1. Vision Inference (TR4-15 Final Model)** | PS1, R2, R5, R10, Task SW1-FIX | **WORKING** | TR4 MobileNetV3-Large 15-class model (`vision.pte`, 16,931,132 bytes, SHA-256 `6626b164215c455b329853fbe5f01e6bc28055b338a5ec2da258a84324e70dbb`). Source: `crop_doctor_final_15class_20ep (2)`. Classes: 5 crops (Rice, Cotton, Chilli, Tomato, Maize), 3 pests (`maize_fall_armyworm`, `rice_stem_borer`, `rice_hispa`), 1 OOD non-crop (`other_not_a_crop`). Parity max error: **2.9524e-07** (< 1e-3 gate). |
 | **2. Offline Knowledge Base & Tri-Lingual Advisory** | R4, R6, R11, U1, H4, H6 | **WORKING** | 100% offline JSON asset in APK. Sourced from ICAR, PJTSAU, ANGRAU. English, Hindi, Telugu. 14 of 15 classes have full verified entries. Exactly 1 class (`other_not_a_crop`) has no KB entry by design (routes to Can't tell). |
 | **3. On-Device Llama 3.2 1B Advisory Assistant** | R6, R7, H5, H15 | **WORKING** | ExecuTorch 0.6.0 SpinQuant INT4 running on dedicated single-thread `CropDoc-LlamaWorker` dispatcher. Isolated `generationLock`. Request ID stale token rejection. Sentence completion trimmer and fail-safe memory decider. |
 | **4. Fast Double-Scan & Shutter Contention Lifecycle** | H15, U2 | **WORKING** | Tested 20 cycles (40 double-scans) on physical POCO M4 5G: **0 crashes, 0 ANRs, 0 stuck scans** with unblocked coroutine preprocessing pipeline. |
@@ -14,33 +14,25 @@
 | **6. Result Screen Offline Chat Box** | Task CHAT | **WORKING** | Sub-5ms SQLite FTS5 BM25 passage retrieval over 576 indexed passages. Llama grounded answers in English and Hindi with `ChatGuardrail`. Verified offline guide fallback. Telugu strictly isolated per Rule H6. |
 | **7. Offline Voice Questions (Speech Recognition)** | Task VOICE | **WORKING (PARTIAL TELUGU)** | Vosk 0.3.47 running 16kHz mono Kaldi decoder on Arm CPU. Decoupled lifecycle: peak speech model PSS 1678 MB; model released so Vosk & Llama never co-exist. English & Hindi high accuracy; Telugu acoustic model uncertainty banner. |
 | **8. Zero-Internet Air-Gapped Operation** | Rule H1 | **WORKING** | Verified via `aapt2 dump permissions`: 0 network permissions (`android.permission.INTERNET` absent). Full offline operation verified in Airplane Mode. |
-| **9. TR4 15-Class Model Integration** | Task SW1 | **WORKING** | `vision.pte`, `labels.json`, `thresholds.json`, `preprocess.json`, `parity_samples.json` integrated. All unit tests updated from 20 classes to 15 classes. All 178 unit tests passing. |
+| **9. TR4-15 Model Integration & Decision Gates** | Task SW1-FIX | **WORKING** | `vision.pte`, `labels.json`, `thresholds.json`, `preprocess.json`, `parity_samples.json` integrated from TR4 deliverable `crop_doctor_final_15class_20ep (2)`. Preserved all decision keys (`crop_mass_threshold: 0.6`, `margin_threshold: 0.25`, `borderline_energy: -9.0`). All 178 unit tests passing. |
 
 ---
 
-### Done in Task SW1: TR4 15-Class Vision Model Integration (Laptop Verification)
-1. **Model Assets Deployed to `app/src/main/assets/`**:
-   - `vision.pte`: 16,931,132 bytes (~16.15 MB, well within 30 MB runtime limit and 90 MB git limit). Copied to `app/src/main/assets/models/vision.pte` and `app/src/main/assets/vision.pte`.
-   - `labels.json`: 15 classes ordered 0..14.
-   - `thresholds.json`: Calibrated 15-class thresholds (`temperature: 0.978`, `confidence_threshold: 0.75`, `energy_threshold: -4.7126`). Thresholds untouched per task instructions.
-   - `preprocess.json`: 512x512 input, RGB normalization (`mean: [0.485, 0.456, 0.406]`, `std: [0.229, 0.224, 0.225]`).
-   - `supported_classes.json`: 15 classes mapped, with 14 agricultural classes `supported: true` and index 14 `other_not_a_crop` marked `supported: false` (type `out_of_class`).
-2. **Parity Validation**:
-   - Tested all 10 validation samples from `parity_samples.json` against `gate_threshold = 0.001`.
-   - Maximum absolute error across all 10 samples: **`2.480144257743788e-07`** (passed, well below 1e-3).
-3. **Unit Tests Migration (15 Classes)**:
-   - Updated `CropMappingTest.kt`: verified 15 classes, 5 crops, 1 non-crop (`other_not_a_crop`), tomato 2 classes, crop mass renormalization.
-   - Updated `VisionParityTest.kt`: tested parity samples against TR4 schema, verified 15-class logits, top-3 ordering, confidence thresholds.
-   - Updated `ModelClassMapTest.kt`: verified 15-class direct 1-to-1 mapping, `MODEL_OUTPUT_SIZE = 15`, unsupported class `other_not_a_crop` routes to Can't tell.
-   - Updated `BlockedClassesHonestyTest.kt`: verified 15-class honesty, `other_not_a_crop` marked `supported=false`.
-   - Updated `ThresholdHonestyTest.kt`: verified single source of truth with TR4 calibrated values (temp 0.978, conf 0.75, energy -4.7126).
-   - Updated `CropdocDecisionGateTest.kt`: updated 15-class array sizes and threshold assertions.
-   - Updated `AutoDecisionTest.kt`: updated 15-class array sizes, crop mass, and non-crop tests.
-   - Zero unit tests deleted. Total tests: **178 passing, 0 failures, 0 skipped**.
-4. **Knowledge Base Audit**:
-   - 14 agricultural classes have complete, verified knowledge base entries in `app/src/main/assets/kb/knowledge_base.json`.
-   - Exactly **1 class without KB entry: `other_not_a_crop`** (OOD non-crop class; intentionally routes to Can't tell).
-5. **Compilation Verification**:
+### Done in Task SW1-FIX: Correct TR4-15 Model Integration & Threshold Alignment
+1. **Model Deliverable Verification & Source Audit**:
+   - Compared `crop_doctor_final_15class_20ep` (TR3-15, 19 epochs, used mistakenly in SW1) vs `crop_doctor_final_15class_20ep (2)` (TR4-15, 20 epochs, `CALIBRATED_15CLASS_TR4`).
+   - Verified SHA-256 of `vision.pte`: `6626b164215c455b329853fbe5f01e6bc28055b338a5ec2da258a84324e70dbb` (identically matches the TR4 weights deliverable).
+   - Replaced `preprocess.json`, `parity_samples.json`, `benchmarks/final/*` with the TR4 files.
+2. **Thresholds Merged with Complete Decision Keys**:
+   - Updated TR4 calibration parameters: `temperature: 0.9433`, `confidence_threshold: 0.75`, `default_threshold: 0.75`, `energy_threshold: -4.5866`, `status: "CALIBRATED_15CLASS_TR4"`, `nll_before: 0.1153`, `nll_after: 0.1012`.
+   - Preserved all decision keys: `crop_mass_threshold: 0.6`, `margin_threshold: 0.25`, `borderline_energy: -9.0`, `selection_note`, `target_precision_reached: true`.
+3. **Parity Validation**:
+   - Evaluated TR4 `parity_samples.json`: max error across all 10 samples is **`2.9524e-07`** (below 1e-3 gate).
+4. **Unit Test Updates & Fixes**:
+   - Updated `VisionParityTest.kt`, `BlockedClassesHonestyTest.kt`, `ModelClassMapTest.kt`, `CropdocDecisionGateTest.kt`, `AutoDecisionTest.kt`, `ThresholdHonestyTest.kt`, `LlamaCancellationTest.kt`.
+   - Updated tests to dynamically read thresholds from `thresholds.json` rather than hardcoding stale literals.
+   - Zero tests deleted. Total tests: **178 passing, 0 failures, 0 skipped**.
+5. **Compilation & Packaging**:
    - `./gradlew testDebugUnitTest`: 178/178 tests passed.
    - `./gradlew assembleDebug`: BUILD SUCCESSFUL.
 
