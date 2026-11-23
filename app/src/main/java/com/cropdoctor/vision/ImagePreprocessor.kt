@@ -88,8 +88,15 @@ object ImagePreprocessor {
     /**
      * Primary preparation entry point from raw JPEG / PNG bytes.
      * Reuses reusableBuffer if provided; otherwise allocates a native direct FloatBuffer.
+     * When [cropToViewfinder] is true, crops strictly to the center square corresponding
+     * to the camera viewfinder box (fraction of height given by [viewfinderHeightFraction]).
      */
-    fun prepare(bytes: ByteArray, reusableBuffer: FloatBuffer? = null): PreprocessedImage {
+    fun prepare(
+        bytes: ByteArray,
+        reusableBuffer: FloatBuffer? = null,
+        cropToViewfinder: Boolean = false,
+        viewfinderHeightFraction: Float = 0.37f
+    ): PreprocessedImage {
         val exifRotation = getExifRotation(bytes)
 
         // 1. Decode bounds
@@ -115,22 +122,46 @@ object ImagePreprocessor {
             origWidth = origWidth,
             origHeight = origHeight,
             exifRotation = exifRotation,
-            reusableBuffer = reusableBuffer
+            reusableBuffer = reusableBuffer,
+            cropToViewfinder = cropToViewfinder,
+            viewfinderHeightFraction = viewfinderHeightFraction
         )
     }
 
     /**
      * Preparation entry point from an existing Bitmap and explicit EXIF rotation.
      */
-    fun prepare(bitmap: Bitmap, exifRotationDegrees: Int = 0, reusableBuffer: FloatBuffer? = null): PreprocessedImage {
+    fun prepare(
+        bitmap: Bitmap,
+        exifRotationDegrees: Int = 0,
+        reusableBuffer: FloatBuffer? = null,
+        cropToViewfinder: Boolean = false,
+        viewfinderHeightFraction: Float = 0.37f
+    ): PreprocessedImage {
         return processBitmapInternal(
             rawBitmap = bitmap,
             origWidth = bitmap.width,
             origHeight = bitmap.height,
             exifRotation = exifRotationDegrees,
             reusableBuffer = reusableBuffer,
-            allowRecycleRaw = false
+            allowRecycleRaw = false,
+            cropToViewfinder = cropToViewfinder,
+            viewfinderHeightFraction = viewfinderHeightFraction
         )
+    }
+
+    data class ViewfinderCrop(val left: Int, val top: Int, val size: Int)
+
+    /**
+     * Calculates the center square bounding box corresponding to the camera viewfinder box.
+     */
+    fun calculateViewfinderCrop(width: Int, height: Int, fraction: Float): ViewfinderCrop {
+        val maxPossible = minOf(width, height)
+        val minPossible = minOf(TARGET_SIZE, maxPossible)
+        val boxSize = (height * fraction).toInt().coerceIn(minPossible, maxPossible)
+        val left = ((width - boxSize) / 2).coerceIn(0, maxOf(0, width - boxSize))
+        val top = ((height - boxSize) / 2).coerceIn(0, maxOf(0, height - boxSize))
+        return ViewfinderCrop(left, top, boxSize)
     }
 
     private fun processBitmapInternal(
@@ -139,7 +170,9 @@ object ImagePreprocessor {
         origHeight: Int,
         exifRotation: Int,
         reusableBuffer: FloatBuffer?,
-        allowRecycleRaw: Boolean = true
+        allowRecycleRaw: Boolean = true,
+        cropToViewfinder: Boolean = false,
+        viewfinderHeightFraction: Float = 0.37f
     ): PreprocessedImage {
         // 1. Ensure ARGB_8888 and non-hardware config
         val isHardware = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && rawBitmap.config == Bitmap.Config.HARDWARE
@@ -165,17 +198,32 @@ object ImagePreprocessor {
             argbBitmap
         }
 
-        // 3. Resize to 512x512 matching training exactly (Squash: bilinear interpolation to 512x512)
-        val final512 = if (uprightBitmap.width != TARGET_SIZE || uprightBitmap.height != TARGET_SIZE) {
-            val scaled = Bitmap.createScaledBitmap(uprightBitmap, TARGET_SIZE, TARGET_SIZE, true)
-            if (scaled != uprightBitmap) {
+        // 2b. Viewfinder crop: if captured from camera with viewfinder framing,
+        // crop strictly to the square region matching the viewfinder box
+        val squareCropBitmap = if (cropToViewfinder) {
+            val crop = calculateViewfinderCrop(uprightBitmap.width, uprightBitmap.height, viewfinderHeightFraction)
+            val cropped = Bitmap.createBitmap(uprightBitmap, crop.left, crop.top, crop.size, crop.size)
+            if (cropped != uprightBitmap) {
                 if (allowRecycleRaw || uprightBitmap != rawBitmap) {
                     uprightBitmap.recycle()
                 }
             }
-            scaled
+            cropped
         } else {
             uprightBitmap
+        }
+
+        // 3. Resize to 512x512 matching training exactly (Bilinear interpolation to 512x512)
+        val final512 = if (squareCropBitmap.width != TARGET_SIZE || squareCropBitmap.height != TARGET_SIZE) {
+            val scaled = Bitmap.createScaledBitmap(squareCropBitmap, TARGET_SIZE, TARGET_SIZE, true)
+            if (scaled != squareCropBitmap) {
+                if (allowRecycleRaw || squareCropBitmap != rawBitmap) {
+                    squareCropBitmap.recycle()
+                }
+            }
+            scaled
+        } else {
+            squareCropBitmap
         }
 
         // 4. Botanical Leaf Validation (Gate 1)

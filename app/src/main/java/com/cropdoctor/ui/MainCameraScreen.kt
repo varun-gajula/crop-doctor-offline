@@ -38,6 +38,7 @@ import com.cropdoctor.R
 import com.cropdoctor.domain.CropMapping
 import com.cropdoctor.ui.components.LanguageChip
 import com.cropdoctor.ui.theme.FarmGreenPrimary
+import com.cropdoctor.vision.ImagePreprocessor
 import com.cropdoctor.vision.ImageAnalysisMetadata
 import java.io.InputStream
 import java.util.concurrent.Executors
@@ -170,12 +171,16 @@ fun MainCameraScreen(
             }
         }
     ) { paddingValues ->
-        Box(
+        BoxWithConstraints(
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color.Black)
                 .padding(paddingValues)
         ) {
+            val previewHeightDp = maxHeight
+            val boxSizeDp = 290.dp
+            val viewfinderFraction = (boxSizeDp.value / previewHeightDp.value).coerceIn(0.20f, 0.90f)
+
             // Camera Preview
             AndroidView(
                 modifier = Modifier.fillMaxSize(),
@@ -344,7 +349,7 @@ fun MainCameraScreen(
                                                         ContextCompat.getMainExecutor(context).execute {
                                                             isShutterBusy = false
                                                             if (onImageBytesCaptured != null) {
-                                                                onImageBytesCaptured(bytes, selectedCrop, "camera")
+                                                                onImageBytesCaptured(bytes, selectedCrop, "camera:$viewfinderFraction")
                                                             } else {
                                                                 val options = BitmapFactory.Options().apply { inJustDecodeBounds = true }
                                                                 BitmapFactory.decodeByteArray(bytes, 0, bytes.size, options)
@@ -353,7 +358,12 @@ fun MainCameraScreen(
                                                                 options.inJustDecodeBounds = false
                                                                 val bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.size, options)
                                                                 if (bmp != null) {
-                                                                    onImageCaptured(bmp, selectedCrop)
+                                                                    val pre = ImagePreprocessor.prepare(
+                                                                        bmp,
+                                                                        cropToViewfinder = true,
+                                                                        viewfinderHeightFraction = viewfinderFraction
+                                                                    )
+                                                                    onImageCaptured(pre.bitmap512, selectedCrop)
                                                                 }
                                                             }
                                                         }

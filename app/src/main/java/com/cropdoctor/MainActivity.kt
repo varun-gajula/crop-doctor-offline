@@ -277,7 +277,18 @@ class MainActivity : ComponentActivity() {
 
                                 withTimeout(12_000L) {
                                     val reusableBuf = (app.classifier as? ExecuTorchClassifier)?.getReusableBuffer()
-                                    val preprocessed = ImagePreprocessor.prepare(bytes, reusableBuf)
+                                    val isCameraSource = source.startsWith("camera")
+                                    val fraction = if (isCameraSource && source.contains(":")) {
+                                        source.substringAfter("camera:").toFloatOrNull() ?: 0.37f
+                                    } else {
+                                        0.37f
+                                    }
+                                    val preprocessed = ImagePreprocessor.prepare(
+                                        bytes = bytes,
+                                        reusableBuffer = reusableBuf,
+                                        cropToViewfinder = isCameraSource,
+                                        viewfinderHeightFraction = fraction
+                                    )
                                     preprocessedImage = preprocessed
 
                                     if (thisRequestId != currentRequestId.get() || !isActive) {

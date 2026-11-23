@@ -74,4 +74,27 @@ class ImagePreprocessorTest {
         assertEquals(expectedG, buf.get(area), 1e-4f)
         assertEquals(expectedB, buf.get(2 * area), 1e-4f)
     }
+
+    @Test
+    fun testCalculateViewfinderCrop() {
+        // Typical portrait capture: 3000 x 4000 on a phone screen
+        val crop4000 = ImagePreprocessor.calculateViewfinderCrop(3000, 4000, 0.37f)
+        // boxSize = 4000 * 0.37 = 1480
+        assertEquals(1480, crop4000.size)
+        assertEquals((3000 - 1480) / 2, crop4000.left)
+        assertEquals((4000 - 1480) / 2, crop4000.top)
+
+        // Landscape capture: 4000 x 3000
+        val cropLand = ImagePreprocessor.calculateViewfinderCrop(4000, 3000, 0.37f)
+        assertEquals(1110, cropLand.size)
+        assertEquals((4000 - 1110) / 2, cropLand.left)
+        assertEquals((3000 - 1110) / 2, cropLand.top)
+
+        // Smaller dimensions should respect TARGET_SIZE or maxPossible
+        val cropSmall = ImagePreprocessor.calculateViewfinderCrop(600, 800, 0.37f)
+        // 800 * 0.37 = 296, coerced to TARGET_SIZE (512)
+        assertEquals(512, cropSmall.size)
+        assertEquals((600 - 512) / 2, cropSmall.left)
+        assertEquals((800 - 512) / 2, cropSmall.top)
+    }
 }
