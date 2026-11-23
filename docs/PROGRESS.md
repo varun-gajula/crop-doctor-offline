@@ -1,20 +1,52 @@
 # Project Progress - Crop Doctor Offline
 
-## Current Status: Task SW1-FIX Complete (TR4-15 Correct Deliverable Integrated on `v15-model`, Parity 2.9524e-07 < 1e-3, 178 Unit Tests Passing, Zero Internet Permissions, Clean APK Build)
+## Current Status: Task LLAMA-COMPLETE Complete (All 3 Stages Passed on Physical POCO M4 5G: 0 Stuck Scans in 40 Double-Scans, 10/10 Advice Generations on Full Sentences, Chat Grounding & Guardrail Verified, 180 Unit Tests Passing, Zero Internet Permissions)
 
-### Feature Status Summary Table (Task SW1-FIX Release Gate)
+### Feature Status Summary Table (Task LLAMA-COMPLETE Release Gate)
 
-| Feature | Requirement / Rule | Status | Implementation Details & Laptop Evidence |
+| Feature | Requirement / Rule | Status | Implementation Details & Hardware Evidence |
 |---|---|---|---|
-| **1. Vision Inference (TR4-15 Final Model)** | PS1, R2, R5, R10, Task SW1-FIX | **WORKING** | TR4 MobileNetV3-Large 15-class model (`vision.pte`, 16,931,132 bytes, SHA-256 `6626b164215c455b329853fbe5f01e6bc28055b338a5ec2da258a84324e70dbb`). Source: `crop_doctor_final_15class_20ep (2)`. Classes: 5 crops (Rice, Cotton, Chilli, Tomato, Maize), 3 pests (`maize_fall_armyworm`, `rice_stem_borer`, `rice_hispa`), 1 OOD non-crop (`other_not_a_crop`). Parity max error: **2.9524e-07** (< 1e-3 gate). |
-| **2. Offline Knowledge Base & Tri-Lingual Advisory** | R4, R6, R11, U1, H4, H6 | **WORKING** | 100% offline JSON asset in APK. Sourced from ICAR, PJTSAU, ANGRAU. English, Hindi, Telugu. 14 of 15 classes have full verified entries. Exactly 1 class (`other_not_a_crop`) has no KB entry by design (routes to Can't tell). |
-| **3. On-Device Llama 3.2 1B Advisory Assistant** | R6, R7, H5, H15 | **WORKING** | ExecuTorch 0.6.0 SpinQuant INT4 running on dedicated single-thread `CropDoc-LlamaWorker` dispatcher. Isolated `generationLock`. Request ID stale token rejection. Sentence completion trimmer and fail-safe memory decider. |
-| **4. Fast Double-Scan & Shutter Contention Lifecycle** | H15, U2 | **WORKING** | Tested 20 cycles (40 double-scans) on physical POCO M4 5G: **0 crashes, 0 ANRs, 0 stuck scans** with unblocked coroutine preprocessing pipeline. |
-| **5. Direct Leaf Scanning & Auto Crop Detection** | Task AUTO | **WORKING** | Direct leaf scanning from home screen without prior crop selection. Dynamic prefix crop mapping (`maize_fall_armyworm` -> Maize, `rice_stem_borer` -> Rice, etc.). Fail-closed decision engine with "Change" crop chip. |
-| **6. Result Screen Offline Chat Box** | Task CHAT | **WORKING** | Sub-5ms SQLite FTS5 BM25 passage retrieval over 576 indexed passages. Llama grounded answers in English and Hindi with `ChatGuardrail`. Verified offline guide fallback. Telugu strictly isolated per Rule H6. |
+| **1. Vision Inference (TR4-15 Final Model)** | PS1, R2, R5, R10, Task SW1-FIX | **WORKING** | TR4 MobileNetV3-Large 15-class model (`vision.pte`, 16,931,132 bytes, SHA-256 `6626b164215c455b329853fbe5f01e6bc28055b338a5ec2da258a84324e70dbb`). Classes: 5 crops (Rice, Cotton, Chilli, Tomato, Maize), 3 pests (`maize_fall_armyworm`, `rice_stem_borer`, `rice_hispa`), 1 OOD non-crop (`other_not_a_crop`). Parity error: **2.9524e-07**. |
+| **2. Fast Double-Scan & Shutter Contention Lifecycle** | H15, U2, Task LLAMA-COMPLETE (Stage A) | **WORKING** | Tested 20 cycles (40 double-scans) on physical POCO M4 5G: **0 crashes, 0 ANRs, 0 stuck scans** (> 8s). Longest spinner: **357 ms**, Average: **264.4 ms**. Unblocked coroutine cancellation before and inside mutex lock. |
+| **3. On-Device Llama 3.2 1B Advisory Assistant** | R6, R7, H5, H15, Task LLAMA-COMPLETE (Stage B) | **WORKING** | Tested 10 full advice runs (5 EN, 5 HI) on POCO M4 5G: **10 of 10 completed on full sentences (100%)**. 9 reached `EOS`, 1 hit 260-token cap and trimmed cleanly at `।` with KB text appended. Avg TTFT: **13.1s**, Avg speed: **6.62 tok/s**, Avg tokens: **178.1**, 0 crashes/ANRs. |
+| **4. Grounded Chat & Guardrail Verification** | Task CHAT, Task LLAMA-COMPLETE (Stage C) | **WORKING** | Tested 10 chat questions (5 EN, 5 HI) on POCO M4 5G: **4 Llama answers** (grounded on ICAR bio-agents/prevention, TTFT 6.0-11.2s), **3 guardrail rejections** (intercepted ungrounded chemical doses and safely fell back to CIB&RC package of practices text), **3 out-of-scope referrals** (routed to Kisan Call Centre in 3-4 ms). 0 crashes/ANRs. |
+| **5. Offline Knowledge Base & Tri-Lingual Advisory** | R4, R6, R11, U1, H4, H6 | **WORKING** | 100% offline JSON asset in APK. Sourced from ICAR, PJTSAU, ANGRAU. English, Hindi, Telugu. 14 of 15 classes have full verified entries. Exactly 1 class (`other_not_a_crop`) has no KB entry by design (routes to Can't tell). |
+| **6. Direct Leaf Scanning & Auto Crop Detection** | Task AUTO | **WORKING** | Direct leaf scanning from home screen without prior crop selection. Dynamic prefix crop mapping (`maize_fall_armyworm` -> Maize, `rice_stem_borer` -> Rice, etc.). Fail-closed decision engine with "Change" crop chip. |
 | **7. Offline Voice Questions (Speech Recognition)** | Task VOICE | **WORKING (PARTIAL TELUGU)** | Vosk 0.3.47 running 16kHz mono Kaldi decoder on Arm CPU. Decoupled lifecycle: peak speech model PSS 1678 MB; model released so Vosk & Llama never co-exist. English & Hindi high accuracy; Telugu acoustic model uncertainty banner. |
 | **8. Zero-Internet Air-Gapped Operation** | Rule H1 | **WORKING** | Verified via `aapt2 dump permissions`: 0 network permissions (`android.permission.INTERNET` absent). Full offline operation verified in Airplane Mode. |
-| **9. TR4-15 Model Integration & Decision Gates** | Task SW1-FIX | **WORKING** | `vision.pte`, `labels.json`, `thresholds.json`, `preprocess.json`, `parity_samples.json` integrated from TR4 deliverable `crop_doctor_final_15class_20ep (2)`. Preserved all decision keys (`crop_mass_threshold: 0.6`, `margin_threshold: 0.25`, `borderline_energy: -9.0`). All 178 unit tests passing. |
+| **9. TR4-15 Model Integration & Decision Gates** | Task SW1-FIX | **WORKING** | `vision.pte`, `labels.json`, `thresholds.json`, `preprocess.json`, `parity_samples.json` integrated from TR4 deliverable. Preserved all decision keys (`crop_mass_threshold: 0.6`, `margin_threshold: 0.25`, `borderline_energy: -9.0`). All 180 unit tests passing. |
+
+---
+
+### Done in Task LLAMA-COMPLETE: Stability, Sentence Completion & Grounded Chat Benchmarking
+1. **Stage A: 20 Immediate Double-Scans (40 Total Scans)**:
+   - Logged after every cycle to `benchmarks/llama_complete_stageA.json`.
+   - Results: **0 stuck scans (> 8 s)**, **0 crashes / ANRs**.
+   - Average duration: **264.4 ms**; longest spinner: **357 ms** (Cycle 18).
+   - Proven cause of previous stuck scan (10,030 ms in cycle 4): cancelled vision forward coroutines queuing behind `NativePeer.forward()` while Llama was allocating weights. Resolved by adding `if (!currentCoroutineContext().isActive) throw CancellationException(...)` before and inside `forwardMutex.withLock` in `ExecuTorchClassifier.kt`.
+2. **Stage B: 10 Full Advice Generations (5 English, 5 Hindi)**:
+   - Logged after every run to `benchmarks/llama_complete_stageB.json`.
+   - Results: **10 of 10 completed on full sentences (100%)**, **0 crashes / ANRs**.
+   - Tokens produced: average 178.1 tokens (range: 100 to 260 tokens).
+   - Time to first token (TTFT): average 13,169.9 ms (range: 11,818 ms to 14,655 ms).
+   - Tokens per second: average 6.62 tok/s (range: 3.72 to 7.54 tok/s).
+   - End reasons: 9 EOS, 1 token limit (cleanly trimmed to last full sentence with KB text appended).
+3. **Stage C: 10 Chat Questions (5 English, 5 Hindi)**:
+   - Logged after every question to `benchmarks/llama_complete_stageC.json`.
+   - Results: **4 Llama generated answers**, **6 Offline guide answers**, **0 crashes / ANRs**.
+   - Latency: average 8,697.7 ms. Llama TTFT: 6.0 s to 11.2 s.
+   - Fallback breakdown:
+     - 3 questions fell back due to `ChatGuardrail` intercepting ungrounded chemical doses/numbers, safely presenting verified CIB&RC/ICAR text.
+     - 3 questions fell back due to out-of-scope queries, providing the toll-free Kisan Call Centre referral (1800-180-1551) in 3–4 ms.
+4. **Unit Test Suite Verification**:
+   - Total Unit Tests: **180 tests passing, 0 failures, 0 skipped**.
+5. **Acceptance Verification**:
+   - 0 stuck scans in 40 immediate scans: **PASS**
+   - 10 of 10 advice generations end on a complete sentence: **PASS**
+   - 0 crashes or ANRs: **PASS**
+   - Raw results saved in `benchmarks/llama_complete.md`, `benchmarks/llama_complete_stageA.json`, `benchmarks/llama_complete_stageB.json`, and `benchmarks/llama_complete_stageC.json`.
+
+---
 
 ---
 

@@ -714,11 +714,59 @@ class MainActivity : ComponentActivity() {
                                 }
                             }
 
-                            if (action == "test_chat") {
-                                val query = intent.getStringExtra("chat_query") ?: "What is the natural remedy?"
+                            if (action == "test_advice") {
                                 val lang = intent.getStringExtra("language") ?: "en"
-                                val classId = intent.getStringExtra("class_id") ?: (classifierResult?.classId ?: "tomato_yellow_leaf_curl_virus")
-                                val crop = intent.getStringExtra("crop") ?: (activeKbEntry?.crop ?: "tomato")
+                                val classId = intent.getStringExtra("class_id") ?: "tomato_septoria_leaf_spot"
+                                val kb = KnowledgeBase.getEntry(classId) ?: KnowledgeBase.getAllEntries().first()
+                                val result = ClassifierResult(
+                                    classId = classId,
+                                    displayName = kb.names.forLanguage(lang),
+                                    confidence = 0.88f,
+                                    severityBand = SeverityBand.MODERATE,
+                                    certaintyBand = CertaintyBand.SURE,
+                                    lesionFraction = 0.22f,
+                                    outcome = DiagnosisOutcome.DIAGNOSE,
+                                    outcomeReason = "BENCHMARK_DIAGNOSE"
+                                )
+                                classifierResult = result
+                                activeKbEntry = kb
+                                selectedLanguage = lang
+                                userPrefs.selectedLanguage = lang
+                                navigateTo(AppScreen.RESULT)
+                                triggerAdvisoryStream(
+                                    app = app,
+                                    result = result,
+                                    kbEntry = kb,
+                                    language = lang,
+                                    crop = kb.crop,
+                                    requestId = currentRequestId.incrementAndGet(),
+                                    onUpdate = { advisoryText = it },
+                                    onStateChange = { isGeneratingAdvice = it },
+                                    onAdvisorSourceChange = { currentAdvisorSource = it }
+                                )
+                            }
+
+                            if (action == "test_chat") {
+                                val chatIndex = intent.getIntExtra("chat_index", -1)
+                                val queryFromMap = when (chatIndex) {
+                                    1 -> "What is the natural remedy?"
+                                    2 -> "How much fertilizer should I apply?"
+                                    3 -> "Is this disease contagious to other plants?"
+                                    4 -> "What chemical spray is recommended?"
+                                    5 -> "How to prevent this next season?"
+                                    6 -> "प्राकृतिक उपचार क्या है?"
+                                    7 -> "खाद कितनी मात्रा में डालें?"
+                                    8 -> "क्या यह रोग फैलता है?"
+                                    9 -> "कौन सा कीटनाशक या फफूंदनाशक छिड़कें?"
+                                    10 -> "इसकी रोकथाम कैसे करें?"
+                                    else -> null
+                                }
+                                val query = queryFromMap ?: (intent.getStringExtra("chat_query") ?: "What is the natural remedy?")
+                                val lang = if (chatIndex in 6..10) "hi" else (intent.getStringExtra("language") ?: "en")
+                                val classId = intent.getStringExtra("class_id") ?: (classifierResult?.classId ?: "tomato_septoria_leaf_spot")
+                                val kb = KnowledgeBase.getEntry(classId)
+                                val crop = intent.getStringExtra("crop") ?: (kb?.crop ?: activeKbEntry?.crop ?: classId.substringBefore("_"))
+                                val problemName = kb?.names?.forLanguage(lang) ?: (activeKbEntry?.names?.forLanguage(lang) ?: classId)
                                 lifecycleScope.launch(Dispatchers.IO) {
                                     val store = app.getPassageStoreIfInitialized()
                                     val adv = app.getAdvisorIfInitialized()
@@ -729,7 +777,7 @@ class MainActivity : ComponentActivity() {
                                             query = query,
                                             detectedClass = classId,
                                             crop = crop,
-                                            problemName = activeKbEntry?.names?.forLanguage(lang) ?: classId,
+                                            problemName = problemName,
                                             severity = classifierResult?.severityBand?.name ?: "MODERATE",
                                             certainty = classifierResult?.certaintyBand?.name ?: "SURE",
                                             language = lang,
@@ -741,7 +789,7 @@ class MainActivity : ComponentActivity() {
                                         )
                                         val durationMs = System.currentTimeMillis() - startTime
                                         val pss = Debug.getPss() / 1024L
-                                        Log.i("CROPDOC_CHAT", "CHAT_TEST_END: query='$query' lang='$lang' source='${response.source}' label='${response.label}' durationMs=${durationMs}ms pssMb=${pss}MB textLength=${response.text.length} isNoMatch=${response.isNoMatch} response='${response.text.replace("\n", " ")}'")
+                                        Log.i("CROPDOC_CHAT", "CHAT_TEST_END: query='$query' lang='$lang' source='${response.source}' label='${response.label}' advisorSource='${response.advisorSource}' guardrailReason='${response.guardrailReason ?: "NONE"}' durationMs=${durationMs}ms pssMb=${pss}MB textLength=${response.text.length} isNoMatch=${response.isNoMatch} response='${response.text.replace("\n", " ")}'")
                                     }
                                 }
                             }
