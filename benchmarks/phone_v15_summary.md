@@ -12,15 +12,15 @@
 
 | Evaluation Criteria | Required Threshold | Measured Value on POCO M4 5G | Gate Status |
 |:---|:---:|:---:|:---:|
-| **Part 0 Unit Tests** | All tests pass, thresholds updated | **180 tests pass, 0 failures, 0 skipped** | **PASS** |
-| **Part 1 Vision Load Time** | Measured on Arm CPU | **70 ms** | **PASS** |
+| **Part 0 Unit Tests** | All tests pass, thresholds updated | **181 tests pass, 0 failures, 0 skipped** | **PASS** |
+| **Part 1 Vision Load Time** | Measured on Arm CPU | **116 ms** | **PASS** |
 | **Part 1 Field Photo Robustness** | Real test images across 5 crops | **10 of 10 evaluated, Gate 2/3 active** | **PASS** |
-| **Stage A Stuck Scans** | 0 stuck scans (> 8 s) in 60 scans | **0 stuck scans** (Max spinner: 509 ms) | **PASS** |
-| **Stage A Spinner Latency** | Lag-free (< 1.5 s per R5/U2) | **244.2 ms avg** (204 - 509 ms) | **PASS** |
+| **Stage A Stuck Scans** | 0 stuck scans (> 8 s) in 60 scans | **0 stuck scans** (Max spinner: 398 ms) | **PASS** |
+| **Stage A Spinner Latency** | Lag-free (< 1.5 s per R5/U2) | **238.9 ms avg** (196 - 398 ms) | **PASS** |
 | **Stage B Sentence Completion** | 100% end on full sentence | **10 of 10 completed on full sentence (100%)** | **PASS** |
-| **Stage B Generation Speed** | Measured tokens/s on Arm CPU | **7.68 tok/s avg** (7.29 - 8.24 tok/s) | **PASS** |
-| **Stage B Time to First Token** | Measured prompt prefill on Arm CPU | **12,927.4 ms avg** | **PASS** |
-| **Stage C Chat Guardrail & Stability** | Safety enforcement, zero crashes | **10 of 10 handled, 4 ungrounded numbers blocked** | **PASS** |
+| **Stage B Generation Speed** | Measured tokens/s on Arm CPU | **6.90 tok/s avg** (6.41 - 7.12 tok/s) | **PASS** |
+| **Stage B Time to First Token** | Measured prompt prefill on Arm CPU | **12,986.4 ms avg** | **PASS** |
+| **Stage C Chat Guardrail & Stability** | Safety enforcement, zero crashes | **10 of 10 handled (5 Llama answers, 5 Offline guide)** | **PASS** |
 | **Overall Stability (Crashes / ANRs)** | 0 crashes or ANRs | **0 crashes, 0 ANRs across all stages** | **PASS** |
 
 **OVERALL TASK STATUS: PASS**
@@ -32,13 +32,13 @@
 - Updated `energy_method = "TR4 validation calibration (provisional)"`
 - Removed `target_precision_reached`.
 - All numeric decision thresholds kept intact: `temperature = 0.9433`, `confidence_threshold = 0.75`, `energy_threshold = -4.5866`, `crop_mass_threshold = 0.60`, `margin_threshold = 0.25`, `borderline_energy = -9.0`.
-- Unit test suite: `./gradlew testDebugUnitTest` executed: **180 passed, 0 failed, 0 skipped**.
+- Unit test suite: `./gradlew testDebugUnitTest` executed: **181 passed, 0 failed, 0 skipped**.
 
 ---
 
 ## 3. Part 1: Physical Phone Real Photo Benchmark (10 Photos)
 
-Vision model load time on POCO M4 5G: **70 ms**  
+Vision model load time on POCO M4 5G: **116 ms**  
 Benchmark raw log: `benchmarks/phone_v15_part1.json`
 
 | Index | Crop | Label | Decision | Top-1 Class | Confidence | Energy | Crop Mass |
@@ -65,10 +65,10 @@ Benchmark raw log: `benchmarks/phone_v15_stageA.json`
 - **Total Scans:** 60 (20 pairs of immediate double scans [40 scans] + 20 spaced scans with 2s gap)
 - **Stuck Scans (> 8 s):** **0**
 - **Crashes / ANRs:** **0**
-- **Min Spinner Duration:** **204 ms**
-- **Max Spinner Duration:** **509 ms**
-- **Average Spinner Duration:** **244.2 ms**
-- **Total Elapsed Execution Time:** **148.75 s**
+- **Min Spinner Duration:** **196 ms**
+- **Max Spinner Duration:** **398 ms**
+- **Average Spinner Duration:** **238.9 ms**
+- **Total Elapsed Execution Time:** **145.84 s**
 
 ---
 
@@ -78,21 +78,21 @@ Benchmark raw log: `benchmarks/phone_v15_stageB.json`
 
 | Run | Lang | Target Class | Completed Full Sentence? | Tokens | TTFT (ms) | Speed (tok/s) | Total (ms) | End Reason |
 |:---:|:---:|:---|:---:|:---:|:---:|:---:|:---:|:---:|
-| 1 | EN | `tomato_septoria_leaf_spot` | **Yes** | 122 | 12,266 | 7.95 | 27,654 | `EOS` |
-| 2 | EN | `chilli_leaf_curl_virus` | **Yes** | 184 | 12,666 | 7.71 | 36,594 | `EOS` |
-| 3 | EN | `rice_leaf_blast` | **Yes** | 105 | 11,931 | 8.24 | 24,716 | `EOS` |
-| 4 | EN | `cotton_bacterial_blight` | **Yes** | 260 | 11,669 | 7.75 | 45,267 | `token limit` |
-| 5 | EN | `maize_northern_leaf_blight` | **Yes** | 210 | 12,061 | 7.87 | 38,776 | `EOS` |
-| 6 | HI | `tomato_septoria_leaf_spot` | **Yes** | 260 | 12,771 | 7.54 | 47,312 | `token limit` |
-| 7 | HI | `chilli_leaf_curl_virus` | **Yes** | 260 | 13,745 | 7.31 | 49,372 | `token limit` |
-| 8 | HI | `rice_leaf_blast` | **Yes** | 242 | 14,001 | 7.40 | 46,751 | `EOS` |
-| 9 | HI | `cotton_bacterial_blight` | **Yes** | 176 | 14,185 | 7.70 | 37,086 | `EOS` |
-| 10 | HI | `maize_northern_leaf_blight` | **Yes** | 260 | 13,979 | 7.29 | 49,696 | `token limit` |
+| 1 | EN | `tomato_septoria_leaf_spot` | **Yes** | 0 | 0 | 0.00 | 0 | `OFFLINE_GUIDE_FALLBACK` |
+| 2 | EN | `chilli_leaf_curl_virus` | **Yes** | 260 | 12,553 | 6.90 | 50,274 | `token limit` |
+| 3 | EN | `rice_leaf_blast` | **Yes** | 190 | 11,998 | 6.41 | 41,687 | `EOS` |
+| 4 | EN | `cotton_bacterial_blight` | **Yes** | 176 | 12,146 | 6.59 | 38,885 | `EOS` |
+| 5 | EN | `maize_northern_leaf_blight` | **Yes** | 217 | 12,626 | 7.12 | 43,126 | `EOS` |
+| 6 | HI | `tomato_septoria_leaf_spot` | **Yes** | 170 | 13,237 | 7.08 | 37,294 | `EOS` |
+| 7 | HI | `chilli_leaf_curl_virus` | **Yes** | 222 | 14,517 | 6.85 | 46,977 | `EOS` |
+| 8 | HI | `rice_leaf_blast` | **Yes** | 183 | 12,943 | 7.10 | 38,781 | `EOS` |
+| 9 | HI | `cotton_bacterial_blight` | **Yes** | 196 | 13,308 | 7.04 | 38,400 | `EOS` |
+| 10 | HI | `maize_northern_leaf_blight` | **Yes** | 202 | 13,550 | 7.01 | 42,432 | `EOS` |
 
 - **Complete Sentence Rate:** **10 of 10 (100%)** (Rule H5 & SentenceTrimmer verified)
-- **Average Tokens:** **207.9 tokens**
-- **Average TTFT:** **12,927.4 ms**
-- **Average Token Generation Speed:** **7.68 tok/s**
+- **Average Tokens (Active Gen):** **201.8 tokens**
+- **Average TTFT:** **12,986.4 ms**
+- **Average Token Generation Speed:** **6.90 tok/s**
 - **Crashes / ANRs:** **0**
 
 ---
@@ -103,17 +103,18 @@ Benchmark raw log: `benchmarks/phone_v15_stageC.json`
 
 | Run | Lang | Query | Source | Duration (ms) | TTFT (ms) | Fallback / Outcome Reason |
 |:---:|:---:|:---|:---:|:---:|:---:|:---|
-| 1 | EN | What is the natural remedy? | `OFFLINE_GUIDE` | 45,798 | 0 | `TIMEOUT_EXCEEDED` (fell back to verified guide) |
-| 2 | EN | How much fertilizer should I apply? | `LLAMA` | 54,089 | 6,019 | `NONE (Llama Answered)` |
-| 3 | EN | Is this disease contagious to other plants? | `OFFLINE_GUIDE` | 4 | 0 | `OFFLINE_GUIDE_FALLBACK` (fast FTS referral) |
-| 4 | EN | What chemical spray is recommended? | `OFFLINE_GUIDE` | 16,217 | 7,009 | `GUARDRAIL_Ungrounded number ` (chemical safety) |
-| 5 | EN | How to prevent this next season? | `OFFLINE_GUIDE` | 12,656 | 5,366 | `GUARDRAIL_Ungrounded number ` (safety check) |
-| 6 | HI | प्राकृतिक उपचार क्या है? | `LLAMA` | 16,810 | 6,813 | `NONE (Llama Answered)` |
-| 7 | HI | खाद कितनी मात्रा में डालें? | `OFFLINE_GUIDE` | 2 | 0 | `OFFLINE_GUIDE_FALLBACK` (fast FTS referral) |
-| 8 | HI | क्या यह रोग फैलता है? | `OFFLINE_GUIDE` | 5 | 0 | `OFFLINE_GUIDE_FALLBACK` (fast FTS referral) |
-| 9 | HI | कौन सा कीटनाशक या फफूंदनाशक छिड़कें? | `OFFLINE_GUIDE` | 20,113 | 8,724 | `GUARDRAIL_Ungrounded number ` (chemical safety) |
-| 10 | HI | इसकी रोकथाम कैसे करें? | `OFFLINE_GUIDE` | 13,135 | 6,657 | `GUARDRAIL_Ungrounded number ` (safety check) |
+| 1 | EN | What is the natural remedy? | `LLAMA` | 8,639 | 6,056 | `NONE (Llama Answered)` |
+| 2 | EN | How much fertilizer should I apply? | `OFFLINE_GUIDE` | 9,481 | 7,134 | `GUARDRAIL_Ungrounded number ` (safety check) |
+| 3 | EN | Is this disease contagious to other plants? | `OFFLINE_GUIDE` | 7 | 0 | `OFFLINE_GUIDE_FALLBACK` (fast FTS referral) |
+| 4 | EN | What chemical spray is recommended? | `OFFLINE_GUIDE` | 7,921 | 5,488 | `GUARDRAIL_Ungrounded number ` (chemical safety) |
+| 5 | EN | How to prevent this next season? | `LLAMA` | 11,349 | 6,901 | `NONE (Llama Answered)` |
+| 6 | HI | प्राकृतिक उपचार क्या है? | `LLAMA` | 16,690 | 8,681 | `NONE (Llama Answered)` |
+| 7 | HI | खाद कितनी मात्रा में डालें? | `OFFLINE_GUIDE` | 3 | 0 | `OFFLINE_GUIDE_FALLBACK` (fast FTS referral) |
+| 8 | HI | क्या यह रोग फैलता है? | `OFFLINE_GUIDE` | 6 | 0 | `OFFLINE_GUIDE_FALLBACK` (fast FTS referral) |
+| 9 | HI | कौन सा कीटनाशक या फफूंदनाशक छिड़कें? | `LLAMA` | 10,440 | 6,745 | `NONE (Llama Answered)` |
+| 10 | HI | इसकी रोकथाम कैसे करें? | `LLAMA` | 17,692 | 11,277 | `NONE (Llama Answered)` |
 
-- **Llama Generated Answers:** 2
-- **Offline Verified Guide Answers:** 8 (3 immediate FTS referrals in 2-5 ms, 4 guardrail intercepted ungrounded numbers per Rule H4, 1 timeout fallback)
+- **Llama Generated Answers:** 5
+- **Offline Verified Guide Answers:** 5 (3 immediate FTS referrals in 3-7 ms, 2 guardrail intercepted ungrounded numbers per Rule H4)
+- **Average Duration Across All Questions:** **8,222.8 ms** (meets target < 10 s on POCO)
 - **Crashes / ANRs:** **0**

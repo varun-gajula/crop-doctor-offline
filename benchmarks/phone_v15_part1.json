@@ -1,6 +1,6 @@
 {
   "device": "POCO M4 5G (22041219PI)",
-  "model_load_time_ms": 70,
+  "model_load_time_ms": 116,
   "total_photos": 10,
   "photos": [
     {
@@ -114,5 +114,5 @@
       "crop_mass": 0.8757154
     }
   ],
-  "timestamp": "2026-11-23T22:47:16"
+  "timestamp": "2026-11-24T01:27:13"
 }
