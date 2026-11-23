@@ -41,6 +41,7 @@ import com.cropdoctor.ui.theme.FarmGreenPrimary
 import com.cropdoctor.vision.ImageAnalysisMetadata
 import com.cropdoctor.vision.LeafValidator
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.NonCancellable
@@ -227,20 +228,41 @@ class MainActivity : ComponentActivity() {
                         skipSoftWarning: Boolean = false
                     ) {
                         val thisRequestId = currentRequestId.incrementAndGet()
+                        Log.i("CROPDOC_LLAMA", "SCAN_START: requestId=$thisRequestId source=$source thread='${Thread.currentThread().name}'")
                         currentDiagnosisJob?.cancel()
                         currentAdviceJob?.cancel()
-                        (app.advisor as? ExecuTorchLlamaAdvisor)?.stop()
+                        app.advisor.stop("new_scan_processImageBytes_req$thisRequestId")
                         isProcessingImage = true
                         if (pendingCapturedBitmap != null && !pendingCapturedBitmap!!.isRecycled) {
                             pendingCapturedBitmap?.recycle()
                             pendingCapturedBitmap = null
                         }
 
+                        val scanStartTime = System.currentTimeMillis()
+                        val watchdogJob = lifecycleScope.launch(Dispatchers.Default) {
+                            delay(8000L)
+                            if (isProcessingImage) {
+                                val elapsed = System.currentTimeMillis() - scanStartTime
+                                Log.w("CROPDOC_LLAMA", "WATCHDOG_8S_TRIGGERED: Scan running > 8000ms (${elapsed}ms) for requestId=$thisRequestId isProcessingImage=$isProcessingImage")
+                                Log.w("CROPDOC_LLAMA", "WATCHDOG_JOBS: currentDiagnosisJob active=${currentDiagnosisJob?.isActive} cancelled=${currentDiagnosisJob?.isCancelled} completed=${currentDiagnosisJob?.isCompleted}")
+                                Log.w("CROPDOC_LLAMA", "WATCHDOG_JOBS: currentAdviceJob active=${currentAdviceJob?.isActive} cancelled=${currentAdviceJob?.isCancelled} completed=${currentAdviceJob?.isCompleted}")
+                                val traces = Thread.getAllStackTraces()
+                                Log.w("CROPDOC_LLAMA", "WATCHDOG_STACK_TRACES: Total active threads=${traces.size}")
+                                for ((thread, stack) in traces) {
+                                    val traceStr = stack.take(20).joinToString("\n      at ") { it.toString() }
+                                    Log.w("CROPDOC_LLAMA", "THREAD [${thread.name}, id=${thread.id}, state=${thread.state}]:\n      at $traceStr")
+                                }
+                            }
+                        }
+
                         currentDiagnosisJob = lifecycleScope.launch(Dispatchers.Default) {
                             var preprocessedImage: ImagePreprocessor.PreprocessedImage? = null
                             var bitmapRetained = false
                             try {
-                                withTimeout(10_000L) {
+                                withTimeout(12_000L) {
+                                    // Cancel current generation and wait up to 3000ms for Llama to exit native execution
+                                    app.advisor.cancelAndAwait(3000L)
+
                                     val reusableBuf = (app.classifier as? ExecuTorchClassifier)?.getReusableBuffer()
                                     val preprocessed = ImagePreprocessor.prepare(bytes, reusableBuf)
                                     preprocessedImage = preprocessed
@@ -386,6 +408,7 @@ class MainActivity : ComponentActivity() {
                                             kbEntry = kb,
                                             language = selectedLanguage,
                                             crop = result.selectedCrop ?: effectiveCropFilter,
+                                            requestId = thisRequestId,
                                             onUpdate = { advisoryText = it },
                                             onStateChange = { isGeneratingAdvice = it },
                                             onAdvisorSourceChange = { currentAdvisorSource = it }
@@ -440,6 +463,7 @@ class MainActivity : ComponentActivity() {
                                     }
                                 }
                             } finally {
+                                watchdogJob.cancel()
                                 if (!bitmapRetained) {
                                     preprocessedImage?.bitmap512?.recycle()
                                 }
@@ -448,6 +472,8 @@ class MainActivity : ComponentActivity() {
                                         isProcessingImage = false
                                     }
                                 }
+                                val scanDuration = System.currentTimeMillis() - scanStartTime
+                                Log.i("CROPDOC_LLAMA", "SCAN_END: requestId=$thisRequestId durationMs=${scanDuration}ms thread='${Thread.currentThread().name}'")
                             }
                         }
                     }
@@ -459,15 +485,36 @@ class MainActivity : ComponentActivity() {
                         metadata: ImageAnalysisMetadata? = null
                     ) {
                         val thisRequestId = currentRequestId.incrementAndGet()
+                        Log.i("CROPDOC_LLAMA", "SCAN_START: requestId=$thisRequestId source=bitmap thread='${Thread.currentThread().name}'")
                         currentDiagnosisJob?.cancel()
                         currentAdviceJob?.cancel()
-                        (app.advisor as? ExecuTorchLlamaAdvisor)?.stop()
+                        app.advisor.stop("new_scan_processDiagnosis_req$thisRequestId")
                         isProcessingImage = true
+
+                        val scanStartTime = System.currentTimeMillis()
+                        val watchdogJob = lifecycleScope.launch(Dispatchers.Default) {
+                            delay(8000L)
+                            if (isProcessingImage) {
+                                val elapsed = System.currentTimeMillis() - scanStartTime
+                                Log.w("CROPDOC_LLAMA", "WATCHDOG_8S_TRIGGERED: Scan running > 8000ms (${elapsed}ms) for requestId=$thisRequestId isProcessingImage=$isProcessingImage")
+                                Log.w("CROPDOC_LLAMA", "WATCHDOG_JOBS: currentDiagnosisJob active=${currentDiagnosisJob?.isActive} cancelled=${currentDiagnosisJob?.isCancelled} completed=${currentDiagnosisJob?.isCompleted}")
+                                Log.w("CROPDOC_LLAMA", "WATCHDOG_JOBS: currentAdviceJob active=${currentAdviceJob?.isActive} cancelled=${currentAdviceJob?.isCancelled} completed=${currentAdviceJob?.isCompleted}")
+                                val traces = Thread.getAllStackTraces()
+                                Log.w("CROPDOC_LLAMA", "WATCHDOG_STACK_TRACES: Total active threads=${traces.size}")
+                                for ((thread, stack) in traces) {
+                                    val traceStr = stack.take(20).joinToString("\n      at ") { it.toString() }
+                                    Log.w("CROPDOC_LLAMA", "THREAD [${thread.name}, id=${thread.id}, state=${thread.state}]:\n      at $traceStr")
+                                }
+                            }
+                        }
 
                         currentDiagnosisJob = lifecycleScope.launch(Dispatchers.Default) {
                             var bitmapRetained = false
                             try {
-                                withTimeout(10_000L) {
+                                withTimeout(12_000L) {
+                                    // Cancel current generation and wait up to 3000ms for Llama to exit native execution
+                                    app.advisor.cancelAndAwait(3000L)
+
                                     val effectiveCropFilter = cropFilter ?: selectedCrop
                                     val result = app.classifier.classify(bitmap, effectiveCropFilter, metadata)
 
@@ -572,6 +619,7 @@ class MainActivity : ComponentActivity() {
                                                 kbEntry = kb,
                                                 language = selectedLanguage,
                                                 crop = result.selectedCrop ?: effectiveCropFilter,
+                                                requestId = thisRequestId,
                                                 onUpdate = { advisoryText = it },
                                                 onStateChange = { isGeneratingAdvice = it },
                                                 onAdvisorSourceChange = { currentAdvisorSource = it }
@@ -626,6 +674,7 @@ class MainActivity : ComponentActivity() {
                                     }
                                 }
                             } finally {
+                                watchdogJob.cancel()
                                 if (!bitmapRetained && capturedLeafBitmap != bitmap && !bitmap.isRecycled) {
                                     bitmap.recycle()
                                 }
@@ -634,6 +683,8 @@ class MainActivity : ComponentActivity() {
                                         isProcessingImage = false
                                     }
                                 }
+                                val scanDuration = System.currentTimeMillis() - scanStartTime
+                                Log.i("CROPDOC_LLAMA", "SCAN_END: requestId=$thisRequestId durationMs=${scanDuration}ms thread='${Thread.currentThread().name}'")
                             }
                         }
                     }
@@ -645,6 +696,11 @@ class MainActivity : ComponentActivity() {
                                 val filePath = intent.getStringExtra("file_path")
                                 val source = intent.getStringExtra("image_source") ?: "gallery"
                                 val cropHint = intent.getStringExtra("crop_hint") ?: "auto"
+                                val langExtra = intent.getStringExtra("language")
+                                if (langExtra != null && (langExtra == "en" || langExtra == "hi" || langExtra == "te")) {
+                                    selectedLanguage = langExtra
+                                    userPrefs.selectedLanguage = langExtra
+                                }
                                 if (filePath != null) {
                                     try {
                                         val file = File(filePath)
@@ -1575,11 +1631,13 @@ class MainActivity : ComponentActivity() {
         fieldSpread: com.cropdoctor.domain.RulesEngine.FieldSpread? = null,
         region: String = "telangana",
         crop: String? = null,
+        requestId: Long = 0L,
         onUpdate: (String) -> Unit,
         onStateChange: (Boolean) -> Unit,
         onAdvisorSourceChange: ((String) -> Unit)? = null
     ) {
         currentAdviceJob?.cancel()
+        app.advisor.stop("triggerAdvisoryStream_req$requestId")
         onUpdate("")
         onStateChange(true)
         onAdvisorSourceChange?.invoke(app.advisor.advisorSource)
@@ -1596,6 +1654,10 @@ class MainActivity : ComponentActivity() {
         currentAdviceJob = lifecycleScope.launch {
             val sb = StringBuilder()
             try {
+                val ready = app.advisor.cancelAndAwait(3000L)
+                if (!ready) {
+                    Log.w("MainActivity", "Previous advisor did not exit in 3s; using verified offline guide")
+                }
                 app.advisor.generateAdvice(
                     classId = result.classId,
                     severityBand = result.severityBand,
@@ -1605,7 +1667,8 @@ class MainActivity : ComponentActivity() {
                     fieldSpread = spreadStr,
                     region = region,
                     urgency = urgency,
-                    crop = effectiveCrop
+                    crop = effectiveCrop,
+                    requestId = requestId
                 ) { token ->
                     sb.append(token)
                     onUpdate(sb.toString())

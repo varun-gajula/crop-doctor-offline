@@ -21,10 +21,13 @@ interface Advisor {
         region: String = "telangana",
         urgency: RulesEngine.UrgencyLevel? = null,
         crop: String? = null,
+        requestId: Long = 0L,
         onToken: (String) -> Unit
     )
 
-    fun stop() {}
+    fun stop() { stop("unspecified") }
+    fun stop(reason: String) {}
+    suspend fun cancelAndAwait(timeoutMs: Long = 3000L): Boolean = true
 
     fun close()
 }

@@ -60,4 +60,15 @@ object MemoryBudgetDecider {
             true
         }
     }
+
+    fun getAvailableRamBytes(context: Context): Long {
+        return try {
+            val actManager = context.getSystemService(Context.ACTIVITY_SERVICE) as? ActivityManager ?: return -1L
+            val memInfo = ActivityManager.MemoryInfo()
+            actManager.getMemoryInfo(memInfo)
+            memInfo.availMem
+        } catch (_: Exception) {
+            -1L
+        }
+    }
 }

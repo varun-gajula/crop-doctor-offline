@@ -26,6 +26,7 @@ class FakeAdvisor : Advisor {
         region: String,
         urgency: RulesEngine.UrgencyLevel?,
         crop: String?,
+        requestId: Long,
         onToken: (String) -> Unit
     ) {
         val certaintyBand = when (certainty.uppercase()) {
