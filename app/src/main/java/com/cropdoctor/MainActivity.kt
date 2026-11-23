@@ -156,15 +156,22 @@ class MainActivity : ComponentActivity() {
                             currentRequestId.incrementAndGet()
                             currentDiagnosisJob?.cancel()
                             currentAdviceJob?.cancel()
-                            (app.advisor as? ExecuTorchLlamaAdvisor)?.stop()
+                            (app.advisor as? ExecuTorchLlamaAdvisor)?.stop("nav_to_camera")
                             isProcessingImage = false
                             isGeneratingAdvice = false
                         } else if (currentScreen == AppScreen.CAMERA && screen != AppScreen.RESULT) {
                             currentRequestId.incrementAndGet()
                             currentDiagnosisJob?.cancel()
                             currentAdviceJob?.cancel()
-                            (app.advisor as? ExecuTorchLlamaAdvisor)?.stop()
+                            (app.advisor as? ExecuTorchLlamaAdvisor)?.stop("nav_from_camera")
                             isProcessingImage = false
+                        } else if (currentScreen == AppScreen.RESULT && screen != AppScreen.RESULT) {
+                            currentRequestId.incrementAndGet()
+                            currentDiagnosisJob?.cancel()
+                            currentAdviceJob?.cancel()
+                            (app.advisor as? ExecuTorchLlamaAdvisor)?.stop("nav_from_result")
+                            isProcessingImage = false
+                            isGeneratingAdvice = false
                         }
                         previousScreen = currentScreen
                         currentScreen = screen
@@ -262,6 +269,12 @@ class MainActivity : ComponentActivity() {
                             var preprocessedImage: ImagePreprocessor.PreprocessedImage? = null
                             var bitmapRetained = false
                             try {
+                                // Await Llama generation stop so native ExecuTorch vision forward pass has exclusive access
+                                val llamaStopped = app.advisor.cancelAndAwait(5000L)
+                                if (!llamaStopped) {
+                                    Log.w("MainActivity", "Llama did not stop within 5s before vision forward pass")
+                                }
+
                                 withTimeout(12_000L) {
                                     val reusableBuf = (app.classifier as? ExecuTorchClassifier)?.getReusableBuffer()
                                     val preprocessed = ImagePreprocessor.prepare(bytes, reusableBuf)
@@ -469,7 +482,7 @@ class MainActivity : ComponentActivity() {
                                     preprocessedImage?.bitmap512?.recycle()
                                 }
                                 withContext(NonCancellable + Dispatchers.Main) {
-                                    if (thisRequestId == currentRequestId.get()) {
+                                    if (thisRequestId == currentRequestId.get() || currentDiagnosisJob?.isActive != true) {
                                         isProcessingImage = false
                                     }
                                 }
@@ -512,6 +525,12 @@ class MainActivity : ComponentActivity() {
                         currentDiagnosisJob = lifecycleScope.launch(Dispatchers.Default) {
                             var bitmapRetained = false
                             try {
+                                // Await Llama generation stop so native ExecuTorch vision forward pass has exclusive access
+                                val llamaStopped = app.advisor.cancelAndAwait(5000L)
+                                if (!llamaStopped) {
+                                    Log.w("MainActivity", "Llama did not stop within 5s before vision forward pass")
+                                }
+
                                 withTimeout(12_000L) {
                                     val effectiveCropFilter = cropFilter ?: selectedCrop
                                     val result = app.classifier.classify(bitmap, effectiveCropFilter, metadata)
@@ -677,7 +696,7 @@ class MainActivity : ComponentActivity() {
                                     bitmap.recycle()
                                 }
                                 withContext(NonCancellable + Dispatchers.Main) {
-                                    if (thisRequestId == currentRequestId.get()) {
+                                    if (thisRequestId == currentRequestId.get() || currentDiagnosisJob?.isActive != true) {
                                         isProcessingImage = false
                                     }
                                 }
@@ -1756,7 +1775,6 @@ class MainActivity : ComponentActivity() {
         onAdvisorSourceChange: ((String) -> Unit)? = null
     ) {
         currentAdviceJob?.cancel()
-        app.advisor.stop("triggerAdvisoryStream_req$requestId")
         onUpdate("")
         onStateChange(true)
         onAdvisorSourceChange?.invoke(app.advisor.advisorSource)
@@ -1771,7 +1789,6 @@ class MainActivity : ComponentActivity() {
         val effectiveCrop = crop ?: result.selectedCrop ?: kbEntry.crop
 
         currentAdviceJob = lifecycleScope.launch {
-            val sb = StringBuilder()
             try {
                 val ready = app.advisor.cancelAndAwait(3000L)
                 if (!ready) {
@@ -1788,9 +1805,8 @@ class MainActivity : ComponentActivity() {
                     urgency = urgency,
                     crop = effectiveCrop,
                     requestId = requestId
-                ) { token ->
-                    sb.append(token)
-                    onUpdate(sb.toString())
+                ) { currentText ->
+                    onUpdate(currentText)
                     onAdvisorSourceChange?.invoke(app.advisor.advisorSource)
                 }
             } catch (e: Exception) {

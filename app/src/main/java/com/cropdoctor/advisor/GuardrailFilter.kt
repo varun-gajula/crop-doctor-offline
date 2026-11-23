@@ -39,8 +39,11 @@ object GuardrailFilter {
         "deltamethrin", "thiamethoxam", "fipronil", "profenofos", "diafenthiuron"
     )
 
+    private val SPECIAL_TOKEN_REGEX = Regex("<\\|[a-zA-Z0-9_]+\\|>")
+
     fun sanitize(text: String): String {
-        val matcher = DOSE_PATTERN.matcher(text)
+        val noSpecial = SPECIAL_TOKEN_REGEX.replace(text, "")
+        val matcher = DOSE_PATTERN.matcher(noSpecial)
         return matcher.replaceAll(REPLACEMENT)
     }
 

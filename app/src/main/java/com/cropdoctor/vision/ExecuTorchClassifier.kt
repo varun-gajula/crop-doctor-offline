@@ -432,6 +432,10 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
 
         Log.e(TAG, "classify() called: cropHint=$cropHint, bitmap=${preprocessed.bitmap512.width}x${preprocessed.bitmap512.height}, moduleNull=${module == null}, labelsCount=${labels.size}")
 
+        if (module == null) {
+            initializeModule()
+        }
+
         // Rule H11 & T1: If model is missing or fails to load, NEVER guess a disease.
         if (module == null || labels.isEmpty()) {
             Log.e(TAG, "classify() EARLY EXIT: module is null (${module == null}) or labels empty (${labels.size})")
@@ -456,23 +460,28 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
             if (!currentCoroutineContext().isActive) {
                 throw kotlinx.coroutines.CancellationException("Scan cancelled before acquiring forwardMutex")
             }
-            // Forward pass reusing native tensor buffer (Rule P2.3) protected by forwardMutex against concurrent native execution
-            val outputs = forwardMutex.withLock {
+            // Forward pass reusing native tensor buffer (Rule P2.3) protected by global ExecuTorchLock against concurrent native execution
+            val (scaledLogits, freeEnergy) = ExecuTorchLock.mutex.withLock {
                 if (!currentCoroutineContext().isActive) {
                     throw kotlinx.coroutines.CancellationException("Scan cancelled before native forward pass")
+                }
+                if (module == null) {
+                    initializeModule()
                 }
                 val inputTensor = Tensor.fromBlob(
                     preprocessed.tensorBuffer,
                     longArrayOf(1, 3, inputSize.toLong(), inputSize.toLong())
                 )
-                module!!.forward(EValue.from(inputTensor))
+                val forwardStart = System.currentTimeMillis()
+                val outputs = module!!.forward(EValue.from(inputTensor))
+                val forwardDuration = System.currentTimeMillis() - forwardStart
+                Log.i(TAG, "Native vision model forward pass took ${forwardDuration} ms")
+                val outputTensor = outputs[0].toTensor()
+                val rawFloats = outputTensor.dataAsFloatArray.copyOf(labels.size)
+                val sLogits = VisionMath.applyTemperature(rawFloats, temperature)
+                val fEnergy = VisionMath.computeFreeEnergy(sLogits, temperature)
+                Pair(sLogits, fEnergy)
             }
-            val outputTensor = outputs[0].toTensor()
-            val rawLogits = outputTensor.dataAsFloatArray
-
-            // 3. Evaluate model outputs against labels.json (Task AUTO / Picker)
-            val scaledLogits = VisionMath.applyTemperature(rawLogits.take(labels.size).toFloatArray(), temperature)
-            val freeEnergy = VisionMath.computeFreeEnergy(scaledLogits, temperature)
             val isFilteredCrop = cropHint != null && cropHint.isNotBlank() && cropHint != "all" && cropHint != "auto"
             val globalProbs = VisionMath.softmax(scaledLogits)
             val cropMasses = com.cropdoctor.domain.CropMapping.computeCropMasses(labels, globalProbs)
@@ -694,6 +703,13 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
         directBuffer.rewind()
 
         return Tensor.fromBlob(directBuffer, longArrayOf(1, 3, width.toLong(), height.toLong()))
+    }
+
+    override fun invalidateModule() {
+        synchronized(this) {
+            module = null
+            Log.i(TAG, "Vision module invalidated (will reload fresh on next scan)")
+        }
     }
 
     override fun close() {
