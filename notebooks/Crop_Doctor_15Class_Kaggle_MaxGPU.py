@@ -56,11 +56,28 @@ IMAGE_EXTS = {".jpg", ".jpeg", ".png", ".bmp", ".webp"}
 
 # Install prerequisite libraries silently
 os.system("pip install -q imagehash Pillow numpy")
+import shutil
+if not shutil.which("flatc"):
+    print("Installing flatbuffers-compiler (flatc) for ExecuTorch schema compilation...")
+    os.system("apt-get update -qq && apt-get install -y -qq flatbuffers-compiler")
 
 import numpy as np
 from PIL import Image, ImageOps, ImageFile
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 import imagehash
+
+def json_safe(obj):
+    if hasattr(obj, "item"):
+        return obj.item()
+    if hasattr(obj, "tolist"):
+        return obj.tolist()
+    if isinstance(obj, (np.integer, int)):
+        return int(obj)
+    if isinstance(obj, (np.floating, float)):
+        return float(obj)
+    if isinstance(obj, (np.bool_, bool)):
+        return bool(obj)
+    return str(obj)
 
 random.seed(SEED)
 np.random.seed(SEED)
@@ -373,7 +390,7 @@ leakage_report = {
     "total_val": len(val_items),
 }
 with open(ARTIFACT_DIR / "leakage_report.json", "w") as fp:
-    json.dump(leakage_report, fp, indent=2)
+    json.dump(leakage_report, fp, indent=2, default=json_safe)
 
 class_counts = {
     c: {
@@ -384,7 +401,7 @@ class_counts = {
     } for c in CLASS_NAMES
 }
 with open(ARTIFACT_DIR / "class_counts.json", "w") as fp:
-    json.dump(class_counts, fp, indent=2)
+    json.dump(class_counts, fp, indent=2, default=json_safe)
 print("✓ Saved leakage_report.json and class_counts.json")
 
 # ==============================================================================
@@ -523,7 +540,7 @@ preprocess_config = {
     "crop_doctor_version": "TR4-15",
 }
 with open(ARTIFACT_DIR / "preprocess.json", "w") as fp:
-    json.dump(preprocess_config, fp, indent=2)
+    json.dump(preprocess_config, fp, indent=2, default=json_safe)
 
 print(f"✓ Model initialized: MobileNetV3-Large -> {len(CLASS_NAMES)} classes")
 print(f"✓ Balanced WeightedRandomSampler active with inverse-sqrt weights: {[round(w, 4) for w in class_weights]}")
@@ -663,7 +680,7 @@ for epoch in range(start_epoch, EPOCHS):
     history.append(ep_record)
     
     with open(HISTORY_PATH, "w") as fp:
-        json.dump(history, fp, indent=2)
+        json.dump(history, fp, indent=2, default=json_safe)
         
     state_to_save = model.module.state_dict() if hasattr(model, "module") else model.state_dict()
     
@@ -787,10 +804,10 @@ thresholds_data = {
 }
 
 with open(ARTIFACT_DIR / "thresholds.json", "w") as fp:
-    json.dump(thresholds_data, fp, indent=2)
+    json.dump(thresholds_data, fp, indent=2, default=json_safe)
 
 with open(ARTIFACT_DIR / "labels.json", "w") as fp:
-    json.dump(CLASS_NAMES, fp, indent=2)
+    json.dump(CLASS_NAMES, fp, indent=2, default=json_safe)
 
 print(f"✓ thresholds.json saved: Temperature={T_opt:.4f}, Confidence Threshold={conf_threshold:.4f}, Energy Threshold={energy_threshold:.4f}")
 print(f"✓ labels.json saved with {len(CLASS_NAMES)} classes.")
@@ -801,6 +818,11 @@ print(f"✓ labels.json saved with {len(CLASS_NAMES)} classes.")
 print("=" * 80)
 print(f"EXPORTING TO EXECUTORCH {APP_REQUIRED_EXECUTORCH} XNNPACK (.pte)")
 print("=" * 80)
+
+import shutil
+if not shutil.which("flatc"):
+    print("Installing flatbuffers-compiler (flatc)...")
+    os.system("apt-get update -qq && apt-get install -y -qq flatbuffers-compiler")
 
 if sys.version_info >= (3, 13):
     print("Detected Python >= 3.13. Setting up automated Python 3.11 environment via uv...")
@@ -819,6 +841,14 @@ from pathlib import Path
 import numpy as np
 import torch
 import torchvision.models as models
+
+def json_safe(obj):
+    if hasattr(obj, "item"): return obj.item()
+    if hasattr(obj, "tolist"): return obj.tolist()
+    if isinstance(obj, (np.integer, int)): return int(obj)
+    if isinstance(obj, (np.floating, float)): return float(obj)
+    if isinstance(obj, (np.bool_, bool)): return bool(obj)
+    return str(obj)
 
 model_path = Path(r'{BEST_MODEL_PATH}')
 output_pte = Path(r'{ARTIFACT_DIR / "vision.pte"}')
@@ -871,20 +901,21 @@ with torch.no_grad():
         max_err = float(np.max(abs_diff))
         max_err_all = max(max_err_all, max_err)
         parity_records.append({{
-            "sample_id": i + 1,
-            "max_abs_error": max_err,
+            "sample_id": int(i + 1),
+            "max_abs_error": float(max_err),
             "pass": bool(max_err < 1e-3)
         }})
 
 parity_data = {{
-    "samples_tested": len(parity_records),
-    "max_error_across_all_samples": max_err_all,
+    "samples_tested": int(len(parity_records)),
+    "max_error_across_all_samples": float(max_err_all),
     "gate_threshold": 1e-3,
     "all_pass": bool(max_err_all < 1e-3),
     "records": parity_records
 }}
 with open(parity_json, "w") as fp:
-    json.dump(parity_data, fp, indent=2)
+    json.dump(parity_data, fp, indent=2, default=json_safe)
+print(f"✓ Parity check: Max Error = {{max_err_all:.2e}} | Gate Result: {{'PASS' if max_err_all < 1e-3 else 'FAIL'}}")
 print(f"✓ Parity check: Max Error = {{max_err_all:.2e}} | Gate Result: {{'PASS' if max_err_all < 1e-3 else 'FAIL'}}")
 """
 
@@ -948,10 +979,10 @@ for c_idx, c_name in enumerate(CLASS_NAMES):
         }
         for s in sources_in_c:
             s_indices = [idx for idx in val_indices_in_c if val_items[idx]["source"] == s]
-            s_correct = sum((val_preds_arr[i] == c_idx) for i in s_indices)
-            s_support = len(s_indices)
+            s_correct = int(sum((val_preds_arr[i] == c_idx) for i in s_indices))
+            s_support = int(len(s_indices))
             s_recall = float(s_correct / s_support) if s_support > 0 else 0.0
-            diff = c_recall - s_recall
+            diff = float(c_recall - s_recall)
             is_flagged = bool(diff > 0.10)
             if is_flagged:
                 flagged_sources.append(f"{c_name}::{s} (recall={s_recall*100:.1f}%, class_avg={c_recall*100:.1f}%, drop={diff*100:.1f}pts)")
@@ -966,7 +997,7 @@ for c_idx, c_name in enumerate(CLASS_NAMES):
             print(f"  [{c_name:28s}] Source '{s:14s}': Recall={s_recall*100:6.2f}% ({s_correct:3d}/{s_support:3d}) | Avg={c_recall*100:6.2f}% | {status_tag}")
 
 with open(ARTIFACT_DIR / "per_source_metrics.json", "w") as fp:
-    json.dump(per_source_metrics, fp, indent=2)
+    json.dump(per_source_metrics, fp, indent=2, default=json_safe)
 
 # 3. Stress-Test Evaluation: PlantDoc Corn Leaf Blight Noisy Web Scrapes
 noisy_results = {}
@@ -997,7 +1028,7 @@ if STRESS_TEST_DIR and STRESS_TEST_DIR.exists():
             "prediction_distribution": dict(noisy_dist)
         }
         with open(ARTIFACT_DIR / "noisy_stress_test_results.json", "w") as fp:
-            json.dump(noisy_results, fp, indent=2)
+            json.dump(noisy_results, fp, indent=2, default=json_safe)
         print(f"✓ Stress-test recall on noisy PlantDoc web scrapes: {noisy_recall*100:.2f}% ({correct_noisy}/{len(noisy_files)})")
         print(f"  Distribution: {dict(noisy_dist.most_common(5))}")
 
@@ -1076,7 +1107,7 @@ metrics_data = {
 }
 
 with open(ARTIFACT_DIR / "metrics.json", "w") as fp:
-    json.dump(metrics_data, fp, indent=2)
+    json.dump(metrics_data, fp, indent=2, default=json_safe)
 
 import csv
 with open(ARTIFACT_DIR / "confusion_matrix.csv", "w", newline="") as fp:
