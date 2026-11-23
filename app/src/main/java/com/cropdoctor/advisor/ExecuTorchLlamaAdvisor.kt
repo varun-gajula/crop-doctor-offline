@@ -162,10 +162,14 @@ class ExecuTorchLlamaAdvisor(private val context: Context) : Advisor {
     }
 
     private fun checkMemoryBudget(): Boolean {
-        val sufficient = MemoryBudgetDecider.isMemorySufficient(context, memoryThresholdBytes)
+        val sufficient = if (isModelLoaded && llamaModule != null) {
+            MemoryBudgetDecider.isMemorySufficientForExecution(context)
+        } else {
+            MemoryBudgetDecider.isMemorySufficient(context, memoryThresholdBytes)
+        }
         if (!sufficient) {
             _isLowMemoryFallback = true
-            Log.w(TAG, "Low device RAM (< ${memoryThresholdBytes / (1024 * 1024)} MB). Fallback to KB text alone with label 'Offline guide' (Rule H15).")
+            Log.w(TAG, "Low device RAM. Fallback to KB text alone with label 'Offline guide' (Rule H15).")
         }
         return sufficient
     }
@@ -398,9 +402,11 @@ class ExecuTorchLlamaAdvisor(private val context: Context) : Advisor {
             urgency = resolvedUrgency.name.replace("_", " ")
         )
 
-        val promptApproxTokens = (prompt.length / 3.8).toInt()
+        val maxNewTokens = 260
+        val totalSeqLimit = 768
+        val promptApproxTokens = (prompt.length / 3.8).toInt().coerceAtLeast(1)
         val startThreadName = Thread.currentThread().name
-        Log.i("CROPDOC_LLAMA", "GEN_START: requestId=$requestId promptTokenCount(approx)=$promptApproxTokens promptChars=${prompt.length} maxLenPassed=768 thread='$startThreadName' (id=${Thread.currentThread().id}) dispatcher=CropDoc-LlamaWorker")
+        Log.i("CROPDOC_LLAMA", "GEN_START: requestId=$requestId promptTokens=$promptApproxTokens maxNewTokens=$maxNewTokens totalSeqLimit=$totalSeqLimit promptChars=${prompt.length} thread='$startThreadName' (id=${Thread.currentThread().id}) dispatcher=CropDoc-LlamaWorker")
 
         _advisorSource = "LLAMA"
         _isFallbackToOfflineGuide = false
@@ -411,6 +417,7 @@ class ExecuTorchLlamaAdvisor(private val context: Context) : Advisor {
         val genStartTime = System.currentTimeMillis()
         var firstTokenTimeMs = 0L
         var totalTokens = 0
+        var hitEos = false
         var hitTargetLimit = false
         var lastLoggedTokenCount = 0
 
@@ -448,10 +455,13 @@ class ExecuTorchLlamaAdvisor(private val context: Context) : Advisor {
                     }
                 }
 
-                // Enforce max 200 answer tokens or EOS
-                if (token.contains("<|eot_id|>") || token.contains("<|end_of_text|>") || totalTokens >= 200) {
+                // Enforce EOS or max new tokens
+                if (token.contains("<|eot_id|>") || token.contains("<|end_of_text|>")) {
+                    hitEos = true
+                    stop("eos_token")
+                } else if (totalTokens >= maxNewTokens) {
                     hitTargetLimit = true
-                    stop("answer_complete_or_cap")
+                    stop("max_tokens_reached")
                 }
             }
 
@@ -467,15 +477,14 @@ class ExecuTorchLlamaAdvisor(private val context: Context) : Advisor {
             return
         }
 
-        var endReason = "finished"
+        var endReason = "EOS"
         var genException: Throwable? = null
 
         try {
             isGenerating = true
-            // Sequence length of 768 comfortably accommodates ~480 max prompt tokens + 200 answer tokens + safety margin
-            val completedInTime = withTimeoutOrNull(60_000L) {
+            val completedInTime = withTimeoutOrNull(75_000L) {
                 try {
-                    llamaModule?.generate(prompt, 768, llamaCallback, false)
+                    llamaModule?.generate(prompt, totalSeqLimit, llamaCallback, false)
                 } catch (t: Throwable) {
                     genException = t
                     Log.e(TAG, "Native Llama generate failed, falling back to offline guide", t)
@@ -483,13 +492,27 @@ class ExecuTorchLlamaAdvisor(private val context: Context) : Advisor {
                 }
             }
 
-            if (completedInTime == null) {
-                endReason = if (genException != null) "error: ${genException?.message}" else "timeout (60s)"
-                Log.w(TAG, "Llama generation ended: $endReason; showing partial text produced so far + offline guide")
-                _advisorSource = "OFFLINE_GUIDE"
-                _isFallbackToOfflineGuide = true
-                val partialText = fullTextBuilder.toString().trim()
-                val fallbackText = RulesEngine.buildCaseSpecificAdvisory(
+            endReason = when {
+                hitEos -> "EOS"
+                hitTargetLimit -> "token limit"
+                totalTokens + promptApproxTokens >= 760 -> "token limit"
+                completedInTime == null && genException == null -> "timeout"
+                genException != null -> "error"
+                else -> "EOS"
+            }
+
+            // Flush any remaining buffered tokens
+            if (tokenThrottleBuffer.isNotEmpty()) {
+                onToken(tokenThrottleBuffer.toString())
+                tokenThrottleBuffer.setLength(0)
+            }
+
+            val rawGeneratedText = fullTextBuilder.toString().trim()
+            val (cleanText, wasCut) = SentenceTrimmer.cleanToCompleteSentence(rawGeneratedText, language)
+
+            val finalFullText = if (wasCut || hitTargetLimit || endReason != "EOS" || completedInTime == null) {
+                val remainingSections = RulesEngine.buildRemainingSections(
+                    trimmedText = cleanText,
                     classId = classId,
                     crop = effectiveCrop,
                     diseaseName = kbEntry.names.forLanguage(language),
@@ -502,36 +525,41 @@ class ExecuTorchLlamaAdvisor(private val context: Context) : Advisor {
                     language = language,
                     kbEntry = kbEntry
                 )
-                val combinedText = if (partialText.isNotEmpty()) {
-                    "$partialText\n\n---\n[Offline guide]\n$fallbackText"
+                if (cleanText.isNotEmpty()) {
+                    if (remainingSections.isNotEmpty()) {
+                        "$cleanText\n\n---\n[Offline guide - Additional steps]\n$remainingSections"
+                    } else {
+                        cleanText
+                    }
                 } else {
-                    fallbackText
+                    RulesEngine.buildCaseSpecificAdvisory(
+                        classId = classId,
+                        crop = effectiveCrop,
+                        diseaseName = kbEntry.names.forLanguage(language),
+                        type = kbEntry.type,
+                        severityBand = severityBand,
+                        certaintyBand = certaintyBand,
+                        fieldSpread = spreadEnum,
+                        urgencyLevel = resolvedUrgency,
+                        region = region,
+                        language = language,
+                        kbEntry = kbEntry
+                    )
                 }
-                if (currentActiveRequestId == requestId) {
-                    onToken(combinedText)
-                }
-                Log.i("CROPDOC_DECISION", "ADVISOR_COMPLETE: advisor_source=OFFLINE_GUIDE tokens=$totalTokens ttft=${firstTokenTimeMs}ms tok_per_sec=0.00")
-                return
             } else {
-                endReason = when {
-                    hitTargetLimit -> "finished (target 200 or EOS)"
-                    totalTokens + promptApproxTokens >= 760 -> "length limit (max_seq_len 768 hit)"
-                    else -> "finished"
-                }
+                cleanText
             }
 
-            // Flush any remaining buffered tokens
-            if (tokenThrottleBuffer.isNotEmpty()) {
-                onToken(tokenThrottleBuffer.toString())
-                tokenThrottleBuffer.setLength(0)
+            // Update UI with sentence-complete text
+            if (currentActiveRequestId == requestId) {
+                onToken(finalFullText)
             }
 
             val totalGenDurationMs = System.currentTimeMillis() - genStartTime
-            val fullGeneratedText = fullTextBuilder.toString().trim()
 
             // Verify with GuardrailFilter (Rule H4, H5 & Task A2)
             val validation = GuardrailFilter.validateAdvice(
-                generatedText = fullGeneratedText,
+                generatedText = finalFullText,
                 kbEntry = kbEntry,
                 severityBand = severityBand,
                 urgencyLevel = resolvedUrgency,
@@ -562,6 +590,7 @@ class ExecuTorchLlamaAdvisor(private val context: Context) : Advisor {
             val genOnlyMs = totalGenDurationMs - firstTokenTimeMs
             val tokensPerSec = if (genOnlyMs > 0) (totalTokens.toDouble() / (genOnlyMs / 1000.0)) else 0.0
 
+            Log.i("CROPDOC_LLAMA", "GEN_METRICS: requestId=$requestId promptTokens=$promptApproxTokens maxNewTokens=$maxNewTokens totalSeqLimit=$totalSeqLimit tokensProduced=$totalTokens ttftMs=$firstTokenTimeMs tokPerSec=${String.format(Locale.US, "%.2f", tokensPerSec)} endReason='$endReason'")
             Log.i("CROPDOC_DECISION", "ADVISOR_COMPLETE: advisor_source=LLAMA tokens=$totalTokens ttft=${firstTokenTimeMs}ms tok_per_sec=${String.format(Locale.US, "%.2f", tokensPerSec)}")
 
             logBenchmarkMetrics(
@@ -651,8 +680,11 @@ class ExecuTorchLlamaAdvisor(private val context: Context) : Advisor {
         generationLock.withLock {
             val chatRequestId = System.nanoTime()
             currentActiveRequestId = chatRequestId
+            val maxNewTokens = 80
+            val totalSeqLimit = 512
+            val promptApproxTokens = (prompt.length / 3.8).toInt().coerceAtLeast(1)
             val startThreadName = Thread.currentThread().name
-            Log.i("CROPDOC_LLAMA", "CHAT_GEN_START: requestId=$chatRequestId promptChars=${prompt.length} thread='$startThreadName' dispatcher=CropDoc-LlamaWorker")
+            Log.i("CROPDOC_LLAMA", "CHAT_GEN_START: requestId=$chatRequestId promptTokens=$promptApproxTokens maxNewTokens=$maxNewTokens totalSeqLimit=$totalSeqLimit promptChars=${prompt.length} thread='$startThreadName' dispatcher=CropDoc-LlamaWorker")
 
             if (!checkMemoryBudget()) {
                 Log.w(TAG, "Memory budget insufficient for chat answer")
@@ -671,6 +703,9 @@ class ExecuTorchLlamaAdvisor(private val context: Context) : Advisor {
             val responseBuilder = StringBuilder()
             var totalTokens = 0
             val genStartTime = System.currentTimeMillis()
+            var firstTokenTimeMs = 0L
+            var hitEos = false
+            var hitTargetLimit = false
 
             val callback = object : LlmCallback {
                 override fun onResult(token: String?) {
@@ -680,27 +715,41 @@ class ExecuTorchLlamaAdvisor(private val context: Context) : Advisor {
                         return
                     }
                     totalTokens++
+                    val now = System.currentTimeMillis()
+                    if (firstTokenTimeMs == 0L) {
+                        firstTokenTimeMs = now - genStartTime
+                    }
                     responseBuilder.append(token)
-                    if (token.contains("<|eot_id|>") || token.contains("<|end_of_text|>") || totalTokens >= 200 || responseBuilder.length >= 800) {
+                    if (token.contains("<|eot_id|>") || token.contains("<|end_of_text|>")) {
+                        hitEos = true
+                        stop("chat_eos")
+                    } else if (totalTokens >= maxNewTokens || responseBuilder.length >= 400) {
+                        hitTargetLimit = true
                         stop("chat_complete_or_cap")
                     }
                 }
                 override fun onStats(stats: Float) {}
             }
 
-            var endReason = "finished"
+            var chatException: Throwable? = null
+            var endReason = "EOS"
             try {
                 isGenerating = true
-                val completed = withTimeoutOrNull(60_000L) {
+                val completed = withTimeoutOrNull(30_000L) {
                     try {
-                        llamaModule?.generate(prompt, 768, callback, false)
+                        llamaModule?.generate(prompt, totalSeqLimit, callback, false)
                     } catch (e: Exception) {
+                        chatException = e
                         Log.e(TAG, "Error generating chat answer: ${e.message}", e)
                         null
                     }
                 }
-                if (completed == null) {
-                    endReason = "timeout_or_error"
+                endReason = when {
+                    hitEos -> "EOS"
+                    hitTargetLimit -> "token limit"
+                    completed == null && chatException == null -> "timeout"
+                    chatException != null -> "error"
+                    else -> "EOS"
                 }
             } catch (ce: CancellationException) {
                 endReason = "cancelled"
@@ -708,12 +757,17 @@ class ExecuTorchLlamaAdvisor(private val context: Context) : Advisor {
             } finally {
                 isGenerating = false
                 val totalGenDurationMs = System.currentTimeMillis() - genStartTime
+                val genOnlyMs = totalGenDurationMs - firstTokenTimeMs
+                val chatTokPerSec = if (genOnlyMs > 0) (totalTokens.toDouble() / (genOnlyMs / 1000.0)) else 0.0
+                Log.i("CROPDOC_LLAMA", "CHAT_GEN_METRICS: requestId=$chatRequestId promptTokens=$promptApproxTokens maxNewTokens=$maxNewTokens totalSeqLimit=$totalSeqLimit tokensProduced=$totalTokens ttftMs=$firstTokenTimeMs tokPerSec=${String.format(Locale.US, "%.2f", chatTokPerSec)} durationMs=$totalGenDurationMs endReason='$endReason'")
                 Log.i("CROPDOC_LLAMA", "CHAT_GEN_END: requestId=$chatRequestId reason='$endReason' totalTokens=$totalTokens durationMs=${totalGenDurationMs}ms thread='${Thread.currentThread().name}' dispatcher=CropDoc-LlamaWorker")
                 if (currentActiveRequestId == chatRequestId) {
                     currentActiveRequestId = -1L
                 }
             }
-            return@withContext responseBuilder.toString().trim()
+            val rawChat = responseBuilder.toString().trim()
+            val (cleanChat, _) = SentenceTrimmer.cleanToCompleteSentence(rawChat)
+            return@withContext if (cleanChat.isNotBlank()) cleanChat else rawChat
         }
     }
 

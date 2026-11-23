@@ -20,6 +20,9 @@ object MemoryBudgetDecider {
     // without triggering OS LowMemoryKiller (LMK) on 6 GB reference devices.
     const val MIN_AVAILABLE_RAM_BYTES: Long = 1500L * 1024L * 1024L
 
+    // 250 MB minimum available system RAM required when the model is already loaded in memory
+    const val MIN_EXECUTION_RAM_BYTES: Long = 250L * 1024L * 1024L
+
     /**
      * Pure, unit-testable decision function.
      *
@@ -61,6 +64,29 @@ object MemoryBudgetDecider {
         }
     }
 
+    /**
+     * Decision function when model is ALREADY resident in RAM.
+     * Checks that the OS is not in low-memory state and there is sufficient scratch RAM.
+     */
+    fun isMemorySufficientForExecution(context: Context, minRequiredBytes: Long = MIN_EXECUTION_RAM_BYTES): Boolean {
+        return try {
+            val actManager = context.getSystemService(Context.ACTIVITY_SERVICE) as? ActivityManager
+                ?: return true
+            val memInfo = ActivityManager.MemoryInfo()
+            actManager.getMemoryInfo(memInfo)
+            val availMb = memInfo.availMem / (1024 * 1024)
+            val decision = !memInfo.lowMemory && memInfo.availMem >= minRequiredBytes
+            Log.i(
+                TAG,
+                "Rule H15 RAM Check (Execution): Available=${availMb}MB, LowMemory=${memInfo.lowMemory}, SafeToExecute=$decision"
+            )
+            decision
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to inspect system memory via ActivityManager", e)
+            true
+        }
+    }
+
     fun getAvailableRamBytes(context: Context): Long {
         return try {
             val actManager = context.getSystemService(Context.ACTIVITY_SERVICE) as? ActivityManager ?: return -1L
@@ -69,6 +95,20 @@ object MemoryBudgetDecider {
             memInfo.availMem
         } catch (_: Exception) {
             -1L
+        }
+    }
+
+    /**
+     * Checks whether the Android OS has flagged a system-wide low memory condition.
+     */
+    fun isSystemInLowMemory(context: Context): Boolean {
+        return try {
+            val actManager = context.getSystemService(Context.ACTIVITY_SERVICE) as? ActivityManager ?: return false
+            val memInfo = ActivityManager.MemoryInfo()
+            actManager.getMemoryInfo(memInfo)
+            memInfo.lowMemory
+        } catch (_: Exception) {
+            false
         }
     }
 }

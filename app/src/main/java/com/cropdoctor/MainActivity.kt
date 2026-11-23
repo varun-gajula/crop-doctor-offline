@@ -263,9 +263,6 @@ class MainActivity : ComponentActivity() {
                             var bitmapRetained = false
                             try {
                                 withTimeout(12_000L) {
-                                    // Cancel current generation and wait up to 3000ms for Llama to exit native execution
-                                    app.advisor.cancelAndAwait(3000L)
-
                                     val reusableBuf = (app.classifier as? ExecuTorchClassifier)?.getReusableBuffer()
                                     val preprocessed = ImagePreprocessor.prepare(bytes, reusableBuf)
                                     preprocessedImage = preprocessed
@@ -515,9 +512,6 @@ class MainActivity : ComponentActivity() {
                             var bitmapRetained = false
                             try {
                                 withTimeout(12_000L) {
-                                    // Cancel current generation and wait up to 3000ms for Llama to exit native execution
-                                    app.advisor.cancelAndAwait(3000L)
-
                                     val effectiveCropFilter = cropFilter ?: selectedCrop
                                     val result = app.classifier.classify(bitmap, effectiveCropFilter, metadata)
 

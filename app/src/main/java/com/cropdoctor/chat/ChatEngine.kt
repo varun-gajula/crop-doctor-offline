@@ -62,26 +62,16 @@ object ChatEngine {
         passages: List<Passage>,
         query: String
     ): String {
-        val passagesText = passages.joinToString("\n\n") { "[Passage: ${it.section}]\n${it.text}" }
-        return """
-            <|begin_of_text|><|start_header_id|>system<|end_header_id|>
-            You are Crop Doctor Offline Chat Assistant running on-device for Indian farmers.
-            Answer the farmer's question using ONLY the provided Passages below.
-            Do NOT invent or add any new chemical products, doses, numbers, or facts not explicitly stated in the Passages.
-            If the Passages do not answer the question, state: "$NO_MATCH_ANSWER_EN"<|eot_id|>
-            <|start_header_id|>user<|end_header_id|>
-            Finding:
-            - Crop: $crop
-            - Problem: $problemName
-            - Severity: $severity
-            - Certainty: $certainty
-
-            Passages:
-            $passagesText
-
-            Question: $query<|eot_id|>
-            <|start_header_id|>assistant<|end_header_id|>
-        """.trimIndent()
+        val topPassage = passages.firstOrNull()?.text?.take(450) ?: ""
+        return """<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+Crop Doctor offline chat assistant.
+- Answer in 1 or 2 short sentences (at most 35 words).
+- End with a complete sentence.
+- Use ONLY the Passage below. Do NOT add new chemicals, doses, or numbers.
+- If the Passage does not answer the question, state: "$NO_MATCH_ANSWER_EN"<|eot_id|><|start_header_id|>user<|end_header_id|>
+Finding: $crop, $problemName, $severity ($certainty)
+Passage: $topPassage
+Question: $query<|eot_id|><|start_header_id|>assistant<|end_header_id|>""".trimIndent()
     }
 
     suspend fun processQuery(
@@ -164,18 +154,20 @@ object ChatEngine {
 
             try {
                 val rawAnswer = llamaGenerator(prompt).trim()
+                val (cleanAnswer, wasCut) = com.cropdoctor.advisor.SentenceTrimmer.cleanToCompleteSentence(rawAnswer, lang)
+                val candidateAnswer = if (cleanAnswer.isNotBlank()) cleanAnswer else rawAnswer
                 val findingText = "Crop: $crop Problem: $problemName Severity: $severity Certainty: $certainty"
 
                 // Validate with Guardrail
                 val validation = ChatGuardrail.validate(
-                    generatedAnswer = rawAnswer,
+                    generatedAnswer = candidateAnswer,
                     passages = passages,
                     findingText = findingText
                 )
 
                 if (validation.isValid) {
                     return ChatResponse(
-                        text = rawAnswer,
+                        text = candidateAnswer,
                         label = LABEL_LLAMA,
                         source = primarySource,
                         retrievedPassages = passages,

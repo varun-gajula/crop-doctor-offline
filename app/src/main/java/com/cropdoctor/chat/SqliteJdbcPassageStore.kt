@@ -17,11 +17,11 @@ class SqliteJdbcPassageStore(
                 """
                 CREATE VIRTUAL TABLE IF NOT EXISTS passages_fts USING fts5(
                     id UNINDEXED,
-                    class_id,
-                    section,
-                    language,
+                    class_id UNINDEXED,
+                    section UNINDEXED,
+                    language UNINDEXED,
                     text,
-                    source
+                    source UNINDEXED
                 );
                 """.trimIndent()
             )

@@ -13,7 +13,7 @@ class AndroidSqlitePassageDatabase(context: Context) :
 
     companion object {
         const val DB_NAME = "cropdoctor_passages.db"
-        const val DB_VERSION = 2
+        const val DB_VERSION = 3
         private const val TABLE_FTS = "passages_fts"
     }
 
@@ -23,11 +23,11 @@ class AndroidSqlitePassageDatabase(context: Context) :
                 """
                 CREATE VIRTUAL TABLE IF NOT EXISTS $TABLE_FTS USING fts5(
                     id UNINDEXED,
-                    class_id,
-                    section,
-                    language,
+                    class_id UNINDEXED,
+                    section UNINDEXED,
+                    language UNINDEXED,
                     text,
-                    source
+                    source UNINDEXED
                 );
                 """.trimIndent()
             )

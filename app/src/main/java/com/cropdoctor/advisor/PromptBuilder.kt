@@ -94,6 +94,7 @@ object PromptBuilder {
         return """<|begin_of_text|><|start_header_id|>system<|end_header_id|>
 Crop Doctor offline assistant.
 - Explain in plain words for a smallholder farmer$langInstruction.
+- Answer in at most 6 short, complete sentences. End every section with a complete sentence.
 - Use only the steps in the knowledge-base entry below.
 - Choose and order the ones relevant to this urgency.
 - Mention what to watch in the coming days.

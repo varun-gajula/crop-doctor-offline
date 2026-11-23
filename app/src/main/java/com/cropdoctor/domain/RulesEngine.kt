@@ -570,4 +570,46 @@ $referralSentence
             }
         }
     }
+
+    /**
+     * Appends missing sections from the verified offline guide when Llama generation is cut off (Task LLAMA-COMPLETE).
+     */
+    fun buildRemainingSections(
+        trimmedText: String,
+        classId: String,
+        crop: String,
+        diseaseName: String,
+        type: String,
+        severityBand: SeverityBand,
+        certaintyBand: CertaintyBand,
+        fieldSpread: FieldSpread,
+        urgencyLevel: UrgencyLevel,
+        region: String,
+        language: String,
+        kbEntry: KbEntry
+    ): String {
+        val fullGuide = buildCaseSpecificAdvisory(
+            classId, crop, diseaseName, type, severityBand, certaintyBand,
+            fieldSpread, urgencyLevel, region, language, kbEntry
+        )
+        val lower = trimmedText.lowercase()
+        val hasSection3 = lower.contains("when to get help") || lower.contains("मदद कब लें") || lower.contains("सहायता कब") || lower.contains("3.")
+        val hasSection2 = lower.contains("what to do now") || lower.contains("अब क्या करें") || lower.contains("2.")
+
+        return when {
+            !hasSection2 -> fullGuide
+            !hasSection3 -> {
+                val marker = when (language.lowercase()) {
+                    "hi" -> "3. सहायता कब लें:"
+                    else -> "3. When to get help:"
+                }
+                if (fullGuide.contains(marker)) {
+                    fullGuide.substring(fullGuide.indexOf(marker)).trim()
+                } else {
+                    fullGuide
+                }
+            }
+            else -> ""
+        }
+    }
 }

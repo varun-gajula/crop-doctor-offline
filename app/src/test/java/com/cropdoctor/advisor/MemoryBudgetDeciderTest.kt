@@ -73,4 +73,19 @@ class MemoryBudgetDeciderTest {
             MemoryBudgetDecider.shouldLoadLlama(belowCustom, false, customThreshold)
         )
     }
+
+    @Test
+    fun shouldLoadLlama_executionThresholdForResidentModel() {
+        val availMem = mbToBytes(500) // 500 MB free with model already resident
+        assertTrue(
+            "500 MB free should allow execution when model is already in RAM",
+            MemoryBudgetDecider.shouldLoadLlama(availMem, false, MemoryBudgetDecider.MIN_EXECUTION_RAM_BYTES)
+        )
+
+        val lowMem = mbToBytes(100) // 100 MB (< 250 MB)
+        assertFalse(
+            "100 MB free should reject execution even when model is in RAM",
+            MemoryBudgetDecider.shouldLoadLlama(lowMem, false, MemoryBudgetDecider.MIN_EXECUTION_RAM_BYTES)
+        )
+    }
 }
