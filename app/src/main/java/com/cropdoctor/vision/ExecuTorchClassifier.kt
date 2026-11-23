@@ -14,6 +14,8 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.sync.withLock
@@ -449,8 +451,14 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
         }
 
         try {
+            if (!currentCoroutineContext().isActive) {
+                throw kotlinx.coroutines.CancellationException("Scan cancelled before acquiring forwardMutex")
+            }
             // Forward pass reusing native tensor buffer (Rule P2.3) protected by forwardMutex against concurrent native execution
             val outputs = forwardMutex.withLock {
+                if (!currentCoroutineContext().isActive) {
+                    throw kotlinx.coroutines.CancellationException("Scan cancelled before native forward pass")
+                }
                 val inputTensor = Tensor.fromBlob(
                     preprocessed.tensorBuffer,
                     longArrayOf(1, 3, inputSize.toLong(), inputSize.toLong())
@@ -625,6 +633,9 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
                 cropMassPerCrop = cropMasses
             )
         } catch (e: Throwable) {
+            if (e is kotlinx.coroutines.CancellationException) {
+                throw e
+            }
             Log.e(TAG, "Vision inference error caught: ${e.message}", e)
             val elapsed = SystemClock.elapsedRealtime() - startTime
             ClassifierResult(
