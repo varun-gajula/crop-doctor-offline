@@ -9,6 +9,7 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import java.io.File
 import android.os.Bundle
+import android.os.Debug
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
@@ -26,7 +27,9 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.cropdoctor.advisor.ExecuTorchLlamaAdvisor
+import com.cropdoctor.chat.ChatEngine
 import com.cropdoctor.data.UserPreferences
+import com.cropdoctor.voice.VoskVoiceRecognizer
 import com.cropdoctor.domain.CertaintyBand
 import com.cropdoctor.domain.DiagnosisOutcome
 import com.cropdoctor.domain.ClassifierResult
@@ -713,6 +716,67 @@ class MainActivity : ComponentActivity() {
                                         }
                                     } catch (e: Exception) {
                                         Log.e("MainActivityBenchmark", "diagnose_file error", e)
+                                    }
+                                }
+                            }
+
+                            if (action == "test_chat") {
+                                val query = intent.getStringExtra("chat_query") ?: "What is the natural remedy?"
+                                val lang = intent.getStringExtra("language") ?: "en"
+                                val classId = intent.getStringExtra("class_id") ?: (classifierResult?.classId ?: "tomato_yellow_leaf_curl_virus")
+                                val crop = intent.getStringExtra("crop") ?: (activeKbEntry?.crop ?: "tomato")
+                                lifecycleScope.launch(Dispatchers.IO) {
+                                    val store = app.getPassageStoreIfInitialized()
+                                    val adv = app.getAdvisorIfInitialized()
+                                    if (store != null && adv != null) {
+                                        Log.i("CROPDOC_CHAT", "CHAT_TEST_START: query='$query' lang='$lang' classId='$classId'")
+                                        val startTime = System.currentTimeMillis()
+                                        val response = ChatEngine.processQuery(
+                                            query = query,
+                                            detectedClass = classId,
+                                            crop = crop,
+                                            problemName = activeKbEntry?.names?.forLanguage(lang) ?: classId,
+                                            severity = classifierResult?.severityBand?.name ?: "MODERATE",
+                                            certainty = classifierResult?.certaintyBand?.name ?: "SURE",
+                                            language = lang,
+                                            passageStore = store,
+                                            isUncertainOrOutOfClass = false,
+                                            llamaGenerator = if (adv.isModelAvailable) {
+                                                { prompt -> adv.answerChatPrompt(prompt) }
+                                            } else null
+                                        )
+                                        val durationMs = System.currentTimeMillis() - startTime
+                                        val pss = Debug.getPss() / 1024L
+                                        Log.i("CROPDOC_CHAT", "CHAT_TEST_END: query='$query' lang='$lang' source='${response.source}' label='${response.label}' durationMs=${durationMs}ms pssMb=${pss}MB textLength=${response.text.length} isNoMatch=${response.isNoMatch} response='${response.text.replace("\n", " ")}'")
+                                    }
+                                }
+                            }
+
+                            if (action == "test_voice") {
+                                val lang = intent.getStringExtra("language") ?: "en"
+                                val filePath = intent.getStringExtra("file_path")
+                                lifecycleScope.launch(Dispatchers.IO) {
+                                    val recognizer = VoskVoiceRecognizer(this@MainActivity)
+                                    Log.i("CROPDOC_VOICE", "VOICE_TEST_START: lang='$lang' file='$filePath'")
+                                    val startTime = System.currentTimeMillis()
+                                    try {
+                                        val wavFile = if (filePath != null) File(filePath) else null
+                                        val result = if (wavFile != null && wavFile.exists()) {
+                                            recognizer.recognizeWavFile(wavFile, lang)
+                                        } else {
+                                            val dummyWav = File(cacheDir, "test_tone.wav")
+                                            if (!dummyWav.exists()) {
+                                                dummyWav.writeBytes(ByteArray(32000))
+                                            }
+                                            recognizer.recognizeWavFile(dummyWav, lang)
+                                        }
+                                        val durationMs = System.currentTimeMillis() - startTime
+                                        val pss = Debug.getPss() / 1024L
+                                        Log.i("CROPDOC_VOICE", "VOICE_TEST_END: lang='$lang' text='${result.text}' durationMs=${durationMs}ms pssMb=${pss}MB")
+                                    } catch (e: Exception) {
+                                        Log.e("CROPDOC_VOICE", "VOICE_TEST_ERROR: lang='$lang' error=${e.message}", e)
+                                    } finally {
+                                        recognizer.releaseModel()
                                     }
                                 }
                             }
