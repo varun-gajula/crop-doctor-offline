@@ -5,6 +5,10 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-feature android:name="android.hardware.camera" android:required="true" />
 
+    <!-- MICROPHONE permission required for offline voice questions (Task VOICE) -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-feature android:name="android.hardware.microphone" android:required="false" />
+
     <!--
         STRICT HARD REQUIREMENT: NO INTERNET PERMISSION
         This app runs 100% offline on-device using local vision models and local Llama 3.2 1B via ExecuTorch.

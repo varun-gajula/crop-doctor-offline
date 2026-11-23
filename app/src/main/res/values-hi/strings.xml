@@ -61,6 +61,9 @@
     <string name="select_crop_title">फसल चुनें</string>
     <string name="select_crop_sub">सटीक निदान के लिए स्कैन करने से पहले फसल चुनें</string>
     <string name="btn_change_crop">फसल बदलें</string>
+    <string name="change_chip">बदलें</string>
+    <string name="detected_crop_format">पहचानी गई फसल: %1$s</string>
+    <string name="select_crop_dialog_title">फसल चुनें</string>
     <string name="analyzing_leaf">पत्ती का विश्लेषण हो रहा है…</string>
 
     <!-- Soft Warning Dialog -->

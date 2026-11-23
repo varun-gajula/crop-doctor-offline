@@ -25,6 +25,10 @@ interface Advisor {
         onToken: (String) -> Unit
     )
 
+    suspend fun answerChatPrompt(
+        prompt: String
+    ): String = ""
+
     fun stop() { stop("unspecified") }
     fun stop(reason: String) {}
     suspend fun cancelAndAwait(timeoutMs: Long = 3000L): Boolean = true

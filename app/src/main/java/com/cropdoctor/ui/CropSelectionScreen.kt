@@ -40,6 +40,81 @@ data class CropTileData(
     val contentDescPrefix: String
 )
 
+val DEFAULT_CROP_TILES = listOf(
+    CropTileData("rice", R.string.crop_rice, R.drawable.ic_tile_rice, "Rice"),
+    CropTileData("cotton", R.string.crop_cotton, R.drawable.ic_tile_cotton, "Cotton"),
+    CropTileData("chilli", R.string.crop_chilli, R.drawable.ic_tile_chilli, "Chilli"),
+    CropTileData("tomato", R.string.crop_tomato, R.drawable.ic_tile_tomato, "Tomato"),
+    CropTileData("maize", R.string.crop_maize, R.drawable.ic_tile_maize, "Maize")
+)
+
+@Composable
+fun CropPickerDialog(
+    language: String,
+    onCropSelected: (String) -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(
+                text = stringResource(R.string.select_crop_dialog_title),
+                fontWeight = FontWeight.Bold,
+                fontSize = 20.sp,
+                color = FarmGreenDark
+            )
+        },
+        text = {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                DEFAULT_CROP_TILES.forEach { cropData ->
+                    Surface(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                onCropSelected(cropData.key)
+                                onDismiss()
+                            },
+                        shape = RoundedCornerShape(12.dp),
+                        color = Color(0xFFF1F8F1),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFC8E6C9))
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 14.dp, vertical = 10.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Image(
+                                painter = painterResource(id = cropData.vectorRes),
+                                contentDescription = null,
+                                modifier = Modifier.size(40.dp)
+                            )
+                            Spacer(modifier = Modifier.width(16.dp))
+                            Text(
+                                text = stringResource(cropData.nameRes),
+                                fontSize = if (language == "te") 20.sp else 18.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = FarmGreenDark
+                            )
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = {},
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(R.string.close))
+            }
+        }
+    )
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CropSelectionScreen(
@@ -52,13 +127,7 @@ fun CropSelectionScreen(
 ) {
     BackHandler { onBackClick() }
 
-    val crops = listOf(
-        CropTileData("rice", R.string.crop_rice, R.drawable.ic_tile_rice, "Rice"),
-        CropTileData("cotton", R.string.crop_cotton, R.drawable.ic_tile_cotton, "Cotton"),
-        CropTileData("chilli", R.string.crop_chilli, R.drawable.ic_tile_chilli, "Chilli"),
-        CropTileData("tomato", R.string.crop_tomato, R.drawable.ic_tile_tomato, "Tomato"),
-        CropTileData("maize", R.string.crop_maize, R.drawable.ic_tile_maize, "Maize")
-    )
+    val crops = DEFAULT_CROP_TILES
 
     val displayTitle = customTitle ?: stringResource(R.string.select_crop_title)
     val displaySubtitle = customSubtitle ?: stringResource(R.string.select_crop_sub)

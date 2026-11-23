@@ -647,6 +647,76 @@ class ExecuTorchLlamaAdvisor(private val context: Context) : Advisor {
         }
     }
 
+    override suspend fun answerChatPrompt(prompt: String): String = withContext(llamaDispatcher) {
+        generationLock.withLock {
+            val chatRequestId = System.nanoTime()
+            currentActiveRequestId = chatRequestId
+            val startThreadName = Thread.currentThread().name
+            Log.i("CROPDOC_LLAMA", "CHAT_GEN_START: requestId=$chatRequestId promptChars=${prompt.length} thread='$startThreadName' dispatcher=CropDoc-LlamaWorker")
+
+            if (!checkMemoryBudget()) {
+                Log.w(TAG, "Memory budget insufficient for chat answer")
+                if (currentActiveRequestId == chatRequestId) currentActiveRequestId = -1L
+                return@withContext ""
+            }
+
+            val ready = ensureModelLoaded()
+            if (!ready || llamaModule == null) {
+                Log.w(TAG, "Real Llama module could not be loaded for chat answer")
+                if (currentActiveRequestId == chatRequestId) currentActiveRequestId = -1L
+                return@withContext ""
+            }
+
+            scheduleIdleRelease()
+            val responseBuilder = StringBuilder()
+            var totalTokens = 0
+            val genStartTime = System.currentTimeMillis()
+
+            val callback = object : LlmCallback {
+                override fun onResult(token: String?) {
+                    if (token.isNullOrEmpty()) return
+                    if (currentActiveRequestId != chatRequestId) {
+                        stop("cancelled_chat_req${chatRequestId}_current$currentActiveRequestId")
+                        return
+                    }
+                    totalTokens++
+                    responseBuilder.append(token)
+                    if (token.contains("<|eot_id|>") || token.contains("<|end_of_text|>") || totalTokens >= 200 || responseBuilder.length >= 800) {
+                        stop("chat_complete_or_cap")
+                    }
+                }
+                override fun onStats(stats: Float) {}
+            }
+
+            var endReason = "finished"
+            try {
+                isGenerating = true
+                val completed = withTimeoutOrNull(60_000L) {
+                    try {
+                        llamaModule?.generate(prompt, 768, callback, false)
+                    } catch (e: Exception) {
+                        Log.e(TAG, "Error generating chat answer: ${e.message}", e)
+                        null
+                    }
+                }
+                if (completed == null) {
+                    endReason = "timeout_or_error"
+                }
+            } catch (ce: CancellationException) {
+                endReason = "cancelled"
+                throw ce
+            } finally {
+                isGenerating = false
+                val totalGenDurationMs = System.currentTimeMillis() - genStartTime
+                Log.i("CROPDOC_LLAMA", "CHAT_GEN_END: requestId=$chatRequestId reason='$endReason' totalTokens=$totalTokens durationMs=${totalGenDurationMs}ms thread='${Thread.currentThread().name}' dispatcher=CropDoc-LlamaWorker")
+                if (currentActiveRequestId == chatRequestId) {
+                    currentActiveRequestId = -1L
+                }
+            }
+            return@withContext responseBuilder.toString().trim()
+        }
+    }
+
     override fun stop() {
         stop("unspecified")
     }

@@ -237,8 +237,8 @@
       "pathogen": "Magnaporthe oryzae",
       "names": {
         "en": "Rice Leaf Blast",
-        "te": "వరి అగ్గితెగులు",
-        "hi": "धान का झुलसा रोग (ब्लास्ट)"
+        "te": "వరి అగ్గి తెగులు",
+        "hi": "धान का झोंका रोग (ब्लास्ट)"
       },
       "needs_expert_review": true,
       "referral_threshold": "SEVERE",
@@ -539,7 +539,7 @@
       "pathogen": "Xanthomonas citri pv. malvacearum",
       "names": {
         "en": "Cotton Bacterial Blight",
-        "te": "పత్తి బాక్టీరియల్ ఆకుమచ్చ తెగులు",
+        "te": "పత్తి బ్యాక్టీరియా ఆకుమచ్చ తెగులు",
         "hi": "कपास का जीवाणु झुलसा"
       },
       "needs_expert_review": true,
@@ -947,8 +947,8 @@
       "pathogen": "Chilli leaf curl virus (ChiLCV)",
       "names": {
         "en": "Chilli Leaf Curl Virus",
-        "te": "మిరప బొబ్బర / ఆకుముడుత తెగులు",
-        "hi": "मिर्च का लीफ कर्ल वायरस (मुरड़िया)"
+        "te": "మిరప ఆకు ముడత తెగులు",
+        "hi": "मिर्च का पत्ती मरोड़ (लीफ कर्ल) रोग"
       },
       "needs_expert_review": true,
       "referral_threshold": "MODERATE",
@@ -1828,8 +1828,8 @@
       "pathogen": "Puccinia sorghi",
       "names": {
         "en": "Maize Common Rust",
-        "te": "మొక్కజొన్న కుంకుమ తెగులు",
-        "hi": "मक्का का रतुआ रोग (रस्ट)"
+        "te": "మొక్కజొన్న తుప్పు తెగులు",
+        "hi": "मक्का का रतुआ रोग"
       },
       "needs_expert_review": true,
       "referral_threshold": "SEVERE",
@@ -1934,8 +1934,8 @@
       "pathogen": "Exserohilum turcicum",
       "names": {
         "en": "Maize Northern Leaf Blight",
-        "te": "మొక్కజొన్న తుప్పు తెగులు / ఆకు ఎండడం",
-        "hi": "मक्का का उत्तरी पत्ती झुलसा"
+        "te": "మొక్కజొన్న ఆకు మాడు తెగులు (నార్తర్న్ లీఫ్ బ్లైట్)",
+        "hi": "मक्का का उत्तरी पत्ती झुलसा (नॉर्दर्न लीफ ब्लाइट)"
       },
       "needs_expert_review": true,
       "referral_threshold": "SEVERE",
@@ -2041,7 +2041,7 @@
       "names": {
         "en": "Maize Fall Armyworm",
         "te": "మొక్కజొన్న కత్తెర పురుగు",
-        "hi": "मक्का का फाल आर्मीवर्म कीट"
+        "hi": "मक्का का फॉल आर्मीवर्म (फौजी कीट)"
       },
       "needs_expert_review": true,
       "referral_threshold": "SEVERE",

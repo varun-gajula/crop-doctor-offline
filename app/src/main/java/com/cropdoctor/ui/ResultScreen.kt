@@ -35,10 +35,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.cropdoctor.CropDoctorApplication
 import com.cropdoctor.R
+import com.cropdoctor.advisor.Advisor
 import com.cropdoctor.advisor.AudioPlayItem
 import com.cropdoctor.advisor.OfflineAudioAdvisor
 import com.cropdoctor.advisor.OfflineTtsHelper
+import com.cropdoctor.chat.PassageStore
 import com.cropdoctor.domain.CertaintyBand
 import com.cropdoctor.domain.ClassifierResult
 import com.cropdoctor.domain.CropMapping
@@ -71,8 +74,11 @@ fun ResultScreen(
     onSaveCaseReport: () -> Unit = {},
     onCancelAdvice: () -> Unit = {},
     onChangeCropClick: () -> Unit = {},
+    onChangeCropSelected: ((String) -> Unit)? = null,
     onTakeAnotherPhoto: () -> Unit = {},
-    onInstallModelClick: () -> Unit = {}
+    onInstallModelClick: () -> Unit = {},
+    advisor: Advisor? = null,
+    passageStore: PassageStore? = null
 ) {
     val context = LocalContext.current
     val scrollState = rememberScrollState()
@@ -101,6 +107,7 @@ fun ResultScreen(
     var showJudgeDialog by remember { mutableStateOf(false) }
     var showMeasurementDetails by remember { mutableStateOf(false) }
     var showHelplineDialog by remember { mutableStateOf(false) }
+    var showCropPickerDialog by remember { mutableStateOf(false) }
 
     // Offline Audio Advisor (Opus clips + TTS fallback + speed control)
     val audioAdvisor = remember { OfflineAudioAdvisor(context) }
@@ -245,6 +252,18 @@ fun ResultScreen(
                     Text(stringResource(R.string.close))
                 }
             }
+        )
+    }
+
+    // Crop Selection Dialog when farmer taps "Change" chip (Task AUTO)
+    if (showCropPickerDialog) {
+        CropPickerDialog(
+            language = language,
+            onCropSelected = { newCrop ->
+                showCropPickerDialog = false
+                onChangeCropSelected?.invoke(newCrop)
+            },
+            onDismiss = { showCropPickerDialog = false }
         )
     }
 
@@ -473,23 +492,59 @@ fun ResultScreen(
                         .fillMaxWidth()
                         .padding(16.dp)
                 ) {
-                    // Crop Badge / Name
+                    // Crop Badge / Name with "Change" chip (Task AUTO Requirement 3)
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween,
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Surface(
-                            shape = RoundedCornerShape(8.dp),
-                            color = Color(0xFFE8F5E9)
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            Text(
-                                text = "🌱 $cropDisplayName",
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = FarmGreenDark,
-                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
-                            )
+                            val cropLabel = if (result.isAutoCrop) {
+                                "🌱 " + stringResource(R.string.detected_crop_format, cropDisplayName)
+                            } else {
+                                "🌱 $cropDisplayName"
+                            }
+                            Surface(
+                                shape = RoundedCornerShape(8.dp),
+                                color = Color(0xFFE8F5E9)
+                            ) {
+                                Text(
+                                    text = cropLabel,
+                                    fontSize = 15.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = FarmGreenDark,
+                                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
+                                )
+                            }
+
+                            Surface(
+                                shape = RoundedCornerShape(8.dp),
+                                color = Color.White,
+                                border = BorderStroke(1.dp, FarmGreenPrimary),
+                                modifier = Modifier.clickable { showCropPickerDialog = true }
+                            ) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Edit,
+                                        contentDescription = stringResource(R.string.change_chip),
+                                        tint = FarmGreenPrimary,
+                                        modifier = Modifier.size(14.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    Text(
+                                        text = stringResource(R.string.change_chip),
+                                        fontSize = 13.sp,
+                                        fontWeight = FontWeight.SemiBold,
+                                        color = FarmGreenPrimary
+                                    )
+                                }
+                            }
                         }
 
                         if (result.outcome == DiagnosisOutcome.DIAGNOSE) {
@@ -806,6 +861,25 @@ fun ResultScreen(
                             color = Color.White
                         )
                     }
+
+                    // Task CHAT: Offline chat disabled for CANT_TELL
+                    val app = context.applicationContext as? CropDoctorApplication
+                    val effectiveAdvisor = advisor ?: app?.getAdvisorIfInitialized()
+                    val effectivePassageStore = passageStore ?: app?.getPassageStoreIfInitialized()
+                    if (effectiveAdvisor != null && effectivePassageStore != null) {
+                        ResultChatSection(
+                            classId = result.classId,
+                            crop = kbEntry.crop,
+                            problemName = cropDisplayName,
+                            severity = result.severityBand.name,
+                            certainty = result.certaintyBand.name,
+                            language = language,
+                            passageStore = effectivePassageStore,
+                            advisor = effectiveAdvisor,
+                            isUncertainOrOutOfClass = true,
+                            onCallOfficer = { showHelplineDialog = true }
+                        )
+                    }
                 }
 
                 DiagnosisOutcome.OUT_OF_CLASS -> {
@@ -897,6 +971,25 @@ fun ResultScreen(
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color.White
+                        )
+                    }
+
+                    // Task CHAT: Offline chat disabled for CANT_TELL
+                    val app = context.applicationContext as? CropDoctorApplication
+                    val effectiveAdvisor = advisor ?: app?.getAdvisorIfInitialized()
+                    val effectivePassageStore = passageStore ?: app?.getPassageStoreIfInitialized()
+                    if (effectiveAdvisor != null && effectivePassageStore != null) {
+                        ResultChatSection(
+                            classId = result.classId,
+                            crop = kbEntry.crop,
+                            problemName = cropDisplayName,
+                            severity = result.severityBand.name,
+                            certainty = result.certaintyBand.name,
+                            language = language,
+                            passageStore = effectivePassageStore,
+                            advisor = effectiveAdvisor,
+                            isUncertainOrOutOfClass = true,
+                            onCallOfficer = { showHelplineDialog = true }
                         )
                     }
                 }
@@ -1286,6 +1379,25 @@ fun ResultScreen(
                         audioAdvisor = audioAdvisor,
                         onCancel = onCancelAdvice
                     )
+
+                    // Task CHAT: Offline chat box on the result screen about the detected problem
+                    val app = context.applicationContext as? CropDoctorApplication
+                    val effectiveAdvisor = advisor ?: app?.getAdvisorIfInitialized()
+                    val effectivePassageStore = passageStore ?: app?.getPassageStoreIfInitialized()
+                    if (effectiveAdvisor != null && effectivePassageStore != null) {
+                        ResultChatSection(
+                            classId = result.classId,
+                            crop = kbEntry.crop,
+                            problemName = kbEntry.names.forLanguage(language),
+                            severity = result.severityBand.name,
+                            certainty = result.certaintyBand.name,
+                            language = language,
+                            passageStore = effectivePassageStore,
+                            advisor = effectiveAdvisor,
+                            isUncertainOrOutOfClass = isUncertain || result.outcome == DiagnosisOutcome.OUT_OF_CLASS,
+                            onCallOfficer = { showHelplineDialog = true }
+                        )
+                    }
 
                     // Requirement 3: Clear "Call extension officer" button for severe cases
                     if (shouldRefer) {

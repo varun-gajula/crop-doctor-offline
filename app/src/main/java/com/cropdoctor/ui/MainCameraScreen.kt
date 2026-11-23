@@ -53,7 +53,7 @@ data class CropChipItem(
 @Composable
 fun MainCameraScreen(
     language: String,
-    selectedCrop: String = "rice",
+    selectedCrop: String? = null,
     isProcessing: Boolean,
     onImageBytesCaptured: ((ByteArray, String?, String) -> Unit)? = null,
     onImageCaptured: (Bitmap, String?) -> Unit,
@@ -212,7 +212,11 @@ fun MainCameraScreen(
             )
 
             // Selected Crop Chip with "Change crop" action (Task P3)
-            val cropDisplayName = CropMapping.getCropDisplayName(selectedCrop, context)
+            val cropDisplayName = if (selectedCrop != null) {
+                CropMapping.getCropDisplayName(selectedCrop, context)
+            } else {
+                null
+            }
             Surface(
                 modifier = Modifier
                     .align(Alignment.TopCenter)
@@ -227,12 +231,21 @@ fun MainCameraScreen(
                     modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = "🌱 $cropDisplayName • ",
-                        color = Color.White,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Medium
-                    )
+                    if (cropDisplayName != null) {
+                        Text(
+                            text = "🌱 $cropDisplayName • ",
+                            color = Color.White,
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Medium
+                        )
+                    } else {
+                        Text(
+                            text = "🌱 " + stringResource(R.string.scan_leaf) + " • ",
+                            color = Color.White,
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
                     Text(
                         text = stringResource(R.string.btn_change_crop),
                         color = Color(0xFF81C784),

@@ -28,16 +28,16 @@ Every entry contains:
 
 | # | Class ID | Crop | Problem Name (EN / TE / HI) | Type | Official Authority Source | Document / Bulletin Title | Source URL | Date Read | Dose Status | Sourced Status |
 |---|---|---|---|---|---|---|---|---|---|---|
-| 1 | `rice_leaf_blast` | Rice | Rice Leaf Blast<br>వరి అగ్గితెగులు<br>धान का झुलसा रोग (ब्लास्ट) | Disease | ICAR-IIRR Hyderabad & PJTSAU | *Integrated Pest Management in Rice* & *Vyavasaya Darsini* | `https://icar-iirr.org` | 2026-11-22 | `follow the product label` (Tricyclazole 75% WP) | **With Source** |
+| 1 | `rice_leaf_blast` | Rice | Rice Leaf Blast<br>వరి అగ్గి తెగులు<br>धान का झोंका रोग (ब्लास्ट) | Disease | ICAR-IIRR Hyderabad & PJTSAU | *Integrated Pest Management in Rice* & *Vyavasaya Darsini* | `https://icar-iirr.org` | 2026-11-22 | `follow the product label` (Tricyclazole 75% WP) | **With Source** |
 | 2 | `rice_healthy` | Rice | Healthy Rice<br>ఆరోగ్యకరమైన వరి<br>स्वस्थ धान | Healthy | ICAR-IIRR Hyderabad & PJTSAU | *Package of Practices for Rice Production* | `https://icar-iirr.org` | 2026-11-22 | None (Healthy GAP) | **With Source** |
 | 3 | `cotton_bacterial_blight` | Cotton | Cotton Bacterial Blight<br>పత్తి బ్యాక్టీరియా ఆకుమచ్చ తెగులు<br>कपास का जीवाणु झुलसा | Disease | ICAR-CICR Nagpur & PJTSAU | *Cotton Disease Management Advisory* & *Vyavasaya Darsini* | `https://cicr.icar.gov.in` | 2026-11-22 | `follow the product label` (Copper Oxychloride 50% WP + Streptocycline) | **With Source** |
 | 4 | `cotton_healthy` | Cotton | Healthy Cotton<br>ఆరోగ్యకరమైన పత్తి<br>स्वस्थ कपास | Healthy | NIPHM Hyderabad & ICAR-CICR | *Integrated Crop Management in Cotton* | `https://niphm.gov.in` | 2026-11-22 | None (Healthy GAP) | **With Source** |
 | 5 | `chilli_leaf_curl_virus` | Chilli | Chilli Leaf Curl Virus<br>మిరప ఆకు ముడత తెగులు<br>मिर्च का पत्ती मरोड़ (लीफ कर्ल) रोग | Disease | ICAR-IIHR Bengaluru & PJTSAU | *Integrated Pest and Disease Management in Chilli* | `https://iihr.res.in` | 2026-11-22 | `follow the product label` (Diafenthiuron 50% WP) | **With Source** |
 | 6 | `chilli_healthy` | Chilli | Healthy Chilli<br>ఆరోగ్యకరమైన మిరప<br>स्वस्थ मिर्च | Healthy | ICAR-IIHR Bengaluru & ANGRAU | *Good Agricultural Practices for Chilli Cultivation* | `https://iihr.res.in` | 2026-11-22 | None (Healthy GAP) | **With Source** |
-| 7 | `maize_northern_leaf_blight` | Maize | Northern Leaf Blight<br>మొక్కజొన్న ఆకు మాడు తెగులు<br>मक्का का उत्तरी पत्ती झुलसा | Disease | ANGRAU Guntur & ICAR-IIMR | *ANGRAU Maize Production Guide* & *IIMR Disease Directory* | `https://angrau.ac.in` | 2026-11-22 | `follow the product label` (Mancozeb 75% WP) | **With Source** |
-| 8 | `maize_common_rust` | Maize | Common Rust<br>మొక్కజొన్న తుప్పు తెగులు<br>मक्का का रतुआ रोग | Disease | ICAR-IIMR Ludhiana & PJTSAU | *Maize Pathology Technical Bulletin* | `https://iimr.icar.gov.in` | 2026-11-22 | `follow the product label` (Azoxystrobin 18.2% + Difenoconazole 11.4% SC) | **With Source** |
+| 7 | `maize_northern_leaf_blight` | Maize | Northern Leaf Blight<br>మొక్కజొన్న ఆకు మాడు తెగులు (నార్తర్న్ లీఫ్ బ్లైట్)<br>मक्का का उत्तरी पत्ती झुलसा (नॉर्दर्न लीफ ब्लाइट) | Disease | ANGRAU Guntur & ICAR-IIMR | *ANGRAU Maize Production Guide* & *IIMR Disease Directory* | `https://angrau.ac.in` | 2026-11-22 | `follow the product label` (Mancozeb 75% WP) | **With Source** |
+| 8 | `maize_common_rust` | Maize | Common Rust<br>మొక్కజొన్న తుప్పు తెగులు<br>मक्का का रतुआ रोग | Disease | ICAR-IIMR Ludhiana & PJTSAU | *Maize Pathology Technical Bulletin* | `https://iimr.icar.gov.in` | 2026-11-22 | `follow the product label` (Mancozeb 75% WP or Propiconazole 25% EC) | **With Source** |
 | 9 | `maize_healthy` | Maize | Healthy Maize<br>ఆరోగ్యకరమైన మొక్కజొన్న<br>स्वस्थ मक्का | Healthy | ICAR-IIMR Ludhiana & ANGRAU | *Surveillance & Best Management Practices in Maize* | `https://iimr.icar.gov.in` | 2026-11-22 | None (Healthy GAP) | **With Source** |
-| 10 | `maize_fall_armyworm` | Maize | Fall Armyworm<br>మొక్కజొన్న కత్తెర పురుగు<br>मक्का का फॉल आर्मीवर्म (फौजी कीट) | Pest | ICAR-NBAIR Bengaluru, PJTSAU & NIPHM | *Spodoptera frugiperda Management Protocol* | `https://nbair.res.in` | 2026-11-22 | `follow the product label` (Chlorantraniliprole 18.5% SC) | **With Source** |
+| 10 | `maize_fall_armyworm` | Maize | Fall Armyworm<br>మొక్కజొన్న కత్తెర పురుగు<br>मक्का का फॉल आर्मीवर्म (फौजी कीट) | Pest | ICAR-NBAIR Bengaluru, PJTSAU & NIPHM | *Spodoptera frugiperda Management Protocol* | `https://nbair.res.in` | 2026-11-22 | `follow the product label` (Emamectin Benzoate 5% SG or Spinetoram 11.7% SC) | **With Source** |
 | 11 | `rice_stem_borer` | Rice | Rice Yellow Stem Borer<br>వరి కాండం తొలుచు పురుగు<br>धान का पीला तना छेदक कीट | Pest | ICAR-IIRR Hyderabad, PJTSAU & ICAR-NBAIR | *Integrated Pest Management in Rice* & *Vyavasaya Darsini* | `https://icar-iirr.org` | 2026-11-22 | `follow the product label` (Chlorantraniliprole 0.4% GR) | **With Source** |
 | 12 | `rice_hispa` | Rice | Rice Hispa<br>వరి హిస్పా (ముళ్ల పురుగు)<br>धान का हिस्पा कीट (कांटेदार कीट) | Pest | ANGRAU Guntur, ICAR-IIRR & NIPHM | *ANGRAU Crop Production Guide* & *Rice Hispa Management Advisory* | `https://angrau.ac.in` | 2026-11-22 | `follow the product label` (Chlorpyrifos 20% EC) | **With Source** |
 | 13 | `tomato_healthy` | Tomato | Healthy Tomato<br>ఆరోగ్యకరమైన టమాటా<br>स्वस्थ टमाटर | Healthy | ICAR-IIHR Bengaluru & TNAU | *Package of Practices for Vegetable Crops* | `https://iihr.res.in` | 2026-11-22 | None (Healthy GAP) | **With Source** |
@@ -112,7 +112,7 @@ Every entry contains:
 - **Symptoms & Early Warning:** Small cinnamon-brown powdery pustules erupting through the leaf epidermis on both upper and lower surfaces.
 - **Prevention & Field Practice:** Plant resistant/tolerant single-cross maize hybrids recommended by SAUs; early planting to avoid cool winter temperatures favored by rust; avoid excess nitrogen.
 - **Natural Tier:** Spray cow urine (10%) or bio-fungicide *Trichoderma viride* (5 g/L) at first appearance of rust pustules (*ICAR-IIMR Hybrid Directory*).
-- **Chemical Tier:** Azoxystrobin 18.2% + Difenoconazole 11.4% SC (*CIB&RC registered*). Dose: `"follow the product label"`. PHI: 21 days.
+- **Chemical Tier:** Mancozeb 75% WP or Propiconazole 25% EC (*CIB&RC registered*). Dose: `"follow the product label"`. PHI: 21 days.
 
 ### 3.9. Class 9: `maize_healthy`
 - **Identity:** Sturdy maize stalks with broad dark-green leaves, uniform tassel emergence, and well-filled cobs without ear rots or borers.
@@ -131,7 +131,7 @@ Every entry contains:
   1. Handpicking egg masses and early-instar larvae + erecting bird perches (*ICAR-NBAIR FAW Advisory*).
   2. Whorl application of dry river sand + wood ash in 9:1 ratio (*PJTSAU Maize Pest Advisory*).
   3. Spray *Nomuraea rileyi* or *Metarhizium anisopliae* (5 g/L) or NSKE 5% (*NIPHM FAW Management Protocol*).
-- **Chemical Tier:** Chlorantraniliprole 18.5% SC applied directly into whorls with a knapsack nozzle (*CIB&RC registered*). Dose: `"follow the product label"`. PHI: 20 days.
+- **Chemical Tier:** Emamectin Benzoate 5% SG or Spinetoram 11.7% SC applied directly into whorls with a knapsack nozzle (*CIB&RC registered*). Dose: `"follow the product label"`. PHI: 20 days.
 
 ### 3.11. Class 11: `rice_stem_borer` (*Scirpophaga incertulas* - PEST)
 - **Botanical / Entomological Identity:** Yellow stem borer; caterpillar bores into stem creating vegetative dead hearts and empty whiteheads at flowering.

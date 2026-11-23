@@ -284,4 +284,110 @@ object VisionMath {
             }
         }
     }
+
+    /**
+     * Task AUTO: Automatic crop detection decision evaluation without pre-selected crop.
+     * Enforces fail-closed rules from Requirement 2:
+     * CAN'T TELL if:
+     * - Top class is not a crop (weeds_not_a_crop or other_not_a_crop or crop is null)
+     * - Energy is above threshold
+     * - Top crop's mass is below threshold
+     * - Top two classes belong to different crops with margin below threshold
+     * - Confidence below threshold
+     * - Leaf validator fails
+     */
+    fun evaluateDiagnosisAuto(
+        labels: List<String>,
+        probabilities: FloatArray,
+        thresholds: Map<String, Float> = emptyMap(),
+        defaultThreshold: Float = 0.3434087f,
+        freeEnergy: Double = 0.0,
+        energyThreshold: Double? = null,
+        cropMassThreshold: Float = 0.60f,
+        marginThreshold: Float = 0.25f,
+        gate1Pass: Boolean = true,
+        leafValidatorReason: String = ""
+    ): DiagnosisEvaluation {
+        val topK = extractTopK(labels, probabilities, 3)
+        val top1 = topK.firstOrNull()
+        val top2 = if (topK.size > 1) topK[1] else null
+        val top1Prob = top1?.probability ?: 0.0f
+        val top2Prob = top2?.probability ?: 0.0f
+        val margin = top1Prob - top2Prob
+
+        val top1Class = top1?.classId ?: "unknown"
+        val top1Crop = com.cropdoctor.domain.CropMapping.getCropForClass(top1Class)
+        val top2Class = top2?.classId ?: "unknown"
+        val top2Crop = com.cropdoctor.domain.CropMapping.getCropForClass(top2Class)
+
+        val isNotACrop = top1Class == "weeds_not_a_crop" || top1Class == "other_not_a_crop" || top1Crop == null
+        val isOOD = if (energyThreshold != null) freeEnergy > energyThreshold else false
+
+        val requiredThreshold = thresholds[top1Class] ?: defaultThreshold
+        val isBelowThreshold = top1 == null || top1Prob < requiredThreshold
+
+        val cropMasses = com.cropdoctor.domain.CropMapping.computeCropMasses(labels, probabilities)
+        val topCropMass = if (top1Crop != null) cropMasses[top1Crop] ?: 0.0f else 0.0f
+
+        val diffCrops = (top1Crop != null && top2Crop != null && top1Crop != top2Crop)
+        val isCrossCropMarginViolated = diffCrops && margin < marginThreshold
+
+        val (outcome, outcomeReason) = when {
+            !gate1Pass -> DiagnosisOutcome.CANT_TELL to "LEAF_VALIDATOR_FAIL($leafValidatorReason)"
+            isNotACrop -> DiagnosisOutcome.CANT_TELL to "NOT_A_CROP($top1Class)"
+            isOOD -> DiagnosisOutcome.CANT_TELL to "HIGH_FREE_ENERGY($freeEnergy > $energyThreshold)"
+            isBelowThreshold -> DiagnosisOutcome.CANT_TELL to "LOW_CONFIDENCE($top1Prob < $requiredThreshold)"
+            topCropMass < cropMassThreshold -> DiagnosisOutcome.CANT_TELL to "LOW_CROP_MASS($topCropMass < $cropMassThreshold)"
+            isCrossCropMarginViolated -> DiagnosisOutcome.CANT_TELL to "CROSS_CROP_MARGIN($margin < $marginThreshold)"
+            else -> DiagnosisOutcome.DIAGNOSE to "ACCEPTED"
+        }
+
+        return when (outcome) {
+            DiagnosisOutcome.CANT_TELL -> {
+                DiagnosisEvaluation(
+                    classId = "unknown",
+                    displayName = "Not sure - ask an extension officer",
+                    confidence = top1Prob,
+                    certaintyBand = CertaintyBand.NOT_SURE,
+                    top3 = topK,
+                    freeEnergy = freeEnergy,
+                    isOutOfDistribution = isOOD,
+                    isBelowThreshold = true,
+                    outcome = outcome,
+                    outcomeReason = outcomeReason,
+                    margin = margin
+                )
+            }
+            DiagnosisOutcome.OUT_OF_CLASS -> {
+                DiagnosisEvaluation(
+                    classId = "out_of_class",
+                    displayName = "Out of class - plant does not match",
+                    confidence = top1Prob,
+                    certaintyBand = CertaintyBand.NOT_SURE,
+                    top3 = topK,
+                    freeEnergy = freeEnergy,
+                    isOutOfDistribution = isOOD,
+                    isBelowThreshold = true,
+                    outcome = outcome,
+                    outcomeReason = outcomeReason,
+                    margin = margin
+                )
+            }
+            DiagnosisOutcome.DIAGNOSE -> {
+                DiagnosisEvaluation(
+                    classId = top1!!.classId,
+                    displayName = top1.displayName,
+                    confidence = top1Prob,
+                    certaintyBand = CertaintyCalculator.calculate(top1Prob),
+                    top3 = topK,
+                    freeEnergy = freeEnergy,
+                    isOutOfDistribution = false,
+                    isBelowThreshold = false,
+                    outcome = outcome,
+                    outcomeReason = outcomeReason,
+                    margin = margin
+                )
+            }
+        }
+    }
 }

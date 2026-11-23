@@ -21,15 +21,30 @@ object CropMapping {
 
     /**
      * Determines the crop prefix from a classId in labels.json.
-     * Every class has exactly one crop except "weeds_not_a_crop", which returns null.
+     * Works with any labels.json (both 20-class and 15-class models).
+     * Returns null for non-crop classes (weeds_not_a_crop, other_not_a_crop, or labels without '_').
      */
     fun getCropForClass(classId: String): String? {
         val normalized = classId.trim().lowercase()
-        if (normalized == "weeds_not_a_crop" || !normalized.contains("_")) {
+        if (normalized == "weeds_not_a_crop" || normalized == "other_not_a_crop" || !normalized.contains("_")) {
             return null
         }
-        val prefix = normalized.substringBefore("_")
-        return if (prefix in VALID_CROPS) prefix else null
+        return normalized.substringBefore("_")
+    }
+
+    /**
+     * Task AUTO: Computes total probability mass per crop across all model classes.
+     */
+    fun computeCropMasses(labels: List<String>, probabilities: FloatArray): Map<String, Float> {
+        val masses = mutableMapOf<String, Float>()
+        val count = minOf(labels.size, probabilities.size)
+        for (i in 0 until count) {
+            val crop = getCropForClass(labels[i])
+            if (crop != null) {
+                masses[crop] = (masses[crop] ?: 0.0f) + probabilities[i]
+            }
+        }
+        return masses
     }
 
     /**
