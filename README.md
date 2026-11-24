@@ -182,7 +182,93 @@ adb push tokenizer.model /sdcard/Android/data/com.cropdoctor/files/tokenizer.mod
 
 ---
 
-## 6. Safety & Human-in-the-Loop Decisions
+## 6. Reproduce: Complete Offline Setup Without Large Files
+
+In strict accordance with Project Rules **H2 (Zero datasets or weights committed)** and **H9 (Free-only / open licences)**, this repository does not bundle gigabytes of model binaries or raw photo datasets. A reviewer or evaluator can reproduce the entire offline environment using the verified utilities in `scripts/setup/`.
+
+```
+scripts/setup/
+  ├── download_vosk.py         # Downloads, verifies SHA-256, extracts & pushes 3 Vosk speech models
+  ├── install_llama.md         # Guide on license acceptance, official sources, and reference checksums
+  ├── install_llama.py         # Verifies SHA-256 of supplied Llama weights & pushes via ADB
+  ├── datasets_manifest.json   # Machine-readable provenance manifest of all 12 datasets
+  └── download_datasets.py     # Automated Kaggle/Git ingestion, Mendeley guidance & clustering pipeline
+```
+
+### 6.1 Reproducing Speech Recognition (Vosk Offline Models)
+Agri Care AI provides offline voice input for English, Hindi, and Telugu using open-source Vosk models.
+
+```bash
+# 1. Simulate workflow with dry-run (prints URLs, hashes, and target phone paths)
+python scripts/setup/download_vosk.py --dry-run
+
+# 2. Download, verify SHA-256, extract, and push to connected phone via ADB
+python scripts/setup/download_vosk.py
+```
+- **Official Sources**: Downloads `vosk-model-small-en-in-0.4` (35.8 MB), `vosk-model-small-hi-0.22` (42.4 MB), and `vosk-model-small-te-0.42` (57.7 MB) from `https://alphacephei.com/vosk/models/`.
+- **Integrity**: Compares SHA-256 against recorded checksums.
+- **Target Path Read by App**: Installs into `/sdcard/Android/data/com.cropdoctor/files/vosk/<lang>/` (where `<lang>` is `en`, `hi`, `te`). No root permissions required.
+
+### 6.2 Reproducing Advisory AI Engine (Llama 3.2 1B-Instruct)
+To enable on-device generative reasoning grounded in the Knowledge Base:
+
+```bash
+# 1. Review license and source instructions
+# Read scripts/setup/install_llama.md
+
+# 2. Dry-run verification (computes SHA-256 of local files and checks target paths)
+python scripts/setup/install_llama.py --model path/to/Llama-3.2-1B-Instruct-SpinQuant_INT4_EO8.pte --tokenizer path/to/tokenizer.model --accept-license --dry-run
+
+# 3. Active installation to connected phone
+python scripts/setup/install_llama.py --model path/to/Llama-3.2-1B-Instruct-SpinQuant_INT4_EO8.pte --tokenizer path/to/tokenizer.model --accept-license
+```
+- **Official Checksums**:
+  - `llama-3.2-1b-spinquant.pte` (1.13 GB): `8715cdba9e91f6bede00cc5f2d6b12397b95225da5630c4972a8da03001cda3b`
+  - `tokenizer.model` (2.18 MB): `82e9d31979e92ab929cd544440f129d9ecd797b69e327f80f17e1c50d5551b55`
+- **Zero Credentials**: No API keys or passwords are used or stored.
+- **Alternative In-App Installation**: Files can also be picked directly on the phone via **More Options (☰)** -> **"Install AI Model (.pte)"**.
+
+### 6.3 Reproducing Dataset Ingestion & Preparation Pipeline
+The vision backbone (`vision.pte`) is trained on a curated 15-class field dataset assembled from 12 open sources.
+
+```bash
+# 1. Audit manifest and check local availability of raw archives
+python scripts/setup/download_datasets.py --dry-run
+
+# 2. Automated ingestion for permissible sources (Kaggle and Git clones)
+# Kaggle sources use the reviewer's own credentials from environment (KAGGLE_USERNAME/KEY)
+python scripts/setup/download_datasets.py --download-all-available
+```
+- **Manifest**: `scripts/setup/datasets_manifest.json` tracks every dataset, DOI, licence (with explicit CC BY-NC 3.0 warnings), classes fed, and expected image counts.
+- **Mendeley Sources**: Direct browser links and target folder instructions are printed for the 6 CC BY 4.0 Mendeley repositories protected by Cloudflare bot-checks.
+- **Audited Preparation Pipeline**:
+  Once raw files are in `C:\crop-data\candidates\raw\`, run:
+  ```bash
+  python scripts/prepare_dataset_v2.py
+  ```
+  This script enforces:
+  1. **Provenance Source Tagging**: Every image is prefixed with `src-<Origin>_` (`src-PaddyDoctor_`, `src-AgML_`, `src-Mendeley74j_`, etc.) to prevent data leakage.
+  2. **Letterbox Trimming & Resizing**: Removes synthetic border artifacts before lanczos resizing to uniform 512x512.
+  3. **Near-Duplicate Single-Linkage Clustering**: Computes dihedral 64-bit dHash; clusters duplicate photos at Hamming $\le 8$ ($\le 10$ for tomato) to guarantee zero cluster memorization.
+  4. **Cross-Class Collision Filtering**: Discards conflicting duplicates across different classes at Hamming $\le 2$.
+  5. **Capping**: Enforces an 800-photo cap per source pool for balanced class distributions.
+  6. **Packaging**: Generates `C:\crop-data\crop_doctor_15_v2.zip` for training.
+
+### 6.4 Reproducing Application Build & Quality Gates
+```bash
+# Run full suite of automated unit tests (rules, localization, guardrails, audio)
+./gradlew testDebugUnitTest
+
+# Assemble production Release APK
+./gradlew assembleRelease
+
+# Verify zero network permissions in compiled binary (Rule H1)
+aapt2 dump permissions app/build/outputs/apk/release/app-release.apk
+```
+
+---
+
+## 7. Safety & Human-in-the-Loop Decisions
 
 1. **Rule H4 (Zero Unverified Doses)**: Chemical dosages appear only when marked `dose_verified: true` from an official University or CIB&RC publication. Otherwise, the app explicitly directs farmers to *"follow the product label"*.
 2. **Rule H5 (Code-Controlled Urgency)**: Llama only explains; it never decides disease severity, urgent referrals, or registered medicines. Severity scoring and emergency escalation reside strictly in unit-tested Kotlin code (`RulesEngine.kt`).
@@ -191,7 +277,7 @@ adb push tokenizer.model /sdcard/Android/data/com.cropdoctor/files/tokenizer.mod
 
 ---
 
-## 7. Out of Scope
+## 8. Out of Scope
 
 The following features are explicitly out of scope for Phase 1 (stated in `FINAL_REQUIREMENTS.md` section C):
 - Post-harvest loss reduction and storage pest management
@@ -203,14 +289,18 @@ The following features are explicitly out of scope for Phase 1 (stated in `FINAL
 
 ---
 
-## 8. Licences & Attributions
+## 9. Licences & Attributions
+
+For complete dataset citations, license texts, and provenance audits, see [`docs/CREDITS.md`](docs/CREDITS.md).
 
 - **Application Code**: Licensed under the [Apache License 2.0](LICENSE).
 - **Advisory LLM**: Meta Llama 3.2 1B-Instruct is licensed under the [Llama 3.2 Community License Agreement](https://llama.meta.com/llama3/license/). *Built with Llama.*
-- **Datasets**:
-  - PlantVillage Dataset (David P. Hughes & Marcel Salathé, Penn State University, CC BY 4.0).
-  - Mendeley Data Rice & Cotton Disease Datasets (CC BY 4.0).
-  - PlantDoc Dataset (IIT Delhi, CC BY 4.0).
-  - IP102 Dataset (Pest morphology academic reference).
-- **Typography**: Noto Sans Telugu and Noto Sans Devanagari fonts (SIL Open Font License OFL 1.1).
-- **ML Runtime**: PyTorch ExecuTorch 0.6.0 (BSD 3-Clause License, Meta Platforms, Inc.).
+- **Offline Speech Recognition**: Vosk speech recognition engine and acoustic models licensed under [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) (Alpha Cephei Inc.).
+- **Edge ML Runtime**: PyTorch ExecuTorch 0.6.0 ([BSD 3-Clause License](https://github.com/pytorch/executorch/blob/main/LICENSE), Meta Platforms, Inc.) and XNNPACK ([BSD 3-Clause License](https://github.com/google/XNNPACK/blob/master/LICENSE), Google LLC).
+- **Datasets**: Audited under `scripts/setup/datasets_manifest.json` and `docs/CREDITS.md`:
+  - Mendeley Data Rice, Cotton, Chilli, and Maize Datasets (CC BY 4.0).
+  - Paddy Doctor Dataset (CC BY 4.0).
+  - Project-AgML Rice Dataset (Apache 2.0 / Open Access).
+  - PlantDoc Dataset (MIT License).
+  - PlantVillage Dataset (CC BY-NC 3.0, *strictly non-commercial educational/research use*).
+- **Typography & Iconography**: Noto Sans Telugu and Noto Sans Devanagari fonts (SIL Open Font License OFL 1.1); Material Design Icons (Apache 2.0).
