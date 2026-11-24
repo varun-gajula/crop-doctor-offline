@@ -24,18 +24,40 @@ llama/
 *.gguf
 tokenizer.bin
 tokenizer.model
+*.model
+*.safetensors
+*.weights
+*.tflite
+
+# Vosk Speech Recognition Models (Rule H2)
+vosk_models/
+*vosk-model*
+vosk/
 
 # Datasets & Raw Images (Rule H2)
 data_raw/
 data_processed/
+candidates/
+crop_doctor_*/
+deepweeds/
+plantdoc/
+plantvillage/
 benchmarks/dummy_realtest/
 benchmarks/phone_samples/
 benchmarks/test_inspect/
 benchmarks/p5_staging/
+benchmarks/contact_sheets/
+benchmarks/realtest/
 benchmarks/*.jpg
+benchmarks/*.png
 *.zip
 *.tar
 *.tar.gz
+*.parquet
+*.arrow
+*.feather
+*.h5
+*.hdf5
 *.csv
 !data/source_class_map.csv
 !data/class_counts.csv
@@ -44,6 +66,7 @@ benchmarks/*.jpg
 !benchmarks/tomato_unique_audit.csv
 !benchmarks/final/confusion_matrix.csv
 test_photos/
+test_images/
 
 # Gradle & Android Build Outputs
 .gradle/
@@ -54,7 +77,7 @@ app/build/
 *.aab
 *.ap_
 
-# Local Android Studio configuration & credentials
+# Local Android Studio configuration & credentials (Rule H2, H9)
 local.properties
 .idea/
 *.iml
@@ -62,10 +85,15 @@ local.properties
 captures/
 .externalNativeBuild
 .cxx/
-local.properties
+kaggle.json
+*.jks
+*.keystore
+*.pem
+*.key
+*.p12
+*.pfx
+google-services.json
 
 # Benchmarks raw logs (keep scripts and summaries, ignore huge dumps)
 *.hprof
 *.prof
-
-test_images/
