@@ -5,6 +5,7 @@ import android.net.Uri
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -280,6 +281,43 @@ fun ModelInstallScreen(
                 }
             }
 
+            // Green status banner when models are already present
+            if (hasModel && hasTokenizer) {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFFE8F5E9)),
+                    border = BorderStroke(1.dp, Color(0xFF81C784))
+                ) {
+                    Row(
+                        modifier = Modifier.padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.CheckCircle,
+                            contentDescription = null,
+                            tint = Color(0xFF2E7D32),
+                            modifier = Modifier.size(28.dp)
+                        )
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Column {
+                            Text(
+                                text = "All AI Models Installed & Ready",
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF1B5E20)
+                            )
+                            Spacer(modifier = Modifier.height(2.dp))
+                            Text(
+                                text = "Llama 3.2 1B & Tokenizer are active. No further installation required.",
+                                fontSize = 13.sp,
+                                color = Color(0xFF2E7D32)
+                            )
+                        }
+                    }
+                }
+            }
+
             if (isCopying) {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
@@ -365,18 +403,33 @@ fun ModelInstallScreen(
                     )
 
                     Spacer(modifier = Modifier.height(12.dp))
-                    Button(
-                        onClick = { modelPickerLauncher.launch(arrayOf("*/*")) },
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors(containerColor = FarmGreenPrimary),
-                        shape = RoundedCornerShape(10.dp),
-                        enabled = !isCopying
-                    ) {
-                        Text(
-                            text = stringResource(R.string.btn_select_model_file),
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.SemiBold
-                        )
+                    if (hasModel) {
+                        OutlinedButton(
+                            onClick = { modelPickerLauncher.launch(arrayOf("*/*")) },
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(10.dp),
+                            enabled = !isCopying
+                        ) {
+                            Text(
+                                text = "Reinstall / Replace Model (.pte)",
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
+                    } else {
+                        Button(
+                            onClick = { modelPickerLauncher.launch(arrayOf("*/*")) },
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = ButtonDefaults.buttonColors(containerColor = FarmGreenPrimary),
+                            shape = RoundedCornerShape(10.dp),
+                            enabled = !isCopying
+                        ) {
+                            Text(
+                                text = stringResource(R.string.btn_select_model_file),
+                                fontSize = 15.sp,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        }
                     }
                 }
             }
@@ -444,18 +497,33 @@ fun ModelInstallScreen(
                     )
 
                     Spacer(modifier = Modifier.height(12.dp))
-                    Button(
-                        onClick = { tokenizerPickerLauncher.launch(arrayOf("*/*")) },
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors(containerColor = FarmGreenPrimary),
-                        shape = RoundedCornerShape(10.dp),
-                        enabled = !isCopying
-                    ) {
-                        Text(
-                            text = stringResource(R.string.btn_select_tokenizer_file),
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.SemiBold
-                        )
+                    if (hasTokenizer) {
+                        OutlinedButton(
+                            onClick = { tokenizerPickerLauncher.launch(arrayOf("*/*")) },
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(10.dp),
+                            enabled = !isCopying
+                        ) {
+                            Text(
+                                text = "Reinstall / Replace Tokenizer (.model)",
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
+                    } else {
+                        Button(
+                            onClick = { tokenizerPickerLauncher.launch(arrayOf("*/*")) },
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = ButtonDefaults.buttonColors(containerColor = FarmGreenPrimary),
+                            shape = RoundedCornerShape(10.dp),
+                            enabled = !isCopying
+                        ) {
+                            Text(
+                                text = stringResource(R.string.btn_select_tokenizer_file),
+                                fontSize = 15.sp,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        }
                     }
                 }
             }
