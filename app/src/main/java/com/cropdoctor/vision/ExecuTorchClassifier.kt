@@ -72,15 +72,15 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
         private set
     var energyThreshold: Double? = null
         private set
-    var cropMassThreshold: Float = 0.60f
+    var cropMassThreshold: Float = 0.40f
         private set
-    var marginThreshold: Float = 0.25f
+    var marginThreshold: Float = 0.15f
         private set
     var borderlineEnergy: Double = -9.0
         private set
-    var autoCropMassThreshold: Float = 0.60f
+    var autoCropMassThreshold: Float = 0.40f
         private set
-    var autoMarginThreshold: Float = 0.25f
+    var autoMarginThreshold: Float = 0.15f
         private set
     val classThresholds: MutableMap<String, Float> = mutableMapOf()
     val unsupportedClasses: MutableSet<String> = mutableSetOf()
@@ -182,8 +182,8 @@ class ExecuTorchClassifier(private val context: Context) : Classifier {
             }
 
             // Task P4 & Task AUTO thresholds
-            cropMassThreshold = if (json.has("crop_mass_threshold")) json.getDouble("crop_mass_threshold").toFloat() else 0.60f
-            marginThreshold = if (json.has("margin_threshold")) json.getDouble("margin_threshold").toFloat() else 0.25f
+            cropMassThreshold = if (json.has("crop_mass_threshold")) json.getDouble("crop_mass_threshold").toFloat() else 0.40f
+            marginThreshold = if (json.has("margin_threshold")) json.getDouble("margin_threshold").toFloat() else 0.15f
             borderlineEnergy = if (json.has("borderline_energy")) json.getDouble("borderline_energy") else -9.0
             autoCropMassThreshold = if (json.has("auto_crop_mass_threshold")) json.getDouble("auto_crop_mass_threshold").toFloat() else cropMassThreshold
             autoMarginThreshold = if (json.has("auto_margin_threshold")) json.getDouble("auto_margin_threshold").toFloat() else marginThreshold

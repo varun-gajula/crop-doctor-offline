@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- App Metadata -->
-    <string name="app_name">Agri Care AI</string>
+    <string name="app_name">AI agri care</string>
     <string name="tagline">గుర్తించండి • నేర్చుకోండి • రక్షించండి</string>
     <string name="subtitle">ఆరోగ్యకరమైన పంటలు, సంపన్నమైన రైతులు</string>
     <string name="offline_badge">100% ఆఫ్‌లైన్</string>

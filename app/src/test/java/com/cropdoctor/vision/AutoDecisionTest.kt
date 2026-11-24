@@ -86,7 +86,7 @@ class AutoDecisionTest {
 
         assertTrue("Confidence threshold should be between 0.2 and 0.8", defThresh in 0.2..0.8)
         assertTrue("Energy threshold should be negative", eThresh < 0.0)
-        assertTrue("Crop mass threshold should be >= 0.5", cmThresh >= 0.5)
+        assertTrue("Crop mass threshold should be >= 0.35", cmThresh >= 0.35)
         assertTrue("Margin threshold should be >= 0.1", mThresh >= 0.1)
     }
 
@@ -179,21 +179,21 @@ class AutoDecisionTest {
     @Test
     fun testLowTopCropMassGivesCantTell() {
         val probs = FloatArray(labels.size) { 0.0f }
-        // Rice top class is 0.45, but rest of mass is scattered across other crops
-        probs[0] = 0.45f // rice_leaf_blast
+        // Rice top class is 0.30, but rest of mass is scattered across other crops
+        probs[0] = 0.30f // rice_leaf_blast
         probs[2] = 0.25f // cotton_bacterial_blight
-        probs[4] = 0.15f // chilli_leaf_curl_virus
-        probs[13] = 0.15f // tomato_septoria_leaf_spot
-        // Top crop mass (rice) = 0.45 < 0.60 threshold
+        probs[4] = 0.25f // chilli_leaf_curl_virus
+        probs[13] = 0.20f // tomato_septoria_leaf_spot
+        // Top crop mass (rice) = 0.30 < 0.40 threshold
 
         val eval = VisionMath.evaluateDiagnosisAuto(
             labels = labels,
             probabilities = probs,
-            defaultThreshold = 0.35f, // isolate crop mass gate
+            defaultThreshold = 0.25f, // isolate crop mass gate
             freeEnergy = -12.0,
             energyThreshold = energyThreshold,
             cropMassThreshold = cropMassThreshold,
-            marginThreshold = 0.10f,
+            marginThreshold = 0.05f,
             gate1Pass = true
         )
 

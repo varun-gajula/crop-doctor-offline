@@ -65,7 +65,7 @@ class FakeClassifier : Classifier {
                 selectedCrop = "tomato",
                 cropMass = 0.22f,
                 outcome = DiagnosisOutcome.OUT_OF_CLASS,
-                outcomeReason = "LOW_CROP_MASS(0.22 < 0.60)"
+                outcomeReason = "LOW_CROP_MASS(0.22 < 0.40)"
             )
         }
 

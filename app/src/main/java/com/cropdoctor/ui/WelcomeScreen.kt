@@ -137,7 +137,7 @@ fun WelcomeScreen(
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = "100% Offline Agri Care AI\nArm Bharat AI-SoC Challenge",
+                            text = "100% Offline AI agri care\nArm Bharat AI-SoC Challenge",
                             fontSize = 15.sp,
                             fontWeight = FontWeight.Medium,
                             color = FarmGreenDark,
