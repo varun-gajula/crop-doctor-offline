@@ -58,7 +58,7 @@ fun FirstLaunchScreen(
             Spacer(modifier = Modifier.height(12.dp))
 
             Text(
-                text = "Crop Doctor",
+                text = "Agri Care AI",
                 fontSize = 32.sp,
                 fontWeight = FontWeight.ExtraBold,
                 color = FarmGreenDark

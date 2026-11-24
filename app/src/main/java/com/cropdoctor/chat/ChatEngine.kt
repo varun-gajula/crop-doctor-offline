@@ -64,7 +64,7 @@ object ChatEngine {
     ): String {
         val topPassage = passages.firstOrNull()?.text?.take(450) ?: ""
         return """<|begin_of_text|><|start_header_id|>system<|end_header_id|>
-Crop Doctor offline chat assistant.
+Agri Care AI offline chat assistant.
 - Answer in 1 or 2 short sentences (at most 35 words).
 - End with a complete sentence.
 - Use ONLY the Passage below. Do NOT add new chemicals, doses, or numbers.

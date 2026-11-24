@@ -84,7 +84,7 @@ class LlamaSpeedBenchmarkTest {
             } else "Follow label"
 
             val prompt = """<|begin_of_text|><|start_header_id|>system<|end_header_id|>
-You are Crop Doctor, an offline farm assistant. Explain concisely based only on official advice.<|eot_id|><|start_header_id|>user<|end_header_id|>
+You are Agri Care AI, an offline farm assistant. Explain concisely based only on official advice.<|eot_id|><|start_header_id|>user<|end_header_id|>
 Crop: ${tc.crop}
 Diagnosis: ${tc.diseaseName}
 Severity: ${tc.severity.name}

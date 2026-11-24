@@ -38,7 +38,7 @@ class CaseReportTest {
         val shareText = CaseReportRepository.formatShareText(report)
 
         // Must contain all F9 fields
-        assertTrue("Report must have header", shareText.contains("CROP DOCTOR - FIELD REPORT"))
+        assertTrue("Report must have header", shareText.contains("AGRI CARE AI - FIELD REPORT"))
         assertTrue("Report must contain Date", shareText.contains("Date: 15 Nov 2026, 12:45 PM"))
         assertTrue("Report must contain Region", shareText.contains("Region: Telangana"))
         assertTrue("Report must contain Crop", shareText.contains("Crop: Rice"))

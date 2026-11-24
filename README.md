@@ -1,4 +1,4 @@
-# Crop Doctor (Offline)
+# Agri Care AI (Offline)
 
 > **Offline Crop Disease & Pest Detection and Advisory for Farmers**  
 > *Developed for the Arm "Bharat AI-SoC Challenge 2026–27" (Problem Statement 1: Offline crop disease/pest detection and advisory for farmers)*  
@@ -13,9 +13,9 @@
 ---
 
 ## 1. Overview
-In rural farming communities, cellular coverage frequently drops deep in the fields where crop diseases and pest outbreaks first appear. **Crop Doctor** is an edge-native, zero-cloud Android application engineered to run 100% offline on consumer Arm System-on-Chips (SoCs).
+In rural farming communities, cellular coverage frequently drops deep in the fields where crop diseases and pest outbreaks first appear. **Agri Care AI** is an edge-native, zero-cloud Android application engineered to run 100% offline on consumer Arm System-on-Chips (SoCs).
 
-Using a decoupled two-lane edge architecture, Crop Doctor captures an affected leaf or pest photo, delivers disease/pest identification and lesion severity in under 1.5 seconds, and provides grounded, actionable treatment recommendations in **Telugu (తెలుగు)**, **Hindi (हिन्दी)**, and **English**, all within an accessible 60-second field workflow.
+Using a decoupled two-lane edge architecture, Agri Care AI captures an affected leaf or pest photo, delivers disease/pest identification and lesion severity in under 1.5 seconds, and provides grounded, actionable treatment recommendations in **Telugu (తెలుగు)**, **Hindi (हिन्दी)**, and **English**, all within an accessible 60-second field workflow.
 
 ---
 
@@ -160,7 +160,7 @@ To enable on-device **Llama 3.2 1B-Instruct** explanations (which stream live on
 
 #### Method A: In-App Installer (Zero-ADB / Direct on Phone)
 1. Transfer `Llama-3.2-1B-Instruct-SpinQuant_INT4_EO8.pte` (~1.13 GB) and `tokenizer.model` (~2.18 MB) to the phone's storage (e.g. via USB cable, SD card, Bluetooth, or Nearby Share to `Downloads/`).
-2. Open **Crop Doctor** -> Tap **More Options (☰)** -> Tap **"Install AI Model (.pte)"** (or tap **"⚙️ Install AI Model (Offline)"** on any result screen).
+2. Open **Agri Care AI** -> Tap **More Options (☰)** -> Tap **"Install AI Model (.pte)"** (or tap **"⚙️ Install AI Model (Offline)"** on any result screen).
 3. Tap **"Select Model File (.pte)"** and pick the `.pte` file using the Android system file picker.
 4. Tap **"Select Tokenizer (.model)"** and pick `tokenizer.model`.
 5. The app copies them to its private storage (`context.filesDir`), validates file sizes ($\ge 100\text{ MB}$ for model, $\ge 50\text{ KB}$ for tokenizer), and loads the model instantly without internet.
@@ -174,7 +174,7 @@ adb push tokenizer.model /sdcard/Android/data/com.cropdoctor/files/tokenizer.mod
 ```
 
 #### Verifiable Fallback Guarantee (Task A-REAL)
-- **Model Missing or Unloaded**: If the model files are not installed, memory is low, or language is Telugu (which Llama does not officially support), Crop Doctor immediately displays the verified Agronomy Knowledge Base text labeled:
+- **Model Missing or Unloaded**: If the model files are not installed, memory is low, or language is Telugu (which Llama does not officially support), Agri Care AI immediately displays the verified Agronomy Knowledge Base text labeled:
   `"Offline guide - AI explanation not available"`
 - **Model Running**: When Llama 3.2 1B streams tokens on device, the advisory card displays:
   `"Explained on this phone by Llama 3.2 1B"`

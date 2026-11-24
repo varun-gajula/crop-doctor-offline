@@ -1,4 +1,4 @@
-# Technical Report: Crop Doctor Offline
+# Technical Report: Agri Care AI (Offline)
 **Arm Bharat AI-SoC Challenge 2026-27**  
 **Problem Statement PS1**: Offline Crop Disease/Pest Detection and Advisory for Farmers  
 **Target Hardware**: 64-bit Arm CPU (`arm64-v8a`), 6 GB RAM reference Android phone  
@@ -11,7 +11,7 @@
 
 Smallholder farmers in rural India face recurring crop yield losses due to delayed or inaccurate diagnosis of foliar diseases and insect pests. Existing commercial solutions rely on remote cloud APIs that require active cellular data or high-speed Wi-Fi. In real farming environments across Telangana, Andhra Pradesh, and semi-arid regions of India, connectivity is either absent or highly intermittent. Furthermore, cloud-dependent apps introduce round-trip latency, ongoing API server costs, and privacy concerns regarding farm imagery.
 
-The primary users of Crop Doctor are:
+The primary users of Agri Care AI are:
 1. **Smallholder Farmers**: Cultivators managing small landholdings (typically 1–5 acres) of Rice, Cotton, Chilli, Tomato, or Maize, often with limited formal literacy and speaking regional languages (Telugu or Hindi). They require immediate, high-contrast visual diagnosis, spoken voice guidance, and non-technical agronomic advice within under 60 seconds.
 2. **Village Agriculture Extension Workers & Krishi Sahayaks**: Field officers visiting remote village clusters who need rapid, reliable on-device diagnostic confirmation, standardized treatment guidelines, and shareable case reports that can be forwarded to agricultural university experts or the Kisan Call Centre without manual data re-entry.
 
@@ -19,7 +19,7 @@ The primary users of Crop Doctor are:
 
 ## 2. Architecture
 
-Crop Doctor is built around a decoupled two-lane edge architecture running 100% locally on the device's Arm CPU without any network access:
+Agri Care AI is built around a decoupled two-lane edge architecture running 100% locally on the device's Arm CPU without any network access:
 
 ```
                           [ Leaf / Pest Photo ]
@@ -127,7 +127,7 @@ The on-device advisory engine executes Meta Llama 3.2 1B-Instruct running locall
 ### 4.2 Prompt Construction & Grounding
 `PromptBuilder.kt` compiles a structured prompt strictly constrained by the vision findings and verified Knowledge Base entry:
 ```text
-System: You are Crop Doctor, an offline farming advisory assistant for Indian farmers.
+System: You are Agri Care AI, an offline farming advisory assistant for Indian farmers.
 Explain the crop condition in simple words for a smallholder farmer.
 Use ONLY the approved knowledge base information below.
 Do NOT invent doses, concentrations, or chemical trade names.
@@ -159,7 +159,7 @@ To eliminate LLM hallucination risks:
 ## 5. Languages and Knowledge Base
 
 ### 5.1 Trilingual Architecture
-Crop Doctor supports three mandatory languages:
+Agri Care AI supports three mandatory languages:
 - **English (en)**
 - **Telugu (తెలుగు)** (pivotal language for Telangana and Andhra Pradesh)
 - **Hindi (हिन्दी)**
@@ -279,7 +279,7 @@ A scripted test harness (`tools/run_p5_benchmarks.py`) evaluated 55 test photos 
 
 ### 7.7 Farmer-First Accessibility & Contrast Ratio Verification (Rule U2)
 
-To ensure usability in harsh direct sunlight for rural farmers with limited reading ability, Crop Doctor adheres to WCAG 2.1 accessibility standards.
+To ensure usability in harsh direct sunlight for rural farmers with limited reading ability, Agri Care AI adheres to WCAG 2.1 accessibility standards.
 
 #### Color Contrast Ratio Derivation:
 - **Foreground (Primary Brand / Text)**: `#1B5E20` (Deep Farm Green: $R=27, G=94, B=32$)
@@ -325,7 +325,7 @@ As specified in `FINAL_REQUIREMENTS.md` section C, the following features are ex
 3. **Hailo and Raspberry Pi Runtimes**: Deployment is focused exclusively on commercial 64-bit Arm Android smartphones.
 4. **Kannada and Tamil Languages**: Support is focused on the three mandatory project languages: English, Telugu, and Hindi.
 5. **On-Device Llama Fine-Tuning**: Inference uses pre-quantized 4-bit SpinQuant weights; on-device backpropagation/fine-tuning is out of scope.
-6. **Cloud Synchronization**: Crop Doctor is zero-cloud and stores case reports purely in local SQLite/DataStore.
+6. **Cloud Synchronization**: Agri Care AI is zero-cloud and stores case reports purely in local SQLite/DataStore.
 
 ---
 
