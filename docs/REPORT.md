@@ -16,7 +16,7 @@ The application executes two distinct machine learning pipelines locally on the 
 1. **Vision Inference Lane**: A compact MobileNetV3-Large convolutional backbone (**16.15 MB** binary size, 512x512 RGB planar tensor input) compiled for the **ExecuTorch 0.6.0** runtime with **XNNPACK** Arm Neon vector SIMD acceleration. The vision model classifies **15 agricultural categories** spanning 5 staple Indian crops (Rice, Cotton, Chilli, Tomato, Maize), including 9 foliar diseases, 3 major economic insect pests (*Spodoptera frugiperda* / Maize Fall Armyworm, *Scirpophaga incertulas* / Rice Yellow Stem Borer, and *Dicladispa armigera* / Rice Hispa), healthy leaf states, and a non-crop guardrail category (`other_not_a_crop`).
 2. **Advisory Reasoning Lane**: Meta's **Llama 3.2 1B-Instruct**, quantized to 4-bit INT4 via **SpinQuant** (**1.06 GiB**, 1,135,951,488 bytes), executing on the Arm CPU via ExecuTorch XNNPACK to stream conversational, context-grounded agronomic explanations in plain language.
 
-The two pipelines are integrated through a deterministic agronomic rules engine and an offline trilingual knowledge base in **Telugu (తెలుగు)**, **Hindi (हिन्दी)**, and **English**. Visual diagnosis, calibrated certainty rating, lesion severity calculation, and official university-sourced interventions appear on-screen immediately following vision inference on the 6 GB physical reference phone (vision model loads in 116 ms; double-scan rapid captures average 238.9 ms spinner time). Llama's conversational explanation streams asynchronously below the treatment cards, delivering a Time to First Token (TTFT) of **9,680.2 ms** and a generation speed of **7.27 tok/s** on CPU following prompt compression optimization.
+The two pipelines are integrated through a deterministic agronomic rules engine and an offline trilingual knowledge base in **Telugu (తెలుగు)**, **Hindi (हिन्दी)**, and **English**. The vision pipeline completes first, rendering the visual diagnosis, temperature-calibrated certainty rating, lesion severity calculation, and official university-sourced interventions on screen (vision model loads in 116 ms; double-scan rapid captures average 238.9 ms spinner time). Llama's conversational explanation streams asynchronously below the treatment cards, delivering a Time to First Token (TTFT) of **9,680.2 ms** and a generation speed of **7.27 tok/s** on CPU following prompt compression optimization.
 
 Safety and agronomic honesty are enforced in plain, unit-tested Kotlin code:
 - **Llama never decides severity, urgency, or chemical dosages.**
@@ -84,7 +84,7 @@ Agri Care AI enforces a strict architectural separation between sensory percepti
         │  - Sourced from ICAR, PJTSAU, ANGRAU (Pending Expert Review)│
         │  - Trilingual Structured Content (English, Telugu, Hindi)   │
         └──────────────────────────────┬──────────────────────────────┘
-                                       │ Instant Result (Diagnosis & Advice)
+                                       │ Structured Result First (Diagnosis & Advice)
                        ┌───────────────┴───────────────┐
                        ▼                               ▼
         ┌──────────────────────────────┐ ┌─────────────────────────────┐
@@ -104,11 +104,30 @@ Agri Care AI enforces a strict architectural separation between sensory percepti
                                          - Fallback: "Offline guide"
 ```
 
+#### End-to-End Component Functions and Data Movement Lifecycle
+The complete runtime flow transitions through eight decoupled stages with strict data movement boundaries:
+1. **Camera Frame Acquisition (`CameraX`)**: The live camera stream acquires high-resolution sensor frames. Prior to downsampling, a center crop of fraction $0.37$ is extracted to isolate the leaf area framed within the UI viewfinder, discarding irrelevant peripheral backgrounds.
+2. **Tensor Transformation (`ImagePreprocessor.kt`)**: The center-cropped bitmap is resized via bilinear interpolation to $512 \times 512$ RGB. Pixel color values are converted to float32 planar memory layout $[1, 3, 512, 512]$ and normalized using standard ImageNet parameters ($\mu = [0.485, 0.456, 0.406], \sigma = [0.229, 0.224, 0.225]$).
+3. **Vision Model Inference (`Classifier.kt`)**: The normalized planar tensor is dispatched to the ExecuTorch C++ runtime via JNI. MobileNetV3-Large forward pass executes across Arm Cortex-A76 performance cores utilizing XNNPACK vector SIMD instructions, producing a raw 15-element logit vector.
+4. **Logit Calibration & Free Energy Calculation (`EnergyCalculator.kt`)**: Raw logits $z_i$ are scaled by temperature $T = 0.9433$. The Helmholtz free energy scalar $E(x) = -T \cdot \ln \sum_{i=1}^{15} \exp(z_i / T)$ is computed via numerically stable LogSumExp. Calibrated class probabilities are derived via softmax over scaled logits.
+5. **Deterministic Decision Gate Evaluation (`DecisionGate.kt`)**:
+   - *Gate 1 (`LeafAreaValidator.kt`)*: Generates an HSV vegetative mask to verify that leaf matter exceeds the background threshold.
+   - *Gate 2 (`EnergyCalculator.kt`)*: Rejects out-of-distribution inputs if free energy exceeds $-4.5866$ (routing to `CAN'T TELL`).
+   - *Gate 3 (`DecisionGate.kt`)*: Enforces target crop probability mass ($\ge 0.60$), decision margin between top-1 and top-2 predictions ($\ge 0.25$), and top-1 confidence ($\ge 0.75$).
+   - Returns a structured diagnostic outcome: `DIAGNOSE`, `OUT_OF_CLASS`, or `CANT_TELL`.
+6. **Lesion Severity & Urgency Estimation (`LesionSeverityEstimator.kt`)**: Segments necrotic and chlorotic pixels in HSV space ($H \in [10^\circ, 45^\circ] \cup [0^\circ, 10^\circ]$) relative to total green foliage to compute lesion area fraction ($< 10\%$ Mild, $10\% - 25\%$ Moderate, $> 25\%$ Severe). Merges the visual metric with the farmer's one-tap field spread selection to generate a deterministic urgency rating: *Early warning*, *Act this week*, or *Act now*.
+7. **Knowledge Base Retrieval (`AndroidSqlitePassageDatabase.kt`)**: The verified class key queries the local SQLite FTS5 database. 576 university-sourced passages (ICAR, PJTSAU, ANGRAU) are retrieved using BM25 full-text indexing for the user's selected language (Telugu, Hindi, English) and region (Telangana, Andhra Pradesh, Other).
+8. **UI Presentation & Asynchronous Advisory (`ResultScreen.kt` & `Advisor.kt`)**:
+   - The diagnosis badge, urgency rating, certainty level, and verified treatment tiers (Cultural, Bio, Chemical) are rendered on screen first.
+   - In a background coroutine, `MemoryBudgetDecider.kt` verifies that available RAM is $\ge 1,500\text{ MB}$. If safe, `ExecuTorchLock.forwardMutex` is acquired, and ExecuTorch initializes `LlmModule` with 4-bit SpinQuant Llama 3.2 1B weights (`llama-3.2-1b-spinquant.pte`).
+   - A concise 159-token context (system instructions + finding + top BM25 passages) is dispatched. Generated tokens stream into the UI asynchronously.
+   - `GuardrailFilter.kt` monitors streamed text; any ungrounded dosage or unapproved chemical halts LLM generation and reverts to the verified knowledge-base guide.
+
 ### 3.2 Deterministic Decision Gates & Outcomes
 To prevent "hallucinated diagnoses" on unfamiliar foliage or non-crop objects, raw model logits are processed through three sequential gates:
 1. **Gate 1: Leaf Area Validation**: An HSV color mask validates that the central sensor crop contains sufficient vegetative plant matter. If non-plant background dominates, the app flags a soft warning.
-2. **Gate 2: Helmholtz Free Energy OOD Scoring**: The model computes Helmholtz free energy E(x) = -T · ln(Σ exp(z_i / T)). Unfamiliar leaves, off-target crop species, and non-crop textures produce abnormally high free energy (E > -4.5866; borderline energy -9.0) and are routed to `CAN'T TELL`.
-3. **Gate 3: Crop-Mass & Ambiguity Margin Filter**: When the farmer selects a target crop (e.g., Rice), the sum of softmax probabilities across all classes belonging to that crop must meet ≥ 0.60 (`crop_mass_threshold`), and the difference between top-1 and top-2 probabilities within that crop must exceed 0.25 (`margin_threshold`). In addition, the top-1 calibrated softmax probability must meet or exceed 0.75 (`confidence_threshold`), matching `thresholds.json`.
+2. **Gate 2: Helmholtz Free Energy OOD Scoring**: The model computes Helmholtz free energy $E(x) = -T \cdot \ln(\sum \exp(z_i / T))$. Here, temperature ($T = 0.9433$) and free energy threshold ($E_{\text{thresh}} = -4.5866$) were calibrated directly on the 15-class validation split. Unfamiliar leaves, off-target crop species, and non-crop textures produce abnormally high free energy ($E > -4.5866$; borderline energy cutoff $-9.0$, carried over from earlier 20-class calibration without 15-class recalibration) and are routed to `CAN'T TELL`.
+3. **Gate 3: Crop-Mass & Ambiguity Margin Filter**: When the farmer selects a target crop (e.g., Rice), the sum of softmax probabilities across all classes belonging to that crop must meet $\ge 0.60$ (`crop_mass_threshold`), and the difference between top-1 and top-2 probabilities within that crop must exceed $0.25$ (`margin_threshold`). Both $0.60$ and $0.25$ were carried over from the earlier 20-class calibration without recalibration for the 15-class model. In addition, the top-1 calibrated softmax probability must meet or exceed $0.75$ (`confidence_threshold`), which was calibrated on the 15-class model, matching `thresholds.json`.
 
 These gates yield three definitive, unit-tested outcomes:
 - **`DIAGNOSE`**: The finding is accepted with high confidence and low energy. The UI displays the verified pathogen/pest name, certainty band (`Sure` / `Probably`), severity rating, and official treatments.
@@ -215,13 +234,13 @@ The final 15-class MobileNetV3-Large model was evaluated on the held-out cluster
 To test robustness against unseen camera sensors and uncurated backgrounds, the model was evaluated on the **PlantDoc Corn leaf blight** benchmark (**174 photos** from IIT Delhi, completely excluded from training):
 - **Correct Blight Diagnoses**: **115 of 174 photos (66.1% recall)** (`benchmarks/final/metrics.json`).
 - **Prediction Distribution**: Maize Northern Leaf Blight (115), Maize Common Rust (40), Rice Leaf Blast (16), Rice Hispa (3).
-- **Agronomic Finding**: On uncurated field imagery, 89.1% (155/174) of predictions correctly identified foliar maize pathology (Blight or Rust), with 0 false predictions into non-crop or healthy categories.
+- **Stress Test Evaluation**: On uncurated field imagery with complex backgrounds, the model achieved 66.1% (115/174) recall on this out-of-distribution benchmark. The remaining 59 photos were misclassified into other foliar pathology classes (40 common rust, 16 rice blast, 3 rice hispa).
 
 ### 5.3 Non-Crop & Out-of-Distribution Rejection Rates
 Evaluated on strictly non-overlapping probe sets (`benchmarks/compare_field.md`, `benchmarks/check_field.md`):
-- **`nocrop` Rejection Rate**: **96.7% (29 of 30 photos rejected to `CAN'T TELL`)**. All 30 photos are real phone captures taken by the team on Xiaomi `220233L2I` and `2201116SI` devices, with 0 perceptual hash overlap against training data.
-- **`othercrop` Rejection Rate**: **72.9% (35 of 48 photos rejected to `CAN'T TELL` or `OUT OF CLASS`)**, testing off-target agricultural species (Apple, Grape, Potato, Sugarcane). This represents a marked improvement over the legacy 20-class model, which rejected only 37.5% (18/48).
-- **Zero Non-Crop Classification Errors**: In grouped cluster validation on the 15-class held-out test set (`benchmarks/final/metrics.json`), the non-crop guardrail class (`other_not_a_crop`) achieved 100.0% precision and 100.0% recall (68/68 correct, with 0 false positive detections of non-crops as diseases, and 0 false detections of crop foliage as non-crop). Furthermore, on the 174-photo noisy PlantDoc stress benchmark, all predictions were classified into agricultural pathology classes with 0 false predictions into non-crop or healthy categories.
+- **`nocrop` Rejection Rate on Field Photography**: **96.7% (29 of 30 photos rejected to `CAN'T TELL`)**. All 30 photos are real phone captures taken by the team on Xiaomi `220233L2I` and `2201116SI` devices, with 0 perceptual hash overlap against training data (1 of 30 non-crop photos was falsely accepted).
+- **`othercrop` Rejection Rate on Field Photography**: **72.9% (35 of 48 photos rejected to `CAN'T TELL` or `OUT OF CLASS`)**, testing off-target agricultural species (Apple, Grape, Potato, Sugarcane). This represents a marked improvement over the legacy 20-class model, which rejected only 37.5% (18/48), while 13 of 48 off-target photos falsely passed the gates.
+- **Non-Crop Classification Performance (Held-Out Test Set vs. Field Photos)**: In grouped cluster validation on the 15-class held-out test set (`benchmarks/final/metrics.json`), the non-crop guardrail class (`other_not_a_crop`) achieved 100.0% precision and 100.0% recall (68/68 correct, with 0 non-crop errors on this held-out set). In contrast, on unconstrained field photography, rejection is not zero-error: 29 of 30 non-crop photos were rejected (1 false positive), and 35 of 48 off-target crop photos were rejected (13 false positives passing the gates).
 
 ### 5.4 Decision Threshold Sweep & Selection
 A parametric sweep across confidence, free energy, crop mass, and margin thresholds was conducted on clean probe photography (`benchmarks/p4b_options.md`, `benchmarks/p4b_table.csv`):
@@ -233,6 +252,8 @@ A parametric sweep across confidence, free energy, crop mass, and margin thresho
 | **Opt-8 (High Yield)** | 0.70 | -4.5000 | 0.60 | 0.20 | **85.0% (17/20)** | **83.3% (25/30)** | **72.9% (35/48)** | 23.7% (22/93) |
 
 Evaluation on 33 clean field photos (`benchmarks/p4b_options.md`) confirmed that diagnostic performance differences across candidate profiles were within one photo; the baseline profile (`confidence_threshold: 0.75`, `energy_threshold: -4.5866`, `crop_mass_threshold: 0.60`, `margin_threshold: 0.25`) was retained.
+
+**Provenance of Threshold Values**: Within the baseline profile, `confidence_threshold` ($0.75$), `energy_threshold` ($-4.5866$), and temperature scaling ($T = 0.9433$) were calibrated directly on the TR4-15 grouped validation split. Conversely, `crop_mass_threshold` ($0.60$), `margin_threshold` ($0.25$), and `borderline_energy` ($-9.0$) were carried over from the earlier 20-class model calibration and were not independently recalibrated for the 15-class architecture.
 
 ### 5.5 Confusion Matrix Analysis
 Analysis of off-diagonal errors in the 15 × 15 validation confusion matrix (`benchmarks/final/metrics.json`) reveals three primary agronomic confusions:
@@ -284,7 +305,7 @@ Measured live on the connected POCO M4 5G (`22041219PI`, MediaTek Dimensity 700 
 
 - **Vision Model Cold Load Time**: **116 ms** (`benchmarks/phone_v15_summary.md`).
 - **Rapid Double-Scan Spinner Latency**: **238.9 ms average** (min 196 ms, max 398 ms across 60 executions on POCO M4 5G in `benchmarks/phone_v15_summary.md`).
-- **Sourced Advice Card Presentation**: The diagnosis badge, certainty indicator, and verified treatment steps appear on screen immediately upon vision inference completion; the farmer never waits for Llama to read recommended practices.
+- **Sourced Advice Card Presentation**: The vision result (diagnosis badge, certainty indicator, and verified treatment steps) is rendered on screen first upon vision inference completion, followed by Llama's streaming explanation; reading the recommended agronomic practices does not wait for LLM token generation.
 - **Llama 3.2 1B-Instruct Generation Metrics (Task LAT-1 Optimization)**:
   - **Average Prompt Tokens**: **301.1 tokens** (shortened by -25.3% from 402.9 tokens in `benchmarks/lat1_summary.md`).
   - **Time to First Token (TTFT)**: **9,680.2 ms (~9.7 s)** on Arm CPU (accelerated by -25.5% from 12,986.4 ms; best observed TTFT: **8,152 ms** in `benchmarks/lat1_after_stageB.json`).
@@ -303,12 +324,12 @@ To achieve real-time vision inference and responsive local LLM execution within 
 3. **Dynamic On-Demand LLM Eviction**: Llama weights and ExecuTorch native contexts load into RAM only when the user requests an explanation, and are automatically unloaded after **60 seconds of inactivity**. This returns **~1.45 GB of native RAM** to the operating system (`benchmarks/memory_summary.md`).
 4. **MemoryBudgetDecider Guard**: Before initializing Llama, `MemoryBudgetDecider.kt` queries the Android `ActivityManager`. If system available RAM is < 1,500 MB, LLM loading is bypassed in **0 ms**, gracefully presenting the static knowledge-base text (*"Offline guide"*) and protecting system stability (`benchmarks/fallback_rate.md`).
 5. **Process-Wide Concurrency Mutex (`ExecuTorchLock`)**: A thread-safe mutex (`forwardMutex`) coordinates vision and LLM inference. Vision classification and Llama generation are mutually exclusive, eliminating CPU core contention and thermal throttling on the Arm Cortex-A76 cores.
-6. **Active Work Cancellation**: If the user taps the camera shutter while Llama is actively streaming tokens, ongoing LLM generation is instantly aborted via an atomic cancellation flag, freeing CPU cores immediately for the vision pass.
+6. **Active Work Cancellation**: If the user taps the camera shutter while Llama is actively streaming tokens, ongoing LLM generation is aborted via an atomic cancellation flag, freeing CPU cores for the incoming vision pass.
 7. **Task LAT-1 Prompt Shortening**: System prompt instructions and finding headers were compressed from 402.9 to 301.1 tokens (-25.3%). On the Arm CPU, prefill time dropped from 12,986.4 ms to **9,680.2 ms (-25.5% faster)**, saving over 3.3 seconds per query (`benchmarks/lat1_summary.md`).
 8. **Ultra-Short Chat Prompt Architecture**: Interactive chat queries utilize a streamlined 159-token prompt context (82-token system prompt + 19-token finding + 44-token top BM25 passage), delivering interactive responses in an average of **8.2 s** on CPU (`benchmarks/lat1_summary.md`).
 9. **Viewfinder Preprocessing Crop**: CameraX preview applies a center crop (`fraction=0.37`) matching the model's receptive field prior to bilinear downsampling, eliminating irrelevant field margins.
 10. **Decoupled Vosk Speech Lifecycle**: The Vosk Kaldi speech model is instantiated only while the microphone button is pressed and released before Llama initializes. This decoupled lifecycle restricts peak speech PSS to **1,678 MB** without memory overlap (`benchmarks/integration_poco_results.json`).
-11. **Fail-Closed Threshold Boundaries**: Calibrated free energy (-4.5866), confidence (0.75), crop mass (0.60), and margin (0.25) thresholds reject 96.7% of non-crop objects and 72.9% of off-target crop leaves, eliminating false diagnoses (`benchmarks/compare_field.md`).
+11. **Fail-Closed Threshold Boundaries**: Combining 15-class calibrated thresholds (free energy -4.5866, confidence 0.75) with carried-over heuristic thresholds from the earlier 20-class calibration (crop mass 0.60, margin 0.25) rejects 29/30 (96.7%) non-crop objects and 35/48 (72.9%) off-target crop leaves on field test photography (`benchmarks/compare_field.md`).
 
 ---
 
@@ -330,13 +351,15 @@ When visual confidence is borderline, when free energy indicates an unfamiliar p
 ## 9. Limitations
 
 In accordance with scientific integrity, the limitations of Agri Care AI are documented once in neutral wording:
-1. **Source-Limited Classes**: Five of the 15 classes (`chilli_leaf_curl_virus`, `chilli_healthy`, `maize_common_rust`, `tomato_spider_mites`, `other_not_a_crop`) currently depend on single repository sources, presenting residual risk of background memorization across diverse agro-climatic zones.
-2. **Unvalidated Severity Scoring**: The HSV necrotic lesion fraction calculation (< 10%, 10% – 25%, > 25%) is an engineering heuristic. It has not been clinically correlated against certified plant pathologists' Disease Severity Index (DSI) ratings.
-3. **Small Real-Photo Field Sample**: Unconstrained in-field evaluation on farmers' phones remains limited in sample size. Broader multi-district field validation is ongoing.
-4. **Acoustic Speech Limitations in Telugu**: While English and Hindi Vosk models achieve high recognition accuracy, the open-source Telugu Kaldi acoustic model exhibits higher word error rates due to limited regional dialect training data.
-5. **Knowledge Base Review Status**: All agronomic management text is transcribed from published ICAR, PJTSAU, and ANGRAU compendiums, but remains **"sourced, pending expert review"** until signed off by accredited university agronomists.
-6. **Localized Vernacular Nuances**: Hindi and Telugu UI strings require ongoing validation with rural farming communities to refine localized agricultural dialects.
-7. **Pest Severity Constraints**: Lesion area segmentation is optimized for foliar necrosis and is poorly suited for mobile insect counts or boring damage inside maize stalks.
+1. **Field Performance Disparity on Northern Leaf Blight**: Maize Northern Leaf Blight exhibited the weakest diagnostic recall on uncurated field photography (66.1% recall on the PlantDoc stress benchmark, 115/174), frequently confused with common rust (40 instances) or rice blast (16 instances) due to similar elongated necrotic lesion morphology under complex outdoor lighting.
+2. **Unvalidated Severity Heuristic**: The HSV necrotic lesion fraction calculation (< 10%, 10% – 25%, > 25%) is an unvalidated engineering heuristic. It has not been clinically correlated against certified plant pathologists' Disease Severity Index (DSI) ratings.
+3. **Single-Source Class Representations**: Five of the 15 classes (`chilli_leaf_curl_virus`, `chilli_healthy`, `maize_common_rust`, `tomato_spider_mites`, `other_not_a_crop`) originate from single repository sources without independent cross-source evaluation datasets, presenting residual risk of background memorization across diverse agro-climatic zones.
+4. **Vernacular Translation & Agronomic Review**: All Telugu and Hindi knowledge-base entries and vernacular UI strings require formal review and sign-off by native speakers and certified agricultural extension officers to ensure regional dialect accuracy and cultural clarity.
+5. **CC BY-NC Dataset Usage**: The vision training corpus incorporates PlantVillage imagery distributed under Creative Commons Attribution-NonCommercial (CC BY-NC 3.0), which restricts commercial deployment and limits the model's current usage to academic, non-commercial, and competition research benchmarking.
+6. **Threshold Calibration Scope**: While temperature scaling ($T = 0.9433$), confidence threshold ($0.75$), and free energy threshold ($-4.5866$) were calibrated directly on the 15-class model validation set, the crop mass threshold ($0.60$), decision margin ($0.25$), and borderline energy cutoff ($-9.0$) were carried over from the earlier 20-class calibration and were not independently recalibrated for the 15-class architecture.
+7. **Small Real-Photo Field Sample**: Unconstrained in-field evaluation on farmers' phones remains limited in sample size (33 clean field photos, 30 non-crop, 48 other-crop). Broader multi-district agronomic field validation is ongoing.
+8. **Acoustic Speech Recognition in Telugu**: While English and Hindi Vosk models achieve high accuracy, the open-source Telugu Kaldi acoustic model exhibits higher word error rates due to limited regional dialect training data.
+9. **Pest Severity Constraints**: Lesion area segmentation is optimized for foliar necrosis and is poorly suited for mobile insect counts or boring damage inside maize stalks.
 
 ---
 
