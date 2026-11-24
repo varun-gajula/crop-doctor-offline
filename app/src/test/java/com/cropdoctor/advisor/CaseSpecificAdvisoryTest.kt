@@ -53,28 +53,24 @@ class CaseSpecificAdvisoryTest {
             urgency = "Act This Week"
         )
 
-        // Case finding fields
-        assertTrue("Prompt must include Crop", prompt.contains("- Crop: maize"))
-        assertTrue("Prompt must include Problem", prompt.contains("- Problem: ${maizeEntry.names.en}"))
-        assertTrue("Prompt must include Type", prompt.contains("- Type: disease"))
-        assertTrue("Prompt must include Severity", prompt.contains("- Severity: MODERATE"))
-        assertTrue("Prompt must include Certainty", prompt.contains("- Confidence Level: Probably"))
-        assertTrue("Prompt must include Field Spread", prompt.contains("- Field Spread: some parts of the field"))
-        assertTrue("Prompt must include Region", prompt.contains("- Region: Telangana"))
-        assertTrue("Prompt must include Urgency", prompt.contains("- Urgency Level: Act This Week"))
+        // Case finding fields (condensed for low latency TTFT)
+        assertTrue("Prompt must include Crop", prompt.contains("Finding: maize"))
+        assertTrue("Prompt must include Problem", prompt.contains(maizeEntry.names.en))
+        assertTrue("Prompt must include Type", prompt.contains("(disease)"))
+        assertTrue("Prompt must include Severity", prompt.contains("MODERATE"))
+        assertTrue("Prompt must include Certainty", prompt.contains("Probably"))
+        assertTrue("Prompt must include Urgency", prompt.contains("Act This Week"))
 
         // Approved KB entry contents
-        assertTrue("Prompt must include Immediate Step", prompt.contains("- Immediate Cultural Step:"))
-        assertTrue("Prompt must include Natural Methods", prompt.contains("- Natural / Cultural Methods:"))
-        assertTrue("Prompt must include Chemical Management", prompt.contains("- Chemical Management Options"))
-        assertTrue("Prompt must include Regional Guidance", prompt.contains("- Regional Guidance (Telangana):"))
-        assertTrue("Prompt must include Referral Rule", prompt.contains("- Official Referral Rule:"))
+        assertTrue("Prompt must include Immediate Step", prompt.contains("- Immediate step:"))
+        assertTrue("Prompt must include Natural Methods", prompt.contains("- Natural remedy:"))
+        assertTrue("Prompt must include Chemical Management", prompt.contains("- Chemical:"))
+        assertTrue("Prompt must include Referral Rule", prompt.contains("- Referral:"))
 
         // Required instructions
         assertTrue("Prompt must instruct plain words for smallholder farmer", prompt.contains("Explain in plain words for a smallholder farmer"))
         assertTrue("Prompt must instruct to use only steps in KB", prompt.contains("Use only the steps in the knowledge-base entry below"))
-        assertTrue("Prompt must instruct urgency ordering", prompt.contains("Choose and order the ones relevant to this urgency"))
-        assertTrue("Prompt must instruct what to watch in coming days", prompt.contains("Mention what to watch in the coming days"))
+        assertTrue("Prompt must instruct 6-sentence limit", prompt.contains("at most 6 short, complete sentences"))
         assertTrue("Prompt must forbid dosage rates", prompt.contains("Do not give doses"))
         assertTrue("Prompt must forbid unlisted products", prompt.contains("Do not name any product not in the entry"))
         assertTrue("Prompt must forbid changing severity/referral", prompt.contains("Do not change the severity or referral advice"))
@@ -100,7 +96,7 @@ class CaseSpecificAdvisoryTest {
             urgency = "Early Warning"
         )
 
-        assertTrue("Pest prompt must state Type: pest", prompt.contains("- Type: pest"))
+        assertTrue("Pest prompt must state Type: pest", prompt.contains("(pest)"))
         assertTrue("Pest prompt must mention pest infestation damage", prompt.contains("pest infestation / plant damage"))
         assertFalse("Pest prompt must not state affected leaf area", prompt.contains("affected leaf area"))
     }

@@ -131,7 +131,7 @@
     <string name="cant_tell_no_disease">గుర్తించలేకపోయాము – తెగులు కనుగొనబడలేదు</string>
     <string name="demo_text_not_ai">డెమో వచనం – AI కాదు</string>
     <string name="advisory_card_title">AI సలహాదారు</string>
-    <string name="advisory_generating">AI సలహా సిద్ధమవుతోంది...</string>
+    <string name="advisory_generating">ఈ ఫోన్‌లో వివరించబడుతోంది...</string>
 
     <!-- T3: Save Case Report & History -->
     <string name="btn_save_case_report">నివేదికను భద్రపరచండి</string>
