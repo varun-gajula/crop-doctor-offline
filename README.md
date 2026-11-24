@@ -17,6 +17,9 @@ In rural farming communities, cellular coverage frequently drops deep in the fie
 
 Using a decoupled two-lane edge architecture, Agri Care AI captures an affected leaf or pest photo, delivers disease/pest identification and lesion severity in under 1.5 seconds, and provides grounded, actionable treatment recommendations in **Telugu (తెలుగు)**, **Hindi (हिन्दी)**, and **English**, all within an accessible 60-second field workflow.
 
+> [!NOTE]
+> **First-Time Model Setup**: The app works 100% offline out-of-the-box (vision, treatment advice, and case reports work with zero extra downloads). Installing the optional Llama 3.2 1B and Vosk speech models enables on-device AI explanations, interactive offline chat, and voice questions. See [Section 5.5](#55-first-time-setup-ai-model-files-optional) or the detailed [Setup Guide](docs/INSTALL_MODELS.md).
+
 ---
 
 ## 2. Two-Lane On-Device Architecture
@@ -152,33 +155,62 @@ adb install -r app/build/outputs/apk/release/app-release.apk
 adb shell pm grant com.cropdoctor android.permission.CAMERA
 ```
 
-### 5.5 Installing Llama 3.2 1B Model for Offline AI Explanations
+### 5.5 First-Time Setup: AI Model Files (Optional)
 
-The vision model (`vision.pte`, 16.9 MB) is pre-bundled in the APK assets and functions immediately out of the box with zero setup.
+> **For complete details, links, and troubleshooting, read the full [`docs/INSTALL_MODELS.md`](docs/INSTALL_MODELS.md) guide.**
 
-To enable on-device **Llama 3.2 1B-Instruct** explanations (which stream live on the Arm CPU via ExecuTorch INT4 SpinQuant):
+#### What is Needed & Why
+- **Core App Works Offline Immediately**: The vision model (`vision.pte`, 14.25 MB) and the trilingual agronomy Knowledge Base (PJTSAU, ANGRAU, ICAR) are bundled directly inside the APK. Vision detection, urgency triage, treatment guidance, and extension worker case reports work **100% offline with zero extra setup or downloads**.
+- **Why AI Files Are Sideloaded**: Large weights are required for on-device **Llama 3.2 1B-Instruct** generative reasoning, conversational offline chat, and **Vosk speech recognition**. Due to the [Meta Llama 3.2 Community License](https://llama.meta.com/) (which users accept directly) and GitHub file limits (> 100 MB), weights are not bundled in the APK.
+- **Privacy & Security Guarantee**: The app contains **0 network permissions** (`INTERNET` is absent). No cellular data or Wi-Fi is ever needed, and no images, audio, or queries are ever uploaded.
 
-#### Method A: In-App Installer (Zero-ADB / Direct on Phone)
-1. Transfer `Llama-3.2-1B-Instruct-SpinQuant_INT4_EO8.pte` (~1.13 GB) and `tokenizer.model` (~2.18 MB) to the phone's storage (e.g. via USB cable, SD card, Bluetooth, or Nearby Share to `Downloads/`).
-2. Open **Agri Care AI** -> Tap **More Options (☰)** -> Tap **"Install AI Model (.pte)"** (or tap **"⚙️ Install AI Model (Offline)"** on any result screen).
-3. Tap **"Select Model File (.pte)"** and pick the `.pte` file using the Android system file picker.
-4. Tap **"Select Tokenizer (.model)"** and pick `tokenizer.model`.
-5. The app copies them to its private storage (`context.filesDir`), validates file sizes ($\ge 100\text{ MB}$ for model, $\ge 50\text{ KB}$ for tokenizer), and loads the model instantly without internet.
+#### Required Files, Sizes & Checksums
+Users must accept the Llama 3.2 license before downloading:
+1. **Llama 3.2 1B-Instruct (SpinQuant INT4)**: `Llama-3.2-1B-Instruct-SpinQuant_INT4_EO8.pte` (~1.13 GB / 1,135,951,488 bytes)  
+   - SHA-256: `8715cdba9e91f6bede00cc5f2d6b12397b95225da5630c4972a8da03001cda3b`  
+   - Source: Accept license at [Meta Llama](https://llama.meta.com/) or [Hugging Face](https://huggingface.co/meta-llama/Llama-3.2-1B-Instruct), then download artifact from [ExecuTorch Community](https://huggingface.co/executorch-community/).
+2. **Tokenizer**: `tokenizer.model` (~2.18 MB / 2,183,982 bytes)  
+   - SHA-256: `82e9d31979e92ab929cd544440f129d9ecd797b69e327f80f17e1c50d5551b55`  
+   - Source: [Meta Llama Tokenizer](https://huggingface.co/meta-llama/Llama-3.2-1B-Instruct/resolve/main/original/tokenizer.model).
+3. **Offline Voice Models (Optional, for Mic in Chat)**:
+   - English: `vosk-model-small-en-in-0.4.zip` (35.8 MB, SHA-256: `20663dcac4d5cb783a579c54d98339344a688e4ec6e1b4a4b059fd1235454cc7`)
+   - Hindi: `vosk-model-small-hi-0.22.zip` (42.4 MB, SHA-256: `7c50a10866889f0ac21d912c20537a055a597ed09fc1d3e5bcd798f9f0017e48`)
+   - Telugu: `vosk-model-small-te-0.42.zip` (57.7 MB, SHA-256: `3e77b05becc7599a596ccebd8b22cb95eb4eca0cfca524827cdfbfd66af09497`)
+   - Sources: [AlphaCephei Models](https://alphacephei.com/vosk/models/).
+
+#### Method A: In-App File Picker (Zero-ADB / Direct on Phone)
+1. Transfer the `.pte`, `tokenizer.model`, and optional `.zip` files to the phone's **`Download`** folder via USB file transfer or browser download.
+2. In Agri Care AI, tap **More Options (☰)** -> **"Install AI Model (.pte)"** (or tap **"⚙️ Install AI Model (Offline)"** on any diagnosis result screen).
+3. Tap **"Select Model File (.pte)"** and choose the `.pte` file using the system file picker.
+4. Tap **"Select Tokenizer (.model)"** and choose `tokenizer.model`.
+5. (Optional) Scroll to **"🎙️ Offline Speech Models (Vosk)"**, tap **"Install (.zip)"** next to your language, and pick the `.zip` file.
+6. The app copies them into private storage, verifies sizes, and immediately activates offline AI mode.
 
 #### Method B: Push via ADB (For Developers)
-On Android 14+, regular apps cannot access `/data/local/tmp` due to SELinux `untrusted_app` policy. Push directly to the app's external files directory (no root or `run-as` required):
+Push directly to the app's external files directory (no root required; accessible on Android 10+):
 ```bash
-# Push 4-bit quantized Llama weights and tokenizer to app-specific storage
+# Push model weights and tokenizer
 adb push Llama-3.2-1B-Instruct-SpinQuant_INT4_EO8.pte /sdcard/Android/data/com.cropdoctor/files/llama-3.2-1b-spinquant.pte
 adb push tokenizer.model /sdcard/Android/data/com.cropdoctor/files/tokenizer.model
+
+# Or use automated repository helper scripts:
+python scripts/setup/install_llama.py --accept-license
+python scripts/setup/download_vosk.py
 ```
 
-#### Verifiable Fallback Guarantee (Task A-REAL)
-- **Model Missing or Unloaded**: If the model files are not installed, memory is low, or language is Telugu (which Llama does not officially support), Agri Care AI immediately displays the verified Agronomy Knowledge Base text labeled:
-  `"Offline guide - AI explanation not available"`
-- **Model Running**: When Llama 3.2 1B streams tokens on device, the advisory card displays:
-  `"Explained on this phone by Llama 3.2 1B"`
-- Every case report and system log records the exact source (`advisor_source=LLAMA` or `advisor_source=OFFLINE_GUIDE`).
+#### How to Check It Worked
+- **In Install Screen**: A green banner displays: `"All AI Models Installed & Ready — Llama 3.2 1B & Tokenizer are active"`.
+- **On Result Screen**: Advisory card displays a green badge: **`Explained on this phone by Llama 3.2 1B`** (or in Hindi: **`इस फ़ोन पर Llama 3.2 1B द्वारा समझाया गया`**).
+- **In Chat**: The mic 🎙️ button records speech offline and transcribes it into chat queries.
+
+#### What You See If Files Are NOT Installed (Verifiable Fallback)
+If model files are absent, the app displays the verified agronomic recommendations from the Knowledge Base with a blue badge:  
+**`Offline guide - AI explanation not available`** (Hindi: **`ऑफ़लाइन गाइड - AI स्पष्टीकरण उपलब्ध नहीं है`**, Telugu: **`ఆఫ్‌లైన్ గైడ్ - AI వివరణ అందుబాటులో లేదు`**).
+
+#### Troubleshooting
+- **Insufficient Storage**: Ensure the phone has at least 3 GB of free storage before copying the ~1.13 GB model.
+- **"Warning: Model file seems too small"**: File download was incomplete (< 100 MB). Check size and re-download.
+- **Low Memory Fallback (Rule H15)**: If system available RAM drops below ~1.8 GB, Llama is bypassed to prevent out-of-memory crashes and the app gracefully serves the offline guide. Close heavy background apps to allow Llama to load.
 
 ---
 
