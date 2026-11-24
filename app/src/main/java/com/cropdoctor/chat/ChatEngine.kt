@@ -67,21 +67,20 @@ object ChatEngine {
         val topPassage = passages.firstOrNull()?.text?.take(450) ?: ""
         return if (isHindi) {
             """<|begin_of_text|><|start_header_id|>system<|end_header_id|>
-Agri Care AI ऑफ़लाइन चैट सहायक (सरल हिंदी में)।
-- किसान के प्रश्न का उत्तर केवल नीचे दिए गए गद्यांश (Passage) के आधार पर 1 या 2 छोटे वाक्यों में दें (अधिकतम 35 शब्द)।
-- पूर्ण वाक्य के साथ समाप्त करें।
-- कोई नया रसायन, दवा या मात्रा न जोड़ें।
-- यदि प्रश्न गद्यांश या फसल से पूरी तरह असंबंधित है, तो कहें: "$NO_MATCH_ANSWER_HI"<|eot_id|><|start_header_id|>user<|end_header_id|>
+Agri Care AI सहायक (सरल हिंदी में)।
+- दिए गए गद्यांश (Passage) के आधार पर किसान के प्रश्न का संक्षिप्त उत्तर 1 या 2 छोटे वाक्यों में दें (अधिकतम 35 शब्द)।
+- पूर्ण वाक्य में उत्तर दें।
+- केवल गद्यांश के तथ्यों का उपयोग करें। कोई नया रसायन या मात्रा न जोड़ें।<|eot_id|><|start_header_id|>user<|end_header_id|>
 Finding: $crop, $problemName, $severity ($certainty)
 Passage: $topPassage
 Question: $query<|eot_id|><|start_header_id|>assistant<|end_header_id|>""".trimIndent()
         } else {
             """<|begin_of_text|><|start_header_id|>system<|end_header_id|>
-Agri Care AI offline chat assistant.
-- Answer the farmer's question directly in 1 or 2 short sentences (at most 35 words) using the facts in the Passage below.
+Agri Care AI assistant.
+- Answer the farmer's question directly in 1 or 2 concise sentences (at most 35 words) using the facts in the Passage below.
 - End with a complete sentence.
-- Use ONLY the Passage below. Do NOT add new chemicals, doses, or numbers.
-- If the question is completely unrelated to the crop or Passage, state: "$NO_MATCH_ANSWER_EN"<|eot_id|><|start_header_id|>user<|end_header_id|>
+- Use ONLY the facts in the Passage. Do NOT add new chemicals, doses, or numbers.
+- Do NOT repeat the prompt headers.<|eot_id|><|start_header_id|>user<|end_header_id|>
 Finding: $crop, $problemName, $severity ($certainty)
 Passage: $topPassage
 Question: $query<|eot_id|><|start_header_id|>assistant<|end_header_id|>""".trimIndent()
@@ -169,39 +168,55 @@ Question: $query<|eot_id|><|start_header_id|>assistant<|end_header_id|>""".trimI
 
             try {
                 val rawAnswer = llamaGenerator(prompt).trim()
-                val (cleanAnswer, wasCut) = com.cropdoctor.advisor.SentenceTrimmer.cleanToCompleteSentence(rawAnswer, lang)
-                val candidateAnswer = if (cleanAnswer.isNotBlank()) cleanAnswer else rawAnswer
+                val strippedPreamble = rawAnswer
+                    .removePrefix("Agri Care AI offline chat assistant.")
+                    .removePrefix("Agri Care AI offline chat assistant:")
+                    .removePrefix("Agri Care AI assistant.")
+                    .removePrefix("Agri Care AI assistant:")
+                    .removePrefix("Here is the answer:")
+                    .removePrefix("Answer:")
+                    .trim()
+
+                val (cleanAnswer, wasCut) = com.cropdoctor.advisor.SentenceTrimmer.cleanToCompleteSentence(strippedPreamble, lang)
+                val candidateAnswer = if (cleanAnswer.isNotBlank()) cleanAnswer else strippedPreamble
                 val findingText = "Crop: $crop Problem: $problemName Severity: $severity Certainty: $certainty"
 
-                // Validate with Guardrail
-                val validation = ChatGuardrail.validate(
-                    generatedAnswer = candidateAnswer,
-                    passages = passages,
-                    findingText = findingText
-                )
+                val isRefusal = candidateAnswer.contains(NO_MATCH_ANSWER_EN, ignoreCase = true) ||
+                        candidateAnswer.contains(NO_MATCH_ANSWER_HI, ignoreCase = true) ||
+                        candidateAnswer.contains("no answer in the passage", ignoreCase = true) ||
+                        candidateAnswer.isBlank()
 
-                if (validation.isValid) {
-                    return ChatResponse(
-                        text = candidateAnswer,
-                        label = LABEL_LLAMA,
-                        source = primarySource,
-                        retrievedPassages = passages,
-                        isNoMatch = false,
-                        advisorSource = "LLAMA",
-                        guardrailPassed = true
+                if (!isRefusal) {
+                    // Validate with Guardrail
+                    val validation = ChatGuardrail.validate(
+                        generatedAnswer = candidateAnswer,
+                        passages = passages,
+                        findingText = findingText
                     )
-                } else {
-                    // On rejection, show passage text with label "Offline guide"
-                    return ChatResponse(
-                        text = fallbackPassageText,
-                        label = getOfflineGuideLabel(lang),
-                        source = primarySource,
-                        retrievedPassages = passages,
-                        isNoMatch = false,
-                        advisorSource = "OFFLINE_GUIDE",
-                        guardrailPassed = false,
-                        guardrailReason = validation.failureReason
-                    )
+
+                    if (validation.isValid) {
+                        return ChatResponse(
+                            text = candidateAnswer,
+                            label = LABEL_LLAMA,
+                            source = primarySource,
+                            retrievedPassages = passages,
+                            isNoMatch = false,
+                            advisorSource = "LLAMA",
+                            guardrailPassed = true
+                        )
+                    } else {
+                        // On rejection, show passage text with label "Offline guide"
+                        return ChatResponse(
+                            text = fallbackPassageText,
+                            label = getOfflineGuideLabel(lang),
+                            source = primarySource,
+                            retrievedPassages = passages,
+                            isNoMatch = false,
+                            advisorSource = "OFFLINE_GUIDE",
+                            guardrailPassed = false,
+                            guardrailReason = validation.failureReason
+                        )
+                    }
                 }
             } catch (e: Exception) {
                 // On error fallback to passage text

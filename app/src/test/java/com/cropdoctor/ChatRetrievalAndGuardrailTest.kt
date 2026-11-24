@@ -306,6 +306,25 @@ class ChatRetrievalAndGuardrailTest {
         )
         assertFalse("Must find passage for Telugu 'ఎందుకు వచ్చింది'", tePassages.isEmpty())
         assertEquals(QuestionSection.WHAT_IS_IT, tePassages.first().section)
+
+        // 6. User questions from screenshot: "what exactly problem here" and "what is the  problem"
+        val exactProbPassages = passageStore.getBestPassages(
+            detectedClass = "maize_northern_leaf_blight",
+            questionKeywords = "what exactly problem here",
+            language = "en",
+            limit = 1
+        )
+        assertFalse("Must find passage for 'what exactly problem here'", exactProbPassages.isEmpty())
+        assertEquals(QuestionSection.WHAT_IS_IT, exactProbPassages.first().section)
+
+        val doubleSpacePassages = passageStore.getBestPassages(
+            detectedClass = "maize_northern_leaf_blight",
+            questionKeywords = "what is the  problem",
+            language = "en",
+            limit = 1
+        )
+        assertFalse("Must find passage for 'what is the  problem'", doubleSpacePassages.isEmpty())
+        assertEquals(QuestionSection.WHAT_IS_IT, doubleSpacePassages.first().section)
     }
 
     /**

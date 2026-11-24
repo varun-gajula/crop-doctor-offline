@@ -38,17 +38,20 @@ object QuestionKeywordMatcher {
                 "urgent", "action", "first step", "right now", "emergency", "how to treat now",
                 "how to treat", "treat", "treatment", "how to cure", "cure", "how to control",
                 "control", "how to fix", "fix", "how to stop", "stop", "how to save", "save",
-                "how to manage", "manage", "management", "solution", "how to solve"
+                "how to manage", "manage", "management", "solution", "solutions", "how to solve",
+                "suggest", "suggestion", "suggestions", "advice", "advise", "recommend",
+                "recommendation", "recommendations", "guidance", "what next", "next step",
+                "steps", "help me", "what can be done", "how to handle"
             ),
             hindiKeywords = listOf(
                 "अभी क्या करें", "तुरंत क्या करें", "तत्काल कदम", "पहला कदम", "उपाय", "अभी", "तुरंत",
                 "क्या उपाय करें", "इलाज", "उपचार", "कैसे ठीक करें", "नियंत्रण", "रोकथाम", "क्या करें",
-                "कैसे बचाएं", "बचाव", "समाधान", "क्या करना चाहिए"
+                "कैसे बचाएं", "बचाव", "समाधान", "क्या करना चाहिए", "सलाह", "सुझाव", "क्या कदम उठाएं"
             ),
             teluguKeywords = listOf(
                 "వెంటనే ఏమి చేయాలి", "ఇప్పుడు ఏమి చేయాలి", "తక్షణ చర్య", "వెంటనే", "ప్రథమ చికిత్స",
                 "ఇప్పుడేం చేయాలి", "వెంటనే ఏం చేయాలి", "చికిత్స", "ఎలా తగ్గించాలి", "ఎలా నియంత్రించాలి",
-                "ఏం చేయాలి", "ఎలా కాపాడాలి", "పరిష్కారం"
+                "ఏం చేయాలి", "ఎలా కాపాడాలి", "పరిష్కారం", "సలహా", "సూచన"
             )
         ),
         KeywordPattern(
@@ -135,23 +138,28 @@ object QuestionKeywordMatcher {
         KeywordPattern(
             section = QuestionSection.WHAT_IS_IT,
             englishKeywords = listOf(
-                "what is it", "what is this", "what disease", "what pest", "about this",
-                "identify", "cause", "causes", "caused", "causing", "pathogen", "disease name",
-                "overview", "tell me about this", "why it occurred", "why did this occur",
-                "why did it happen", "why is this happening", "why", "occur", "occurred",
-                "occurrence", "happen", "happened", "reason", "origin", "where did it come from",
-                "how did it happen", "how does it spread", "spread", "spreads", "spreading",
-                "fungus", "bacteria", "virus", "tell me about", "about"
+                "what is it", "what is this", "what is that", "what disease", "what pest", "about this",
+                "identify", "identification", "cause", "causes", "caused", "causing", "pathogen", "disease name",
+                "overview", "tell me about this", "tell me about", "tell me more", "explain", "explanation",
+                "details", "condition", "what condition", "problem", "problems", "what is the problem",
+                "what problem", "what exactly problem here", "issue", "issues", "wrong", "what is wrong",
+                "what is the issue", "why it occurred", "why did this occur", "why did it happen",
+                "why is this happening", "why", "occur", "occurred", "occurrence", "happen", "happened",
+                "reason", "reasons", "origin", "where did it come from", "how did it happen", "how does it spread",
+                "spread", "spreads", "spreading", "fungus", "fungal", "bacteria", "bacterial", "virus", "viral",
+                "pest", "disease", "infection", "infected", "information", "info"
             ),
             hindiKeywords = listOf(
                 "यह क्या है", "यह कौन सा रोग है", "रोग का नाम", "कारण", "पहचान", "इसके बारे में बताएं",
                 "क्यों हुआ", "क्यों आया", "वजह", "उत्पत्ति", "कैसे फैलता है", "फैलता", "फैलना",
-                "बीमारी", "यह कैसे हुआ", "कारण क्या है"
+                "बीमारी", "यह कैसे हुआ", "कारण क्या है", "समस्या", "दिक्कत", "परेशानी", "क्या हुआ",
+                "क्या खराबी है", "जानकारी", "विवरण", "बताओ", "समझाइए"
             ),
             teluguKeywords = listOf(
                 "ఇది ఏమిటి", "ఈ తెగులు ఏమిటి", "తెగులు పేరు", "కారణం", "వివరణ", "పరిచయం",
                 "ఏమిటి?", "ఏమిటి", "ఎందుకు వచ్చింది", "ఎలా వ్యాపిస్తుంది", "ఎందుకు",
-                "ఎలా వచ్చింది", "కారణాలు"
+                "ఎలా వచ్చింది", "కారణాలు", "సమస్య", "ఏం జరిగింది", "పంటకు ఏమైంది",
+                "వివరాలు", "తెలియజేయండి"
             )
         )
     )
@@ -163,7 +171,7 @@ object QuestionKeywordMatcher {
      * from shadowing specific compound phrases.
      */
     fun matchSection(query: String, language: String): String? {
-        val q = query.lowercase().trim()
+        val q = query.lowercase().trim().replace(Regex("\\s+"), " ")
         if (q.isBlank()) return null
 
         var bestSection: String? = null
