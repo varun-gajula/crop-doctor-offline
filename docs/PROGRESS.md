@@ -1,20 +1,46 @@
 # Project Progress - Crop Doctor Offline
 
-## Current Status: Task PHONE-V15 Complete (TR4-15 Model Verified on Physical POCO M4 5G: Part 0 180 Unit Tests Pass, Part 1 10/10 Real Photos Evaluated with 70ms Load Time, Part 2 Stages A/B/C All Passed: 0 Stuck Scans in 60 Scans, 10/10 Advice Generations on Full Sentences, 0 Crashes/ANRs)
+## Current Status: Task LAT-1 Complete (Llama Time to First Token Cut by 3.3 s / 25.5% on POCO M4 5G, Prompt Tokens Reduced by 25.3%, 182 Unit Tests Pass, 10/10 On-Device Advice Generations on Full Sentences, 0 Crashes/ANRs)
 
-### Feature Status Summary Table (Task PHONE-V15 Release Gate)
+### Feature Status Summary Table (Release Gate)
 
 | Feature | Requirement / Rule | Status | Implementation Details & Hardware Evidence |
 |---|---|---|---|
-| **1. Vision Inference (TR4-15 Final Model)** | PS1, R2, R5, R10, Task SW1-FIX, Task PHONE-V15 | **WORKING** | TR4 MobileNetV3-Large 15-class model (`vision.pte`, 16,931,132 bytes, SHA-256 `6626b164215c455b329853fbe5f01e6bc28055b338a5ec2da258a84324e70dbb`). Verified load time on POCO M4 5G: **70 ms**. 10 real gallery photos evaluated across Rice, Cotton, Chilli, Tomato, Maize. Fail-closed gates 2 & 3 fully functioning. |
-| **2. Fast Double-Scan & Shutter Contention Lifecycle** | H15, U2, Task PHONE-V15 (Stage A) | **WORKING** | Tested 20 immediate double scans (40 scans) + 20 spaced scans (2s gap) on POCO M4 5G: **0 crashes, 0 ANRs, 0 stuck scans** (> 8s). Longest spinner: **509 ms**, Average: **244.2 ms**, Min: **204 ms**. |
-| **3. On-Device Llama 3.2 1B Advisory Assistant** | R6, R7, H5, H15, Task PHONE-V15 (Stage B) | **WORKING** | Tested 10 full advice runs (5 EN, 5 HI) on POCO M4 5G: **10 of 10 completed on full sentences (100%)**. Avg TTFT: **12,927.4 ms**, Avg speed: **7.68 tok/s**, Avg tokens: **207.9**, 0 crashes/ANRs. |
-| **4. Grounded Chat & Guardrail Verification** | Task CHAT, Task PHONE-V15 (Stage C) | **WORKING** | Tested 10 chat questions (5 EN, 5 HI) on POCO M4 5G: 2 Llama answers, 4 guardrail intercepted ungrounded numbers (Rule H4 compliance), 3 fast FTS offline guide referrals (2-5 ms), 1 timeout fallback. 0 crashes/ANRs. |
-| **5. Offline Knowledge Base & Tri-Lingual Advisory** | R4, R6, R11, U1, H4, H6 | **WORKING** | 100% offline JSON asset in APK. Sourced from ICAR, PJTSAU, ANGRAU. English, Hindi, Telugu. 14 of 15 classes have full verified entries. Exactly 1 class (`other_not_a_crop`) has no KB entry by design (routes to Can't tell). |
-| **6. Direct Leaf Scanning & Auto Crop Detection** | Task AUTO | **WORKING** | Direct leaf scanning from home screen without prior crop selection. Dynamic prefix crop mapping (`maize_fall_armyworm` -> Maize, `rice_stem_borer` -> Rice, etc.). Fail-closed decision engine with "Change" crop chip. |
-| **7. Offline Voice Questions (Speech Recognition)** | Task VOICE | **WORKING (PARTIAL TELUGU)** | Vosk 0.3.47 running 16kHz mono Kaldi decoder on Arm CPU. Decoupled lifecycle: peak speech model PSS 1678 MB; model released so Vosk & Llama never co-exist. English & Hindi high accuracy; Telugu acoustic model uncertainty banner. |
-| **8. Zero-Internet Air-Gapped Operation** | Rule H1 | **WORKING** | Verified via `aapt2 dump permissions`: 0 network permissions (`android.permission.INTERNET` absent). Full offline operation verified in Airplane Mode. |
-| **9. TR4-15 Model Integration & Decision Gates** | Task SW1-FIX | **WORKING** | `vision.pte`, `labels.json`, `thresholds.json`, `preprocess.json`, `parity_samples.json` integrated from TR4 deliverable. Preserved all decision keys (`crop_mass_threshold: 0.6`, `margin_threshold: 0.25`, `borderline_energy: -9.0`). All 180 unit tests passing. |
+| **1. Llama TTFT Optimization (Task LAT-1)** | R6, R7, H5, H15, Task LAT-1 | **WORKING (OPTIMIZED)** | Streamlined prompt tokens from 402.9 to 301.1 (-25.3%). Measured TTFT on POCO M4 5G dropped from **12,986.4 ms** down to **9,680.2 ms** (saving **~3.3 s** before streaming). 10/10 runs finished on full sentences (`SentenceTrimmer`). |
+| **2. Immediate Result Screen Display** | R3, R4, R5, U2, Task LAT-1 | **WORKING** | Diagnosis, severity, certainty, and sourced KB treatment (Natural, Chemical, Immediate) appear instantly without waiting for Llama. Live progress note: `"Explaining on this phone..."` / `"इस फोन पर समझाई जा रही है..."` / `"ఈ ఫోన్‌లో వివరించబడుతోంది..."`. |
+| **3. Vision Inference (TR4-15 Final Model)** | PS1, R2, R5, R10, Task SW1-FIX, Task PHONE-V15 | **WORKING** | TR4 MobileNetV3-Large 15-class model (`vision.pte`, 16,931,132 bytes, SHA-256 `6626b164215c455b329853fbe5f01e6bc28055b338a5ec2da258a84324e70dbb`). Verified load time on POCO M4 5G: **70 ms**. 10 real gallery photos evaluated across Rice, Cotton, Chilli, Tomato, Maize. Fail-closed gates 2 & 3 fully functioning. |
+| **4. Fast Double-Scan & Shutter Contention Lifecycle** | H15, U2, Task PHONE-V15 (Stage A) | **WORKING** | Tested 20 immediate double scans (40 scans) + 20 spaced scans (2s gap) on POCO M4 5G: **0 crashes, 0 ANRs, 0 stuck scans** (> 8s). Longest spinner: **509 ms**, Average: **244.2 ms**, Min: **204 ms**. |
+| **5. On-Device Llama 3.2 1B Advisory Assistant** | R6, R7, H5, H15, Task PHONE-V15 (Stage B) | **WORKING** | Tested 10 full advice runs (5 EN, 5 HI) on POCO M4 5G: **10 of 10 completed on full sentences (100%)**. Avg TTFT: **9,680.2 ms**, Avg speed: **7.27 tok/s**, 0 crashes/ANRs. |
+| **6. Grounded Chat & Guardrail Verification** | Task CHAT, Task PHONE-V15 (Stage C) | **WORKING** | Tested 10 chat questions (5 EN, 5 HI) on POCO M4 5G: 2 Llama answers, 4 guardrail intercepted ungrounded numbers (Rule H4 compliance), 3 fast FTS offline guide referrals (2-5 ms), 1 timeout fallback. 0 crashes/ANRs. |
+| **7. Offline Knowledge Base & Tri-Lingual Advisory** | R4, R6, R11, U1, H4, H6 | **WORKING** | 100% offline JSON asset in APK. Sourced from ICAR, PJTSAU, ANGRAU. English, Hindi, Telugu. 14 of 15 classes have full verified entries. Exactly 1 class (`other_not_a_crop`) has no KB entry by design (routes to Can't tell). |
+| **8. Direct Leaf Scanning & Auto Crop Detection** | Task AUTO | **WORKING** | Direct leaf scanning from home screen without prior crop selection. Dynamic prefix crop mapping (`maize_fall_armyworm` -> Maize, `rice_stem_borer` -> Rice, etc.). Fail-closed decision engine with "Change" crop chip. |
+| **9. Offline Voice Questions (Speech Recognition)** | Task VOICE | **WORKING (PARTIAL TELUGU)** | Vosk 0.3.47 running 16kHz mono Kaldi decoder on Arm CPU. Decoupled lifecycle: peak speech model PSS 1678 MB; model released so Vosk & Llama never co-exist. English & Hindi high accuracy; Telugu acoustic model uncertainty banner. |
+| **10. Zero-Internet Air-Gapped Operation** | Rule H1 | **WORKING** | Verified via `aapt2 dump permissions`: 0 network permissions (`android.permission.INTERNET` absent). Full offline operation verified in Airplane Mode. |
+| **11. TR4-15 Model Integration & Decision Gates** | Task SW1-FIX | **WORKING** | `vision.pte`, `labels.json`, `thresholds.json`, `preprocess.json`, `parity_samples.json` integrated from TR4 deliverable. Preserved all decision keys (`crop_mass_threshold: 0.6`, `margin_threshold: 0.25`, `borderline_energy: -9.0`). All 182 unit tests passing. |
+
+---
+
+### Done in Task LAT-1: Llama Time to First Token (TTFT) Optimization & Instant Sourced Results
+1. **Measured Token Breakdown Across Components**:
+   - Analyzed exact token counts with Llama 3 BPE tokenizer:
+     - Old Advice Prompt: 397 tokens (System: 186, Finding: 70, KB: 122, Instructions: 18).
+     - New Advice Prompt: 233 tokens EN / 245 tokens HI (System: 115/127, Finding: 34, KB: 70, Instructions: 13).
+     - Chat Prompt: 159 tokens (System: 82, Finding: 19, Passage: 44, Query: 13).
+2. **Shortened Grounded Advice Prompt in Code**:
+   - Updated `PromptBuilder.kt`: compact single-line Finding, concise single relevant KB steps (immediate, natural, chemical active + brand, referral), 6-sentence concise system instruction.
+   - Kept `GuardrailFilter.sanitize`, `SentenceTrimmer`, and `<|eot_id|>` boundaries intact.
+3. **Instant Sourced Advice in UI**:
+   - `ResultScreen.kt` displays label, severity, certainty, and sourced KB treatments immediately on opening.
+   - Live progress indicator displays `"Explaining on this phone..."` / `"इस फोन पर समझाई जा रही है..."` / `"ఈ ఫోన్‌లో వివరించబడుతోంది..."` while Llama streams below.
+4. **On-Device Hardware Benchmark on POCO M4 5G**:
+   - Ran 10 advice generations (5 EN, 5 HI) logged in `benchmarks/lat1_after_stageB.json`:
+     - Prompt tokens: **301.1** (down from 402.9, -25.3%).
+     - TTFT: **9,680.2 ms** (down from 12,986.4 ms, -3,306.2 ms / **25.5% faster**).
+     - Best TTFT: **8,152 ms** (Tomato, EN).
+     - Average generation speed: **7.27 tok/s**.
+     - Sentence completion: **10/10 (100%)**.
+     - Crashes / ANRs: **0**.
+     - Status: **PASS**.
 
 ---
 
