@@ -1,0 +1,296 @@
+{
+  "device": "POCO M4 5G (sseqjnucrkeeprtw)",
+  "timestamp": "2026-11-24T14:21:19",
+  "thread_benchmarks": {
+    "2": [
+      {
+        "class_id": "tomato_septoria_leaf_spot",
+        "crop": "tomato",
+        "ttft_ms": 0,
+        "tok_per_sec": 0.0,
+        "tokens": 0,
+        "active_threads": 2,
+        "prompt_tokens": 0
+      },
+      {
+        "class_id": "chilli_leaf_curl_virus",
+        "crop": "chilli",
+        "ttft_ms": 0,
+        "tok_per_sec": 0.0,
+        "tokens": 0,
+        "active_threads": 2,
+        "prompt_tokens": 0
+      },
+      {
+        "class_id": "rice_leaf_blast",
+        "crop": "rice",
+        "ttft_ms": 0,
+        "tok_per_sec": 0.0,
+        "tokens": 0,
+        "active_threads": 2,
+        "prompt_tokens": 0
+      },
+      {
+        "class_id": "cotton_bacterial_blight",
+        "crop": "cotton",
+        "ttft_ms": 20167,
+        "tok_per_sec": 2.88,
+        "tokens": 105,
+        "active_threads": 0,
+        "prompt_tokens": 238
+      },
+      {
+        "class_id": "maize_northern_leaf_blight",
+        "crop": "maize",
+        "ttft_ms": 0,
+        "tok_per_sec": 0.0,
+        "tokens": 0,
+        "active_threads": 2,
+        "prompt_tokens": 0
+      }
+    ],
+    "4": [
+      {
+        "class_id": "tomato_septoria_leaf_spot",
+        "crop": "tomato",
+        "ttft_ms": 0,
+        "tok_per_sec": 0.0,
+        "tokens": 0,
+        "active_threads": 4,
+        "prompt_tokens": 0
+      },
+      {
+        "class_id": "chilli_leaf_curl_virus",
+        "crop": "chilli",
+        "ttft_ms": 6360,
+        "tok_per_sec": 8.48,
+        "tokens": 188,
+        "active_threads": 0,
+        "prompt_tokens": 227
+      },
+      {
+        "class_id": "rice_leaf_blast",
+        "crop": "rice",
+        "ttft_ms": 7343,
+        "tok_per_sec": 7.82,
+        "tokens": 242,
+        "active_threads": 0,
+        "prompt_tokens": 236
+      },
+      {
+        "class_id": "cotton_bacterial_blight",
+        "crop": "cotton",
+        "ttft_ms": 8317,
+        "tok_per_sec": 7.7,
+        "tokens": 221,
+        "active_threads": 0,
+        "prompt_tokens": 238
+      },
+      {
+        "class_id": "maize_northern_leaf_blight",
+        "crop": "maize",
+        "ttft_ms": 8436,
+        "tok_per_sec": 7.89,
+        "tokens": 140,
+        "active_threads": 0,
+        "prompt_tokens": 239
+      }
+    ],
+    "6": [
+      {
+        "class_id": "tomato_septoria_leaf_spot",
+        "crop": "tomato",
+        "ttft_ms": 8058,
+        "tok_per_sec": 7.99,
+        "tokens": 165,
+        "active_threads": 0,
+        "prompt_tokens": 239
+      },
+      {
+        "class_id": "chilli_leaf_curl_virus",
+        "crop": "chilli",
+        "ttft_ms": 8247,
+        "tok_per_sec": 8.0,
+        "tokens": 160,
+        "active_threads": 0,
+        "prompt_tokens": 227
+      },
+      {
+        "class_id": "rice_leaf_blast",
+        "crop": "rice",
+        "ttft_ms": 8379,
+        "tok_per_sec": 7.8,
+        "tokens": 158,
+        "active_threads": 0,
+        "prompt_tokens": 236
+      },
+      {
+        "class_id": "cotton_bacterial_blight",
+        "crop": "cotton",
+        "ttft_ms": 8240,
+        "tok_per_sec": 7.94,
+        "tokens": 164,
+        "active_threads": 0,
+        "prompt_tokens": 238
+      },
+      {
+        "class_id": "maize_northern_leaf_blight",
+        "crop": "maize",
+        "ttft_ms": 8431,
+        "tok_per_sec": 7.29,
+        "tokens": 260,
+        "active_threads": 0,
+        "prompt_tokens": 239
+      }
+    ],
+    "8": [
+      {
+        "class_id": "tomato_septoria_leaf_spot",
+        "crop": "tomato",
+        "ttft_ms": 8056,
+        "tok_per_sec": 7.95,
+        "tokens": 168,
+        "active_threads": 0,
+        "prompt_tokens": 239
+      },
+      {
+        "class_id": "chilli_leaf_curl_virus",
+        "crop": "chilli",
+        "ttft_ms": 8259,
+        "tok_per_sec": 7.21,
+        "tokens": 197,
+        "active_threads": 0,
+        "prompt_tokens": 227
+      },
+      {
+        "class_id": "rice_leaf_blast",
+        "crop": "rice",
+        "ttft_ms": 8776,
+        "tok_per_sec": 7.96,
+        "tokens": 170,
+        "active_threads": 0,
+        "prompt_tokens": 236
+      },
+      {
+        "class_id": "cotton_bacterial_blight",
+        "crop": "cotton",
+        "ttft_ms": 8175,
+        "tok_per_sec": 7.6,
+        "tokens": 238,
+        "active_threads": 0,
+        "prompt_tokens": 238
+      },
+      {
+        "class_id": "maize_northern_leaf_blight",
+        "crop": "maize",
+        "ttft_ms": 8384,
+        "tok_per_sec": 8.04,
+        "tokens": 150,
+        "active_threads": 0,
+        "prompt_tokens": 239
+      }
+    ]
+  },
+  "quality_150t_runs": [
+    {
+      "class_id": "tomato_septoria_leaf_spot",
+      "crop": "tomato",
+      "language": "en",
+      "ttft_ms": 8096,
+      "tok_per_sec": 7.64,
+      "tokens": 260,
+      "end_reason": "token limit",
+      "prompt_tokens": 239
+    },
+    {
+      "class_id": "chilli_leaf_curl_virus",
+      "crop": "chilli",
+      "language": "en",
+      "ttft_ms": 8284,
+      "tok_per_sec": 8.01,
+      "tokens": 157,
+      "end_reason": "EOS",
+      "prompt_tokens": 227
+    },
+    {
+      "class_id": "rice_leaf_blast",
+      "crop": "rice",
+      "language": "en",
+      "ttft_ms": 8461,
+      "tok_per_sec": 7.58,
+      "tokens": 260,
+      "end_reason": "token limit",
+      "prompt_tokens": 236
+    },
+    {
+      "class_id": "cotton_bacterial_blight",
+      "crop": "cotton",
+      "language": "en",
+      "ttft_ms": 8264,
+      "tok_per_sec": 7.83,
+      "tokens": 196,
+      "end_reason": "EOS",
+      "prompt_tokens": 238
+    },
+    {
+      "class_id": "maize_northern_leaf_blight",
+      "crop": "maize",
+      "language": "en",
+      "ttft_ms": 8438,
+      "tok_per_sec": 8.15,
+      "tokens": 118,
+      "end_reason": "EOS",
+      "prompt_tokens": 239
+    },
+    {
+      "class_id": "tomato_septoria_leaf_spot",
+      "crop": "tomato",
+      "language": "hi",
+      "ttft_ms": 9226,
+      "tok_per_sec": 7.29,
+      "tokens": 233,
+      "end_reason": "EOS",
+      "prompt_tokens": 250
+    },
+    {
+      "class_id": "chilli_leaf_curl_virus",
+      "crop": "chilli",
+      "language": "hi",
+      "ttft_ms": 9223,
+      "tok_per_sec": 6.33,
+      "tokens": 171,
+      "end_reason": "EOS",
+      "prompt_tokens": 239
+    },
+    {
+      "class_id": "rice_leaf_blast",
+      "crop": "rice",
+      "language": "hi",
+      "ttft_ms": 12656,
+      "tok_per_sec": 6.43,
+      "tokens": 226,
+      "end_reason": "EOS",
+      "prompt_tokens": 247
+    },
+    {
+      "class_id": "cotton_bacterial_blight",
+      "crop": "cotton",
+      "language": "hi",
+      "ttft_ms": 11488,
+      "tok_per_sec": 6.63,
+      "tokens": 161,
+      "end_reason": "EOS",
+      "prompt_tokens": 246
+    },
+    {
+      "class_id": "maize_northern_leaf_blight",
+      "crop": "maize",
+      "language": "hi",
+      "ttft_ms": 12465,
+      "tok_per_sec": 6.74,
+      "tokens": 130,
+      "end_reason": "EOS",
+      "prompt_tokens": 253
+    }
+  ]
+}

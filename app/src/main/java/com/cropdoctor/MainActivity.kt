@@ -750,8 +750,9 @@ class MainActivity : ComponentActivity() {
                                 val classId = intent.getStringExtra("class_id") ?: "tomato_septoria_leaf_spot"
                                 val threads = intent.getIntExtra("threads", -1)
                                 if (threads > 0) {
-                                    val actual = com.cropdoctor.advisor.ExecuTorchNativeThreadHelper.setThreadNum(threads.toLong())
-                                    android.util.Log.i("CROPDOC_LLAMA", "BENCHMARK_THREAD_SET: requested=$threads actual=$actual")
+                                    com.cropdoctor.advisor.ExecuTorchNativeThreadHelper.targetThreadCount = threads.toLong()
+                                    com.cropdoctor.advisor.ExecuTorchNativeThreadHelper.setThreadNum(threads.toLong())
+                                    android.util.Log.i("CROPDOC_LLAMA", "BENCHMARK_THREAD_SET: requested=$threads")
                                 }
                                 val kb = KnowledgeBase.getEntry(classId) ?: KnowledgeBase.getAllEntries().first()
                                 val result = ClassifierResult(

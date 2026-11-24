@@ -9,6 +9,9 @@ object ExecuTorchNativeThreadHelper {
     @Volatile
     private var currentConfiguredThreads: Long = -1L
 
+    @Volatile
+    var targetThreadCount: Long = 4L
+
     fun setThreadNum(numThreads: Long): Long {
         return try {
             val lib = NativeLibrary.getInstance("executorch")
