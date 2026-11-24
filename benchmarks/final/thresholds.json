@@ -1,14 +1,16 @@
 {
   "calibration_method": "single_scalar_temperature_scaling",
-  "temperature": 1.7817542552947998,
-  "confidence_threshold": 0.3434087038040161,
-  "default_threshold": 0.3434087038040161,
-  "energy_threshold": -9.305036544799805,
-  "energy_method": "free_energy_validation_95th_percentile",
-  "nll_before": 0.29563385248184204,
-  "nll_after": 0.24356000125408173,
+  "temperature": 0.9433,
+  "confidence_threshold": 0.75,
+  "default_threshold": 0.75,
+  "energy_threshold": -4.5866,
+  "crop_mass_threshold": 0.6,
+  "margin_threshold": 0.25,
+  "borderline_energy": -9.0,
+  "energy_method": "TR4 validation calibration (provisional)",
+  "nll_before": 0.1153,
+  "nll_after": 0.1012,
   "threshold_target_precision": 0.9,
-  "target_precision_reached": true,
-  "selection_note": "lowest-confidence operating point meeting target precision on validation data",
-  "status": "provisional; calibrated on Task R2 grouped validation split"
+  "selection_note": "PROVISIONAL. temperature, confidence_threshold and energy_threshold come from TR4 grouped validation; crop_mass_threshold, margin_threshold and borderline_energy come from P4 on the previous 20-class model. To be re-measured on field photos (P4b).",
+  "status": "CALIBRATED_15CLASS_TR4"
 }

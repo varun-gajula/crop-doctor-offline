@@ -62,6 +62,8 @@ class ExecuTorchLlamaAdvisor(private val context: Context) : Advisor {
     @Volatile
     private var isLoading = false
     @Volatile
+    private var isStopRequested = false
+    @Volatile
     private var currentActiveRequestId: Long = -1L
     private val generationLock = Mutex()
 
@@ -207,6 +209,7 @@ class ExecuTorchLlamaAdvisor(private val context: Context) : Advisor {
                     isModelLoaded = true
                     _isLowMemoryFallback = false
                     scheduleIdleRelease()
+                    (context.applicationContext as? com.cropdoctor.CropDoctorApplication)?.classifier?.invalidateModule()
                     return true
                 } else {
                     Log.e(TAG, "LlamaModule.load() failed with code $status")
@@ -222,23 +225,23 @@ class ExecuTorchLlamaAdvisor(private val context: Context) : Advisor {
     }
 
     private fun releaseModelInternal(reason: String) {
+        if (isGenerating || isLoading) {
+            Log.w(TAG, "Cannot release model while isGenerating=$isGenerating or isLoading=$isLoading ($reason)")
+            return
+        }
         synchronized(modelLock) {
+            if (isGenerating || isLoading) return
             try {
                 idleJob?.cancel()
                 try {
                     llamaModule?.stop()
                 } catch (_: Throwable) {}
+                try {
+                    llamaModule?.resetNative()
+                } catch (_: Throwable) {}
                 llamaModule = null
                 isModelLoaded = false
-                System.runFinalization()
                 System.gc()
-                try {
-                    val wmgClass = Class.forName("android.view.WindowManagerGlobal")
-                    val getInstance = wmgClass.getMethod("getInstance")
-                    val wmg = getInstance.invoke(null)
-                    val trimMemory = wmgClass.getMethod("trimMemory", Int::class.javaPrimitiveType)
-                    trimMemory.invoke(wmg, android.content.ComponentCallbacks2.TRIM_MEMORY_COMPLETE)
-                } catch (ignored: Throwable) {}
                 val pssMb = Debug.getPss() / 1024L
                 val threadName = Thread.currentThread().name
                 Log.i("CROPDOC_LLAMA", "MODEL_RELEASE: reason='$reason' thread='$threadName' pssMb=${pssMb}MB")
@@ -271,6 +274,7 @@ class ExecuTorchLlamaAdvisor(private val context: Context) : Advisor {
         onToken: (String) -> Unit
     ) = withContext(llamaDispatcher) {
         generationLock.withLock {
+            isStopRequested = false
             currentActiveRequestId = requestId
             try {
                 generateAdviceInternal(
@@ -380,6 +384,11 @@ class ExecuTorchLlamaAdvisor(private val context: Context) : Advisor {
 
         // Load real Llama 3.2 1B module on Arm phone
         val ready = ensureModelLoaded()
+        if (isStopRequested || currentActiveRequestId != requestId) {
+            Log.i("CROPDOC_LLAMA", "ADVISORY_ABORT_PRE_GEN: cancelled during model load for requestId=$requestId")
+            emitStaticOfflineGuide()
+            return
+        }
         if (!ready || llamaModule == null) {
             Log.w(TAG, "Real Llama module could not be loaded; falling back to static offline guide")
             emitStaticOfflineGuide()
@@ -412,7 +421,6 @@ class ExecuTorchLlamaAdvisor(private val context: Context) : Advisor {
         _isFallbackToOfflineGuide = false
 
         val fullTextBuilder = java.lang.StringBuilder()
-        val tokenThrottleBuffer = java.lang.StringBuilder()
         var lastEmitTime = System.currentTimeMillis()
         val genStartTime = System.currentTimeMillis()
         var firstTokenTimeMs = 0L
@@ -424,11 +432,20 @@ class ExecuTorchLlamaAdvisor(private val context: Context) : Advisor {
         val llamaCallback = object : LlmCallback {
             override fun onResult(token: String?) {
                 if (token.isNullOrEmpty()) return
+                if (hitEos || hitTargetLimit) return
                 if (currentActiveRequestId != requestId) {
                     // Late token from cancelled generation -> stop native loop and ignore
                     stop("cancelled_req${requestId}_current$currentActiveRequestId")
                     return
                 }
+
+                // Enforce EOS immediately: do NOT append or emit special tokens
+                if (token.contains("<|")) {
+                    hitEos = true
+                    stop("eos_token")
+                    return
+                }
+
                 totalTokens++
                 val now = System.currentTimeMillis()
                 if (firstTokenTimeMs == 0L) {
@@ -437,7 +454,6 @@ class ExecuTorchLlamaAdvisor(private val context: Context) : Advisor {
 
                 val sanitizedToken = GuardrailFilter.sanitize(token)
                 fullTextBuilder.append(sanitizedToken)
-                tokenThrottleBuffer.append(sanitizedToken)
 
                 if (totalTokens % 20 == 0 && totalTokens != lastLoggedTokenCount) {
                     lastLoggedTokenCount = totalTokens
@@ -447,19 +463,13 @@ class ExecuTorchLlamaAdvisor(private val context: Context) : Advisor {
 
                 // Throttle UI update to ~100 ms or upon line breaks / sentence ends
                 if (now - lastEmitTime >= 100L || token.contains("\n") || token.contains("।") || token.contains(".")) {
-                    val chunk = tokenThrottleBuffer.toString()
-                    tokenThrottleBuffer.setLength(0)
                     lastEmitTime = now
                     if (currentActiveRequestId == requestId) {
-                        onToken(chunk)
+                        onToken(fullTextBuilder.toString())
                     }
                 }
 
-                // Enforce EOS or max new tokens
-                if (token.contains("<|eot_id|>") || token.contains("<|end_of_text|>")) {
-                    hitEos = true
-                    stop("eos_token")
-                } else if (totalTokens >= maxNewTokens) {
+                if (totalTokens >= maxNewTokens) {
                     hitTargetLimit = true
                     stop("max_tokens_reached")
                 }
@@ -480,11 +490,22 @@ class ExecuTorchLlamaAdvisor(private val context: Context) : Advisor {
         var endReason = "EOS"
         var genException: Throwable? = null
 
+        if (isStopRequested || currentActiveRequestId != requestId) {
+            Log.i("CROPDOC_LLAMA", "ADVISORY_ABORT_PRE_GEN: cancelled before gen for requestId=$requestId")
+            emitStaticOfflineGuide()
+            return
+        }
+
         try {
             isGenerating = true
             val completedInTime = withTimeoutOrNull(75_000L) {
                 try {
-                    llamaModule?.generate(prompt, totalSeqLimit, llamaCallback, false)
+                    com.cropdoctor.vision.ExecuTorchLock.mutex.withLock {
+                        if (!isGenerating || currentActiveRequestId != requestId) {
+                            return@withLock null
+                        }
+                        llamaModule?.generate(prompt, totalSeqLimit, llamaCallback, false)
+                    }
                 } catch (t: Throwable) {
                     genException = t
                     Log.e(TAG, "Native Llama generate failed, falling back to offline guide", t)
@@ -499,12 +520,6 @@ class ExecuTorchLlamaAdvisor(private val context: Context) : Advisor {
                 completedInTime == null && genException == null -> "timeout"
                 genException != null -> "error"
                 else -> "EOS"
-            }
-
-            // Flush any remaining buffered tokens
-            if (tokenThrottleBuffer.isNotEmpty()) {
-                onToken(tokenThrottleBuffer.toString())
-                tokenThrottleBuffer.setLength(0)
             }
 
             val rawGeneratedText = fullTextBuilder.toString().trim()
@@ -679,6 +694,7 @@ class ExecuTorchLlamaAdvisor(private val context: Context) : Advisor {
     override suspend fun answerChatPrompt(prompt: String): String = withContext(llamaDispatcher) {
         generationLock.withLock {
             val chatRequestId = System.nanoTime()
+            isStopRequested = false
             currentActiveRequestId = chatRequestId
             val maxNewTokens = 80
             val totalSeqLimit = 512
@@ -693,6 +709,10 @@ class ExecuTorchLlamaAdvisor(private val context: Context) : Advisor {
             }
 
             val ready = ensureModelLoaded()
+            if (isStopRequested || currentActiveRequestId != chatRequestId) {
+                if (currentActiveRequestId == chatRequestId) currentActiveRequestId = -1L
+                return@withContext ""
+            }
             if (!ready || llamaModule == null) {
                 Log.w(TAG, "Real Llama module could not be loaded for chat answer")
                 if (currentActiveRequestId == chatRequestId) currentActiveRequestId = -1L
@@ -710,6 +730,7 @@ class ExecuTorchLlamaAdvisor(private val context: Context) : Advisor {
             val callback = object : LlmCallback {
                 override fun onResult(token: String?) {
                     if (token.isNullOrEmpty()) return
+                    if (hitEos || hitTargetLimit) return
                     if (currentActiveRequestId != chatRequestId) {
                         stop("cancelled_chat_req${chatRequestId}_current$currentActiveRequestId")
                         return
@@ -719,11 +740,14 @@ class ExecuTorchLlamaAdvisor(private val context: Context) : Advisor {
                     if (firstTokenTimeMs == 0L) {
                         firstTokenTimeMs = now - genStartTime
                     }
-                    responseBuilder.append(token)
-                    if (token.contains("<|eot_id|>") || token.contains("<|end_of_text|>")) {
+                    if (token.contains("<|")) {
                         hitEos = true
                         stop("chat_eos")
-                    } else if (totalTokens >= maxNewTokens || responseBuilder.length >= 400) {
+                        return
+                    }
+                    val sanitizedToken = GuardrailFilter.sanitize(token)
+                    responseBuilder.append(sanitizedToken)
+                    if (totalTokens >= maxNewTokens || responseBuilder.length >= 400) {
                         hitTargetLimit = true
                         stop("chat_complete_or_cap")
                     }
@@ -737,7 +761,12 @@ class ExecuTorchLlamaAdvisor(private val context: Context) : Advisor {
                 isGenerating = true
                 val completed = withTimeoutOrNull(30_000L) {
                     try {
-                        llamaModule?.generate(prompt, totalSeqLimit, callback, false)
+                        com.cropdoctor.vision.ExecuTorchLock.mutex.withLock {
+                            if (!isGenerating || currentActiveRequestId != chatRequestId) {
+                                return@withLock null
+                            }
+                            llamaModule?.generate(prompt, totalSeqLimit, callback, false)
+                        }
                     } catch (e: Exception) {
                         chatException = e
                         Log.e(TAG, "Error generating chat answer: ${e.message}", e)
@@ -778,11 +807,15 @@ class ExecuTorchLlamaAdvisor(private val context: Context) : Advisor {
     override fun stop(reason: String) {
         val callerThread = Thread.currentThread().name
         Log.i("CROPDOC_LLAMA", "STOP_CALLED: reason='$reason' callerThread='$callerThread'")
-        try {
-            llamaModule?.stop()
-            Log.i(TAG, "LlamaModule.stop() requested ($reason)")
-        } catch (e: Throwable) {
-            Log.e(TAG, "Failed to stop LlamaModule", e)
+        isStopRequested = true
+        currentActiveRequestId = -1L
+        if (isGenerating || isLoading) {
+            try {
+                llamaModule?.stop()
+                Log.i(TAG, "LlamaModule.stop() requested ($reason)")
+            } catch (e: Throwable) {
+                Log.e(TAG, "Failed to stop LlamaModule", e)
+            }
         }
     }
 

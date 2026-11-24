@@ -105,8 +105,9 @@ class ThresholdHonestyTest {
         // energy_threshold is present in the calibrated final thresholds
         assertTrue("thresholds.json defines energy_threshold", json.containsKey("energy_threshold"))
 
-        assertEquals("Calibrated temperature is ~1.782", 1.7818f, json["temperature"]!!.jsonPrimitive.float, 0.01f)
-        assertEquals("Calibrated confidence threshold is ~0.343", 0.3434f, json["confidence_threshold"]!!.jsonPrimitive.float, 0.01f)
-        assertEquals("Calibrated energy threshold is ~ -8.0", -8.0f, json["energy_threshold"]!!.jsonPrimitive.float, 0.01f)
+        assertEquals("Calibrated temperature is ~0.9433", 0.9433f, json["temperature"]!!.jsonPrimitive.float, 0.01f)
+        assertEquals("Calibrated confidence threshold is ~0.75", 0.75f, json["confidence_threshold"]!!.jsonPrimitive.float, 0.01f)
+        assertEquals("Calibrated energy threshold is ~ -4.5866", -4.5866f, json["energy_threshold"]!!.jsonPrimitive.float, 0.01f)
+        assertEquals("Status is CALIBRATED_15CLASS_TR4", "CALIBRATED_15CLASS_TR4", json["status"]!!.jsonPrimitive.content)
     }
 }

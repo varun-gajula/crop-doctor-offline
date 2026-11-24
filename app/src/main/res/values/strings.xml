@@ -131,7 +131,7 @@
     <string name="cant_tell_no_disease">Can’t tell – no disease identified</string>
     <string name="demo_text_not_ai">Demo text – not AI</string>
     <string name="advisory_card_title">AI Advisory</string>
-    <string name="advisory_generating">Generating advice on-device...</string>
+    <string name="advisory_generating">Explaining on this phone...</string>
 
     <!-- T3: Save Case Report & History -->
     <string name="btn_save_case_report">Save case report</string>

@@ -101,6 +101,7 @@ class LlamaCancellationTest {
         }
 
         val job1 = launch(Dispatchers.Default) { simulateGenerate("Gen1", 80L) }
+        delay(10L)
         val job2 = launch(Dispatchers.Default) { simulateGenerate("Gen2", 40L) }
 
         job1.join()

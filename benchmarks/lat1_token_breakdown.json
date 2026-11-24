@@ -1,0 +1,92 @@
+[
+  {
+    "class_id": "tomato_septoria_leaf_spot",
+    "lang": "en",
+    "total": 253,
+    "sys": 115,
+    "find": 35,
+    "kb": 91,
+    "inst": 13
+  },
+  {
+    "class_id": "chilli_leaf_curl_virus",
+    "lang": "en",
+    "total": 254,
+    "sys": 115,
+    "find": 36,
+    "kb": 91,
+    "inst": 13
+  },
+  {
+    "class_id": "rice_leaf_blast",
+    "lang": "en",
+    "total": 257,
+    "sys": 115,
+    "find": 33,
+    "kb": 97,
+    "inst": 13
+  },
+  {
+    "class_id": "cotton_bacterial_blight",
+    "lang": "en",
+    "total": 256,
+    "sys": 115,
+    "find": 35,
+    "kb": 94,
+    "inst": 13
+  },
+  {
+    "class_id": "maize_northern_leaf_blight",
+    "lang": "en",
+    "total": 267,
+    "sys": 115,
+    "find": 36,
+    "kb": 104,
+    "inst": 13
+  },
+  {
+    "class_id": "tomato_septoria_leaf_spot",
+    "lang": "hi",
+    "total": 265,
+    "sys": 127,
+    "find": 35,
+    "kb": 91,
+    "inst": 13
+  },
+  {
+    "class_id": "chilli_leaf_curl_virus",
+    "lang": "hi",
+    "total": 266,
+    "sys": 127,
+    "find": 36,
+    "kb": 91,
+    "inst": 13
+  },
+  {
+    "class_id": "rice_leaf_blast",
+    "lang": "hi",
+    "total": 269,
+    "sys": 127,
+    "find": 33,
+    "kb": 97,
+    "inst": 13
+  },
+  {
+    "class_id": "cotton_bacterial_blight",
+    "lang": "hi",
+    "total": 268,
+    "sys": 127,
+    "find": 35,
+    "kb": 94,
+    "inst": 13
+  },
+  {
+    "class_id": "maize_northern_leaf_blight",
+    "lang": "hi",
+    "total": 279,
+    "sys": 127,
+    "find": 36,
+    "kb": 104,
+    "inst": 13
+  }
+]

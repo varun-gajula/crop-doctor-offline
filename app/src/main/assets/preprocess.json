@@ -1,9 +1,18 @@
 {
-  "input_size": 512,
-  "mean": [0.485, 0.456, 0.406],
-  "std": [0.229, 0.224, 0.225],
-  "temperature": 1.7817542552947998,
-  "confidence_threshold": 0.3434087038040161,
-  "model_version": "20261120_512_v2",
-  "model_bytes": 16956752
+  "image_size": [
+    512,
+    512
+  ],
+  "mean": [
+    0.485,
+    0.456,
+    0.406
+  ],
+  "std": [
+    0.229,
+    0.224,
+    0.225
+  ],
+  "interpolation": "bilinear",
+  "crop_doctor_version": "TR4-15"
 }

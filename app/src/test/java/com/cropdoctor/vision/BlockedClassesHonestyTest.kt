@@ -4,6 +4,7 @@ import com.cropdoctor.domain.CertaintyBand
 import com.cropdoctor.domain.RulesEngine
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.boolean
+import kotlinx.serialization.json.float
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import org.junit.Assert.*
@@ -19,32 +20,26 @@ import java.io.File
  */
 class BlockedClassesHonestyTest {
 
-    private val all20Labels = listOf(
-        "rice_bacterial_leaf_blight",       // 0
-        "rice_leaf_blast",                  // 1
-        "rice_sheath_blight",               // 2
-        "rice_healthy",                     // 3
-        "cotton_bacterial_blight",          // 4
-        "cotton_fusarium_wilt",             // 5
-        "cotton_leaf_curl_virus",           // 6
-        "cotton_healthy",                   // 7
-        "chilli_leaf_curl_virus",           // 8
-        "chilli_nutrition_deficiency",      // 9
-        "chilli_healthy",                   // 10
-        "tomato_leaf_blight",               // 11 (unsupported)
-        "tomato_yellow_leaf_curl_virus",    // 12
+    private val all15Labels = listOf(
+        "rice_leaf_blast",                  // 0
+        "rice_healthy",                     // 1
+        "cotton_bacterial_blight",          // 2
+        "cotton_healthy",                   // 3
+        "chilli_leaf_curl_virus",           // 4
+        "chilli_healthy",                   // 5
+        "maize_northern_leaf_blight",       // 6
+        "maize_common_rust",                // 7
+        "maize_healthy",                    // 8
+        "maize_fall_armyworm",              // 9
+        "rice_stem_borer",                  // 10
+        "rice_hispa",                       // 11
+        "tomato_healthy",                   // 12
         "tomato_septoria_leaf_spot",        // 13
-        "tomato_healthy",                   // 14
-        "maize_gray_leaf_spot",             // 15
-        "maize_common_rust",                // 16
-        "maize_northern_leaf_blight",       // 17
-        "maize_healthy",                    // 18
-        "weeds_not_a_crop"                  // 19 (unsupported)
+        "other_not_a_crop"                  // 14 (unsupported)
     )
 
     private val unsupportedClassIds = setOf(
-        "tomato_leaf_blight",
-        "weeds_not_a_crop"
+        "other_not_a_crop"
     )
 
     private fun findFile(relativePaths: List<String>): File {
@@ -68,12 +63,12 @@ class BlockedClassesHonestyTest {
         val json = Json.parseToJsonElement(target.readText()).jsonObject
         val classesObj = json["classes"]!!.jsonObject
 
-        assertEquals("Must have exactly 20 classes", 20, classesObj.size)
+        assertEquals("Must have exactly 15 classes", 15, classesObj.size)
 
-        for (i in 0 until 20) {
+        for (i in 0 until 15) {
             val entry = classesObj[i.toString()]!!.jsonObject
             val classId = entry["class_id"]!!.jsonPrimitive.content
-            assertEquals("Index $i must match all20Labels[$i]", all20Labels[i], classId)
+            assertEquals("Index $i must match all15Labels[$i]", all15Labels[i], classId)
 
             val isSupported = entry["supported"]!!.jsonPrimitive.boolean
             if (classId in unsupportedClassIds) {
@@ -84,20 +79,30 @@ class BlockedClassesHonestyTest {
         }
     }
 
+    private val defaultThreshold: Float
+        get() = try {
+            val f = findFile(listOf(
+                "app/src/main/assets/thresholds.json",
+                "src/main/assets/thresholds.json"
+            ))
+            val obj = Json.parseToJsonElement(f.readText()).jsonObject
+            (obj["default_threshold"] ?: obj["confidence_threshold"])!!.jsonPrimitive.float
+        } catch (_: Exception) { 0.75f }
+
     @Test
     fun testSimulatedUnsupportedClassIsTreatedAsCantTell() {
         for (unsupportedClass in unsupportedClassIds) {
-            val idx = all20Labels.indexOf(unsupportedClass)
+            val idx = all15Labels.indexOf(unsupportedClass)
             assertTrue("Class $unsupportedClass must be present in labels", idx >= 0)
 
-            val probs = FloatArray(20) { 0.002f }
+            val probs = FloatArray(15) { 0.002f }
             probs[idx] = 0.95f
 
             val eval = VisionMath.evaluateDiagnosis(
-                labels = all20Labels,
+                labels = all15Labels,
                 probabilities = probs,
                 thresholds = emptyMap(),
-                defaultThreshold = 0.4018f,
+                defaultThreshold = defaultThreshold,
                 freeEnergy = -5.0,
                 energyThreshold = null,
                 unsupportedClasses = unsupportedClassIds
@@ -112,38 +117,38 @@ class BlockedClassesHonestyTest {
 
     @Test
     fun testSupportedClassesAreDiagnosedCorrectly() {
-        // Test Rice Bacterial Leaf Blight (index 0) with 92% confidence
-        val probsRice = FloatArray(20) { 0.003f }
+        // Test Rice Leaf Blast (index 0) with 92% confidence
+        val probsRice = FloatArray(15) { 0.003f }
         probsRice[0] = 0.92f
 
         val evalRice = VisionMath.evaluateDiagnosis(
-            labels = all20Labels,
+            labels = all15Labels,
             probabilities = probsRice,
             thresholds = emptyMap(),
-            defaultThreshold = 0.4018f,
+            defaultThreshold = defaultThreshold,
             freeEnergy = -5.0,
             energyThreshold = null,
             unsupportedClasses = unsupportedClassIds
         )
 
-        assertEquals("Supported rice class must be diagnosed", "rice_bacterial_leaf_blight", evalRice.classId)
+        assertEquals("Supported rice class must be diagnosed", "rice_leaf_blast", evalRice.classId)
         assertEquals("Supported rice class certainty must be SURE", CertaintyBand.SURE, evalRice.certaintyBand)
 
-        // Test Tomato Yellow Leaf Curl Virus (index 12) with 88% confidence
-        val probsTomato = FloatArray(20) { 0.005f }
-        probsTomato[12] = 0.88f
+        // Test Tomato Septoria Leaf Spot (index 13) with 88% confidence
+        val probsTomato = FloatArray(15) { 0.005f }
+        probsTomato[13] = 0.88f
 
         val evalTomato = VisionMath.evaluateDiagnosis(
-            labels = all20Labels,
+            labels = all15Labels,
             probabilities = probsTomato,
             thresholds = emptyMap(),
-            defaultThreshold = 0.4018f,
+            defaultThreshold = defaultThreshold,
             freeEnergy = -5.0,
             energyThreshold = null,
             unsupportedClasses = unsupportedClassIds
         )
 
-        assertEquals("Supported tomato class must be diagnosed", "tomato_yellow_leaf_curl_virus", evalTomato.classId)
+        assertEquals("Supported tomato class must be diagnosed", "tomato_septoria_leaf_spot", evalTomato.classId)
         assertEquals("Supported tomato class certainty must be SURE", CertaintyBand.SURE, evalTomato.certaintyBand)
     }
 }

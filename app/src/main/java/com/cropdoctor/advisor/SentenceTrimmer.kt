@@ -6,15 +6,18 @@ package com.cropdoctor.advisor
  */
 object SentenceTrimmer {
     private val SENTENCE_END_CHARS = charArrayOf('.', '!', '?', '।', '\u0964')
+    private val SPECIAL_TOKEN_REGEX = Regex("<\\|[a-zA-Z0-9_]+\\|>")
 
     /**
      * Checks if the text ends on a complete sentence.
      * If not, trims to the last complete sentence terminator.
+     * Special tokens like <|eot_id|> are stripped before sentence boundary detection.
      *
      * @return Pair of (cleanText, wasCut). If no terminator exists, returns Pair("", true).
      */
     fun cleanToCompleteSentence(text: String, language: String = "en"): Pair<String, Boolean> {
-        val trimmed = text.trim()
+        val noSpecial = SPECIAL_TOKEN_REGEX.replace(text, "")
+        val trimmed = noSpecial.trim()
         if (trimmed.isEmpty()) return Pair("", false)
 
         val lastChar = trimmed.last()

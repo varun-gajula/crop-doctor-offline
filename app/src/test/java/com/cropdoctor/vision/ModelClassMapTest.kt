@@ -2,7 +2,9 @@ package com.cropdoctor.vision
 
 import com.cropdoctor.domain.CertaintyBand
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.float
 import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import org.junit.Assert.*
 import org.junit.Test
@@ -39,15 +41,15 @@ class ModelClassMapTest {
     @Test
     fun testModelOutputSizeEqualsEntriesInLabelsJson() {
         val labels = loadLabels()
-        assertEquals("labels.json must have exactly 20 classes", 20, labels.size)
+        assertEquals("labels.json must have exactly 15 classes", 15, labels.size)
         assertEquals(
-            "Model output size constant must equal 20",
-            20,
+            "Model output size constant must equal 15",
+            15,
             ExecuTorchClassifier.MODEL_OUTPUT_SIZE
         )
         assertEquals(
-            "VisionMath MODEL_OUTPUT_SIZE must equal 20",
-            20,
+            "VisionMath MODEL_OUTPUT_SIZE must equal 15",
+            15,
             VisionMath.MODEL_OUTPUT_SIZE
         )
     }
@@ -55,29 +57,24 @@ class ModelClassMapTest {
     @Test
     fun testEachOf20LabelsDirectlyMapped() {
         val labels = loadLabels()
-        assertEquals(20, labels.size)
+        assertEquals(15, labels.size)
 
         val expectedLabels = listOf(
-            "rice_bacterial_leaf_blight",
             "rice_leaf_blast",
-            "rice_sheath_blight",
             "rice_healthy",
             "cotton_bacterial_blight",
-            "cotton_fusarium_wilt",
-            "cotton_leaf_curl_virus",
             "cotton_healthy",
             "chilli_leaf_curl_virus",
-            "chilli_nutrition_deficiency",
             "chilli_healthy",
-            "tomato_leaf_blight",
-            "tomato_yellow_leaf_curl_virus",
-            "tomato_septoria_leaf_spot",
-            "tomato_healthy",
-            "maize_gray_leaf_spot",
-            "maize_common_rust",
             "maize_northern_leaf_blight",
+            "maize_common_rust",
             "maize_healthy",
-            "weeds_not_a_crop"
+            "maize_fall_armyworm",
+            "rice_stem_borer",
+            "rice_hispa",
+            "tomato_healthy",
+            "tomato_septoria_leaf_spot",
+            "other_not_a_crop"
         )
 
         for (i in expectedLabels.indices) {
@@ -85,27 +82,41 @@ class ModelClassMapTest {
         }
     }
 
+    private val defaultThreshold: Float
+        get() = try {
+            val file = findAsset("thresholds.json")
+            val obj = Json.parseToJsonElement(file.readText()).jsonObject
+            (obj["default_threshold"] ?: obj["confidence_threshold"])!!.jsonPrimitive.float
+        } catch (_: Exception) { 0.75f }
+
+    private val temperature: Float
+        get() = try {
+            val file = findAsset("thresholds.json")
+            val obj = Json.parseToJsonElement(file.readText()).jsonObject
+            obj["temperature"]!!.jsonPrimitive.float
+        } catch (_: Exception) { 0.9433f }
+
     @Test
     fun testUnsupportedClassesGiveCantTell() {
         val labels = loadLabels()
-        val unsupported = setOf("weeds_not_a_crop", "tomato_leaf_blight")
+        val unsupported = setOf("other_not_a_crop")
 
         for (unsupportedClass in unsupported) {
             val idx = labels.indexOf(unsupportedClass)
             assertTrue("Class $unsupportedClass must be present in labels.json", idx >= 0)
 
-            // Construct 20 logits where unsupportedClass is dominant (top-1)
-            val logits = FloatArray(20) { -5.0f }
+            // Construct 15 logits where unsupportedClass is dominant (top-1)
+            val logits = FloatArray(15) { -5.0f }
             logits[idx] = 10.0f
 
-            val scaledLogits = VisionMath.applyTemperature(logits, 1.3302f)
+            val scaledLogits = VisionMath.applyTemperature(logits, temperature)
             val probs = VisionMath.softmax(scaledLogits)
 
             val eval = VisionMath.evaluateDiagnosis(
                 labels = labels,
                 probabilities = probs,
                 thresholds = emptyMap(),
-                defaultThreshold = 0.4018f,
+                defaultThreshold = defaultThreshold,
                 freeEnergy = -5.0,
                 energyThreshold = null,
                 unsupportedClasses = unsupported
@@ -122,48 +133,48 @@ class ModelClassMapTest {
     fun testKnownCasesDirectMapping() {
         val labels = loadLabels()
 
-        // 1. Maize common rust (index 16)
+        // 1. Maize common rust (index 7)
         val rustIdx = labels.indexOf("maize_common_rust")
-        assertEquals(16, rustIdx)
+        assertEquals(7, rustIdx)
 
-        val rustLogits = FloatArray(20) { -5.0f }
+        val rustLogits = FloatArray(15) { -5.0f }
         rustLogits[rustIdx] = 8.0f
 
-        val rustProbs = VisionMath.softmax(VisionMath.applyTemperature(rustLogits, 1.3302f))
+        val rustProbs = VisionMath.softmax(VisionMath.applyTemperature(rustLogits, temperature))
         val evalRust = VisionMath.evaluateDiagnosis(
             labels = labels,
             probabilities = rustProbs,
             thresholds = emptyMap(),
-            defaultThreshold = 0.4018f,
+            defaultThreshold = defaultThreshold,
             freeEnergy = -5.0,
             energyThreshold = null,
-            unsupportedClasses = setOf("weeds_not_a_crop", "tomato_leaf_blight")
+            unsupportedClasses = setOf("other_not_a_crop")
         )
 
         assertEquals("maize_common_rust", evalRust.classId)
         assertEquals("Maize Common Rust", evalRust.displayName)
         assertEquals(CertaintyBand.SURE, evalRust.certaintyBand)
 
-        // 2. Rice bacterial leaf blight (index 0)
-        val blbIdx = labels.indexOf("rice_bacterial_leaf_blight")
-        assertEquals(0, blbIdx)
+        // 2. Rice leaf blast (index 0)
+        val blastIdx = labels.indexOf("rice_leaf_blast")
+        assertEquals(0, blastIdx)
 
-        val blbLogits = FloatArray(20) { -5.0f }
-        blbLogits[blbIdx] = 8.0f
+        val blastLogits = FloatArray(15) { -5.0f }
+        blastLogits[blastIdx] = 8.0f
 
-        val blbProbs = VisionMath.softmax(VisionMath.applyTemperature(blbLogits, 1.3302f))
-        val evalBlb = VisionMath.evaluateDiagnosis(
+        val blastProbs = VisionMath.softmax(VisionMath.applyTemperature(blastLogits, temperature))
+        val evalBlast = VisionMath.evaluateDiagnosis(
             labels = labels,
-            probabilities = blbProbs,
+            probabilities = blastProbs,
             thresholds = emptyMap(),
-            defaultThreshold = 0.4018f,
+            defaultThreshold = defaultThreshold,
             freeEnergy = -5.0,
             energyThreshold = null,
-            unsupportedClasses = setOf("weeds_not_a_crop", "tomato_leaf_blight")
+            unsupportedClasses = setOf("other_not_a_crop")
         )
 
-        assertEquals("rice_bacterial_leaf_blight", evalBlb.classId)
-        assertEquals("Rice Bacterial Leaf Blight", evalBlb.displayName)
-        assertEquals(CertaintyBand.SURE, evalBlb.certaintyBand)
+        assertEquals("rice_leaf_blast", evalBlast.classId)
+        assertEquals("Rice Leaf Blast", evalBlast.displayName)
+        assertEquals(CertaintyBand.SURE, evalBlast.certaintyBand)
     }
 }

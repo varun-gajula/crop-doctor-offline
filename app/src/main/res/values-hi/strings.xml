@@ -131,7 +131,7 @@
     <string name="cant_tell_no_disease">पहचान नहीं हो सकी – कोई रोग नहीं मिला</string>
     <string name="demo_text_not_ai">डेमो टेक्स्ट – AI नहीं</string>
     <string name="advisory_card_title">AI कृषि सलाहकार</string>
-    <string name="advisory_generating">सलाह तैयार हो रही है...</string>
+    <string name="advisory_generating">इस फोन पर समझाई जा रही है...</string>
 
     <!-- T3: Save Case Report & History -->
     <string name="btn_save_case_report">केस रिपोर्ट सहेजें</string>

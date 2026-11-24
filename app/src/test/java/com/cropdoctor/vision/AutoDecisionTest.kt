@@ -5,6 +5,7 @@ import com.cropdoctor.domain.CropMapping
 import com.cropdoctor.domain.DiagnosisOutcome
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.double
+import kotlinx.serialization.json.float
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import org.junit.Assert.assertEquals
@@ -20,39 +21,57 @@ import java.io.File
  */
 class AutoDecisionTest {
 
+    private fun findAsset(name: String): File {
+        val candidates = listOf(
+            File("app/src/main/assets/$name"),
+            File("src/main/assets/$name"),
+            File("../app/src/main/assets/$name")
+        )
+        val f = candidates.firstOrNull { it.exists() }
+        assertNotNull("Could not find asset $name", f)
+        return f!!
+    }
+
+    private val thresholdsJson by lazy {
+        val file = findAsset("thresholds.json")
+        Json.parseToJsonElement(file.readText()).jsonObject
+    }
+
+    private val defaultThreshold: Float
+        get() = (thresholdsJson["default_threshold"] ?: thresholdsJson["confidence_threshold"])!!.jsonPrimitive.float
+
+    private val energyThreshold: Double
+        get() = thresholdsJson["energy_threshold"]!!.jsonPrimitive.double
+
+    private val cropMassThreshold: Float
+        get() = thresholdsJson["crop_mass_threshold"]!!.jsonPrimitive.float
+
+    private val marginThreshold: Float
+        get() = thresholdsJson["margin_threshold"]!!.jsonPrimitive.float
+
     private val labels = listOf(
-        "rice_bacterial_leaf_blight",
         "rice_leaf_blast",
-        "rice_sheath_blight",
         "rice_healthy",
         "cotton_bacterial_blight",
-        "cotton_fusarium_wilt",
-        "cotton_leaf_curl_virus",
         "cotton_healthy",
         "chilli_leaf_curl_virus",
-        "chilli_nutrition_deficiency",
         "chilli_healthy",
-        "tomato_leaf_blight",
-        "tomato_yellow_leaf_curl_virus",
-        "tomato_septoria_leaf_spot",
-        "tomato_healthy",
-        "maize_gray_leaf_spot",
-        "maize_common_rust",
         "maize_northern_leaf_blight",
+        "maize_common_rust",
         "maize_healthy",
-        "weeds_not_a_crop"
+        "maize_fall_armyworm",
+        "rice_stem_borer",
+        "rice_hispa",
+        "tomato_healthy",
+        "tomato_septoria_leaf_spot",
+        "other_not_a_crop"
     )
-
-    private val defaultThreshold = 0.3434087f
-    private val energyThreshold = -8.0
-    private val cropMassThreshold = 0.60f
-    private val marginThreshold = 0.25f
 
     @Test
     fun testThresholdsJsonKeyPresenceAndValues() {
-        val thresholdsFile = File("src/main/assets/thresholds.json")
+        val thresholdsFile = findAsset("thresholds.json")
         assertTrue("thresholds.json must exist in assets", thresholdsFile.exists())
-        val json = Json.parseToJsonElement(thresholdsFile.readText()).jsonObject
+        val json = thresholdsJson
 
         assertTrue("Must contain default_threshold or confidence_threshold",
             json.containsKey("default_threshold") || json.containsKey("confidence_threshold"))
@@ -96,7 +115,7 @@ class AutoDecisionTest {
     @Test
     fun testWeedsNotACropGivesCantTell() {
         val probs = FloatArray(labels.size) { 0.01f }
-        val weedsIdx = labels.indexOf("weeds_not_a_crop")
+        val weedsIdx = labels.indexOf("other_not_a_crop")
         probs[weedsIdx] = 0.85f
 
         val eval = VisionMath.evaluateDiagnosisAuto(
@@ -124,7 +143,7 @@ class AutoDecisionTest {
             labels = labels,
             probabilities = probs,
             defaultThreshold = defaultThreshold,
-            freeEnergy = -5.0, // -5.0 > -8.0 -> OOD
+            freeEnergy = energyThreshold + 2.0, // above energy threshold -> OOD
             energyThreshold = energyThreshold,
             cropMassThreshold = cropMassThreshold,
             marginThreshold = marginThreshold,
@@ -139,7 +158,7 @@ class AutoDecisionTest {
     @Test
     fun testLowConfidenceBelowThresholdGivesCantTell() {
         val probs = FloatArray(labels.size) { 0.04f }
-        probs[0] = 0.20f // 0.20 < 0.3434
+        probs[0] = defaultThreshold / 2.0f // strictly below threshold
 
         val eval = VisionMath.evaluateDiagnosisAuto(
             labels = labels,
@@ -161,16 +180,16 @@ class AutoDecisionTest {
     fun testLowTopCropMassGivesCantTell() {
         val probs = FloatArray(labels.size) { 0.0f }
         // Rice top class is 0.45, but rest of mass is scattered across other crops
-        probs[0] = 0.45f // rice
-        probs[4] = 0.25f // cotton
-        probs[8] = 0.15f // chilli
-        probs[11] = 0.15f // tomato
+        probs[0] = 0.45f // rice_leaf_blast
+        probs[2] = 0.25f // cotton_bacterial_blight
+        probs[4] = 0.15f // chilli_leaf_curl_virus
+        probs[13] = 0.15f // tomato_septoria_leaf_spot
         // Top crop mass (rice) = 0.45 < 0.60 threshold
 
         val eval = VisionMath.evaluateDiagnosisAuto(
             labels = labels,
             probabilities = probs,
-            defaultThreshold = defaultThreshold,
+            defaultThreshold = 0.35f, // isolate crop mass gate
             freeEnergy = -12.0,
             energyThreshold = energyThreshold,
             cropMassThreshold = cropMassThreshold,
@@ -189,14 +208,14 @@ class AutoDecisionTest {
         // Top 1: rice_leaf_blast (0.40)
         // Top 2: cotton_bacterial_blight (0.35)
         // Different crops! Margin = 0.40 - 0.35 = 0.05 < marginThreshold (0.25)
-        probs[1] = 0.40f // rice
-        probs[4] = 0.35f // cotton
-        probs[0] = 0.25f // rice (total rice mass = 0.65 >= 0.60)
+        probs[0] = 0.40f // rice_leaf_blast
+        probs[2] = 0.35f // cotton_bacterial_blight
+        probs[1] = 0.25f // rice_healthy (total rice mass = 0.65 >= 0.60)
 
         val eval = VisionMath.evaluateDiagnosisAuto(
             labels = labels,
             probabilities = probs,
-            defaultThreshold = defaultThreshold,
+            defaultThreshold = 0.35f, // isolate cross-crop margin gate
             freeEnergy = -12.0,
             energyThreshold = energyThreshold,
             cropMassThreshold = cropMassThreshold,
@@ -212,17 +231,17 @@ class AutoDecisionTest {
     @Test
     fun testSameCropCloseMarginDoesNotFailCrossCropGate() {
         val probs = FloatArray(labels.size) { 0.0f }
-        // Top 1: rice_bacterial_leaf_blight (0.45)
-        // Top 2: rice_leaf_blast (0.40)
+        // Top 1: rice_leaf_blast (0.45)
+        // Top 2: rice_healthy (0.40)
         // SAME CROP (rice)! Margin = 0.05, but diffCrops is false!
-        probs[0] = 0.45f
-        probs[1] = 0.40f
-        probs[2] = 0.15f // total rice mass = 1.00
+        probs[0] = 0.45f // rice_leaf_blast
+        probs[1] = 0.40f // rice_healthy
+        probs[10] = 0.15f // rice_stem_borer (total rice mass = 1.00)
 
         val eval = VisionMath.evaluateDiagnosisAuto(
             labels = labels,
             probabilities = probs,
-            defaultThreshold = defaultThreshold,
+            defaultThreshold = 0.35f, // isolate same-crop margin gate
             freeEnergy = -12.0,
             energyThreshold = energyThreshold,
             cropMassThreshold = cropMassThreshold,
@@ -231,14 +250,14 @@ class AutoDecisionTest {
         )
 
         assertEquals(DiagnosisOutcome.DIAGNOSE, eval.outcome)
-        assertEquals("rice_bacterial_leaf_blight", eval.classId)
+        assertEquals("rice_leaf_blast", eval.classId)
         assertEquals("ACCEPTED", eval.outcomeReason)
     }
 
     @Test
     fun testConfidentSingleCropDiagnosisAccepted() {
         val probs = FloatArray(labels.size) { 0.005f }
-        probs[8] = 0.85f // chilli_leaf_curl_virus
+        probs[4] = 0.85f // chilli_leaf_curl_virus
 
         val eval = VisionMath.evaluateDiagnosisAuto(
             labels = labels,
@@ -260,9 +279,9 @@ class AutoDecisionTest {
     @Test
     fun testCropMassComputation() {
         val probs = FloatArray(labels.size) { 0.0f }
-        probs[0] = 0.3f // rice
-        probs[1] = 0.2f // rice
-        probs[4] = 0.5f // cotton
+        probs[0] = 0.3f // rice_leaf_blast
+        probs[1] = 0.2f // rice_healthy
+        probs[2] = 0.5f // cotton_bacterial_blight
 
         val masses = CropMapping.computeCropMasses(labels, probs)
         assertEquals(0.5f, masses["rice"] ?: 0f, 0.001f)
@@ -292,10 +311,10 @@ class AutoDecisionTest {
     @Test
     fun testPickerMaskOverrideRerunsWithP3P4Logic() {
         val logits = FloatArray(labels.size) { -10.0f }
-        logits[1] = 2.0f // rice_leaf_blast
-        logits[4] = 1.8f // cotton_bacterial_blight
-        logits[0] = 1.0f // rice_bacterial_leaf_blight
-        logits[2] = 0.0f // rice_sheath_blight
+        logits[0] = 4.0f // rice_leaf_blast
+        logits[2] = 1.8f // cotton_bacterial_blight
+        logits[1] = 1.0f // rice_healthy
+        logits[10] = 0.0f // rice_stem_borer
 
         // When the farmer selects "cotton" as mask:
         val cottonMask = VisionMath.maskAndRenormalizeWithMass(labels, logits, "cotton")

@@ -52,4 +52,15 @@ class SentenceTrimmerTest {
         assertEquals("", clean)
         assertTrue("No terminator should mark wasCut true", wasCut)
     }
+
+    @Test
+    fun testSpecialTokensAreStrippedWithoutDuplicatingOrCorruptingSentence() {
+        val text = "1. What I see: Healthy leaf. 2. What to do now: Maintain optimal water.<|eot_id|>"
+        val (clean, wasCut) = SentenceTrimmer.cleanToCompleteSentence(text, "en")
+        assertEquals(
+            "1. What I see: Healthy leaf. 2. What to do now: Maintain optimal water.",
+            clean
+        )
+        assertFalse("Trailing special token should be stripped and clean sentence retained", wasCut)
+    }
 }

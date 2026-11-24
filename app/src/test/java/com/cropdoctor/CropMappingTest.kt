@@ -32,19 +32,19 @@ class CropMappingTest {
     @Test
     fun testEveryClassHasExactlyOneCropExceptWeeds() {
         val labels = loadLabels()
-        assertEquals("labels.json must contain exactly 20 classes", 20, labels.size)
+        assertEquals("labels.json must contain exactly 15 classes", 15, labels.size)
 
         val supportedCrops: Set<String> = CropMapping.VALID_CROPS.toSet()
         assertEquals(setOf("rice", "cotton", "chilli", "tomato", "maize"), supportedCrops)
 
-        var weedCount = 0
+        var nonCropCount = 0
         for (label in labels) {
             val crop = CropMapping.getCropForClass(label)
-            if (label == "weeds_not_a_crop") {
-                assertNull("weeds_not_a_crop must have null crop", crop)
-                assertFalse("weeds_not_a_crop is not in any crop", CropMapping.isClassOfCrop(label, "rice"))
-                assertFalse("weeds_not_a_crop is not in any crop", CropMapping.isClassOfCrop(label, "tomato"))
-                weedCount++
+            if (label == "other_not_a_crop" || label == "weeds_not_a_crop") {
+                assertNull("$label must have null crop", crop)
+                assertFalse("$label is not in any crop", CropMapping.isClassOfCrop(label, "rice"))
+                assertFalse("$label is not in any crop", CropMapping.isClassOfCrop(label, "tomato"))
+                nonCropCount++
             } else {
                 assertNotNull("Class '$label' must have a mapped crop", crop)
                 assertTrue("Class '$label' mapped to unexpected crop '$crop'", crop in supportedCrops)
@@ -59,7 +59,7 @@ class CropMappingTest {
                 }
             }
         }
-        assertEquals("There must be exactly 1 weed class", 1, weedCount)
+        assertEquals("There must be exactly 1 non-crop class", 1, nonCropCount)
     }
 
     @Test
@@ -76,36 +76,36 @@ class CropMappingTest {
             }
         }
 
-        // Weeds index should be the only one not in allIndices
-        val weedIndex = labels.indexOf("weeds_not_a_crop")
-        assertTrue("weeds_not_a_crop must be in labels", weedIndex >= 0)
-        assertFalse("weeds_not_a_crop index must not be in any crop indices", allIndices.contains(weedIndex))
+        // other_not_a_crop index should be the only one not in allIndices
+        val nonCropIndex = labels.indexOf("other_not_a_crop")
+        assertTrue("other_not_a_crop must be in labels", nonCropIndex >= 0)
+        assertFalse("other_not_a_crop index must not be in any crop indices", allIndices.contains(nonCropIndex))
 
-        allIndices.add(weedIndex)
-        assertEquals("Union of all crop indices plus weed index must cover all 20 classes", (0 until 20).toSet(), allIndices)
+        allIndices.add(nonCropIndex)
+        assertEquals("Union of all crop indices plus non-crop index must cover all 15 classes", (0 until 15).toSet(), allIndices)
     }
 
     @Test
     fun testCropMaskRenormalizationAndCropMass() {
         val labels = loadLabels()
         val n = labels.size
-        assertEquals(20, n)
+        assertEquals(15, n)
 
-        // Equal logits produces equal softmax probabilities of 0.05
+        // Equal logits produces equal softmax probabilities of 1/15
         val scaledLogits = FloatArray(n) { 2.0f }
         val tomatoIndices: List<Int> = CropMapping.getClassIndicesForCrop("tomato", labels)
-        assertEquals("Tomato has 4 classes in final model", 4, tomatoIndices.size)
+        assertEquals("Tomato has 2 classes in final model", 2, tomatoIndices.size)
 
         val result = VisionMath.maskAndRenormalizeWithMass(labels, scaledLogits, "tomato")
         val maskedProbs = result.probabilities
 
-        // Total tomato mass originally: 4 * 0.05 = 0.20
-        assertEquals(0.20f, result.cropMass, 1e-4f)
+        // Total tomato mass originally: 2 * (1/15) = 2/15
+        assertEquals(2.0f / 15.0f, result.cropMass, 1e-4f)
 
         // Non-tomato indices must have probability 0.0
         for (i in 0 until n) {
             if (i in tomatoIndices) {
-                assertEquals(0.25f, maskedProbs[i], 1e-4f) // 4 equal items renormalized to 1.0
+                assertEquals(0.5f, maskedProbs[i], 1e-4f) // 2 equal items renormalized to 1.0
             } else {
                 assertEquals(0.0f, maskedProbs[i], 1e-6f)
             }
