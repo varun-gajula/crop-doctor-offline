@@ -4,25 +4,31 @@
 **Primary Benchmark Hardware**: 64-bit Arm CPU (`arm64-v8a`), 6 GB RAM reference Android phone (Xiaomi POCO M4 5G `22041219PI`, MediaTek Dimensity 700)  
 **Secondary Test Hardware**: 64-bit Arm CPU (`arm64-v8a`), 12 GB RAM Android phone (Motorola Edge 60 `ZA222YGPNG`) — used for installation and functional checks only  
 **Repository**: https://github.com/varun-gajula/crop-doctor-offline  
-**Deliverable**: Technical Report (Section D4)  
+**Deliverable**: Technical Report  
 
 ---
 
-## 1. Summary
+## 1. Executive Summary
 
-**Agri Care AI** is a fully offline, on-device agricultural diagnostic and advisory system engineered for smallholder farmers and village agriculture extension workers across India. Built specifically for the Arm Bharat AI-SoC Challenge 2026–27, the application addresses the reality of Indian rural agriculture: crop threats must be identified and treated immediately at the field edge, before connectivity arrives. The app manifest contains **0 network permissions** (`aapt2` verified; `android.permission.INTERNET: NOT FOUND`), guaranteeing 100% offline autonomy in airplane mode with zero recurring API costs and complete data sovereignty for farmers.
+### Problem
+Smallholder farmers in rural India face severe, rapid crop losses from foliar pathogens and pests. Existing diagnostic tools depend on cloud APIs that fail in disconnected fields lacking mobile signal, while commercial apps output raw Latin binomials without actionable, safe, local-language advisory.
 
-The application executes two distinct machine learning pipelines locally on the phone's 64-bit Arm CPU (`arm64-v8a`) without GPU or NPU hardware accelerators:
-1. **Vision Inference Lane**: A compact MobileNetV3-Large convolutional backbone (**16.15 MB** binary size, 512x512 RGB planar tensor input) compiled for the **ExecuTorch 0.6.0** runtime with **XNNPACK** Arm Neon vector SIMD acceleration. The vision model classifies **15 agricultural categories** spanning 5 staple Indian crops (Rice, Cotton, Chilli, Tomato, Maize), including 9 foliar diseases, 3 major economic insect pests (*Spodoptera frugiperda* / Maize Fall Armyworm, *Scirpophaga incertulas* / Rice Yellow Stem Borer, and *Dicladispa armigera* / Rice Hispa), healthy leaf states, and a non-crop guardrail category (`other_not_a_crop`).
-2. **Advisory Reasoning Lane**: Meta's **Llama 3.2 1B-Instruct**, quantized to 4-bit INT4 via **SpinQuant** (**1.06 GiB**, 1,135,951,488 bytes), executing on the Arm CPU via ExecuTorch XNNPACK to stream conversational, context-grounded agronomic explanations in plain language.
+### Approach
+**Agri Care AI** is a fully autonomous on-device diagnostic and advisory system operating with **0 network permissions** (`android.permission.INTERNET: NOT FOUND`, `aapt2` verified). Running offline on a 64-bit Arm CPU (`arm64-v8a`) via a decoupled two-lane architecture:
+- **Vision Lane**: MobileNetV3-Large (**16.15 MB**, 512x512 RGB) compiled for **ExecuTorch 0.6.0** (XNNPACK SIMD), classifying **15 categories** across 5 staple Indian crops (9 foliar diseases, 3 economic pests: Maize Fall Armyworm, Rice Yellow Stem Borer, Rice Hispa, healthy leaves, and non-crop guardrail `other_not_a_crop`).
+- **Advisory Lane**: Meta's **Llama 3.2 1B-Instruct** 4-bit INT4 **SpinQuant** (**1.06 GiB**, 1,135,951,488 bytes) streaming conversational agronomic explanations on Arm CPU.
+- **Deterministic Safety Core**: Rules engine and trilingual knowledge base in **Telugu (తెలుగు)**, **Hindi (हिन्दी)**, and **English** (576 SQLite FTS5 passages; ICAR, PJTSAU, ANGRAU). Verified guidance displays immediately upon shutter release; Llama streams underneath strictly as an explanatory aid. Llama never decides severity, urgency, or dosages; dosages require human-verified records (`dose_verified: true`); Telugu advice is 100% assembled from verified local knowledge base records.
 
-The two pipelines are integrated through a deterministic agronomic rules engine and an offline trilingual knowledge base in **Telugu (తెలుగు)**, **Hindi (हिन्दी)**, and **English**. The vision pipeline completes first, rendering the visual diagnosis, temperature-calibrated certainty rating, lesion severity calculation, and official university-sourced interventions on screen (vision model loads in 116 ms; double-scan rapid captures average 238.9 ms spinner time). Llama's conversational explanation streams asynchronously below the treatment cards, delivering a Time to First Token (TTFT) of **9,680.2 ms** and a generation speed of **7.27 tok/s** on CPU following prompt compression optimization.
+### Five Key Results
+1. **Diagnostic Accuracy**: **97.95% overall** (**98.18% macro**) on 15 classes (grouped validation); **66.1% recall (115 of 174 photos)** on noisy out-of-distribution PlantDoc field benchmark.
+2. **Field Rejection**: Calibrated free energy ($-4.5866$) and crop-mass gates reject **96.7% (29 of 30)** non-crop photos and **72.9% (35 of 48)** off-target crops to `CAN'T TELL` / `OUT OF CLASS`.
+3. **Edge Speed**: Vision load time is **116 ms**; double-scan average spinner latency is **238.9 ms** (min **196 ms**, max **398 ms**). Llama achieves **9,680.2 ms** TTFT (best: **8,152 ms**) and **7.27 tok/s** on Arm CPU after prompt trimming.
+4. **6 GB RAM Budget**: Process peaks at **1,634 MB PSS** during active generation (**1,678 MB** during voice input) and **186.81 MB** for vision only (**147.68 MB** cold launch idle). 60s idle eviction reclaims **~1.45 GB** native RAM to a **243.79 MB** baseline.
+5. **Safety Integrity**: Zero network permissions. Recommendations cite CIB&RC-registered actives with safety warnings; severe cases route to Kisan Call Centre (`1800-180-1551`).
 
-Safety and agronomic honesty are enforced in plain, unit-tested Kotlin code:
-- **Llama never decides severity, urgency, or chemical dosages.**
-- **Telugu text is never generated by Llama**; it is assembled deterministically from human-reviewed knowledge-base records.
-- All chemical treatments display only active ingredients registered by the Central Insecticides Board & Registration Committee (CIB&RC), accompanied by mandatory protective warnings. Specific dosages are displayed only when backed by human-checked university citations (`dose_verified: true`), otherwise defaulting to *"follow the product label"*.
-- The agronomic knowledge base is cited from official research institutions (ICAR, PJTSAU, ANGRAU) and carries the transparent status **"sourced, pending expert review"**.
+### Hardware Used
+- **POCO M4 5G (`22041219PI`, MediaTek Dimensity 700)**: 64-bit Arm CPU (`arm64-v8a`: 2x Cortex-A76 + 6x Cortex-A55), 6 GB RAM (**5,597 MB** available to OS), Android 14 (primary 6 GB benchmark device).
+- **Motorola Edge 60 (`ZA222YGPNG`)**: 64-bit Arm CPU (`arm64-v8a`), **12 GB** RAM, Android 14 (secondary functional check device).
 
 ---
 
@@ -32,21 +38,21 @@ Safety and agronomic honesty are enforced in plain, unit-tested Kotlin code:
 Smallholder farmers in semi-arid and rural regions of Telangana, Andhra Pradesh, and broader India operate under extreme constraints. Foliar fungal pathogens (such as Rice Blast), bacterial blights, viral complexes, and invasive pests (such as Fall Armyworm) can defoliate crops within days. Existing commercial smartphone apps rely on cloud-hosted computer vision APIs that fail completely in remote fields lacking 4G/5G signal. Furthermore, commercial tools frequently output technical pathogen names without explaining practical, region-specific next steps or distinguishing between mild initial infections and catastrophic emergencies.
 
 ### 2.2 Traceability to Problem Statement PS1
-Every requirement from the official Bharat AI-SoC Challenge Problem Statement PS1 and `FINAL_REQUIREMENTS.md` is mapped to an implemented system feature and verified by benchmark evidence:
+Every requirement from the official Bharat AI-SoC Challenge Problem Statement PS1 is mapped to an implemented system feature and verified by benchmark evidence:
 
-| Official PS1 Line / Requirement | System Feature & Architectural Implementation | Implementation Status | Verification Evidence & Benchmark Log |
+| Official Challenge Requirement | System Feature & Architectural Implementation | Implementation Status | Verification Evidence & Benchmark Log |
 |---|---|:---:|---|
-| **R1 / N1: On-device, no internet** | Manifest has zero network permissions. Entire diagnostic flow executes in airplane mode. | **PASS** | `benchmarks/permissions_check.txt` (`android.permission.INTERNET: NOT FOUND`), `benchmarks/airplane_mode_test.md` |
-| **R2 / F2: Identify crop diseases** | 15-class MobileNetV3-Large classifier trained on 5 staple crops (Rice, Cotton, Chilli, Tomato, Maize). | **PASS** | `benchmarks/final/metrics.json` (97.95% grouped validation accuracy), `benchmarks/d6_class_audit.md` |
-| **R3 / F3: Detect pests as well as diseases** | 3 committed economic insect pest classes: Maize Fall Armyworm, Rice Yellow Stem Borer, Rice Hispa. | **PASS** | `benchmarks/d5b_pest_audit.md`, `benchmarks/final/metrics.json` (100% recall on Stem Borer, 97.3% on FAW) |
-| **R4 / F4: Classify severity & urgency** | Dual-factor matrix: HSV necrotic lesion area (< 10%, 10% – 25%, > 25%) + farmer field-spread response (`Few`, `Some`, `Most`). | **PASS** | `app/src/test/java/com/cropdoctor/AgronomicRulesEngineTest.kt` (100% unit test pass across all combinations) |
-| **R5 / F5: Recommend treatment & intervention** | 3-tiered guidance: Cultural/Prevention, Natural/Bio-pesticides, CIB&RC Chemical actives. Tiers ordered by urgency. | **PASS** | `app/src/main/assets/kb.json`, `docs/KB_REVIEW_CHECKLIST.md`, `benchmarks/u1_screenshots/` |
-| **R6 / F6: Region-specific advisory** | Multi-region picker: Telangana (PJTSAU), Andhra Pradesh (ANGRAU), Other/National (ICAR). | **PASS** | `app/src/main/assets/kb.json`, `benchmarks/u1_screenshots/result_diagnose_te.png` |
-| **R7 / F7: Multiple local languages** | Telugu, Hindi, English full UI and knowledge-base parity. Telugu is never generated by LLM. | **PASS** | `app/src/test/java/com/cropdoctor/LanguageParityTest.kt`, `benchmarks/a1_result_te.png`, `benchmarks/a1_result_hi.png` |
-| **R8 / F8: Advisory model on ExecuTorch** | Llama 3.2 1B-Instruct SpinQuant INT4 running on 64-bit Arm CPU via ExecuTorch XNNPACK. | **PASS** | `benchmarks/lat1_summary.md` (9,680.2 ms TTFT, 7.27 tok/s on Dimensity 700 CPU), `benchmarks/phone_v15_summary.md` |
-| **R9 / F9: Extension worker tools** | Emergency referral card to Kisan Call Centre (`1800-180-1551`) and shareable case reports via Android share sheet. | **PASS** | `app/src/main/java/com/cropdoctor/ui/ShareReportHelper.kt`, `benchmarks/u1_screenshots/result_cant_tell_en.png` |
-| **R10 / F10: Offline voice guidance** | Vosk 0.3.47 offline Kaldi speech recognition running on 16 kHz mono audio on Arm CPU. | **PASS** | `benchmarks/integration_poco_results.json` (peak speech PSS 1,678 MB; decoupled lifecycle) |
-| **R15 / N2: 6 GB RAM reference budget** | App peak memory strictly capped below 2.5 GB PSS with Llama loaded; below 500 MB without. | **PASS** | `benchmarks/integration_poco_results.json` (1,634 MB peak with Llama; 186.81 MB vision only) |
+| **Offline Operation (No Internet)** | Manifest has zero network permissions. Entire diagnostic flow executes in airplane mode. | **PASS** | `benchmarks/permissions_check.txt` (`android.permission.INTERNET: NOT FOUND`), `benchmarks/airplane_mode_test.md` |
+| **Crop Disease Identification** | 15-class MobileNetV3-Large classifier trained on 5 staple crops (Rice, Cotton, Chilli, Tomato, Maize). | **PASS** | `benchmarks/final/metrics.json` (97.95% grouped validation accuracy), `benchmarks/d6_class_audit.md` |
+| **Pest and Disease Detection** | 3 committed economic insect pest classes: Maize Fall Armyworm, Rice Yellow Stem Borer, Rice Hispa. | **PASS** | `benchmarks/d5b_pest_audit.md`, `benchmarks/final/metrics.json` (100% recall on Stem Borer, 97.3% on FAW) |
+| **Severity & Urgency Classification** | Dual-factor matrix: HSV necrotic lesion area (< 10%, 10% – 25%, > 25%) + farmer field-spread response (`Few`, `Some`, `Most`). | **PASS** | `app/src/test/java/com/cropdoctor/AgronomicRulesEngineTest.kt` (100% unit test pass across all combinations) |
+| **Treatment & Practical Advisory** | 3-tiered guidance: Cultural/Prevention, Natural/Bio-pesticides, CIB&RC Chemical actives. Tiers ordered by urgency. | **PASS** | `app/src/main/assets/kb.json`, `docs/KB_REVIEW_CHECKLIST.md`, `benchmarks/u1_screenshots/` |
+| **Region-Specific Recommendations** | Multi-region picker: Telangana (PJTSAU), Andhra Pradesh (ANGRAU), Other/National (ICAR). | **PASS** | `app/src/main/assets/kb.json`, `benchmarks/u1_screenshots/result_diagnose_te.png` |
+| **Multilingual Vernacular Delivery** | Telugu, Hindi, English full UI and knowledge-base parity. Telugu is never generated by LLM. | **PASS** | `app/src/test/java/com/cropdoctor/LanguageParityTest.kt`, `benchmarks/a1_result_te.png`, `benchmarks/a1_result_hi.png` |
+| **On-Device Advisory Runtime (ExecuTorch)** | Llama 3.2 1B-Instruct SpinQuant INT4 running on 64-bit Arm CPU via ExecuTorch XNNPACK. | **PASS** | `benchmarks/lat1_summary.md` (9,680.2 ms TTFT, 7.27 tok/s on Dimensity 700 CPU), `benchmarks/phone_v15_summary.md` |
+| **Extension Worker Support & Referral** | Emergency referral card to Kisan Call Centre (`1800-180-1551`) and shareable case reports via Android share sheet. | **PASS** | `app/src/main/java/com/cropdoctor/ui/ShareReportHelper.kt`, `benchmarks/u1_screenshots/result_cant_tell_en.png` |
+| **Offline Voice Interaction** | Vosk 0.3.47 offline Kaldi speech recognition running on 16 kHz mono audio on Arm CPU. | **PASS** | `benchmarks/integration_poco_results.json` (peak speech PSS 1,678 MB; decoupled lifecycle) |
+| **Hardware Memory Envelope (6 GB RAM Budget)** | App peak memory strictly capped below 2.5 GB PSS with Llama loaded; below 500 MB without. | **PASS** | `benchmarks/integration_poco_results.json` (1,634 MB peak with Llama; 186.81 MB vision only) |
 
 ---
 
@@ -109,7 +115,7 @@ The complete runtime flow transitions through eight decoupled stages with strict
 1. **Camera Frame Acquisition (`CameraX`)**: The live camera stream acquires high-resolution sensor frames. Prior to downsampling, a center crop of fraction $0.37$ is extracted to isolate the leaf area framed within the UI viewfinder, discarding irrelevant peripheral backgrounds.
 2. **Tensor Transformation (`ImagePreprocessor.kt`)**: The center-cropped bitmap is resized via bilinear interpolation to $512 \times 512$ RGB. Pixel color values are converted to float32 planar memory layout $[1, 3, 512, 512]$ and normalized using standard ImageNet parameters ($\mu = [0.485, 0.456, 0.406], \sigma = [0.229, 0.224, 0.225]$).
 3. **Vision Model Inference (`Classifier.kt`)**: The normalized planar tensor is dispatched to the ExecuTorch C++ runtime via JNI. MobileNetV3-Large forward pass executes across Arm Cortex-A76 performance cores utilizing XNNPACK vector SIMD instructions, producing a raw 15-element logit vector.
-4. **Logit Calibration & Free Energy Calculation (`EnergyCalculator.kt`)**: Raw logits $z_i$ are scaled by temperature $T = 0.9433$. The Helmholtz free energy scalar $E(x) = -T \cdot \ln \sum_{i=1}^{15} \exp(z_i / T)$ is computed via numerically stable LogSumExp. Calibrated class probabilities are derived via softmax over scaled logits.
+4. **Logit Calibration & Free Energy Calculation (`EnergyCalculator.kt`)**: Raw logits $z_i$ are scaled by temperature $T = 0.9433$. The Helmholtz free energy scalar $E(x) = -T \cdot \text{ln}(\sum \text{exp}(z_i / T))$ is computed via numerically stable LogSumExp. Calibrated class probabilities are derived via softmax over scaled logits.
 5. **Deterministic Decision Gate Evaluation (`DecisionGate.kt`)**:
    - *Gate 1 (`LeafAreaValidator.kt`)*: Generates an HSV vegetative mask to verify that leaf matter exceeds the background threshold.
    - *Gate 2 (`EnergyCalculator.kt`)*: Rejects out-of-distribution inputs if free energy exceeds $-4.5866$ (routing to `CAN'T TELL`).
@@ -126,7 +132,7 @@ The complete runtime flow transitions through eight decoupled stages with strict
 ### 3.2 Deterministic Decision Gates & Outcomes
 To prevent "hallucinated diagnoses" on unfamiliar foliage or non-crop objects, raw model logits are processed through three sequential gates:
 1. **Gate 1: Leaf Area Validation**: An HSV color mask validates that the central sensor crop contains sufficient vegetative plant matter. If non-plant background dominates, the app flags a soft warning.
-2. **Gate 2: Helmholtz Free Energy OOD Scoring**: The model computes Helmholtz free energy $E(x) = -T \cdot \ln(\sum \exp(z_i / T))$. Here, temperature ($T = 0.9433$) and free energy threshold ($E_{\text{thresh}} = -4.5866$) were calibrated directly on the 15-class validation split. Unfamiliar leaves, off-target crop species, and non-crop textures produce abnormally high free energy ($E > -4.5866$; borderline energy cutoff $-9.0$, carried over from earlier 20-class calibration without 15-class recalibration) and are routed to `CAN'T TELL`.
+2. **Gate 2: Helmholtz Free Energy OOD Scoring**: The model computes Helmholtz free energy $E(x) = -T \cdot \text{ln}(\sum \text{exp}(z_i / T))$. Here, temperature ($T = 0.9433$) and free energy threshold ($E_{\text{thresh}} = -4.5866$) were calibrated directly on the 15-class validation split. Unfamiliar leaves, off-target crop species, and non-crop textures produce abnormally high free energy ($E > -4.5866$; borderline energy cutoff $-9.0$, carried over from earlier 20-class calibration without 15-class recalibration) and are routed to `CAN'T TELL`.
 3. **Gate 3: Crop-Mass & Ambiguity Margin Filter**: When the farmer selects a target crop (e.g., Rice), the sum of softmax probabilities across all classes belonging to that crop must meet $\ge 0.60$ (`crop_mass_threshold`), and the difference between top-1 and top-2 probabilities within that crop must exceed $0.25$ (`margin_threshold`). Both $0.60$ and $0.25$ were carried over from the earlier 20-class calibration without recalibration for the 15-class model. In addition, the top-1 calibrated softmax probability must meet or exceed $0.75$ (`confidence_threshold`), which was calibrated on the 15-class model, matching `thresholds.json`.
 
 These gates yield three definitive, unit-tested outcomes:
@@ -134,8 +140,8 @@ These gates yield three definitive, unit-tested outcomes:
 - **`OUT OF CLASS`**: The plant belongs to an unsupported species or the wrong crop was selected in picker mode. The UI clearly states: *"Out of class - plant does not match"*.
 - **`CAN'T TELL`**: Energy is high, confidence is low, or ambiguous symptoms are detected. The UI displays *"Can't tell - ask an extension officer"* and provides a one-tap dialer to the Kisan Call Centre (`1800-180-1551`).
 
-### 3.3 Strict LLM Boundaries (Rule H5 & H6)
-Llama 3.2 1B-Instruct serves strictly as a communication aid, never an authority. Its prompt is populated exclusively with the structured finding and top-matching passages retrieved from the local SQLite FTS5 knowledge base. An in-process safety guardrail (`GuardrailFilter.kt`) scans Llama's streaming output: if Llama attempts to hallucinate numerical chemical dosages or unknown trade names, the stream is aborted and replaced with the static, verified text from the knowledge base (*"Offline guide"*). Telugu text is never generated by Llama; it is constructed deterministically from human-reviewed knowledge-base strings.
+### 3.3 Deterministic Advisory Boundaries & Safety Rules
+Llama 3.2 1B-Instruct serves strictly as a communication aid, never an authority. Its input context is populated exclusively with the structured finding and top-matching passages retrieved from the local SQLite FTS5 knowledge base. An in-process safety guardrail (`GuardrailFilter.kt`) scans Llama's streaming output: if Llama attempts to hallucinate numerical chemical dosages or unknown trade names, the stream is aborted and replaced with the static, verified text from the knowledge base (*"Offline guide"*). Telugu text is never generated by Llama; it is constructed deterministically from human-reviewed knowledge-base strings.
 
 ---
 
@@ -157,10 +163,10 @@ The vision training dataset was compiled from 10 distinct open-access repositori
 | **DeepWeeds** | Nature Scientific Reports open agricultural weed benchmark | CC BY 4.0 | Permitted | Non-crop guardrail (`other_not_a_crop`) |
 | **PlantDoc** | IIT Delhi real field benchmark | MIT | Permitted | Maize northern leaf blight (strictly isolated for noisy stress test) |
 
-### 4.2 Near-Duplicate Clustering & Source-Confound Resolution (TR3 vs TR4)
+### 4.2 Near-Duplicate Clustering & Confound Resolution (Baseline vs. Clustered Dataset)
 A critical scientific finding emerged during model iteration:
-1. **The TR3-15 Failure**: In early training iterations (TR3-15), cross-source validation failed catastrophically. When individual repositories were held out, held-out recall dropped to between **2.5% and 41.8% across 5 classes** (`metrics.json` of TR3-15). The deep network had memorized camera sensor noise, uniform background soil, and synthetic letterbox padding rather than biological foliar pathology.
-2. **The TR4 Rebuild**: To permanently resolve source confounding:
+1. **The Early Unclustered Baseline**: In early training iterations without cluster deduplication, cross-source validation failed catastrophically. When individual repositories were held out, held-out recall dropped to between **2.5% and 41.8% across 5 classes** in baseline validation. The deep network had memorized camera sensor noise, uniform background soil, and synthetic letterbox padding rather than biological foliar pathology.
+2. **The Clustered Dataset Rebuild**: To permanently resolve source confounding:
    - **Perceptual Hash Clustering**: All images were audited using 64-bit Dihedral Perceptual Hashing (D₄ group: 4 rotations × horizontal mirror) with single-linkage clustering at Hamming distance ≤ 8 (`benchmarks/d6_class_audit.md`). An 80/20 train/validation split was enforced strictly at the cluster level, guaranteeing zero near-duplicate leakage.
    - **Letterbox Border Trimming**: A variance-based scanning algorithm detected and trimmed synthetic gray border padding across **1,085 photos (10.89% of corpus)** before resizing (`benchmarks/data_fix_source_table.md`).
    - **Source-Balanced Sampling**: For multi-source classes, contributing sources were sampled in equal proportions (e.g., Maize Fall Armyworm was balanced at exactly 285 MLD photos [50.0%] and 285 CCMT photos [50.0%], balancing leaf blade puncture damage with whorl feeding damage).
@@ -170,7 +176,7 @@ A critical scientific finding emerged during model iteration:
 ### 4.3 Model Architecture & Edge Compilation
 - **Backbone**: MobileNetV3-Large with Hard-Swish non-linearities and Squeeze-and-Excitation attention modules in the final stages.
 - **Input Dimensions**: 1 × 3 × 512 × 512 RGB planar tensor, normalized with ImageNet statistics (μ = [0.485, 0.456, 0.406], σ = [0.229, 0.224, 0.225]).
-- **Compilation**: Lowered to PyTorch Edge IR and exported to ExecuTorch 0.6.0 with the XNNPACK CPU backend. The compiled binary size is **16.15 MB** (`benchmarks/final/metrics.json`), passing the 30 MB Rule H15 ceiling with 46% margin.
+- **Compilation**: Lowered to PyTorch Edge IR and exported to ExecuTorch 0.6.0 with the XNNPACK CPU backend. The compiled binary size is **16.15 MB** (`benchmarks/final/metrics.json`), passing the 30 MB model size ceiling with 46% margin.
 - **Numerical Parity**: Maximum absolute parity error between PyTorch eager execution and ExecuTorch runtime on Arm64 is **2.95 × 10⁻⁷**, confirming zero degradation from graph export (`benchmarks/final/metrics.json`).
 - **Advisory Model Binary**: Llama 3.2 1B-Instruct quantized via SpinQuant INT4 is **1.06 GiB** (1,135,951,488 bytes) on disk (`docs/INSTALL_MODELS.md`, `benchmarks/llama_speed.md`).
 
@@ -206,7 +212,7 @@ All entries carry the formal status **"sourced, pending expert review"**.
 
 ## 5. Experimental Results
 
-### 5.1 Grouped Cluster Validation Results (TR4-15 Model)
+### 5.1 Grouped Cluster Validation Results (Final 15-Class Model)
 The final 15-class MobileNetV3-Large model was evaluated on the held-out cluster validation split (**1,647 photos** across 15 classes). Clusters were isolated by perceptual hash Hamming distance ≤ 8, ensuring zero image overlap between train and validation:
 
 | # | Class Name | Category | Support (N) | Correct (n) | Recall | Precision | F1-Score |
@@ -247,13 +253,13 @@ A parametric sweep across confidence, free energy, crop mass, and margin thresho
 
 | Threshold Profile | Conf Thresh | Energy Thresh | Crop Mass | Margin | Supported Diag Acc (n/N, %) | Nocrop Rejection (n/N, %) | Othercrop Rejection (n/N, %) | Unsupported Wrong Diag (n/93, %) |
 |---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| **Opt-0 (Current Baseline)** | 0.75 | -4.5866 | 0.60 | 0.25 | **84.2% (16/19)** | **86.7% (26/30)** | **72.9% (35/48)** | 23.7% (22/93) |
-| **Opt-6 (Balanced Guard)** | 0.65 | -4.7500 | 0.55 | 0.20 | **81.2% (13/16)** | **86.7% (26/30)** | **77.1% (37/48)** | **19.4% (18/93)** |
-| **Opt-8 (High Yield)** | 0.70 | -4.5000 | 0.60 | 0.20 | **85.0% (17/20)** | **83.3% (25/30)** | **72.9% (35/48)** | 23.7% (22/93) |
+| **Baseline Thresholds (Selected)** | 0.75 | -4.5866 | 0.60 | 0.25 | **84.2% (16/19)** | **86.7% (26/30)** | **72.9% (35/48)** | 23.7% (22/93) |
+| **Balanced Guard Thresholds** | 0.65 | -4.7500 | 0.55 | 0.20 | **81.2% (13/16)** | **86.7% (26/30)** | **77.1% (37/48)** | **19.4% (18/93)** |
+| **High-Yield Diagnostic Thresholds** | 0.70 | -4.5000 | 0.60 | 0.20 | **85.0% (17/20)** | **83.3% (25/30)** | **72.9% (35/48)** | 23.7% (22/93) |
 
 Evaluation on 33 clean field photos (`benchmarks/p4b_options.md`) confirmed that diagnostic performance differences across candidate profiles were within one photo; the baseline profile (`confidence_threshold: 0.75`, `energy_threshold: -4.5866`, `crop_mass_threshold: 0.60`, `margin_threshold: 0.25`) was retained.
 
-**Provenance of Threshold Values**: Within the baseline profile, `confidence_threshold` ($0.75$), `energy_threshold` ($-4.5866$), and temperature scaling ($T = 0.9433$) were calibrated directly on the TR4-15 grouped validation split. Conversely, `crop_mass_threshold` ($0.60$), `margin_threshold` ($0.25$), and `borderline_energy` ($-9.0$) were carried over from the earlier 20-class model calibration and were not independently recalibrated for the 15-class architecture.
+**Provenance of Threshold Values**: Within the baseline profile, `confidence_threshold` ($0.75$), `energy_threshold` ($-4.5866$), and temperature scaling ($T = 0.9433$) were calibrated directly on the 15-class model grouped validation split. Conversely, `crop_mass_threshold` ($0.60$), `margin_threshold` ($0.25$), and `borderline_energy` ($-9.0$) were carried over from the earlier 20-class model calibration and were not independently recalibrated for the 15-class architecture.
 
 ### 5.5 Confusion Matrix Analysis
 Analysis of off-diagonal errors in the 15 × 15 validation confusion matrix (`benchmarks/final/metrics.json`) reveals three primary agronomic confusions:
@@ -263,10 +269,10 @@ Analysis of off-diagonal errors in the 15 × 15 validation confusion matrix (`be
 
 ---
 
-## 6. Hardware Utilization (Arm CPU & Memory)
+## 6. Hardware Utilization and Optimization
 
 ### 6.1 Physical Test Device Specifications
-All hardware benchmarks were recorded live on physical Android devices. In accordance with project instructions, every device-dependent result is attributed to the exact hardware specifications from `benchmarks/device_comparison.md`:
+All hardware benchmarks were recorded live on physical Android devices. Every device-dependent result is attributed to the exact hardware specifications from `benchmarks/device_comparison.md`:
 
 - **Phone 1 (Primary Benchmark Device - 6 GB Budget Constraint)**:
   - **Commercial Name**: Xiaomi POCO M4 5G
@@ -288,7 +294,7 @@ All hardware benchmarks were recorded live on physical Android devices. In accor
 ### 6.2 Process Memory Footprint (PSS) on 6 GB Phone
 Memory utilization was logged via `dumpsys meminfo com.cropdoctor` on the physical 6 GB POCO M4 5G (`22041219PI`) across all operational lifecycle states (`benchmarks/memory_summary.md`, `benchmarks/integration_poco_results.json`):
 
-| Lifecycle Operational State | Total Process PSS | Java Heap PSS | Native Heap PSS | Rule H15 Budget Limit | Headroom Below Ceiling | Verification Source Log |
+| Lifecycle Operational State | Total Process PSS | Java Heap PSS | Native Heap PSS | 6 GB RAM Budget Ceiling | Headroom Below Ceiling | Verification Source Log |
 |---|:---:|:---:|:---:|:---:|:---:|---|
 | **App Cold Launch (Idle)** | 147.68 MB | 13.57 MB | 17.43 MB | ≤ 500.0 MB | **+352.32 MB** | `benchmarks/memory_summary.md` |
 | **Vision Inference Complete** | 186.81 MB | 12.64 MB | 49.32 MB | ≤ 500.0 MB | **+313.19 MB** | `benchmarks/memory_summary.md` |
@@ -298,7 +304,7 @@ Memory utilization was logged via `dumpsys meminfo com.cropdoctor` on the physic
 | **60s After Idle Eviction (`resetNative`)** | **243.79 MB** | 13.91 MB | 107.29 MB | ≤ 500.0 MB | **+256.21 MB** | `benchmarks/memory_summary.md` |
 | **Memory Reclaimed After Release** | **1.45 GB** | — | — | — | — | `benchmarks/memory_summary.md` |
 
-Every stage safely complies with the Rule H15 6 GB phone memory ceiling (≤ 2.5 GB peak PSS with Llama, ≤ 500 MB vision-only).
+Every stage safely complies with the target 6 GB phone memory ceiling (≤ 2.5 GB peak PSS with Llama loaded, ≤ 500 MB for vision only).
 
 ### 6.3 On-Device Latency & Execution Throughput
 Measured live on the connected POCO M4 5G (`22041219PI`, MediaTek Dimensity 700 Arm CPU):
@@ -306,36 +312,34 @@ Measured live on the connected POCO M4 5G (`22041219PI`, MediaTek Dimensity 700 
 - **Vision Model Cold Load Time**: **116 ms** (`benchmarks/phone_v15_summary.md`).
 - **Rapid Double-Scan Spinner Latency**: **238.9 ms average** (min 196 ms, max 398 ms across 60 executions on POCO M4 5G in `benchmarks/phone_v15_summary.md`).
 - **Sourced Advice Card Presentation**: The vision result (diagnosis badge, certainty indicator, and verified treatment steps) is rendered on screen first upon vision inference completion, followed by Llama's streaming explanation; reading the recommended agronomic practices does not wait for LLM token generation.
-- **Llama 3.2 1B-Instruct Generation Metrics (Task LAT-1 Optimization)**:
-  - **Average Prompt Tokens**: **301.1 tokens** (shortened by -25.3% from 402.9 tokens in `benchmarks/lat1_summary.md`).
+- **Llama 3.2 1B-Instruct Generation Metrics (Prompt Trimming Optimization)**:
+  - **Average Input Context**: **301.1 tokens** (shortened by -25.3% from 402.9 tokens in `benchmarks/lat1_summary.md`).
   - **Time to First Token (TTFT)**: **9,680.2 ms (~9.7 s)** on Arm CPU (accelerated by -25.5% from 12,986.4 ms; best observed TTFT: **8,152 ms** in `benchmarks/lat1_after_stageB.json`).
   - **Generation Speed**: **7.27 tok/s** on Arm CPU (improved from 6.90 tok/s).
   - **Sentence Completion Rate**: **100% (10 of 10 runs)** terminated cleanly on a grammatically complete sentence verified by `SentenceTrimmer`.
 - **Interactive Offline Chat Latency**: **8,222.8 ms average** across 10 agronomic questions (`benchmarks/phone_v15_summary.md`).
 
----
-
-## 7. Edge Optimization Techniques
+### 6.4 Edge Optimization Techniques
 
 To achieve real-time vision inference and responsive local LLM execution within a 6 GB memory envelope on an Arm CPU, eleven concrete optimizations were implemented and measured:
 
-1. **Backbone Model Selection**: MobileNetV3-Large (16.15 MB binary size) was selected over ResNet-18 (42.68 MB). MobileNetV3 is **2.6x smaller** in storage, consumes < 200 MB runtime RAM (versus > 400 MB for ResNet), and passes Rule H15 while achieving 97.95% accuracy (`benchmarks/head_to_head_comparison.md`).
+1. **Backbone Model Selection**: MobileNetV3-Large (16.15 MB binary size) was selected over ResNet-18 (42.68 MB). MobileNetV3 is **2.6x smaller** in storage, consumes < 200 MB runtime RAM (versus > 400 MB for ResNet), and remains well within the 6 GB RAM budget while achieving 97.95% accuracy (`benchmarks/head_to_head_comparison.md`).
 2. **4-Bit SpinQuant Quantization**: Quantizing Llama 3.2 1B weights from FP16 (> 2.5 GB) to 4-bit INT4-EO8 (**1.06 GiB** / 1,135,951,488 bytes) enabled the model to reside in memory with a peak PSS of only **1,634 MB**, preventing out-of-memory kernel termination on 6 GB devices (`benchmarks/integration_poco_results.json`).
 3. **Dynamic On-Demand LLM Eviction**: Llama weights and ExecuTorch native contexts load into RAM only when the user requests an explanation, and are automatically unloaded after **60 seconds of inactivity**. This returns **~1.45 GB of native RAM** to the operating system (`benchmarks/memory_summary.md`).
 4. **MemoryBudgetDecider Guard**: Before initializing Llama, `MemoryBudgetDecider.kt` queries the Android `ActivityManager`. If system available RAM is < 1,500 MB, LLM loading is bypassed in **0 ms**, gracefully presenting the static knowledge-base text (*"Offline guide"*) and protecting system stability (`benchmarks/fallback_rate.md`).
 5. **Process-Wide Concurrency Mutex (`ExecuTorchLock`)**: A thread-safe mutex (`forwardMutex`) coordinates vision and LLM inference. Vision classification and Llama generation are mutually exclusive, eliminating CPU core contention and thermal throttling on the Arm Cortex-A76 cores.
 6. **Active Work Cancellation**: If the user taps the camera shutter while Llama is actively streaming tokens, ongoing LLM generation is aborted via an atomic cancellation flag, freeing CPU cores for the incoming vision pass.
-7. **Task LAT-1 Prompt Shortening**: System prompt instructions and finding headers were compressed from 402.9 to 301.1 tokens (-25.3%). On the Arm CPU, prefill time dropped from 12,986.4 ms to **9,680.2 ms (-25.5% faster)**, saving over 3.3 seconds per query (`benchmarks/lat1_summary.md`).
-8. **Ultra-Short Chat Prompt Architecture**: Interactive chat queries utilize a streamlined 159-token prompt context (82-token system prompt + 19-token finding + 44-token top BM25 passage), delivering interactive responses in an average of **8.2 s** on CPU (`benchmarks/lat1_summary.md`).
+7. **Prompt Trimming Optimization**: System instructions and finding headers were compressed from 402.9 to 301.1 tokens (-25.3%). On the Arm CPU, prefill time dropped from 12,986.4 ms to **9,680.2 ms (-25.5% faster)**, saving over 3.3 seconds per query (`benchmarks/lat1_summary.md`).
+8. **Ultra-Short Chat Context Architecture**: Interactive chat queries utilize a streamlined 159-token input context (82-token system instructions + 19-token finding + 44-token top BM25 passage), delivering interactive responses in an average of **8.2 s** on CPU (`benchmarks/lat1_summary.md`).
 9. **Viewfinder Preprocessing Crop**: CameraX preview applies a center crop (`fraction=0.37`) matching the model's receptive field prior to bilinear downsampling, eliminating irrelevant field margins.
 10. **Decoupled Vosk Speech Lifecycle**: The Vosk Kaldi speech model is instantiated only while the microphone button is pressed and released before Llama initializes. This decoupled lifecycle restricts peak speech PSS to **1,678 MB** without memory overlap (`benchmarks/integration_poco_results.json`).
 11. **Fail-Closed Threshold Boundaries**: Combining 15-class calibrated thresholds (free energy -4.5866, confidence 0.75) with carried-over heuristic thresholds from the earlier 20-class calibration (crop mass 0.60, margin 0.25) rejects 29/30 (96.7%) non-crop objects and 35/48 (72.9%) off-target crop leaves on field test photography (`benchmarks/compare_field.md`).
 
 ---
 
-## 8. Safety, Honesty, and Guardrails
+## 7. Safety, Honesty, and Guardrails
 
-### 8.1 What Agri Care AI Will NOT Do
+### 7.1 What Agri Care AI Will NOT Do
 To protect rural farmers from agronomic harm and maintain scientific honesty:
 - **No Unverified Chemical Dosages**: The application never computes, estimates, or extrapolates spray dosages. Dosages appear only when copied verbatim from published university compendiums with `dose_verified: true`. If unverified, the app displays *"follow the product label"*.
 - **No LLM-Generated Prescriptions**: Llama 3.2 is constrained to explaining the biology and cultural context of the diagnosis. An active regex filter (`GuardrailFilter.kt`) intercepts any generated numbers resembling application rates, chemical concentrations, or unapproved trade names.
@@ -343,12 +347,12 @@ To protect rural farmers from agronomic harm and maintain scientific honesty:
 - **No Simulated AI Code in Production**: All fallback and mock components were permanently excised from release builds. If model weights are missing or unreadable, the app cleanly falls back to the deterministic offline guide.
 - **Zero Internet Permissions**: The app cannot transmit telemetry, farmer location, or camera images off the phone. Verified via `aapt2 dump permissions` (`benchmarks/permissions_check.txt`).
 
-### 8.2 Extension Worker Referral
+### 7.2 Extension Worker Referral
 When visual confidence is borderline, when free energy indicates an unfamiliar pathogen, or when necrotic severity is classified as Severe, the application surfaces an emergency extension referral card. The farmer can tap to dial the national **Kisan Call Centre (1800-180-1551)** or export a standardized case report via the Android share sheet for village Krishi Vigyan Kendra (KVK) officers.
 
 ---
 
-## 9. Limitations
+## 8. Limitations
 
 In accordance with scientific integrity, the limitations of Agri Care AI are documented once in neutral wording:
 1. **Field Performance Disparity on Northern Leaf Blight**: Maize Northern Leaf Blight exhibited the weakest diagnostic recall on uncurated field photography (66.1% recall on the PlantDoc stress benchmark, 115/174), frequently confused with common rust (40 instances) or rice blast (16 instances) due to similar elongated necrotic lesion morphology under complex outdoor lighting.
@@ -363,7 +367,7 @@ In accordance with scientific integrity, the limitations of Agri Care AI are doc
 
 ---
 
-## 10. Roadmap
+## 9. Roadmap
 
 Future development is organized into concrete, staged engineering milestones:
 1. **Live Field Diagnostic Accuracy & Extended Multi-District Evaluation**: Systematic validation on uncurated, standing crops in real farming conditions across diverse light, camera angles, and leaf backgrounds to validate in-field generalization beyond laboratory probe sets.
@@ -374,9 +378,9 @@ Future development is organized into concrete, staged engineering milestones:
 
 ---
 
-## 11. Reproducibility, Repository & Licenses
+## 10. Reproducibility, Repository & Licenses
 
-### 11.1 Repository Structure
+### 10.1 Repository Structure
 ```
 crop-doctor-offline/
 ├── app/                     # Android Jetpack Compose application (Kotlin)
@@ -385,13 +389,13 @@ crop-doctor-offline/
 ├── benchmarks/              # Measured benchmark logs, hardware dumps, and JSON runs
 ├── docs/                    # Technical documentation: REPORT.md, REQUIREMENTS.md, NUMBER_TRACE.md
 ├── ml/                      # PyTorch training, evaluation, calibration, and export scripts
-├── notebooks/               # Production Kaggle/Colab training notebooks (TR4-15)
+├── notebooks/               # Production training notebooks (15-class model)
 ├── scripts/                 # Benchmark automation, hardware runners, traceability tools
 ├── LICENSE                  # Apache 2.0 open-source code license
 └── README.md                # Project documentation and build instructions
 ```
 
-### 11.2 Build & Execution Instructions
+### 10.2 Build & Execution Instructions
 1. **Clone the Public Repository**:
    ```bash
    git clone https://github.com/varun-gajula/crop-doctor-offline.git
@@ -413,7 +417,7 @@ crop-doctor-offline/
    python scripts/run_integration_benchmarks.py
    ```
 
-### 11.3 Third-Party Licenses & Attributions
+### 10.3 Third-Party Licenses & Attributions
 - **Application Code**: Apache License 2.0 (© 2026 Agri Care AI Contributors).
 - **Meta Llama 3.2 1B-Instruct**: [Llama 3.2 Community License Agreement](https://llama.meta.com/llama3/license/). *Built with Llama.* Weights are not redistributed in the repository.
 - **ExecuTorch & XNNPACK**: BSD 3-Clause License (© 2023–2024 Meta Platforms, Inc. & PyTorch Contributors; © Google LLC).
@@ -423,10 +427,10 @@ crop-doctor-offline/
 
 ---
 
-## 12. Appendix
+## 11. Appendix
 
-### 12.1 Detailed Class-Level Validation Performance
-From the final TR4-15 evaluation log (`benchmarks/final/metrics.json`):
+### 11.1 Detailed Class-Level Validation Performance
+From the final 15-class model evaluation log (`benchmarks/final/metrics.json`):
 
 | Class Identifier | Class Name | Support (N) | Correct (n) | Recall | Precision | F1-Score |
 |---|---|:---:|:---:|:---:|:---:|:---:|
@@ -446,7 +450,7 @@ From the final TR4-15 evaluation log (`benchmarks/final/metrics.json`):
 | `class_13` | `tomato_septoria_leaf_spot` | 119 | 117 | 98.32% | 99.15% | 0.9873 |
 | `class_14` | `other_not_a_crop` | 68 | 68 | 100.00% | 100.00% | 1.0000 |
 
-### 12.2 TR4-15 Confusion Matrix (15 × 15)
+### 11.2 Final 15-Class Confusion Matrix (15 × 15)
 Rows represent true ground-truth classes; columns represent predicted classes (`benchmarks/final/metrics.json`):
 
 ```
@@ -468,11 +472,11 @@ Rows represent true ground-truth classes; columns represent predicted classes (`
  [14]     0    0    0    0    0    0    0    0    0    0    0    0    0    0   68
 ```
 
-### 12.3 Benchmark Log File References
+### 11.3 Benchmark Log File References
 Every quantitative claim in this report is traceable to raw benchmark logs in the repository:
-- `benchmarks/final/metrics.json`: TR4-15 model validation metrics, stress test results, confusion matrix, and model size.
+- `benchmarks/final/metrics.json`: 15-class model validation metrics, stress test results, confusion matrix, and model size.
 - `benchmarks/device_comparison.md`: Hardware specifications for POCO M4 5G and Motorola Edge 60.
-- `benchmarks/lat1_summary.md` & `benchmarks/lat1_after_stageB.json`: Llama TTFT, token generation throughput, and prompt reduction data.
+- `benchmarks/lat1_summary.md` & `benchmarks/lat1_after_stageB.json`: Llama TTFT, token generation throughput, and context reduction data.
 - `benchmarks/phone_v15_summary.md`: Vision model load time, rapid scan spinner latency, and chat latency on POCO M4 5G.
 - `benchmarks/integration_poco_results.json`: Peak process memory (PSS) with Llama (1,634 MB) and with speech (1,678 MB).
 - `benchmarks/memory_summary.md`: Detailed PSS breakdown across app launch, vision inference, Llama residency, and idle eviction.
