@@ -1,20 +1,20 @@
-# A/B Field Test: Crop Doctor 15-Class vs 20-Class
+# A/B Field Test: Agri Care AI (15-Class) vs Old 20-Class
 
 This document is for recording real-world field evaluations conducted side by side on the physical POCO M4 5G between:
-1. **APK-15 (`Crop Doctor`)**: Package `com.cropdoctor` (TR4-15 MobileNetV3-Large model, calibrated thresholds, Task LAT-1 prompt optimization).
-2. **APK-20 (`Crop Doctor 20-class`)**: Package `com.cropdoctor.old20` (Built from tag `stable-23nov`, 20-class MobileNetV3-Large model).
+1. **APK-15 (`Agri Care AI`)**: Package `com.cropdoctor` (TR4-15 MobileNetV3-Large model, calibrated thresholds, Task LAT-1/LAT-2 prompt and runtime optimizations).
+2. **APK-20 (`Old 20-class (test)`)**: Package `com.cropdoctor.old20` (Built from tag `stable-23nov`, 20-class MobileNetV3-Large model).
 
 ---
 
 ## Instructions for Field Testing
 
 1. Both apps are installed side-by-side on your POCO phone launcher:
-   - **`Crop Doctor`** (Green icon) -> 15-class TR4 model.
-   - **`Crop Doctor 20-class`** (Green icon labelled `Crop Doctor 20-class`) -> 20-class model.
+   - **`Agri Care AI`** (APK-15) -> 15-class TR4 model (`com.cropdoctor`).
+   - **`Old 20-class (test)`** (APK-20) -> 20-class model (`com.cropdoctor.old20`).
 2. Turn **Airplane Mode ON ✈️**.
 3. For each leaf:
-   - Scan the leaf using **`Crop Doctor` (APK-15)**: Record the decision (`DIAGNOSE` / `CAN'T TELL` / `OUT OF CLASS`) and the predicted top-1 class.
-   - Scan the same leaf using **`Crop Doctor 20-class` (APK-20)**: Record the decision and the predicted top-1 class.
+   - Scan the leaf using **`Agri Care AI` (APK-15)**: Record the decision (`DIAGNOSE` / `CAN'T TELL` / `OUT OF CLASS`) and the predicted top-1 class.
+   - Scan the same leaf using **`Old 20-class (test)` (APK-20)**: Record the decision and the predicted top-1 class.
    - Fill in whether each app was correct based on your ground-truth observation.
 4. **Note on Llama / Vosk**:
    - Llama and Vosk are **not required** for this vision test. Both vision models (`vision.pte`) run 100% locally from bundled APK assets and display the vision classification (class, severity, certainty) immediately.
