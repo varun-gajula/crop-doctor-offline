@@ -1,9 +1,9 @@
 {
   "calibration_method": "single_scalar_temperature_scaling",
   "temperature": 0.9433,
-  "confidence_threshold": 0.40,
-  "default_threshold": 0.40,
-  "energy_threshold": -3.50,
+  "confidence_threshold": 0.32,
+  "default_threshold": 0.32,
+  "energy_threshold": -3.30,
   "crop_mass_threshold": 0.40,
   "margin_threshold": 0.15,
   "borderline_energy": -9.0,
@@ -11,6 +11,6 @@
   "nll_before": 0.1153,
   "nll_after": 0.1012,
   "threshold_target_precision": 0.9,
-  "selection_note": "Selected via user request: conf=0.40, energy=-3.50, crop_mass=0.40, margin=0.15.",
+  "selection_note": "Selected via user request: conf=0.32, energy=-3.30, crop_mass=0.40, margin=0.15.",
   "status": "CALIBRATED_15CLASS_TR4_OPT8"
 }

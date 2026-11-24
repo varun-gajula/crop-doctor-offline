@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Crop Doctor - 15 Classes Phone Testing Gallery</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #0f172a; color: #f8fafc; margin: 0; padding: 24px; }
+        .header { text-align: center; margin-bottom: 32px; border-bottom: 1px solid #334155; padding-bottom: 20px; }
+        h1 { color: #22c55e; margin: 0 0 8px 0; }
+        p.subtitle { color: #94a3b8; font-size: 16px; margin: 0; }
+        .instruction { background: #1e293b; border-left: 4px solid #22c55e; padding: 14px 18px; border-radius: 6px; max-width: 900px; margin: 20px auto; color: #cbd5e1; text-align: left; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(420px, 1fr)); gap: 24px; max-width: 1400px; margin: 0 auto; }
+        .card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; transition: transform 0.15s ease; }
+        .card:hover { border-color: #22c55e; transform: translateY(-2px); }
+        .card-header { padding: 14px 18px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155; }
+        .class-idx { font-weight: 800; font-size: 18px; color: #38bdf8; }
+        .badge { font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 9999px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .badge-disease { background: #7f1d1d; color: #fca5a5; }
+        .badge-pest { background: #78350f; color: #fde68a; }
+        .badge-healthy { background: #14532d; color: #86efac; }
+        .badge-ood { background: #334155; color: #cbd5e1; }
+        .card-body { padding: 16px 18px; flex-grow: 1; }
+        .name-en { font-size: 20px; font-weight: 700; color: #ffffff; margin-bottom: 6px; }
+        .name-local { font-size: 14px; color: #94a3b8; margin-bottom: 4px; }
+        .pathogen { font-size: 13px; font-style: italic; color: #a5b4fc; margin-top: 8px; }
+        .card-img { width: 100%; height: 260px; object-fit: contain; background: #000; border-top: 1px solid #334155; border-bottom: 1px solid #334155; }
+        .card-footer { padding: 12px 18px; display: flex; justify-content: space-between; align-items: center; background: #0f172a; gap: 8px; }
+        .btn-link { font-size: 13px; color: #38bdf8; text-decoration: none; font-weight: 600; padding: 6px 12px; background: #1e293b; border-radius: 6px; border: 1px solid #334155; }
+        .btn-link:hover { text-decoration: none; border-color: #38bdf8; background: #0f172a; }
+        .btn-gphotos { color: #fde047; border-color: #ca8a04; }
+        .btn-gphotos:hover { border-color: #facc15; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🌿 Crop Doctor: 15 Classes Phone Testing Gallery</h1>
+        <p class="subtitle">Point your Android phone (POCO M4 5G) at each photo card on this screen to test real-time vision inference & advisory.</p>
+        <div class="instruction">
+            <strong>How to test with your phone:</strong><br>
+            1. Open <strong>Crop Doctor</strong> on your phone (Airplane Mode ON ✈️).<br>
+            2. Tap <strong>"Scan Leaf"</strong> on the Home screen.<br>
+            3. Point your phone camera directly at the image card on your laptop monitor within the green frame.<br>
+            4. Press the large green shutter button.<br>
+            5. Watch the app detect the crop, condition, severity, and multi-lingual advisory in under 1.5 seconds!
+        </div>
+    </div>
+    <div class="grid">
+
+        <div class="card" id="class-0">
+            <div class="card-header">
+                <span class="class-idx">#00 • RICE</span>
+                <span class="badge badge-disease">🦠 DISEASE</span>
+            </div>
+            <img class="card-img" src="contact_sheets/rice_leaf_blast.jpg" alt="Rice Leaf Blast" loading="lazy">
+            <div class="card-body">
+                <div class="name-en">Rice Leaf Blast</div>
+                <div class="name-local"><strong>తెలుగు:</strong> వరి అగ్గి తెగులు</div>
+                <div class="name-local"><strong>हिन्दी:</strong> धान का झोंका रोग (ब्लास्ट)</div>
+                <div class="pathogen">Cause: Magnaporthe oryzae</div>
+            </div>
+            <div class="card-footer">
+                <span style="font-size: 12px; color: #64748b;">ID: <code>rice_leaf_blast</code></span>
+                <a class="btn-link btn-gphotos" href="https://www.google.com/search?q=rice+leaf+blast+disease+leaf+photo&udm=2" target="_blank">🔍 Google Photos / Images ↗</a>
+            </div>
+        </div>
+    
+        <div class="card" id="class-1">
+            <div class="card-header">
+                <span class="class-idx">#01 • RICE</span>
+                <span class="badge badge-healthy">✔ HEALTHY</span>
+            </div>
+            <img class="card-img" src="contact_sheets/rice_healthy.jpg" alt="Healthy Rice" loading="lazy">
+            <div class="card-body">
+                <div class="name-en">Healthy Rice</div>
+                <div class="name-local"><strong>తెలుగు:</strong> ఆరోగ్యకరమైన వరి</div>
+                <div class="name-local"><strong>हिन्दी:</strong> स्वस्थ धान</div>
+                <div class="pathogen">Cause: None</div>
+            </div>
+            <div class="card-footer">
+                <span style="font-size: 12px; color: #64748b;">ID: <code>rice_healthy</code></span>
+                <a class="btn-link btn-gphotos" href="https://www.google.com/search?q=healthy+rice+leaf+photo&udm=2" target="_blank">🔍 Google Photos / Images ↗</a>
+            </div>
+        </div>
+    
+        <div class="card" id="class-2">
+            <div class="card-header">
+                <span class="class-idx">#02 • COTTON</span>
+                <span class="badge badge-disease">🦠 DISEASE</span>
+            </div>
+            <img class="card-img" src="contact_sheets/cotton_bacterial_blight.jpg" alt="Cotton Bacterial Blight" loading="lazy">
+            <div class="card-body">
+                <div class="name-en">Cotton Bacterial Blight</div>
+                <div class="name-local"><strong>తెలుగు:</strong> పత్తి బ్యాక్టీరియా ఆకుమచ్చ తెగులు</div>
+                <div class="name-local"><strong>हिन्दी:</strong> कपास का जीवाणु झुलसा</div>
+                <div class="pathogen">Cause: Xanthomonas citri pv. malvacearum</div>
+            </div>
+            <div class="card-footer">
+                <span style="font-size: 12px; color: #64748b;">ID: <code>cotton_bacterial_blight</code></span>
+                <a class="btn-link btn-gphotos" href="https://www.google.com/search?q=cotton+bacterial+blight+leaf+disease+photo&udm=2" target="_blank">🔍 Google Photos / Images ↗</a>
+            </div>
+        </div>
+    
+        <div class="card" id="class-3">
+            <div class="card-header">
+                <span class="class-idx">#03 • COTTON</span>
+                <span class="badge badge-healthy">✔ HEALTHY</span>
+            </div>
+            <img class="card-img" src="contact_sheets/cotton_healthy.jpg" alt="Healthy Cotton" loading="lazy">
+            <div class="card-body">
+                <div class="name-en">Healthy Cotton</div>
+                <div class="name-local"><strong>తెలుగు:</strong> ఆరోగ్యకరమైన పత్తి</div>
+                <div class="name-local"><strong>हिन्दी:</strong> स्वस्थ कपास</div>
+                <div class="pathogen">Cause: None</div>
+            </div>
+            <div class="card-footer">
+                <span style="font-size: 12px; color: #64748b;">ID: <code>cotton_healthy</code></span>
+                <a class="btn-link btn-gphotos" href="https://www.google.com/search?q=healthy+cotton+leaf+photo&udm=2" target="_blank">🔍 Google Photos / Images ↗</a>
+            </div>
+        </div>
+    
+        <div class="card" id="class-4">
+            <div class="card-header">
+                <span class="class-idx">#04 • CHILLI</span>
+                <span class="badge badge-disease">🦠 DISEASE</span>
+            </div>
+            <img class="card-img" src="contact_sheets/chilli_leaf_curl_virus.jpg" alt="Chilli Leaf Curl Virus" loading="lazy">
+            <div class="card-body">
+                <div class="name-en">Chilli Leaf Curl Virus</div>
+                <div class="name-local"><strong>తెలుగు:</strong> మిరప ఆకు ముడత తెగులు</div>
+                <div class="name-local"><strong>हिन्दी:</strong> मिर्च का पत्ती मरोड़ (लीफ कर्ल) रोग</div>
+                <div class="pathogen">Cause: Chilli leaf curl virus (ChiLCV)</div>
+            </div>
+            <div class="card-footer">
+                <span style="font-size: 12px; color: #64748b;">ID: <code>chilli_leaf_curl_virus</code></span>
+                <a class="btn-link btn-gphotos" href="https://www.google.com/search?q=chilli+leaf+curl+virus+disease+photo&udm=2" target="_blank">🔍 Google Photos / Images ↗</a>
+            </div>
+        </div>
+    
+        <div class="card" id="class-5">
+            <div class="card-header">
+                <span class="class-idx">#05 • CHILLI</span>
+                <span class="badge badge-healthy">✔ HEALTHY</span>
+            </div>
+            <img class="card-img" src="contact_sheets/chilli_healthy.jpg" alt="Healthy Chilli" loading="lazy">
+            <div class="card-body">
+                <div class="name-en">Healthy Chilli</div>
+                <div class="name-local"><strong>తెలుగు:</strong> ఆరోగ్యకరమైన మిరప</div>
+                <div class="name-local"><strong>हिन्दी:</strong> स्वस्थ मिर्च</div>
+                <div class="pathogen">Cause: None</div>
+            </div>
+            <div class="card-footer">
+                <span style="font-size: 12px; color: #64748b;">ID: <code>chilli_healthy</code></span>
+                <a class="btn-link btn-gphotos" href="https://www.google.com/search?q=healthy+chilli+plant+leaf+photo&udm=2" target="_blank">🔍 Google Photos / Images ↗</a>
+            </div>
+        </div>
+    
+        <div class="card" id="class-6">
+            <div class="card-header">
+                <span class="class-idx">#06 • MAIZE</span>
+                <span class="badge badge-disease">🦠 DISEASE</span>
+            </div>
+            <img class="card-img" src="contact_sheets/maize_northern_leaf_blight.jpg" alt="Maize Northern Leaf Blight" loading="lazy">
+            <div class="card-body">
+                <div class="name-en">Maize Northern Leaf Blight</div>
+                <div class="name-local"><strong>తెలుగు:</strong> మొక్కజొన్న ఆకు మాడు తెగులు (నార్తర్న్ లీఫ్ బ్లైట్)</div>
+                <div class="name-local"><strong>हिन्दी:</strong> मक्का का उत्तरी पत्ती झुलसा (नॉर्दर्न लीफ ब्लाइट)</div>
+                <div class="pathogen">Cause: Exserohilum turcicum</div>
+            </div>
+            <div class="card-footer">
+                <span style="font-size: 12px; color: #64748b;">ID: <code>maize_northern_leaf_blight</code></span>
+                <a class="btn-link btn-gphotos" href="https://www.google.com/search?q=northern+corn+leaf+blight+maize+photo&udm=2" target="_blank">🔍 Google Photos / Images ↗</a>
+            </div>
+        </div>
+    
+        <div class="card" id="class-7">
+            <div class="card-header">
+                <span class="class-idx">#07 • MAIZE</span>
+                <span class="badge badge-disease">🦠 DISEASE</span>
+            </div>
+            <img class="card-img" src="contact_sheets/maize_common_rust.jpg" alt="Maize Common Rust" loading="lazy">
+            <div class="card-body">
+                <div class="name-en">Maize Common Rust</div>
+                <div class="name-local"><strong>తెలుగు:</strong> మొక్కజొన్న తుప్పు తెగులు</div>
+                <div class="name-local"><strong>हिन्दी:</strong> मक्का का रतुआ रोग</div>
+                <div class="pathogen">Cause: Puccinia sorghi</div>
+            </div>
+            <div class="card-footer">
+                <span style="font-size: 12px; color: #64748b;">ID: <code>maize_common_rust</code></span>
+                <a class="btn-link btn-gphotos" href="https://www.google.com/search?q=maize+common+rust+Puccinia+sorghi+leaf+photo&udm=2" target="_blank">🔍 Google Photos / Images ↗</a>
+            </div>
+        </div>
+    
+        <div class="card" id="class-8">
+            <div class="card-header">
+                <span class="class-idx">#08 • MAIZE</span>
+                <span class="badge badge-healthy">✔ HEALTHY</span>
+            </div>
+            <img class="card-img" src="contact_sheets/maize_healthy.jpg" alt="Healthy Maize" loading="lazy">
+            <div class="card-body">
+                <div class="name-en">Healthy Maize</div>
+                <div class="name-local"><strong>తెలుగు:</strong> ఆరోగ్యకరమైన మొక్కజొన్న</div>
+                <div class="name-local"><strong>हिन्दी:</strong> स्वस्थ मक्का</div>
+                <div class="pathogen">Cause: None</div>
+            </div>
+            <div class="card-footer">
+                <span style="font-size: 12px; color: #64748b;">ID: <code>maize_healthy</code></span>
+                <a class="btn-link btn-gphotos" href="https://www.google.com/search?q=healthy+maize+leaf+corn+photo&udm=2" target="_blank">🔍 Google Photos / Images ↗</a>
+            </div>
+        </div>
+    
+        <div class="card" id="class-9">
+            <div class="card-header">
+                <span class="class-idx">#09 • MAIZE</span>
+                <span class="badge badge-pest">🪲 PEST</span>
+            </div>
+            <img class="card-img" src="contact_sheets/maize_fall_armyworm.jpg" alt="Maize Fall Armyworm" loading="lazy">
+            <div class="card-body">
+                <div class="name-en">Maize Fall Armyworm</div>
+                <div class="name-local"><strong>తెలుగు:</strong> మొక్కజొన్న కత్తెర పురుగు</div>
+                <div class="name-local"><strong>हिन्दी:</strong> मक्का का फॉल आर्मीवर्म (फौजी कीट)</div>
+                <div class="pathogen">Cause: Spodoptera frugiperda</div>
+            </div>
+            <div class="card-footer">
+                <span style="font-size: 12px; color: #64748b;">ID: <code>maize_fall_armyworm</code></span>
+                <a class="btn-link btn-gphotos" href="https://www.google.com/search?q=fall+armyworm+maize+leaf+damage+photo&udm=2" target="_blank">🔍 Google Photos / Images ↗</a>
+            </div>
+        </div>
+    
+        <div class="card" id="class-10">
+            <div class="card-header">
+                <span class="class-idx">#10 • RICE</span>
+                <span class="badge badge-pest">🪲 PEST</span>
+            </div>
+            <img class="card-img" src="contact_sheets/rice_stem_borer.jpg" alt="Rice Yellow Stem Borer" loading="lazy">
+            <div class="card-body">
+                <div class="name-en">Rice Yellow Stem Borer</div>
+                <div class="name-local"><strong>తెలుగు:</strong> వరి కాండం తొలుచు పురుగు</div>
+                <div class="name-local"><strong>हिन्दी:</strong> धान का पीला तना छेदक कीट</div>
+                <div class="pathogen">Cause: Scirpophaga incertulas</div>
+            </div>
+            <div class="card-footer">
+                <span style="font-size: 12px; color: #64748b;">ID: <code>rice_stem_borer</code></span>
+                <a class="btn-link btn-gphotos" href="https://www.google.com/search?q=rice+yellow+stem+borer+dead+heart+damage+photo&udm=2" target="_blank">🔍 Google Photos / Images ↗</a>
+            </div>
+        </div>
+    
+        <div class="card" id="class-11">
+            <div class="card-header">
+                <span class="class-idx">#11 • RICE</span>
+                <span class="badge badge-pest">🪲 PEST</span>
+            </div>
+            <img class="card-img" src="contact_sheets/rice_hispa.jpg" alt="Rice Hispa" loading="lazy">
+            <div class="card-body">
+                <div class="name-en">Rice Hispa</div>
+                <div class="name-local"><strong>తెలుగు:</strong> వరి హిస్పా (ముళ్ల పురుగు)</div>
+                <div class="name-local"><strong>हिन्दी:</strong> धान का हिस्पा कीट (कांटेदार कीट)</div>
+                <div class="pathogen">Cause: Dicladispa armigera</div>
+            </div>
+            <div class="card-footer">
+                <span style="font-size: 12px; color: #64748b;">ID: <code>rice_hispa</code></span>
+                <a class="btn-link btn-gphotos" href="https://www.google.com/search?q=rice+hispa+leaf+damage+Dicladispa+armigera+photo&udm=2" target="_blank">🔍 Google Photos / Images ↗</a>
+            </div>
+        </div>
+    
+        <div class="card" id="class-12">
+            <div class="card-header">
+                <span class="class-idx">#12 • TOMATO</span>
+                <span class="badge badge-healthy">✔ HEALTHY</span>
+            </div>
+            <img class="card-img" src="contact_sheets/tomato_healthy.jpg" alt="Healthy Tomato" loading="lazy">
+            <div class="card-body">
+                <div class="name-en">Healthy Tomato</div>
+                <div class="name-local"><strong>తెలుగు:</strong> ఆరోగ్యకరమైన టమాటా</div>
+                <div class="name-local"><strong>हिन्दी:</strong> स्वस्थ टमाटर</div>
+                <div class="pathogen">Cause: None</div>
+            </div>
+            <div class="card-footer">
+                <span style="font-size: 12px; color: #64748b;">ID: <code>tomato_healthy</code></span>
+                <a class="btn-link btn-gphotos" href="https://www.google.com/search?q=healthy+tomato+leaf+photo&udm=2" target="_blank">🔍 Google Photos / Images ↗</a>
+            </div>
+        </div>
+    
+        <div class="card" id="class-13">
+            <div class="card-header">
+                <span class="class-idx">#13 • TOMATO</span>
+                <span class="badge badge-disease">🦠 DISEASE</span>
+            </div>
+            <img class="card-img" src="contact_sheets/tomato_septoria_leaf_spot.jpg" alt="Tomato Septoria Leaf Spot" loading="lazy">
+            <div class="card-body">
+                <div class="name-en">Tomato Septoria Leaf Spot</div>
+                <div class="name-local"><strong>తెలుగు:</strong> టమాటా సెప్టోరియా ఆకుమచ్చ తెగులు</div>
+                <div class="name-local"><strong>हिन्दी:</strong> टमाटर का सेप्टोरिया पत्ती धब्बा रोग</div>
+                <div class="pathogen">Cause: Septoria lycopersici</div>
+            </div>
+            <div class="card-footer">
+                <span style="font-size: 12px; color: #64748b;">ID: <code>tomato_septoria_leaf_spot</code></span>
+                <a class="btn-link btn-gphotos" href="https://www.google.com/search?q=tomato+septoria+leaf+spot+disease+photo&udm=2" target="_blank">🔍 Google Photos / Images ↗</a>
+            </div>
+        </div>
+    
+        <div class="card" id="class-14">
+            <div class="card-header">
+                <span class="class-idx">#14 • GUARDRAIL</span>
+                <span class="badge badge-ood">⚠️ OUT OF CLASS</span>
+            </div>
+            <img class="card-img" src="contact_sheets/weeds_not_a_crop.jpg" alt="other_not_a_crop" loading="lazy">
+            <div class="card-body">
+                <div class="name-en">other_not_a_crop</div>
+                <div class="name-local"><strong>తెలుగు:</strong> -</div>
+                <div class="name-local"><strong>हिन्दी:</strong> -</div>
+                <div class="pathogen">Cause: Non-crop / Clean leaf</div>
+            </div>
+            <div class="card-footer">
+                <span style="font-size: 12px; color: #64748b;">ID: <code>other_not_a_crop</code></span>
+                <a class="btn-link btn-gphotos" href="https://www.google.com/search?q=garden+weeds+field+soil+background+photo&udm=2" target="_blank">🔍 Google Photos / Images ↗</a>
+            </div>
+        </div>
+    
+    </div>
+</body>
+</html>

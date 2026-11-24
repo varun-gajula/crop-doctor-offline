@@ -216,34 +216,34 @@ class VisionParityTest {
         assertEquals(CertaintyBand.SURE, evalSure.certaintyBand)
         assertEquals("rice_leaf_blast", evalSure.classId)
 
-        // 2. Medium confidence >= defaultThreshold and < 0.80 -> PROBABLY
+        // 2. Medium confidence >= 0.60 and < 0.80 -> PROBABLY
         val probsProb = FloatArray(15) { 0.015f }
-        val probConfidence = if (defaultThreshold < 0.80f) (defaultThreshold + 0.80f) / 2f else 0.70f
+        val probConfidence = 0.70f
         probsProb[0] = probConfidence
         val evalProb = VisionMath.evaluateDiagnosis(
             labels = labels,
             probabilities = probsProb,
-            defaultThreshold = minOf(defaultThreshold, probConfidence),
+            defaultThreshold = defaultThreshold,
             unsupportedClasses = unsupported
         )
         assertEquals(CertaintyBand.PROBABLY, evalProb.certaintyBand)
         assertEquals("rice_leaf_blast", evalProb.classId)
 
-        // 3. Low confidence between threshold and 0.60 -> NOT_SURE
+        // 3. Low confidence between threshold and 0.60 (0.45 >= 0.4018) -> NOT_SURE
         val probsLow = FloatArray(15) { 0.025f }
-        probsLow[0] = 0.55f
+        probsLow[0] = 0.45f
         val evalLow = VisionMath.evaluateDiagnosis(
             labels = labels,
             probabilities = probsLow,
-            defaultThreshold = 0.40f,
+            defaultThreshold = defaultThreshold,
             unsupportedClasses = unsupported
         )
         assertEquals(CertaintyBand.NOT_SURE, evalLow.certaintyBand)
         assertEquals("rice_leaf_blast", evalLow.classId)
 
-        // 4. Below confidence threshold (< defaultThreshold) -> "Can't tell" (unknown, NOT_SURE)
+        // 4. Below confidence threshold (< 0.4018) -> "Can't tell" (unknown, NOT_SURE)
         val probsBelow = FloatArray(15) { 0.035f }
-        probsBelow[0] = defaultThreshold - 0.10f
+        probsBelow[0] = 0.35f
         val evalBelow = VisionMath.evaluateDiagnosis(
             labels = labels,
             probabilities = probsBelow,

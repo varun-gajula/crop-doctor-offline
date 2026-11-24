@@ -24,7 +24,7 @@ def run_adb(args, timeout=40):
 
 print("=" * 80)
 print("AI AGRI CARE (com.aiagricare) - Real Field Image Evaluation")
-print("Thresholds: confidence=0.40, energy=-3.50, crop_mass=0.40, margin=0.15")
+print("Thresholds: confidence=0.32, energy=-3.30, crop_mass=0.40, margin=0.15")
 print(f"Target Device: POCO M4 5G ({DEVICE_SERIAL})")
 print("=" * 80)
 
@@ -187,8 +187,8 @@ summary = {
     "application_id": "com.aiagricare",
     "device": f"POCO M4 5G ({DEVICE_SERIAL})",
     "thresholds": {
-        "confidence": 0.40,
-        "energy": -3.50,
+        "confidence": 0.32,
+        "energy": -3.30,
         "crop_mass": 0.40,
         "margin": 0.15
     },

@@ -3,12 +3,12 @@
   "application_id": "com.aiagricare",
   "device": "POCO M4 5G (sseqjnucrkeeprtw)",
   "thresholds": {
-    "confidence": 0.4,
-    "energy": -3.5,
+    "confidence": 0.32,
+    "energy": -3.3,
     "crop_mass": 0.4,
     "margin": 0.15
   },
-  "timestamp": "2026-11-25T04:01:56",
+  "timestamp": "2026-11-25T04:08:41",
   "total_images": 16,
   "field_photos_count": 14,
   "field_photos_diagnosed": 12,
@@ -293,13 +293,13 @@
       "expected": "reject",
       "top1_class": "unknown",
       "decision": "CANT_TELL",
-      "outcome_code": "HIGH_FREE_ENERGY(-3.3049787412698066",
+      "outcome_code": "LOW_CONFIDENCE(0.28387064",
       "confidence": 0.28387064,
       "energy": -3.3049787412698066,
       "crop_mass": 0.323,
       "margin": 0.0402,
       "gate1": "PASS(frac=0.332)",
-      "gate2": "FAIL(energy=-3.3050",
+      "gate2": "PASS(energy=-3.3050",
       "gate3": "FAIL(class=rice_healthy,",
       "correct": true
     }
