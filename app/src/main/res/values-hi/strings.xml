@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- App Metadata -->
-    <string name="app_name">क्रॉप डॉक्टर</string>
+    <string name="app_name">Agri Care AI</string>
     <string name="tagline">पहचानें • सीखें • सुरक्षित करें</string>
     <string name="subtitle">स्वस्थ फसलें, समृद्ध किसान</string>
     <string name="offline_badge">100% ऑफ़लाइन</string>

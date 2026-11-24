@@ -319,7 +319,7 @@ fun shareAppViaWhatsApp(context: Context) {
             action = Intent.ACTION_SEND
             putExtra(
                 Intent.EXTRA_TEXT,
-                "🌾 Crop Doctor (AgriCare AI) - 100% Offline Crop Disease & Pest Diagnosis for Indian Farmers! Built for Arm Bharat AI-SoC Challenge.\nDownload APK: https://github.com/varun-gajula/crop-doctor-offline/releases"
+                "🌾 Agri Care AI - 100% Offline Crop Disease & Pest Diagnosis for Indian Farmers! Built for Arm Bharat AI-SoC Challenge.\nDownload APK: https://github.com/varun-gajula/crop-doctor-offline/releases"
             )
             type = "text/plain"
             setPackage("com.whatsapp")
@@ -331,11 +331,11 @@ fun shareAppViaWhatsApp(context: Context) {
             action = Intent.ACTION_SEND
             putExtra(
                 Intent.EXTRA_TEXT,
-                "🌾 Crop Doctor (AgriCare AI) - 100% Offline Crop Disease & Pest Diagnosis for Indian Farmers!\nDownload APK: https://github.com/varun-gajula/crop-doctor-offline/releases"
+                "🌾 Agri Care AI - 100% Offline Crop Disease & Pest Diagnosis for Indian Farmers!\nDownload APK: https://github.com/varun-gajula/crop-doctor-offline/releases"
             )
             type = "text/plain"
         }
-        context.startActivity(Intent.createChooser(genericIntent, "Share Crop Doctor"))
+        context.startActivity(Intent.createChooser(genericIntent, "Share Agri Care AI"))
     }
 }
 

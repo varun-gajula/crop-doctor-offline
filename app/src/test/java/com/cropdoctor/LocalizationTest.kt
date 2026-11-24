@@ -73,7 +73,7 @@ class LocalizationTest {
         val teluguRegex = Regex("[\\u0C00-\\u0C7F]")
 
         // Keys that are numbers or symbols or brand words might not need Telugu, but prose keys must
-        val proseKeys = teMap.keys.filterNot { it in listOf("close", "offline_badge", "speed_normal", "speed_slow") }
+        val proseKeys = teMap.keys.filterNot { it in listOf("app_name", "close", "offline_badge", "speed_normal", "speed_slow") }
         for (key in proseKeys) {
             val value = teMap[key] ?: ""
             assertTrue(
@@ -89,7 +89,7 @@ class LocalizationTest {
         val hiMap = loadStringKeysAndValues(hiFile)
         val devanagariRegex = Regex("[\\u0900-\\u097F]")
 
-        val proseKeys = hiMap.keys.filterNot { it in listOf("close", "offline_badge", "speed_normal", "speed_slow") }
+        val proseKeys = hiMap.keys.filterNot { it in listOf("app_name", "close", "offline_badge", "speed_normal", "speed_slow") }
         for (key in proseKeys) {
             val value = hiMap[key] ?: ""
             assertTrue(

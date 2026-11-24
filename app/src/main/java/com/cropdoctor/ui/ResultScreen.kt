@@ -1424,7 +1424,7 @@ fun ResultScreen(
                     OutlinedButton(
                         onClick = {
                             val reportBuilder = StringBuilder()
-                            reportBuilder.append("🌾 Crop Doctor - Field Diagnosis Report\n")
+                            reportBuilder.append("🌾 Agri Care AI - Field Diagnosis Report\n")
                             reportBuilder.append("====================================\n")
                             reportBuilder.append("Crop: ${kbEntry.crop.replaceFirstChar { it.uppercase() }}\n")
                             reportBuilder.append("Diagnosis: ${kbEntry.names.forLanguage(language)}\n")
@@ -1453,13 +1453,13 @@ fun ResultScreen(
                                 reportBuilder.append("\n")
                             }
 
-                            reportBuilder.append("Generated 100% offline via Crop Doctor on Arm SoC.\n")
+                            reportBuilder.append("Generated 100% offline via Agri Care AI on Arm SoC.\n")
                             reportBuilder.append("For expert consultation call Kisan Call Centre: 1800-180-1551")
 
                             try {
                                 val shareIntent = Intent(Intent.ACTION_SEND).apply {
                                     type = "text/plain"
-                                    putExtra(Intent.EXTRA_SUBJECT, "Crop Doctor Report: ${kbEntry.names.forLanguage(language)}")
+                                    putExtra(Intent.EXTRA_SUBJECT, "Agri Care AI Report: ${kbEntry.names.forLanguage(language)}")
                                     putExtra(Intent.EXTRA_TEXT, reportBuilder.toString())
                                 }
                                 context.startActivity(Intent.createChooser(shareIntent, context.getString(R.string.btn_share_report)))

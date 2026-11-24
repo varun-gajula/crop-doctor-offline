@@ -748,6 +748,12 @@ class MainActivity : ComponentActivity() {
                             if (action == "test_advice") {
                                 val lang = intent.getStringExtra("language") ?: "en"
                                 val classId = intent.getStringExtra("class_id") ?: "tomato_septoria_leaf_spot"
+                                val threads = intent.getIntExtra("threads", -1)
+                                if (threads > 0) {
+                                    com.cropdoctor.advisor.ExecuTorchNativeThreadHelper.targetThreadCount = threads.toLong()
+                                    com.cropdoctor.advisor.ExecuTorchNativeThreadHelper.setThreadNum(threads.toLong())
+                                    android.util.Log.i("CROPDOC_LLAMA", "BENCHMARK_THREAD_SET: requested=$threads")
+                                }
                                 val kb = KnowledgeBase.getEntry(classId) ?: KnowledgeBase.getAllEntries().first()
                                 val result = ClassifierResult(
                                     classId = classId,

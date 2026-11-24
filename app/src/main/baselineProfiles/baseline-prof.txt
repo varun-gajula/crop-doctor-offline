@@ -1,4 +1,4 @@
-# Baseline Profile for Crop Doctor Offline
+# Baseline Profile for Agri Care AI Offline
 # Guides ahead-of-time (AOT) compilation of critical user journeys:
 # 1. App Startup (MainActivity, Navigation, Datastore)
 # 2. Camera & Vision inference (ExecuTorchClassifier, Module)

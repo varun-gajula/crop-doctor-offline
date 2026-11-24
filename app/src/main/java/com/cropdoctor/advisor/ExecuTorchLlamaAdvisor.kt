@@ -504,6 +504,9 @@ class ExecuTorchLlamaAdvisor(private val context: Context) : Advisor {
                         if (!isGenerating || currentActiveRequestId != requestId) {
                             return@withLock null
                         }
+                        val targetThreads = if (ExecuTorchNativeThreadHelper.targetThreadCount > 0) ExecuTorchNativeThreadHelper.targetThreadCount else 4L
+                        ExecuTorchNativeThreadHelper.setThreadNum(targetThreads)
+                        Log.i("CROPDOC_LLAMA", "GEN_EXEC_START: activeThreads=$targetThreads target=$targetThreads")
                         llamaModule?.generate(prompt, totalSeqLimit, llamaCallback, false)
                     }
                 } catch (t: Throwable) {
@@ -604,9 +607,10 @@ class ExecuTorchLlamaAdvisor(private val context: Context) : Advisor {
 
             val genOnlyMs = totalGenDurationMs - firstTokenTimeMs
             val tokensPerSec = if (genOnlyMs > 0) (totalTokens.toDouble() / (genOnlyMs / 1000.0)) else 0.0
+            val currentThreads = if (ExecuTorchNativeThreadHelper.targetThreadCount > 0) ExecuTorchNativeThreadHelper.targetThreadCount else 4L
 
-            Log.i("CROPDOC_LLAMA", "GEN_METRICS: requestId=$requestId promptTokens=$promptApproxTokens maxNewTokens=$maxNewTokens totalSeqLimit=$totalSeqLimit tokensProduced=$totalTokens ttftMs=$firstTokenTimeMs tokPerSec=${String.format(Locale.US, "%.2f", tokensPerSec)} endReason='$endReason'")
-            Log.i("CROPDOC_DECISION", "ADVISOR_COMPLETE: advisor_source=LLAMA tokens=$totalTokens ttft=${firstTokenTimeMs}ms tok_per_sec=${String.format(Locale.US, "%.2f", tokensPerSec)}")
+            Log.i("CROPDOC_LLAMA", "GEN_METRICS: requestId=$requestId promptTokens=$promptApproxTokens maxNewTokens=$maxNewTokens totalSeqLimit=$totalSeqLimit tokensProduced=$totalTokens ttftMs=$firstTokenTimeMs tokPerSec=${String.format(Locale.US, "%.2f", tokensPerSec)} threads=$currentThreads endReason='$endReason'")
+            Log.i("CROPDOC_DECISION", "ADVISOR_COMPLETE: advisor_source=LLAMA tokens=$totalTokens ttft=${firstTokenTimeMs}ms tok_per_sec=${String.format(Locale.US, "%.2f", tokensPerSec)} threads=$currentThreads")
 
             logBenchmarkMetrics(
                 loadTimeMs = 0L,

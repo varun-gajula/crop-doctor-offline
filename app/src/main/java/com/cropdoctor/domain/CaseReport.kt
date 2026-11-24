@@ -232,7 +232,7 @@ object CaseReportRepository {
      */
     fun formatShareText(report: CaseReport): String {
         val sb = StringBuilder()
-        sb.appendLine("CROP DOCTOR - FIELD REPORT")
+        sb.appendLine("AGRI CARE AI - FIELD REPORT")
         sb.appendLine("Date: ${report.dateString}")
         sb.appendLine("Region: ${report.region}")
         sb.appendLine("Crop: ${report.crop}")
@@ -267,7 +267,7 @@ object CaseReportRepository {
             val text = formatShareText(report)
             val intent = Intent(Intent.ACTION_SEND).apply {
                 type = "text/plain"
-                putExtra(Intent.EXTRA_SUBJECT, "Crop Doctor Field Report - ${report.crop} (${report.problemLabel})")
+                putExtra(Intent.EXTRA_SUBJECT, "Agri Care AI Field Report - ${report.crop} (${report.problemLabel})")
                 putExtra(Intent.EXTRA_TEXT, text)
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- App Metadata -->
-    <string name="app_name">Crop Doctor</string>
+    <string name="app_name">Agri Care AI</string>
     <string name="tagline">Detect • Learn • Protect</string>
     <string name="subtitle">Healthy Crops, Prosperous Farmers</string>
     <string name="offline_badge">100% Offline</string>
