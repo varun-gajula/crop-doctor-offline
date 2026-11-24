@@ -1792,9 +1792,6 @@ class MainActivity : ComponentActivity() {
         onAdvisorSourceChange: ((String) -> Unit)? = null
     ) {
         currentAdviceJob?.cancel()
-        onUpdate("")
-        onStateChange(true)
-        onAdvisorSourceChange?.invoke(app.advisor.advisorSource)
 
         val spreadStr = when (fieldSpread) {
             com.cropdoctor.domain.RulesEngine.FieldSpread.FEW_PLANTS -> "a few plants"
@@ -1804,6 +1801,25 @@ class MainActivity : ComponentActivity() {
         val spreadEnum = fieldSpread ?: com.cropdoctor.domain.RulesEngine.FieldSpread.SOME
         val urgency = com.cropdoctor.domain.RulesEngine.calculateUrgency(result.severityBand, spreadEnum)
         val effectiveCrop = crop ?: result.selectedCrop ?: kbEntry.crop
+
+        // Task LAT-1: Immediate result screen - display verified offline guide instantly so user never sees blank card or buffering
+        val initialGuide = com.cropdoctor.domain.RulesEngine.buildCaseSpecificAdvisory(
+            classId = result.classId,
+            crop = effectiveCrop,
+            diseaseName = kbEntry.names.forLanguage(language),
+            type = kbEntry.type,
+            severityBand = result.severityBand,
+            certaintyBand = result.certaintyBand,
+            fieldSpread = spreadEnum,
+            urgencyLevel = urgency,
+            region = region,
+            language = language,
+            kbEntry = kbEntry
+        )
+        val sanitizedInitialGuide = com.cropdoctor.advisor.GuardrailFilter.sanitize(initialGuide)
+        onUpdate(sanitizedInitialGuide)
+        onStateChange(true)
+        onAdvisorSourceChange?.invoke(app.advisor.advisorSource)
 
         currentAdviceJob = lifecycleScope.launch {
             try {

@@ -240,6 +240,74 @@ class ChatRetrievalAndGuardrailTest {
         assertEquals(groundedResponse, chatResponse.text)
     }
 
+    @Test
+    fun testFreeTextUserQueriesMatchAppropriatePassages() = runBlocking {
+        // 1. "why it occurred" on maize_common_rust
+        val whyPassages = passageStore.getBestPassages(
+            detectedClass = "maize_common_rust",
+            questionKeywords = "why it occurred",
+            language = "en",
+            limit = 1
+        )
+        assertFalse("Must find passage for 'why it occurred'", whyPassages.isEmpty())
+        assertEquals(QuestionSection.WHAT_IS_IT, whyPassages.first().section)
+
+        val whyResponse = ChatEngine.processQuery(
+            query = "why it occurred",
+            detectedClass = "maize_common_rust",
+            crop = "maize",
+            problemName = "Maize Common Rust",
+            severity = "MODERATE",
+            certainty = "SURE",
+            language = "en",
+            passageStore = passageStore,
+            llamaGenerator = { "Airborne fungal rust erupts during cool humid nights, weakening plants." }
+        )
+        assertFalse("why it occurred must NOT trigger no-match fallback", whyResponse.isNoMatch)
+        assertEquals("LLAMA", whyResponse.advisorSource)
+        assertEquals("Explained on this phone by Llama 3.2 1B", whyResponse.label)
+
+        // 2. "how to treat this"
+        val treatPassages = passageStore.getBestPassages(
+            detectedClass = "maize_common_rust",
+            questionKeywords = "how to treat this",
+            language = "en",
+            limit = 1
+        )
+        assertFalse("Must find passage for 'how to treat this'", treatPassages.isEmpty())
+        assertEquals(QuestionSection.WHAT_TO_DO_NOW, treatPassages.first().section)
+
+        // 3. "which spray to use"
+        val sprayPassages = passageStore.getBestPassages(
+            detectedClass = "maize_common_rust",
+            questionKeywords = "which spray to use",
+            language = "en",
+            limit = 1
+        )
+        assertFalse("Must find passage for 'which spray to use'", sprayPassages.isEmpty())
+        assertEquals(QuestionSection.CHEMICAL, sprayPassages.first().section)
+
+        // 4. Hindi: "यह क्यों हुआ"
+        val hiPassages = passageStore.getBestPassages(
+            detectedClass = "maize_common_rust",
+            questionKeywords = "यह क्यों हुआ",
+            language = "hi",
+            limit = 1
+        )
+        assertFalse("Must find passage for Hindi 'यह क्यों हुआ'", hiPassages.isEmpty())
+        assertEquals(QuestionSection.WHAT_IS_IT, hiPassages.first().section)
+
+        // 5. Telugu: "ఎందుకు వచ్చింది"
+        val tePassages = passageStore.getBestPassages(
+            detectedClass = "maize_common_rust",
+            questionKeywords = "ఎందుకు వచ్చింది",
+            language = "te",
+            limit = 1
+        )
+        assertFalse("Must find passage for Telugu 'ఎందుకు వచ్చింది'", tePassages.isEmpty())
+        assertEquals(QuestionSection.WHAT_IS_IT, tePassages.first().section)
+    }
+
     /**
      * Requirement 4: If no passage matches: answer "I do not have a sourced answer for this.
      * Please call the extension officer (1800-180-1551)." Never guess.

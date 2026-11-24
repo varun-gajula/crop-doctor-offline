@@ -49,7 +49,7 @@ class CropDoctorApplication : Application() {
         // Asynchronous background initialization for vision & advisory engines
         applicationScope.launch {
             val root = KnowledgeBase.getRoot()
-            if (root != null && passageStore.countPassages() == 0) {
+            if (root != null && passageStore.countPassages() < 576) {
                 val passages = KnowledgeBasePassageIndexer.buildAllPassages(root)
                 passageStore.indexPassages(passages)
                 Log.i("CropDoctorApp", "Indexed ${passages.size} passages into SQLite FTS5 database.")

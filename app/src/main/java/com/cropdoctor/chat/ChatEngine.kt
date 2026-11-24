@@ -60,18 +60,32 @@ object ChatEngine {
         severity: String,
         certainty: String,
         passages: List<Passage>,
-        query: String
+        query: String,
+        language: String = "en"
     ): String {
+        val isHindi = language.equals("hi", ignoreCase = true)
         val topPassage = passages.firstOrNull()?.text?.take(450) ?: ""
-        return """<|begin_of_text|><|start_header_id|>system<|end_header_id|>
-Agri Care AI offline chat assistant.
-- Answer in 1 or 2 short sentences (at most 35 words).
-- End with a complete sentence.
-- Use ONLY the Passage below. Do NOT add new chemicals, doses, or numbers.
-- If the Passage does not answer the question, state: "$NO_MATCH_ANSWER_EN"<|eot_id|><|start_header_id|>user<|end_header_id|>
+        return if (isHindi) {
+            """<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+Agri Care AI ऑफ़लाइन चैट सहायक (सरल हिंदी में)।
+- किसान के प्रश्न का उत्तर केवल नीचे दिए गए गद्यांश (Passage) के आधार पर 1 या 2 छोटे वाक्यों में दें (अधिकतम 35 शब्द)।
+- पूर्ण वाक्य के साथ समाप्त करें।
+- कोई नया रसायन, दवा या मात्रा न जोड़ें।
+- यदि प्रश्न गद्यांश या फसल से पूरी तरह असंबंधित है, तो कहें: "$NO_MATCH_ANSWER_HI"<|eot_id|><|start_header_id|>user<|end_header_id|>
 Finding: $crop, $problemName, $severity ($certainty)
 Passage: $topPassage
 Question: $query<|eot_id|><|start_header_id|>assistant<|end_header_id|>""".trimIndent()
+        } else {
+            """<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+Agri Care AI offline chat assistant.
+- Answer the farmer's question directly in 1 or 2 short sentences (at most 35 words) using the facts in the Passage below.
+- End with a complete sentence.
+- Use ONLY the Passage below. Do NOT add new chemicals, doses, or numbers.
+- If the question is completely unrelated to the crop or Passage, state: "$NO_MATCH_ANSWER_EN"<|eot_id|><|start_header_id|>user<|end_header_id|>
+Finding: $crop, $problemName, $severity ($certainty)
+Passage: $topPassage
+Question: $query<|eot_id|><|start_header_id|>assistant<|end_header_id|>""".trimIndent()
+        }
     }
 
     suspend fun processQuery(
@@ -149,7 +163,8 @@ Question: $query<|eot_id|><|start_header_id|>assistant<|end_header_id|>""".trimI
                 severity = severity,
                 certainty = certainty,
                 passages = passages,
-                query = q
+                query = q,
+                language = lang
             )
 
             try {

@@ -28,28 +28,37 @@ object PromptBuilder {
             throw IllegalArgumentException("Telugu must never be processed by Llama (Rule H6). Telugu advisory is built in code from verified knowledge base text.")
         }
 
+        val isHindi = language.equals("hi", ignoreCase = true)
         val langInstruction = when (language.lowercase()) {
             "hi" -> " in simple Hindi (सरल हिंदी में)"
             else -> ""
         }
 
         val rawNatural = if (kbEntry.treatment.natural.isNotEmpty()) {
-            kbEntry.treatment.natural.first().action.en.split('.').firstOrNull { it.isNotBlank() }?.let { "$it." }
-                ?: kbEntry.treatment.natural.first().action.en
+            val stepAction = if (isHindi) kbEntry.treatment.natural.first().action.hi else kbEntry.treatment.natural.first().action.en
+            stepAction.split('.').firstOrNull { it.isNotBlank() }?.let { "$it." }
+                ?: stepAction
         } else {
-            "Field hygiene, crop rotation, and sanitation."
+            if (isHindi) "खेत की स्वच्छता, फसल चक्र और अवशेषों का प्रबंधन।" else "Field hygiene, crop rotation, and sanitation."
         }
         val naturalRemedy = GuardrailFilter.sanitize(rawNatural).take(75)
 
         val chemicalActives = if (kbEntry.treatment.chemical.isNotEmpty()) {
             kbEntry.treatment.chemical.first().let { "${it.activeIngredient} (${it.productExample})" }.take(50)
         } else {
-            "None recommended for current stage."
+            if (isHindi) "वर्तमान स्थिति में किसी रासायनिक दवा की आवश्यकता नहीं है।" else "None recommended for current stage."
         }
 
-        val rawUrgent = kbEntry.immediateStep.en.split('.').firstOrNull { it.isNotBlank() }?.let { "$it." }
-            ?: kbEntry.immediateStep.en
-        val urgentStep = GuardrailFilter.sanitize(rawUrgent).take(80).ifEmpty { "Isolate infected plants and avoid overhead watering." }
+        val rawUrgent = if (isHindi) {
+            val step = kbEntry.immediateStep.hi
+            step.split('।').firstOrNull { it.isNotBlank() }?.let { "$it।" } ?: step
+        } else {
+            val step = kbEntry.immediateStep.en
+            step.split('.').firstOrNull { it.isNotBlank() }?.let { "$it." } ?: step
+        }
+        val urgentStep = GuardrailFilter.sanitize(rawUrgent).take(80).ifEmpty {
+            if (isHindi) "संक्रमित पौधों को अलग करें और पत्तियों पर पानी का जमाव न होने दें।" else "Isolate infected plants and avoid overhead watering."
+        }
 
         val sevPctDisplay = if (severityPercent > 0) String.format("%.1f", severityPercent) else when (severity.uppercase()) {
             "MILD" -> "10.0"
@@ -66,13 +75,32 @@ object PromptBuilder {
 
         val isSevereOrActNow = severity.equals("SEVERE", ignoreCase = true) || urgency.contains("now", ignoreCase = true)
         val referralStatus = if (isSevereOrActNow) {
-            "Immediate Referral Required"
+            if (isHindi) "तत्काल कृषि विशेषज्ञ सहायता आवश्यक" else "Immediate Referral Required"
         } else {
-            "Routine Field Monitoring"
+            if (isHindi) "नियमित निगरानी रखें" else "Routine Field Monitoring"
         }
-        val referralContact = "KVK or Kisan Call Centre 1800-180-1551"
+        val referralContact = if (isHindi) "केवीके या किसान कॉल सेंटर 1800-180-1551" else "KVK or Kisan Call Centre 1800-180-1551"
 
-        return """<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+        return if (isHindi) {
+            """<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+Agri Care AI assistant in simple Hindi (सरल हिंदी में).
+- Explain in plain words for a smallholder farmer in at most 6 short, complete sentences.
+- Answer completely in Hindi (संपूर्ण उत्तर केवल हिंदी में दें).
+- Use only steps in the entry below.
+- Do not give doses (follow product label).
+- Do not name any product not in the entry.
+- Do not change severity or referral advice.
+1. क्या लक्षण हैं:
+2. अभी क्या करें:
+3. कृषि अधिकारी से संपर्क कब करें:<|eot_id|><|start_header_id|>user<|end_header_id|>
+Finding: $crop, $diseaseName (${kbEntry.type}), $severity ($severityDamageDescription), $certainty, $urgency.
+- Action: $urgentStep
+- Natural: $naturalRemedy
+- Referral: $referralStatus ($referralContact)
+Explain practical steps for the farmer in Hindi (किसान के लिए व्यावहारिक कदम हिंदी में समझाएं).<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+"""
+        } else {
+            """<|begin_of_text|><|start_header_id|>system<|end_header_id|>
 Agri Care AI assistant$langInstruction.
 - Explain in plain words for a smallholder farmer in at most 6 short, complete sentences.
 - Use only steps in the entry below.
@@ -88,5 +116,6 @@ Finding: $crop, $diseaseName (${kbEntry.type}), $severity ($severityDamageDescri
 - Referral: $referralStatus ($referralContact)
 Explain practical steps for the farmer.<|eot_id|><|start_header_id|>assistant<|end_header_id|>
 """
+        }
     }
 }

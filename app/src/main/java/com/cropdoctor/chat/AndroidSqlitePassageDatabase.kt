@@ -13,7 +13,7 @@ class AndroidSqlitePassageDatabase(context: Context) :
 
     companion object {
         const val DB_NAME = "cropdoctor_passages.db"
-        const val DB_VERSION = 3
+        const val DB_VERSION = 4
         private const val TABLE_FTS = "passages_fts"
     }
 

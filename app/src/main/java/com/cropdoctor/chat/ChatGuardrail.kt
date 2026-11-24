@@ -71,10 +71,11 @@ object ChatGuardrail {
             }
         }
 
-        // 3. Check for ungrounded numbers (excluding bullet indices 1, 2, 3)
+        // 3. Check for ungrounded numbers (excluding bullet indices 1, 2, 3 and official helpline digits 1800, 180, 1551)
+        val helplineNumbers = setOf("1", "2", "3", "1800", "180", "1551")
         val answerNumbers = NUMBER_REGEX.findAll(answer)
             .map { it.groupValues[1] }
-            .filterNot { it in listOf("1", "2", "3") } // allow small bullet step numbering
+            .filterNot { it in helplineNumbers }
             .toList()
 
         val refNumbers = NUMBER_REGEX.findAll(referenceText)
