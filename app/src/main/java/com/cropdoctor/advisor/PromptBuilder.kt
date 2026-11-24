@@ -73,22 +73,18 @@ object PromptBuilder {
         val referralContact = "KVK or Kisan Call Centre 1800-180-1551"
 
         return """<|begin_of_text|><|start_header_id|>system<|end_header_id|>
-Agri Care AI offline assistant.
-- Explain in plain words for a smallholder farmer$langInstruction.
-- Answer in at most 6 short, complete sentences. End every section with a complete sentence.
-- Use only the steps in the knowledge-base entry below.
-- Do not give doses (always instruct to follow the product label).
+Agri Care AI assistant$langInstruction.
+- Explain in plain words for a smallholder farmer in at most 6 short, complete sentences.
+- Use only steps in the entry below.
+- Do not give doses (follow product label).
 - Do not name any product not in the entry.
-- Do not change the severity or referral advice.
-Output in three short parts:
+- Do not change severity or referral advice.
 1. What I see:
 2. What to do now:
 3. When to get help:<|eot_id|><|start_header_id|>user<|end_header_id|>
 Finding: $crop, $diseaseName (${kbEntry.type}), $severity ($severityDamageDescription), $certainty, $urgency.
-Knowledge base:
-- Immediate step: $urgentStep
-- Natural remedy: $naturalRemedy
-- Chemical: $chemicalActives
+- Action: $urgentStep
+- Natural: $naturalRemedy
 - Referral: $referralStatus ($referralContact)
 Explain practical steps for the farmer.<|eot_id|><|start_header_id|>assistant<|end_header_id|>
 """

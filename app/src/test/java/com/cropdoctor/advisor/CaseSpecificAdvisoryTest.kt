@@ -61,19 +61,18 @@ class CaseSpecificAdvisoryTest {
         assertTrue("Prompt must include Certainty", prompt.contains("Probably"))
         assertTrue("Prompt must include Urgency", prompt.contains("Act This Week"))
 
-        // Approved KB entry contents
-        assertTrue("Prompt must include Immediate Step", prompt.contains("- Immediate step:"))
-        assertTrue("Prompt must include Natural Methods", prompt.contains("- Natural remedy:"))
-        assertTrue("Prompt must include Chemical Management", prompt.contains("- Chemical:"))
+        // Approved KB entry contents (Task LAT-2: condensed to ~150 tokens)
+        assertTrue("Prompt must include Action Step", prompt.contains("- Action:"))
+        assertTrue("Prompt must include Natural Methods", prompt.contains("- Natural:"))
         assertTrue("Prompt must include Referral Rule", prompt.contains("- Referral:"))
 
-        // Required instructions
+        // Required instructions (Task LAT-2: condensed prompt)
         assertTrue("Prompt must instruct plain words for smallholder farmer", prompt.contains("Explain in plain words for a smallholder farmer"))
-        assertTrue("Prompt must instruct to use only steps in KB", prompt.contains("Use only the steps in the knowledge-base entry below"))
+        assertTrue("Prompt must instruct to use only steps in KB", prompt.contains("Use only steps in the entry below"))
         assertTrue("Prompt must instruct 6-sentence limit", prompt.contains("at most 6 short, complete sentences"))
         assertTrue("Prompt must forbid dosage rates", prompt.contains("Do not give doses"))
         assertTrue("Prompt must forbid unlisted products", prompt.contains("Do not name any product not in the entry"))
-        assertTrue("Prompt must forbid changing severity/referral", prompt.contains("Do not change the severity or referral advice"))
+        assertTrue("Prompt must forbid changing severity/referral", prompt.contains("Do not change severity or referral advice"))
 
         // Output format in 3 short parts
         assertTrue("Prompt must require Part 1: What I see", prompt.contains("1. What I see:"))
