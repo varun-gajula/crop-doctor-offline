@@ -118,7 +118,7 @@ fun ModelInstallScreen(
                         if (ok) {
                             Toast.makeText(context, "Voice model for $pendingVoiceLang installed successfully!", Toast.LENGTH_SHORT).show()
                         } else {
-                            Toast.makeText(context, "Failed to extract voice model for $pendingVoiceLang", Toast.LENGTH_LONG).show()
+                            Toast.makeText(context, "Failed to install voice model for $pendingVoiceLang (invalid zip or size < 15MB)", Toast.LENGTH_LONG).show()
                         }
                     }
                 } catch (e: Exception) {

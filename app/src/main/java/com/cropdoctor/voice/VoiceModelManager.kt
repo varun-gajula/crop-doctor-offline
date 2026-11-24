@@ -154,9 +154,18 @@ object VoiceModelManager {
                     }
                 }
             }
-            return isValidModelDirectory(targetDir)
+            val valid = isValidModelDirectory(targetDir)
+            val totalSize = getFolderSize(targetDir)
+            if (!valid || totalSize < 15_000_000L) {
+                Log.w(TAG, "Extracted model for '$lang' failed verification (valid=$valid, size=$totalSize bytes). Cleaning up.")
+                targetDir.deleteRecursively()
+                return false
+            }
+            Log.i(TAG, "Successfully extracted and verified Vosk model for '$lang' ($totalSize bytes).")
+            return true
         } catch (e: Exception) {
             Log.e(TAG, "Failed to extract model zip for '$lang': ${e.message}", e)
+            targetDir.deleteRecursively()
             return false
         }
     }
