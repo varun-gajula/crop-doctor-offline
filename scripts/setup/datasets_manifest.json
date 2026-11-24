@@ -1,0 +1,236 @@
+{
+  "version": "1.0",
+  "project": "Crop Doctor Offline / Agri Care AI",
+  "target_challenge": "Bharat AI-SoC Challenge 2026-27 (PS1: Offline crop disease/pest detection and advisory)",
+  "rules_compliance": {
+    "rule_h2": "Zero datasets or raw photos committed to git repository",
+    "rule_h9": "Zero-budget stack; all sources are open-access, CC BY, or approved non-commercial research datasets",
+    "rule_h11": "Zero synthetic crop disease images; all classes originate from real field photography"
+  },
+  "datasets": [
+    {
+      "id": "paddy_doctor",
+      "name": "Paddy Doctor: A Large-Scale Benchmark Dataset for Paddy Disease Classification",
+      "source_url_or_doi": "https://doi.org/10.21227/zsc8-d217",
+      "secondary_url": "https://www.kaggle.com/competitions/paddy-disease-classification",
+      "licence": "CC BY 4.0",
+      "is_commercial_allowed": true,
+      "classes_it_feeds": [
+        "rice_leaf_blast",
+        "rice_healthy",
+        "rice_stem_borer",
+        "rice_hispa"
+      ],
+      "expected_photo_count": 10407,
+      "download_method": "kaggle_api",
+      "kaggle_competition": "paddy-disease-classification",
+      "download_command": "kaggle competitions download -c paddy-disease-classification",
+      "target_file": "paddy-disease-classification.zip",
+      "target_dir": "paddy-disease-classification",
+      "source_tag": "src-PaddyDoctor"
+    },
+    {
+      "id": "project_agml_rice",
+      "name": "Project-AgML Rice Leaf Disease Classification",
+      "source_url_or_doi": "https://huggingface.co/datasets/Project-AgML/rice_leaf_disease_classification",
+      "licence": "Apache 2.0 / Open Access",
+      "is_commercial_allowed": true,
+      "classes_it_feeds": [
+        "rice_leaf_blast",
+        "rice_healthy"
+      ],
+      "expected_photo_count": 3829,
+      "download_method": "huggingface",
+      "download_url": "https://huggingface.co/datasets/Project-AgML/rice_leaf_disease_classification",
+      "target_file": "rice_leaf_disease_classification",
+      "target_dir": "agml_rice",
+      "source_tag": "src-AgML"
+    },
+    {
+      "id": "chilli_krishna_basin",
+      "name": "Image Dataset on Chili Leaf Diseases in the Krishna River Basin of the Deccan Plateau",
+      "source_url_or_doi": "https://doi.org/10.17632/ymt8k9bjkn.3",
+      "web_url": "https://data.mendeley.com/datasets/ymt8k9bjkn/3",
+      "licence": "CC BY 4.0",
+      "is_commercial_allowed": true,
+      "classes_it_feeds": [
+        "chilli_leaf_curl_virus",
+        "chilli_healthy",
+        "chilli_bacterial_spot",
+        "chilli_cercospora_leaf_spot",
+        "chilli_white_spot"
+      ],
+      "expected_photo_count": 1570,
+      "download_method": "manual_mendeley",
+      "target_file": "Chili Leaf Disease Original Dataset.zip",
+      "target_dir": "ymt8k9bjkn",
+      "source_tag": "src-Krishna"
+    },
+    {
+      "id": "cotton_severity",
+      "name": "Cotton Leaf Disease Dataset with Severity Levels",
+      "source_url_or_doi": "https://doi.org/10.17632/74jsdxtmx2.1",
+      "web_url": "https://data.mendeley.com/datasets/74jsdxtmx2/1",
+      "licence": "CC BY 4.0",
+      "is_commercial_allowed": true,
+      "classes_it_feeds": [
+        "cotton_bacterial_blight",
+        "cotton_healthy",
+        "cotton_fusarium_wilt",
+        "cotton_leaf_curl_virus"
+      ],
+      "expected_photo_count": 980,
+      "download_method": "manual_mendeley",
+      "target_file": "Cotton-Original.zip",
+      "target_dir": "74jsdxtmx2",
+      "source_tag": "src-Mendeley74j"
+    },
+    {
+      "id": "cotton_original",
+      "name": "Cotton Leaf Image Dataset for Disease Classification",
+      "source_url_or_doi": "https://doi.org/10.17632/t9hgvk2h9p.1",
+      "web_url": "https://data.mendeley.com/datasets/t9hgvk2h9p/1",
+      "licence": "CC BY 4.0",
+      "is_commercial_allowed": true,
+      "classes_it_feeds": [
+        "cotton_bacterial_blight",
+        "cotton_healthy",
+        "cotton_alternaria_leaf_spot",
+        "cotton_fusarium_wilt"
+      ],
+      "expected_photo_count": 1060,
+      "download_method": "manual_mendeley",
+      "target_file": "Cotton_Original_Dataset.zip",
+      "target_dir": "t9hgvk2h9p",
+      "source_tag": "src-MendeleyT9h"
+    },
+    {
+      "id": "cotton_b3jy2p6k8w",
+      "name": "Cotton Disease Dataset",
+      "source_url_or_doi": "https://doi.org/10.17632/b3jy2p6k8w.1",
+      "web_url": "https://data.mendeley.com/datasets/b3jy2p6k8w/1",
+      "licence": "CC BY 4.0",
+      "is_commercial_allowed": true,
+      "classes_it_feeds": [
+        "cotton_bacterial_blight",
+        "cotton_healthy"
+      ],
+      "expected_photo_count": 600,
+      "download_method": "manual_mendeley",
+      "target_file": "Original Dataset.zip",
+      "target_dir": "b3jy2p6k8w",
+      "source_tag": "src-MendeleyB3j"
+    },
+    {
+      "id": "maize_mld",
+      "name": "MLD: Multi-Class Maize Leaf Disease Image Dataset",
+      "source_url_or_doi": "https://doi.org/10.17632/3myfctrgk3.1",
+      "web_url": "https://data.mendeley.com/datasets/3myfctrgk3/1",
+      "licence": "CC BY 4.0",
+      "is_commercial_allowed": true,
+      "classes_it_feeds": [
+        "maize_northern_leaf_blight",
+        "maize_healthy",
+        "maize_fall_armyworm",
+        "maize_gray_leaf_spot"
+      ],
+      "expected_photo_count": 2096,
+      "download_method": "manual_mendeley",
+      "target_file": "Maize dataset.zip",
+      "target_dir": "3myfctrgk3",
+      "source_tag": "src-MLD"
+    },
+    {
+      "id": "maize_ccmt",
+      "name": "CCMT: Dataset for Crop Pest and Disease Detection",
+      "source_url_or_doi": "https://doi.org/10.17632/bwh3zbpkpv.1",
+      "web_url": "https://data.mendeley.com/datasets/bwh3zbpkpv/1",
+      "licence": "CC BY 4.0",
+      "is_commercial_allowed": true,
+      "classes_it_feeds": [
+        "maize_fall_armyworm",
+        "maize_northern_leaf_blight",
+        "maize_healthy"
+      ],
+      "expected_photo_count": 1200,
+      "download_method": "manual_mendeley",
+      "target_file": "Dataset for Crop Pest and Disease Detection.zip",
+      "target_dir": "bwh3zbpkpv",
+      "source_tag": "src-CCMT"
+    },
+    {
+      "id": "plantdoc",
+      "name": "PlantDoc: A Dataset for Visual Plant Disease Detection in Natural Field Conditions",
+      "source_url_or_doi": "https://github.com/pratikkayal/PlantDoc-Dataset",
+      "licence": "MIT License",
+      "is_commercial_allowed": true,
+      "classes_it_feeds": [
+        "maize_northern_leaf_blight"
+      ],
+      "expected_photo_count": 2598,
+      "download_method": "git_clone",
+      "git_url": "https://github.com/pratikkayal/PlantDoc-Dataset.git",
+      "target_file": null,
+      "target_dir": "plantdoc",
+      "source_tag": "src-PlantDoc"
+    },
+    {
+      "id": "plantvillage",
+      "name": "PlantVillage Disease Classification Dataset",
+      "source_url_or_doi": "https://github.com/spMohanty/PlantVillage-Dataset",
+      "citation": "Hughes, D. P., & Salathe, M. (2015). An open access repository of images on plant health to enable the development of mobile disease diagnostics.",
+      "licence": "CC BY-NC 3.0",
+      "is_commercial_allowed": false,
+      "non_commercial_notice": "RESTRICTED: Creative Commons Attribution-NonCommercial 3.0. For research and educational competition use only; not for commercial deployment.",
+      "classes_it_feeds": [
+        "maize_common_rust",
+        "tomato_early_blight",
+        "tomato_late_blight",
+        "tomato_yellow_leaf_curl_virus",
+        "tomato_spider_mites",
+        "tomato_healthy"
+      ],
+      "expected_photo_count": 54306,
+      "download_method": "git_clone",
+      "git_url": "https://github.com/spMohanty/PlantVillage-Dataset.git",
+      "target_file": null,
+      "target_dir": "plantvillage",
+      "source_tag": "src-PlantVillage"
+    },
+    {
+      "id": "tomatoleaf_field",
+      "name": "Tomato Leaf Diseases Field Dataset",
+      "source_url_or_doi": "https://www.kaggle.com/datasets/kaustubhb999/tomatoleaf",
+      "licence": "CC BY-SA 4.0 / Open Access",
+      "is_commercial_allowed": true,
+      "classes_it_feeds": [
+        "tomato_septoria_leaf_spot",
+        "tomato_healthy"
+      ],
+      "expected_photo_count": 10000,
+      "download_method": "kaggle_api",
+      "kaggle_dataset": "kaustubhb999/tomatoleaf",
+      "download_command": "kaggle datasets download -d kaustubhb999/tomatoleaf",
+      "target_file": "tomatoleaf.zip",
+      "target_dir": "tomatoleaf",
+      "source_tag": "src-Archive2"
+    },
+    {
+      "id": "agridata_weeds",
+      "name": "DeepWeeds / Agricultural Non-Crop & Weed Rejection Dataset",
+      "source_url_or_doi": "https://doi.org/10.1038/s41598-018-38343-3",
+      "secondary_url": "https://github.com/AlexOlsen/DeepWeeds",
+      "licence": "CC BY 4.0",
+      "is_commercial_allowed": true,
+      "classes_it_feeds": [
+        "other_not_a_crop"
+      ],
+      "expected_photo_count": 1000,
+      "download_method": "git_clone",
+      "git_url": "https://github.com/AlexOlsen/DeepWeeds.git",
+      "target_file": null,
+      "target_dir": "deepweeds",
+      "source_tag": "src-AgriData"
+    }
+  ]
+}
