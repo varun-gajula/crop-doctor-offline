@@ -1,39 +1,40 @@
 {
   "app": "AI agri care",
   "application_id": "com.aiagricare",
-  "device": "Xiaomi POCO M4 5G (sseqjnucrkeeprtw)",
+  "device": "motorola motorola edge 60 (ZA222YGPNG)",
+  "app_uid": "10368",
   "thresholds": {
     "confidence": 0.32,
     "energy": -3.3,
     "crop_mass": 0.4,
     "margin": 0.15
   },
-  "timestamp": "2026-11-25T04:30:30",
+  "timestamp": "2026-11-25T07:30:46",
   "performance": {
     "total_images": 30,
     "total_classes": 15,
     "overall_accuracy_pct": 96.7,
     "crop_classes_accuracy_pct": 96.4,
-    "crop_classes_diagnostic_yield_pct": 100.0,
-    "avg_inference_latency_ms": 876.3,
-    "min_latency_ms": 438,
-    "max_latency_ms": 6143,
+    "crop_classes_diagnostic_yield_pct": 96.4,
+    "avg_inference_latency_ms": 537.3,
+    "min_latency_ms": 488,
+    "max_latency_ms": 887,
     "class_summary": {
       "rice_leaf_blast": {
         "samples": 2,
         "correct": 2,
         "diagnosed": 2,
         "accuracy_pct": 100.0,
-        "avg_confidence": 0.9916,
-        "avg_latency_ms": 929.5
+        "avg_confidence": 0.9915,
+        "avg_latency_ms": 687.5
       },
       "rice_healthy": {
         "samples": 2,
         "correct": 2,
         "diagnosed": 2,
         "accuracy_pct": 100.0,
-        "avg_confidence": 0.9874,
-        "avg_latency_ms": 483.0
+        "avg_confidence": 0.9878,
+        "avg_latency_ms": 505.5
       },
       "cotton_bacterial_blight": {
         "samples": 2,
@@ -41,122 +42,123 @@
         "diagnosed": 2,
         "accuracy_pct": 100.0,
         "avg_confidence": 0.999,
-        "avg_latency_ms": 446.0
+        "avg_latency_ms": 509.0
       },
       "cotton_healthy": {
         "samples": 2,
         "correct": 2,
         "diagnosed": 2,
         "accuracy_pct": 100.0,
-        "avg_confidence": 0.8463,
-        "avg_latency_ms": 443.0
+        "avg_confidence": 0.8841,
+        "avg_latency_ms": 509.5
       },
       "chilli_leaf_curl_virus": {
         "samples": 2,
         "correct": 2,
         "diagnosed": 2,
         "accuracy_pct": 100.0,
-        "avg_confidence": 0.9973,
-        "avg_latency_ms": 455.5
+        "avg_confidence": 0.9974,
+        "avg_latency_ms": 531.0
       },
       "chilli_healthy": {
         "samples": 2,
         "correct": 2,
         "diagnosed": 2,
         "accuracy_pct": 100.0,
-        "avg_confidence": 0.9918,
-        "avg_latency_ms": 494.0
+        "avg_confidence": 0.9926,
+        "avg_latency_ms": 523.5
       },
       "maize_northern_leaf_blight": {
         "samples": 2,
         "correct": 2,
         "diagnosed": 2,
         "accuracy_pct": 100.0,
-        "avg_confidence": 0.9743,
-        "avg_latency_ms": 478.5
+        "avg_confidence": 0.9742,
+        "avg_latency_ms": 532.0
       },
       "maize_common_rust": {
         "samples": 2,
         "correct": 2,
         "diagnosed": 2,
         "accuracy_pct": 100.0,
-        "avg_confidence": 0.9873,
-        "avg_latency_ms": 459.5
+        "avg_confidence": 0.9872,
+        "avg_latency_ms": 526.5
       },
       "maize_healthy": {
         "samples": 2,
         "correct": 2,
         "diagnosed": 2,
         "accuracy_pct": 100.0,
-        "avg_confidence": 0.9934,
-        "avg_latency_ms": 468.5
+        "avg_confidence": 0.9935,
+        "avg_latency_ms": 510.5
       },
       "maize_fall_armyworm": {
         "samples": 2,
         "correct": 2,
         "diagnosed": 2,
         "accuracy_pct": 100.0,
-        "avg_confidence": 0.9964,
-        "avg_latency_ms": 458.0
+        "avg_confidence": 0.9965,
+        "avg_latency_ms": 515.0
       },
       "rice_stem_borer": {
         "samples": 2,
         "correct": 2,
         "diagnosed": 2,
         "accuracy_pct": 100.0,
-        "avg_confidence": 0.989,
-        "avg_latency_ms": 476.5
+        "avg_confidence": 0.9897,
+        "avg_latency_ms": 523.0
       },
       "rice_hispa": {
         "samples": 2,
         "correct": 1,
-        "diagnosed": 2,
+        "diagnosed": 1,
         "accuracy_pct": 50.0,
-        "avg_confidence": 0.7855,
-        "avg_latency_ms": 493.5
+        "avg_confidence": 0.7599,
+        "avg_latency_ms": 540.0
       },
       "tomato_healthy": {
         "samples": 2,
         "correct": 2,
         "diagnosed": 2,
         "accuracy_pct": 100.0,
-        "avg_confidence": 0.9907,
-        "avg_latency_ms": 462.5
+        "avg_confidence": 0.9909,
+        "avg_latency_ms": 541.0
       },
       "tomato_septoria_leaf_spot": {
         "samples": 2,
         "correct": 2,
         "diagnosed": 2,
         "accuracy_pct": 100.0,
-        "avg_confidence": 0.9972,
-        "avg_latency_ms": 479.5
+        "avg_confidence": 0.9971,
+        "avg_latency_ms": 542.0
       },
       "other_not_a_crop": {
         "samples": 2,
         "correct": 2,
         "diagnosed": 0,
         "accuracy_pct": 100.0,
-        "avg_confidence": 0.9651,
-        "avg_latency_ms": 6116.5
+        "avg_confidence": 0.9656,
+        "avg_latency_ms": 563.5
       }
     }
   },
   "power_consumption": {
-    "duration_seconds": 32.94,
-    "battery_level_start_pct": 100,
-    "battery_level_end_pct": 100,
-    "voltage_start_mv": 4405.0,
-    "voltage_end_mv": 4405.0,
-    "voltage_avg_v": 4.405,
-    "temperature_start_c": 33.9,
-    "temperature_end_c": 33.9,
+    "duration_seconds": 28.15,
+    "battery_capacity_mah": 4984.0,
+    "battery_level_start_pct": 45,
+    "battery_level_end_pct": 45,
+    "voltage_start_mv": 3934.0,
+    "voltage_end_mv": 3934.0,
+    "voltage_avg_v": 3.934,
+    "temperature_start_c": 33.0,
+    "temperature_end_c": 33.0,
     "temperature_delta_c": 0.0,
-    "uid_power_drain_mah": 0.264,
-    "uid_energy_consumed_mwh": 1.1629,
-    "uid_average_power_mw": 127.11,
-    "energy_per_scan_mj": 139.55,
-    "estimated_scans_per_1pct_battery": 5151,
-    "estimated_total_scans_full_charge": 515114
+    "uid_power_drain_mah": 1.361,
+    "uid_energy_consumed_mwh": 5.3542,
+    "uid_average_power_mw": 684.8,
+    "energy_per_scan_mj": 642.5,
+    "estimated_scans_per_1pct_battery": 1099,
+    "estimated_total_scans_full_charge": 109860
   },
   "individual_results": [
     {
@@ -168,11 +170,11 @@
       "decision": "DIAGNOSE",
       "outcome_code": "ACCEPTED",
       "top1_class": "rice_leaf_blast",
-      "confidence": 0.9931805,
-      "energy": -5.391789062407772,
-      "crop_mass": 0.9719,
-      "margin": 0.9902,
-      "latency_ms": 986,
+      "confidence": 0.9930835,
+      "energy": -5.386606697892911,
+      "crop_mass": 0.9717,
+      "margin": 0.99,
+      "latency_ms": 887,
       "pass": true
     },
     {
@@ -184,11 +186,11 @@
       "decision": "DIAGNOSE",
       "outcome_code": "ACCEPTED",
       "top1_class": "rice_leaf_blast",
-      "confidence": 0.9900585,
-      "energy": -5.159935490582469,
-      "crop_mass": 0.9673,
-      "margin": 0.986,
-      "latency_ms": 873,
+      "confidence": 0.98998463,
+      "energy": -5.1687497649746454,
+      "crop_mass": 0.9676,
+      "margin": 0.9859,
+      "latency_ms": 488,
       "pass": true
     },
     {
@@ -200,11 +202,11 @@
       "decision": "DIAGNOSE",
       "outcome_code": "ACCEPTED",
       "top1_class": "rice_healthy",
-      "confidence": 0.9781416,
-      "energy": -5.1008463799000285,
-      "crop_mass": 0.963,
-      "margin": 0.9637,
-      "latency_ms": 453,
+      "confidence": 0.97891015,
+      "energy": -5.0770703998565985,
+      "crop_mass": 0.9616,
+      "margin": 0.9654,
+      "latency_ms": 493,
       "pass": true
     },
     {
@@ -216,11 +218,11 @@
       "decision": "DIAGNOSE",
       "outcome_code": "ACCEPTED",
       "top1_class": "rice_healthy",
-      "confidence": 0.9966434,
-      "energy": -5.835452219574656,
-      "crop_mass": 0.9818,
+      "confidence": 0.99667966,
+      "energy": -5.847831954575032,
+      "crop_mass": 0.9822,
       "margin": 0.9948,
-      "latency_ms": 513,
+      "latency_ms": 518,
       "pass": true
     },
     {
@@ -232,11 +234,11 @@
       "decision": "DIAGNOSE",
       "outcome_code": "ACCEPTED",
       "top1_class": "cotton_bacterial_blight",
-      "confidence": 0.9993166,
-      "energy": -5.719711173684766,
-      "crop_mass": 0.9739,
-      "margin": 0.9986,
-      "latency_ms": 447,
+      "confidence": 0.99937516,
+      "energy": -5.75163810099014,
+      "crop_mass": 0.9748,
+      "margin": 0.9988,
+      "latency_ms": 518,
       "pass": true
     },
     {
@@ -248,11 +250,11 @@
       "decision": "DIAGNOSE",
       "outcome_code": "ACCEPTED",
       "top1_class": "cotton_bacterial_blight",
-      "confidence": 0.99868363,
-      "energy": -5.1410747452553816,
-      "crop_mass": 0.9513,
+      "confidence": 0.99871695,
+      "energy": -5.144538955887524,
+      "crop_mass": 0.9514,
       "margin": 0.9974,
-      "latency_ms": 445,
+      "latency_ms": 500,
       "pass": true
     },
     {
@@ -264,11 +266,11 @@
       "decision": "DIAGNOSE",
       "outcome_code": "ACCEPTED",
       "top1_class": "cotton_healthy",
-      "confidence": 0.6993572,
-      "energy": -4.290117231569789,
-      "crop_mass": 0.7168,
-      "margin": 0.3987,
-      "latency_ms": 438,
+      "confidence": 0.776115,
+      "energy": -4.328706524182837,
+      "crop_mass": 0.7099,
+      "margin": 0.5522,
+      "latency_ms": 501,
       "pass": true
     },
     {
@@ -280,11 +282,11 @@
       "decision": "DIAGNOSE",
       "outcome_code": "ACCEPTED",
       "top1_class": "cotton_healthy",
-      "confidence": 0.9932191,
-      "energy": -5.10703331731318,
-      "crop_mass": 0.9527,
-      "margin": 0.9864,
-      "latency_ms": 448,
+      "confidence": 0.9921818,
+      "energy": -5.042234453804587,
+      "crop_mass": 0.9491,
+      "margin": 0.9844,
+      "latency_ms": 518,
       "pass": true
     },
     {
@@ -296,11 +298,11 @@
       "decision": "DIAGNOSE",
       "outcome_code": "ACCEPTED",
       "top1_class": "chilli_leaf_curl_virus",
-      "confidence": 0.99734974,
-      "energy": -5.094634430507023,
-      "crop_mass": 0.9579,
-      "margin": 0.9947,
-      "latency_ms": 454,
+      "confidence": 0.99739814,
+      "energy": -5.079282325125541,
+      "crop_mass": 0.957,
+      "margin": 0.9948,
+      "latency_ms": 534,
       "pass": true
     },
     {
@@ -312,11 +314,11 @@
       "decision": "DIAGNOSE",
       "outcome_code": "ACCEPTED",
       "top1_class": "chilli_leaf_curl_virus",
-      "confidence": 0.99728096,
-      "energy": -5.113615276335681,
-      "crop_mass": 0.9598,
-      "margin": 0.9946,
-      "latency_ms": 457,
+      "confidence": 0.9974847,
+      "energy": -5.126454747111923,
+      "crop_mass": 0.9604,
+      "margin": 0.995,
+      "latency_ms": 528,
       "pass": true
     },
     {
@@ -328,11 +330,11 @@
       "decision": "DIAGNOSE",
       "outcome_code": "ACCEPTED",
       "top1_class": "chilli_healthy",
-      "confidence": 0.993178,
-      "energy": -5.5771341038435125,
-      "crop_mass": 0.9761,
-      "margin": 0.9864,
-      "latency_ms": 517,
+      "confidence": 0.99368954,
+      "energy": -5.559055185547414,
+      "crop_mass": 0.9754,
+      "margin": 0.9874,
+      "latency_ms": 520,
       "pass": true
     },
     {
@@ -344,11 +346,11 @@
       "decision": "DIAGNOSE",
       "outcome_code": "ACCEPTED",
       "top1_class": "chilli_healthy",
-      "confidence": 0.9904731,
-      "energy": -5.5672953822216575,
-      "crop_mass": 0.9766,
-      "margin": 0.9809,
-      "latency_ms": 471,
+      "confidence": 0.99156207,
+      "energy": -5.538568980617348,
+      "crop_mass": 0.9754,
+      "margin": 0.9831,
+      "latency_ms": 527,
       "pass": true
     },
     {
@@ -360,11 +362,11 @@
       "decision": "DIAGNOSE",
       "outcome_code": "ACCEPTED",
       "top1_class": "maize_northern_leaf_blight",
-      "confidence": 0.9823287,
-      "energy": -4.751540795151146,
-      "crop_mass": 0.9337,
-      "margin": 0.9741,
-      "latency_ms": 481,
+      "confidence": 0.9806358,
+      "energy": -4.705724026285397,
+      "crop_mass": 0.9301,
+      "margin": 0.9714,
+      "latency_ms": 538,
       "pass": true
     },
     {
@@ -376,11 +378,11 @@
       "decision": "DIAGNOSE",
       "outcome_code": "ACCEPTED",
       "top1_class": "maize_northern_leaf_blight",
-      "confidence": 0.9662941,
-      "energy": -5.089965701248076,
-      "crop_mass": 0.9692,
-      "margin": 0.9492,
-      "latency_ms": 476,
+      "confidence": 0.9677834,
+      "energy": -5.127088758678284,
+      "crop_mass": 0.9704,
+      "margin": 0.951,
+      "latency_ms": 526,
       "pass": true
     },
     {
@@ -392,11 +394,11 @@
       "decision": "DIAGNOSE",
       "outcome_code": "ACCEPTED",
       "top1_class": "maize_common_rust",
-      "confidence": 0.9847782,
-      "energy": -4.896963425661823,
-      "crop_mass": 0.9458,
-      "margin": 0.9767,
-      "latency_ms": 456,
+      "confidence": 0.98466563,
+      "energy": -4.8929425686304,
+      "crop_mass": 0.9456,
+      "margin": 0.9765,
+      "latency_ms": 530,
       "pass": true
     },
     {
@@ -408,11 +410,11 @@
       "decision": "DIAGNOSE",
       "outcome_code": "ACCEPTED",
       "top1_class": "maize_common_rust",
-      "confidence": 0.98975986,
-      "energy": -5.25864359385356,
-      "crop_mass": 0.967,
-      "margin": 0.9856,
-      "latency_ms": 463,
+      "confidence": 0.9896622,
+      "energy": -5.250804087240799,
+      "crop_mass": 0.9668,
+      "margin": 0.9855,
+      "latency_ms": 523,
       "pass": true
     },
     {
@@ -424,11 +426,11 @@
       "decision": "DIAGNOSE",
       "outcome_code": "ACCEPTED",
       "top1_class": "maize_healthy",
-      "confidence": 0.99472225,
-      "energy": -5.509932053273356,
-      "crop_mass": 0.9767,
-      "margin": 0.9923,
-      "latency_ms": 469,
+      "confidence": 0.9946839,
+      "energy": -5.50175079948011,
+      "crop_mass": 0.9765,
+      "margin": 0.9922,
+      "latency_ms": 517,
       "pass": true
     },
     {
@@ -440,11 +442,11 @@
       "decision": "DIAGNOSE",
       "outcome_code": "ACCEPTED",
       "top1_class": "maize_healthy",
-      "confidence": 0.9921355,
-      "energy": -5.303822006331605,
-      "crop_mass": 0.973,
-      "margin": 0.9891,
-      "latency_ms": 468,
+      "confidence": 0.9923713,
+      "energy": -5.326479954922168,
+      "crop_mass": 0.9735,
+      "margin": 0.9894,
+      "latency_ms": 504,
       "pass": true
     },
     {
@@ -456,11 +458,11 @@
       "decision": "DIAGNOSE",
       "outcome_code": "ACCEPTED",
       "top1_class": "maize_fall_armyworm",
-      "confidence": 0.9951481,
-      "energy": -5.685411313611263,
-      "crop_mass": 0.9816,
-      "margin": 0.9928,
-      "latency_ms": 471,
+      "confidence": 0.99522674,
+      "energy": -5.677863671013931,
+      "crop_mass": 0.9813,
+      "margin": 0.9929,
+      "latency_ms": 519,
       "pass": true
     },
     {
@@ -472,11 +474,11 @@
       "decision": "DIAGNOSE",
       "outcome_code": "ACCEPTED",
       "top1_class": "maize_fall_armyworm",
-      "confidence": 0.9977513,
-      "energy": -6.051602129272014,
-      "crop_mass": 0.9882,
-      "margin": 0.997,
-      "latency_ms": 445,
+      "confidence": 0.99773586,
+      "energy": -6.039803276247946,
+      "crop_mass": 0.988,
+      "margin": 0.9969,
+      "latency_ms": 511,
       "pass": true
     },
     {
@@ -488,11 +490,11 @@
       "decision": "DIAGNOSE",
       "outcome_code": "ACCEPTED",
       "top1_class": "rice_stem_borer",
-      "confidence": 0.9882925,
-      "energy": -5.614805455855786,
-      "crop_mass": 0.9844,
-      "margin": 0.9831,
-      "latency_ms": 462,
+      "confidence": 0.9886507,
+      "energy": -5.60240991722529,
+      "crop_mass": 0.9842,
+      "margin": 0.9837,
+      "latency_ms": 533,
       "pass": true
     },
     {
@@ -504,11 +506,11 @@
       "decision": "DIAGNOSE",
       "outcome_code": "ACCEPTED",
       "top1_class": "rice_stem_borer",
-      "confidence": 0.9897466,
-      "energy": -4.928083582913553,
-      "crop_mass": 0.9588,
-      "margin": 0.9845,
-      "latency_ms": 491,
+      "confidence": 0.9907498,
+      "energy": -4.973842899403917,
+      "crop_mass": 0.96,
+      "margin": 0.986,
+      "latency_ms": 513,
       "pass": true
     },
     {
@@ -520,11 +522,11 @@
       "decision": "DIAGNOSE",
       "outcome_code": "ACCEPTED",
       "top1_class": "rice_hispa",
-      "confidence": 0.9982147,
-      "energy": -5.918959770686661,
-      "crop_mass": 0.9815,
-      "margin": 0.9976,
-      "latency_ms": 501,
+      "confidence": 0.9980646,
+      "energy": -5.78651459492372,
+      "crop_mass": 0.9778,
+      "margin": 0.9973,
+      "latency_ms": 528,
       "pass": true
     },
     {
@@ -533,14 +535,14 @@
       "sample_num": 2,
       "filename": "src-PaddyDoctor_100005.jpg",
       "expected": "rice_hispa",
-      "decision": "DIAGNOSE",
-      "outcome_code": "ACCEPTED",
-      "top1_class": "rice_leaf_blast",
-      "confidence": 0.572712,
-      "energy": -4.207609650696504,
-      "crop_mass": 0.9186,
-      "margin": 0.165,
-      "latency_ms": 486,
+      "decision": "OUT_OF_CLASS",
+      "outcome_code": "BORDERLINE_AMBIGUOUS(margin=0.06403431",
+      "top1_class": "out_of_class",
+      "confidence": 0.521778,
+      "energy": -4.259460051654791,
+      "crop_mass": 0.9254,
+      "margin": 0.064,
+      "latency_ms": 552,
       "pass": false
     },
     {
@@ -552,11 +554,11 @@
       "decision": "DIAGNOSE",
       "outcome_code": "ACCEPTED",
       "top1_class": "tomato_healthy",
-      "confidence": 0.991226,
-      "energy": -4.880353313188263,
-      "crop_mass": 0.9539,
-      "margin": 0.9825,
-      "latency_ms": 473,
+      "confidence": 0.99148965,
+      "energy": -4.894036815675967,
+      "crop_mass": 0.9546,
+      "margin": 0.983,
+      "latency_ms": 538,
       "pass": true
     },
     {
@@ -568,11 +570,11 @@
       "decision": "DIAGNOSE",
       "outcome_code": "ACCEPTED",
       "top1_class": "tomato_healthy",
-      "confidence": 0.9902311,
-      "energy": -4.535587022620278,
-      "crop_mass": 0.931,
-      "margin": 0.9805,
-      "latency_ms": 452,
+      "confidence": 0.9903492,
+      "energy": -4.5332979734244,
+      "crop_mass": 0.9305,
+      "margin": 0.9807,
+      "latency_ms": 544,
       "pass": true
     },
     {
@@ -584,11 +586,11 @@
       "decision": "DIAGNOSE",
       "outcome_code": "ACCEPTED",
       "top1_class": "tomato_septoria_leaf_spot",
-      "confidence": 0.99790454,
-      "energy": -5.233135812683719,
-      "crop_mass": 0.971,
-      "margin": 0.9958,
-      "latency_ms": 485,
+      "confidence": 0.9977658,
+      "energy": -5.2205486674405135,
+      "crop_mass": 0.9706,
+      "margin": 0.9955,
+      "latency_ms": 542,
       "pass": true
     },
     {
@@ -600,11 +602,11 @@
       "decision": "DIAGNOSE",
       "outcome_code": "ACCEPTED",
       "top1_class": "tomato_septoria_leaf_spot",
-      "confidence": 0.9964978,
-      "energy": -5.386032695383731,
-      "crop_mass": 0.9746,
-      "margin": 0.993,
-      "latency_ms": 474,
+      "confidence": 0.9964006,
+      "energy": -5.359225157137044,
+      "crop_mass": 0.9739,
+      "margin": 0.9928,
+      "latency_ms": 542,
       "pass": true
     },
     {
@@ -616,11 +618,11 @@
       "decision": "CANT_TELL",
       "outcome_code": "NOT_A_CROP(other_not_a_crop)",
       "top1_class": "unknown",
-      "confidence": 0.9650906,
-      "energy": -5.536968415593031,
+      "confidence": 0.96606535,
+      "energy": -5.562947030015675,
       "crop_mass": 0.0,
-      "margin": 0.9604,
-      "latency_ms": 6143,
+      "margin": 0.9615,
+      "latency_ms": 576,
       "pass": true
     },
     {
@@ -632,11 +634,11 @@
       "decision": "CANT_TELL",
       "outcome_code": "NOT_A_CROP(other_not_a_crop)",
       "top1_class": "unknown",
-      "confidence": 0.9651868,
-      "energy": -5.517883386971651,
+      "confidence": 0.9650966,
+      "energy": -5.51910955678115,
       "crop_mass": 0.0,
-      "margin": 0.9615,
-      "latency_ms": 6090,
+      "margin": 0.9614,
+      "latency_ms": 551,
       "pass": true
     }
   ]

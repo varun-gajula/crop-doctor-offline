@@ -9,7 +9,14 @@ ADB = os.path.expandvars(r"%LOCALAPPDATA%\Android\Sdk\platform-tools\adb.exe")
 if not os.path.exists(ADB):
     ADB = "adb"
 
-DEVICE_SERIAL = "sseqjnucrkeeprtw"
+def get_device_serial():
+    if len(sys.argv) > 1 and not sys.argv[1].startswith("-"):
+        return sys.argv[1]
+    res = subprocess.run([ADB, "devices"], capture_output=True, text=True, encoding="utf-8")
+    lines = [l.split()[0] for l in res.stdout.strip().splitlines()[1:] if "\tdevice" in l]
+    return lines[0] if lines else "ZA222YGPNG"
+
+DEVICE_SERIAL = get_device_serial()
 OUT_PATH = os.path.join("benchmarks", "classwise_and_power_results.json")
 os.makedirs("benchmarks", exist_ok=True)
 
@@ -34,9 +41,23 @@ def get_battery_info():
             info[k] = v
     return info
 
+# Detect device info and app UID
+manufacturer = run_adb(["shell", "getprop", "ro.product.manufacturer"])
+model = run_adb(["shell", "getprop", "ro.product.model"])
+device_display = f"{manufacturer} {model} ({DEVICE_SERIAL})".strip()
+
+uid_out = run_adb(["shell", "pm", "list", "packages", "-U"])
+app_uid = "10368"
+for line in uid_out.splitlines():
+    if "com.aiagricare" in line and "uid:" in line:
+        m = re.search(r"uid:(\d+)", line)
+        if m:
+            app_uid = m.group(1)
+
 print("=" * 80)
 print("AI AGRI CARE (com.aiagricare) - Class-Wise Performance & Power Benchmark")
-print("Target Device: Xiaomi POCO M4 5G (sseqjnucrkeeprtw)")
+print(f"Target Device: {device_display}")
+print(f"Application UID: {app_uid}")
 print("Active Thresholds: conf=0.32, energy=-3.30, crop_mass=0.40, margin=0.15")
 print("=" * 80)
 
@@ -80,9 +101,17 @@ print(f"Total test suite: {len(test_items)} images across {len(labels)} classes 
 # --- START POWER BENCHMARK SETUP ---
 print("\n[POWER BENCHMARK] Initializing battery measurement...")
 batt_start = get_battery_info()
-v_start_mv = float(batt_start.get("voltage", 4400))
+v_start_mv = float(batt_start.get("voltage", 3920))
 temp_start_c = float(batt_start.get("temperature", 330)) / 10.0
-level_start = int(batt_start.get("level", 100))
+level_start = int(batt_start.get("level", 40))
+
+# Query full learned battery capacity (or design capacity)
+battery_capacity_mah = 5000.0
+if "Full capacity" in batt_start:
+    try:
+        battery_capacity_mah = float(batt_start["Full capacity"]) / 1000.0
+    except Exception:
+        pass
 
 # Simulate unplugged battery mode for power calculation
 run_adb(["shell", "dumpsys", "battery", "unplug"])
@@ -90,7 +119,7 @@ run_adb(["shell", "dumpsys", "batterystats", "--reset"])
 time.sleep(1)
 
 start_time = time.time()
-print(f"  Starting Battery: {level_start}%, Voltage: {v_start_mv:.0f} mV, Temp: {temp_start_c:.1f} °C")
+print(f"  Starting Battery: {level_start}%, Voltage: {v_start_mv:.0f} mV, Temp: {temp_start_c:.1f} °C, Capacity: {battery_capacity_mah:.0f} mAh")
 print("  Simulated On-Battery Mode: ACTIVE (dumpsys battery unplug)")
 # ------------------------------------
 
@@ -110,7 +139,7 @@ for idx, item in enumerate(test_items, 1):
     
     # Push image to temp and copy via run-as
     run_adb(["push", local_path, "/data/local/tmp/test_photo.jpg"])
-    run_adb(["shell", "chmod 666 /data/local/tmp/test_photo.jpg && run-as com.aiagricare cp /data/local/tmp/test_photo.jpg /data/data/com.aiagricare/files/test_photo.jpg"])
+    run_adb(["shell", f"chmod 666 /data/local/tmp/test_photo.jpg && run-as com.aiagricare cp /data/local/tmp/test_photo.jpg /data/data/com.aiagricare/files/test_photo.jpg"])
     
     run_adb(["logcat", "-c"])
     
@@ -153,6 +182,8 @@ for idx, item in enumerate(test_items, 1):
                 if m_cf: conf = float(m_cf.group(1))
                 if m_e: energy = float(m_e.group(1))
                 
+        if decision in ["CANT_TELL", "OUT_OF_CLASS"]:
+            break
         if decision != "UNKNOWN" and top1_class != "unknown":
             break
             
@@ -191,32 +222,36 @@ elapsed_sec = end_time - start_time
 batt_end = get_battery_info()
 v_end_mv = float(batt_end.get("voltage", v_start_mv))
 temp_end_c = float(batt_end.get("temperature", 330)) / 10.0
-level_end = int(batt_end.get("level", 100))
+level_end = int(batt_end.get("level", 40))
 
-# Query batterystats for UID 10268 (com.aiagricare)
-bstats_raw = run_adb(["shell", "dumpsys", "batterystats", "com.aiagricare"])
+# Query batterystats for UID
+bstats_raw = run_adb(["shell", "dumpsys", "batterystats"])
 
 # Restore normal charging
 run_adb(["shell", "dumpsys", "battery", "reset"])
 
 # Parse UID power usage
-uid_cpu_user_ms = 0
-uid_cpu_sys_ms = 0
 uid_power_mah = 0.0
+uid_cpu_mah = 0.0
+uid_screen_mah = 0.0
+uid_suffix = app_uid[-4:] if len(app_uid) >= 4 else app_uid
 
 for line in bstats_raw.splitlines():
     line_s = line.strip()
-    if "UID 10268:" in line_s or "UID u0a268:" in line_s:
-        # e.g. UID 10268: 0.1234 ( cpu=0.1234 (1s 234ms) )
+    if f"UID u0a{uid_suffix}:" in line_s or f"UID {app_uid}:" in line_s:
         m_mah = re.search(r"UID [^:]+:\s*([0-9.]+)", line_s)
         if m_mah:
             uid_power_mah = float(m_mah.group(1))
-    if "10268:" in line_s and "cpu=" in line_s and uid_power_mah == 0.0:
-        m_mah = re.search(r"cpu=([0-9.]+)", line_s)
-        if m_mah:
-            uid_power_mah = float(m_mah.group(1))
+    if f"screen=" in line_s and "cpu=" in line_s and (uid_cpu_mah == 0.0 or uid_screen_mah == 0.0):
+        # Check if preceding line was our UID
+        m_cpu = re.search(r"cpu=([0-9.]+)", line_s)
+        m_scr = re.search(r"screen=([0-9.]+)", line_s)
+        if m_cpu: uid_cpu_mah = float(m_cpu.group(1))
+        if m_scr: uid_screen_mah = float(m_scr.group(1))
 
-# Fallback: estimate from total CPU active time if batterystats power profile is minimal
+if uid_power_mah == 0.0 and uid_cpu_mah > 0:
+    uid_power_mah = uid_cpu_mah + uid_screen_mah
+
 v_avg_v = (v_start_mv + v_end_mv) / 2000.0  # mV to V
 
 # Energy calculations
@@ -250,7 +285,8 @@ crop_diagnosed = sum(1 for r in crop_results if r["decision"] == "DIAGNOSE")
 final_report = {
     "app": "AI agri care",
     "application_id": "com.aiagricare",
-    "device": f"Xiaomi POCO M4 5G ({DEVICE_SERIAL})",
+    "device": device_display,
+    "app_uid": app_uid,
     "thresholds": {
         "confidence": 0.32,
         "energy": -3.30,
@@ -271,6 +307,7 @@ final_report = {
     },
     "power_consumption": {
         "duration_seconds": round(elapsed_sec, 2),
+        "battery_capacity_mah": battery_capacity_mah,
         "battery_level_start_pct": level_start,
         "battery_level_end_pct": level_end,
         "voltage_start_mv": v_start_mv,
@@ -283,8 +320,8 @@ final_report = {
         "uid_energy_consumed_mwh": round(energy_mwh, 4),
         "uid_average_power_mw": round(power_mw, 2),
         "energy_per_scan_mj": round(energy_per_scan_mj, 2),
-        "estimated_scans_per_1pct_battery": round((4533.0 * 0.01) / (uid_power_mah / len(test_items))) if uid_power_mah > 0 else "N/A",
-        "estimated_total_scans_full_charge": round(4533.0 / (uid_power_mah / len(test_items))) if uid_power_mah > 0 else "N/A"
+        "estimated_scans_per_1pct_battery": round((battery_capacity_mah * 0.01) / (uid_power_mah / len(test_items))) if uid_power_mah > 0 else "N/A",
+        "estimated_total_scans_full_charge": round(battery_capacity_mah / (uid_power_mah / len(test_items))) if uid_power_mah > 0 else "N/A"
     },
     "individual_results": results
 }
@@ -292,8 +329,18 @@ final_report = {
 with open(OUT_PATH, "w", encoding="utf-8") as f:
     json.dump(final_report, f, indent=2)
 
+# Also write device-specific file
+dev_clean = re.sub(r"[^a-zA-Z0-9_]+", "_", f"{manufacturer}_{model}".lower().strip("_"))
+dev_out = os.path.join("benchmarks", f"{dev_clean}_classwise_power_results.json")
+with open(dev_out, "w", encoding="utf-8") as f:
+    json.dump(final_report, f, indent=2)
+if "motorola" in dev_clean:
+    edge_out = os.path.join("benchmarks", "motorola_edge60_classwise_power_results.json")
+    with open(edge_out, "w", encoding="utf-8") as f:
+        json.dump(final_report, f, indent=2)
+
 print("\n" + "=" * 80)
-print("BENCHMARK SUMMARY")
+print(f"BENCHMARK SUMMARY FOR {device_display}")
 print("=" * 80)
 print(f"Total Images: {len(results)} across {len(labels)} classes")
 print(f"Crop-Class Accuracy: {crop_correct}/{len(crop_results)} ({final_report['performance']['crop_classes_accuracy_pct']}%)")
@@ -306,6 +353,6 @@ print(f"  App Power Drain: {uid_power_mah:.4f} mAh ({energy_mwh:.4f} mWh)")
 print(f"  Average Power Draw: {power_mw:.2f} mW")
 print(f"  Energy Per Scan: {energy_per_scan_mj:.2f} mJ/scan")
 if uid_power_mah > 0:
-    print(f"  Endurance: ~{final_report['power_consumption']['estimated_scans_per_1pct_battery']} scans per 1% battery (~{final_report['power_consumption']['estimated_total_scans_full_charge']} scans on a full 4,533 mAh charge)")
-print(f"\nFull benchmark report saved to: {OUT_PATH}")
+    print(f"  Endurance: ~{final_report['power_consumption']['estimated_scans_per_1pct_battery']} scans per 1% battery (~{final_report['power_consumption']['estimated_total_scans_full_charge']} scans on a full {battery_capacity_mah:.0f} mAh charge)")
+print(f"\nFull benchmark report saved to: {OUT_PATH} and {dev_out}")
 print("=" * 80)
