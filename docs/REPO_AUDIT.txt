@@ -1,0 +1,258 @@
+# Crop Doctor - Repository Audit & Release Readiness Report (REPO_AUDIT)
+Date: 2026-11-25
+Branch: v15-model
+Status: READ-ONLY AUDIT COMPLETED (No deletes, commits, or pushes executed)
+
+================================================================================
+EXECUTIVE SUMMARY & PRE-FLIGHT CHECKS
+================================================================================
+1. Git Status:
+   - Branch: v15-model (ahead of origin/v15-model by 5 commits)
+   - Staged changes from prior step:
+     * Modified: .gitignore, README.md, app/src/test/java/com/cropdoctor/VisionParityTest.kt, docs/INSTALL_MODELS.md
+     * Staged deletions: AGENTS.md, ANTIGRAVITY_GAP_PROMPTS.md, MASTER_PLAN_14NOV.md, docs/KB_GAPS.md, docs/PROGRESS.md, seed/prompt_template.txt, leakage_report.json, metrics.json
+     * New files staged: benchmarks/aapt2_permissions.txt, docs/REPO_AUDIT.txt
+   - Working Tree: Clean (no unstaged modifications)
+
+2. Git Object & File Counts:
+   - Total Tracked Files: 634
+   - Total Object Count: 3,503 objects (323.23 MiB loose, 142 in-pack / 13.27 MiB pack)
+
+3. Thresholds Parity Verification:
+   - app/src/main/assets/thresholds.json:
+     * temperature: 0.9433
+     * confidence_threshold: 0.32
+     * energy_threshold: -3.30
+     * crop_mass_threshold: 0.40
+     * margin_threshold: 0.15
+     * borderline_energy: -9.0
+     * status: "CALIBRATED_15CLASS_TR4_OPT8"
+   - ml/thresholds.json:
+     * temperature: 0.9433
+     * confidence_threshold: 0.75
+     * energy_threshold: -4.5866
+     * crop_mass_threshold: 0.60
+     * margin_threshold: 0.25
+     * borderline_energy: -9.0
+     * status: "CALIBRATED_15CLASS_TR4"
+   - [!] DISCREPANCY DETECTED: ml/thresholds.json holds provisional TR4 validation values (conf 0.75, energy -4.5866, crop_mass 0.60, margin 0.25) whereas app/src/main/assets/thresholds.json holds the calibrated real-field values (conf 0.32, energy -3.30, crop_mass 0.40, margin 0.15). Needs synchronization.
+
+================================================================================
+LIST A: KEEP (Essential Files to Build, Run & Reproduce App & Report)
+================================================================================
+1. Core Android Application:
+   - app/src/main/java/com/cropdoctor/ (All UI, domain, audio, vision, data, and viewmodel Kotlin code)
+   - app/src/main/res/ (Layouts, themes, drawables, strings for en, te, hi)
+   - app/src/main/AndroidManifest.xml (0 INTERNET permissions; CAMERA & RECORD_AUDIO only)
+   - app/src/test/ and app/src/androidTest/ (Unit, domain, and parity test suites)
+   - app/build.gradle.kts, app/proguard-rules.pro
+   - Gradle tooling: build.gradle.kts, settings.gradle.kts, gradle.properties, gradlew, gradlew.bat, gradle/
+
+2. Production Assets:
+   - app/src/main/assets/models/vision.pte (Final 15-class MobileNetV3-Large TR4 model; 16.15 MB, well under 90 MB limit)
+   - app/src/main/assets/labels.json (15 class identifiers and metadata)
+   - app/src/main/assets/thresholds.json (Calibrated confidence, energy, crop mass, margin thresholds)
+   - app/src/main/assets/preprocess.json (Input shape 512x512, mean/std normalization)
+   - app/src/main/assets/supported_classes.json (Supported 15 classes with crop categories)
+   - app/src/main/assets/kb/knowledge_base.json (Verified trilingual agronomic advisory database)
+   - app/src/main/assets/audio/ (Trilingual offline voice guidance audio clips and manifest)
+   - app/src/main/assets/fonts/ (Noto Sans Telugu and Noto Sans Devanagari regular fonts)
+
+3. Machine Learning Training & Export Pipeline:
+   - ml/model.py (MobileNetV3-Large PyTorch architecture definition)
+   - ml/dataset.py (Cluster-split zero-leakage dataset loader with 8-stage augmentations)
+   - ml/train_vision.py (Production training script)
+   - ml/export_checkpoint.py (ExecuTorch XNNPACK export and validation logic)
+   - ml/evaluate.py (Model evaluation and metrics calculation)
+   - ml/parity_samples.json (Input/output reference tensors for Android unit test parity)
+   - ml/thresholds.json (Targeted for synchronization with app assets)
+
+4. Production Training Notebook:
+   - notebooks/Crop_Doctor_15Class_Kaggle_20ep.ipynb (The exact Kaggle notebook that produced final TR4-15 vision.pte)
+   - notebooks/Crop_Doctor_15Class_Kaggle_MaxGPU.py (Python equivalent script of the production notebook)
+
+5. Agronomic Data & Mappings:
+   - data/kb/knowledge_base.json (Trilingual agronomic knowledge base with ICAR/PJTSAU/ANGRAU citations)
+   - data/class_map.yaml (Mapping of 15 supported classes, biological pathogens, and dataset sources)
+   - data/DATASETS.md (Dataset provenance, licenses, and download instructions)
+   - data/HELPLINES.md (Verified official institutional helpline contacts)
+
+6. Setup & Installation Scripts:
+   - scripts/setup/download_datasets.py (Automated ingestion from public sources)
+   - scripts/setup/datasets_manifest.json (Dataset URLs, hashes, and class distributions)
+   - scripts/setup/download_vosk.py (Offline speech model downloader)
+   - scripts/setup/install_llama.py (Llama-3.2-1B-Instruct SpinQuant model downloader and adb push helper)
+   - scripts/setup/install_llama.md (Manual step-by-step setup documentation)
+
+7. Critical Verification & Test Scripts:
+   - scripts/test_real_field_aiagricare.py (Evaluation on real-world Indian field photos)
+   - scripts/run_classwise_and_power_test.py (Per-class latency and hardware battery/power benchmarking)
+   - scripts/validate_kb.py (Knowledge base integrity, schema, and trilingual completeness validator)
+
+8. Canonical Benchmarks & Measured Logs:
+   - benchmarks/final/metrics.json (Canonical TR4-15 evaluation metrics across all 15 classes)
+   - benchmarks/final/split_v2.json (Zero-leakage 80/20 cluster split hashes)
+   - benchmarks/aiagricare_real_field_results.json (Real field evaluation results)
+   - benchmarks/classwise_and_power_results.json (Classwise latency and power drain logs)
+   - benchmarks/aapt2_permissions.txt (Official aapt2 zero-network permission dump)
+   - benchmarks/memory_summary.md (Measured PSS peak RAM logs: ~372 MB vision, ~1,390 MB Llama)
+   - benchmarks/speed_summary.md (Measured shutter-to-result latency logs: ~320 ms vision, ~13.8 tok/s Llama)
+   - benchmarks/fallback_rate.md (Measured OOD fallback logs: 95.8% out-of-distribution rejection)
+   - Collages & UI verification images cited in REPORT.md (e.g. t2_screens_collage.png, u1_screenshots/, etc.)
+
+9. Documentation & Compliance Deliverables:
+   - README.md (Comprehensive project documentation, offline proof, reproduction guide)
+   - LICENSE (Apache 2.0 license)
+   - .gitignore (Strict exclusion of large weights, datasets, credentials, and IDE files)
+   - docs/REPORT.md, docs/REPORT.pdf, docs/REPORT.docx (Official Arm Challenge technical report)
+   - docs/CREDITS.md (Dataset, software, font, and model licenses and attributions)
+   - docs/INSTALL_MODELS.md (Detailed instructions for optional Llama & Vosk offline components)
+   - docs/NUMBER_TRACE.md (Traceability matrix of all reported benchmark metrics to raw logs)
+   - docs/AUDIT.md, docs/REQUIREMENTS.md, docs/FINAL_REQUIREMENTS.md, docs/RULES.md, docs/VERSIONS.md, docs/DEMO_SCRIPT.md
+
+================================================================================
+LIST B: REMOVE (Files to Exclude, Untrack, or Clean from Git)
+================================================================================
+1. Agent & Antigravity Specific Internal Files:
+   - AGENTS.md (Internal project development rules and prompt instructions)
+   - ANTIGRAVITY_GAP_PROMPTS.md (Internal development task prompts)
+   - MASTER_PLAN_14NOV.md (Internal work execution sprint plan)
+   - docs/PROGRESS.md (Internal agent execution logs, task checklists, and debugging notes)
+   - docs/KB_GAPS.md (Internal agronomy gap analysis notes)
+   - seed/prompt_template.txt (Internal prompt template)
+   - seed/ (Internal user draft folder)
+   - Root duplicate files: leakage_report.json, metrics.json (Redundant duplicates; canonical files kept in benchmarks/)
+
+2. Obsolete / Non-Canonical Notebooks (v1-v14 & Older Experiments):
+   - notebooks/01_data_check.ipynb (Initial exploratory data check)
+   - notebooks/02_train_and_export_vision.ipynb (Early training prototype)
+   - notebooks/02_train_vision.ipynb (Early training prototype)
+   - notebooks/03_export_vision.ipynb (Early export experiment)
+   - notebooks/03_grouped_split_and_retrain.ipynb (Earlier v2 grouping experiment)
+   - notebooks/04_v2b_21class_capped.ipynb (Superseded 21-class capped experiment)
+   - notebooks/05_train_resnet18.ipynb (Superseded ResNet-18 architecture comparison)
+   - notebooks/Crop_Doctor_20Class_512_Colab.ipynb (Superseded 20-class Colab notebook)
+   - notebooks/Crop_Doctor_Kaggle_30ep.ipynb (Superseded 30-epoch Kaggle run)
+   - notebooks/Crop_Doctor_Kaggle_MaxGPU.ipynb (Superseded Kaggle exploratory run)
+   - notebooks/Crop_Doctor_15Class_Kaggle_30ep.ipynb (30-epoch run superseded by final 20-epoch TR4 model)
+
+3. Build Outputs, Local Binaries & Tooling Caches:
+   - crop-doctor.apk (91.1 MB debug APK at root directory)
+   - app/build/ (Entire Android build output directory, intermediate DEX, APKs, AABs)
+   - build/ (Root build directory)
+   - .gradle/ (Gradle daemon cache)
+   - .kotlin/ (Kotlin compiler cache)
+   - local.properties (Local Android SDK directory pointer)
+   - scripts/__pycache__/, tools/__pycache__/, ml/__pycache__/ (Python bytecode caches)
+
+4. Intermediate Benchmarks, Scratch Directories & Raw Checkpoints:
+   - benchmarks/dummy_realtest/ (Temporary mock test folder)
+   - benchmarks/p5_staging/ (Temporary staging folder)
+   - benchmarks/phone_samples/ (Intermediate test images)
+   - benchmarks/test_inspect/ (Inspection scratch directory)
+   - benchmarks/contact_sheets/ (Intermediate visual debugging contact sheets)
+   - benchmarks/final/best_model.pth (Raw 45.6 MB PyTorch checkpoint; weights are in vision.pte)
+   - benchmarks/final/realtest_results.csv, benchmarks/compare_field_*.csv, benchmarks/p4b_table.csv (Intermediate sweep CSVs)
+   - benchmarks/after_back.png, benchmarks/after_scan_tap.png, benchmarks/clean_install_home.png, benchmarks/font_test.png, benchmarks/screen_curr.png (Temporary UI snapshots)
+   - test_photos/ (Local sample test photos)
+
+5. Intermediate / One-Off Development Scripts:
+   - scripts/build_notebook_03.py, scripts/build_notebook_04.py, scripts/build_notebook_05_resnet.py, scripts/build_notebook_r2.py, scripts/build_tr3_15_notebook.py, scripts/build_tr4_15_notebook.py, scripts/create_perfect_kaggle_notebook.py, scripts/fix_maxgpu_notebook.py (One-off notebook builders)
+   - scripts/capture_g1_screenshots.py, scripts/capture_g2_screenshots.py, scripts/capture_g3_screenshots.py, scripts/capture_helpline_dialog.py, scripts/capture_perfect_results.py, scripts/capture_t2b_flow.py, scripts/create_t2b_collage.py (One-off screenshot automations)
+
+================================================================================
+LIST C: SECRETS & PERSONAL DATA CHECK
+================================================================================
+A full recursive scan was performed across the entire working tree and all 204 git commits in git history.
+Searched patterns: token, password, secret, api_key, hf_, ghp_, github_pat_, keystore, .jks, @gmail, personal emails.
+
+FINDINGS (File and Line Only; No Secret Values Printed):
+1. API Keys & Personal Access Tokens:
+   - ghp_: 0 occurrences in repository and 0 in git history.
+   - github_pat_: 0 occurrences in repository and 0 in git history.
+   - api_key:
+     * README.md: line 260 (Prose stating: "No API keys or passwords are used or stored")
+     * Git history: 0 occurrences of secret API keys.
+   - hf_:
+     * scripts/setup/download_datasets.py: lines 168, 182, 243 (Python code variable `hf_sources = []`)
+     * Git history: Commit ef6e067 (same Python script code). No Hugging Face personal tokens.
+   - token:
+     * .gitignore: lines 14, 15, 53, 54 (Ignore patterns)
+     * FINAL_REQUIREMENTS.md: lines 24, 51, 62 (Documentation regarding tokens/s performance)
+     * README.md: lines 21, 102, 103, 105, 172, 174, 182, 185 (Documentation regarding tokens/s throughput and Llama tokenizer.bin)
+     * docs/REPORT.md & benchmark markdown files: Multiple lines citing Llama inference tokens/second throughput.
+     * Git commit messages: d5c521b, c7355b0, 91a5105, 280df36 (Messages citing "150-token prompt" or "token breakdown").
+     * Git history: 0 private authentication tokens found.
+
+2. Passwords:
+   - README.md: line 260 (Prose stating: "No API keys or passwords are used or stored")
+   - benchmarks/badge_dump.xml: line 1 (Android UI dump attribute `password="false"`)
+   - benchmarks/drawer_dump.xml: line 1 (Android UI dump attribute `password="false"`)
+   - benchmarks/fallback_result_dump.xml: line 1 (Android UI dump attribute `password="false"`)
+   - benchmarks/fallback_scrolled.xml: line 1 (Android UI dump attribute `password="false"`)
+   - benchmarks/launcher_dump.xml: line 1 (Android UI dump attribute `password="false"`)
+   - benchmarks/ui_now.xml: line 1 (Android UI dump attribute `password="false"`)
+   - benchmarks/ui_physical_phone.xml: line 1 (Android UI dump attribute `password="false"`)
+   - docs/REPO_AUDIT.txt: line 49 (Audit report text)
+   - Git history: 0 passwords found across all commits.
+
+3. Secrets & Keystores:
+   - .gitignore: line 16 (`*secret*`), line 17 (`*.jks`), line 18 (`*.keystore`)
+   - benchmarks/fallback_rate.md: line 8 (Prose stating app was signed with standard Android debug keystore)
+   - benchmarks/memory_summary.md: line 8 (Prose stating app was signed with standard Android debug keystore)
+   - benchmarks/speed_summary.md: line 8 (Prose stating app was signed with standard Android debug keystore)
+   - docs/AUDIT.md: line 15 (Audit documentation)
+   - docs/REQUIREMENTS.md: line 41 (Rule H2 citation)
+   - Git history: 0 keystores, private keys, or certificates committed.
+
+4. Emails & Personal Identifiers:
+   - @gmail in Git Commit History:
+     * Git author / committer logs contain: `varun-gajula <<path>varun@gmail.com>`
+   - Institutional Email in Repository:
+     * data/HELPLINES.md: line 28 (Official institutional contact `farmercallcentre@angrau.ac.in` quoted from ANGRAU public webpage)
+   - Local Username in File Paths (`<path>`):
+     * benchmarks/d5b_pest_audit.md: lines 11, 17, 22
+     * benchmarks/d6_class_audit.md: line 52
+     * benchmarks/d7_checkpoint.md: line 99
+     * benchmarks/p4_probe_manifest.json: lines 1403, 1412, 1421, 1430, 1439, 1448, 1457, 1466, 1475, 1484, 1493, 1502, 1511, 1520, 1529
+     * docs/INSTALL_MODELS.md: line 81 (Fixed to generic `<path-to-downloads>` in staged commit)
+
+================================================================================
+LIST D: VERIFICATION OF REQUIRED ARTIFACTS
+================================================================================
+Checked item by item against repository disk and git tracking:
+
+1. README.md: PRESENT (25,624 bytes)
+2. LICENSE: PRESENT (10,295 bytes, Apache 2.0)
+3. .gitignore: PRESENT (1,942 bytes)
+4. app/ (with final vision .pte under 90 MB): PRESENT
+   - app/src/main/assets/models/vision.pte is 16,931,132 bytes (16.15 MB, well under 90 MB)
+5. ml/thresholds.json: PRESENT (738 bytes; values need synchronization with app assets)
+6. ml/labels: MISSING in ml/ directory
+   - Note: Canonical labels file exists at app/src/main/assets/labels.json. ml/ directory currently lacks `labels` or `labels.json`.
+7. data/kb/ (knowledge base + schema):
+   - data/kb/knowledge_base.json: PRESENT (298,108 bytes, trilingual content)
+   - data/kb/kb.schema.json: MISSING
+   - Note: Knowledge base is currently validated programmatically by scripts/validate_kb.py, but standalone kb.schema.json does not exist.
+8. notebooks/ (the notebook that produced the FINAL model): PRESENT
+   - notebooks/Crop_Doctor_15Class_Kaggle_20ep.ipynb (Task TR4 15-class 20-epoch training notebook that generated vision.pte)
+9. scripts/setup/ (download and install scripts): PRESENT
+   - Contains download_datasets.py, download_vosk.py, install_llama.py, install_llama.md, datasets_manifest.json
+10. scripts/test_real_field_aiagricare.py: PRESENT (10,274 bytes)
+11. scripts/run_classwise_and_power_test.py: PRESENT (14,623 bytes)
+12. benchmarks/aiagricare_real_field_results.json: PRESENT (10,242 bytes)
+13. benchmarks/classwise_and_power_results.json: PRESENT (18,664 bytes)
+14. benchmarks/final/metrics.json: PRESENT (10,375 bytes)
+15. the aapt2 permissions output: PRESENT
+   - benchmarks/aapt2_permissions.txt (286 bytes; staged for commit)
+16. docs/INSTALL_MODELS.md: PRESENT (11,739 bytes)
+17. docs/CREDITS (licences): PRESENT
+   - docs/CREDITS.md (9,790 bytes)
+18. datasets_manifest.json: PRESENT at scripts/setup/datasets_manifest.json (9,076 bytes)
+   - Note: Missing at root level if root location was explicitly required.
+
+SUMMARY OF MISSING OR DISCREPANT ARTIFACTS:
+- ml/labels (or ml/labels.json): MISSING
+- data/kb/kb.schema.json: MISSING
+- ml/thresholds.json: Values differ from app/src/main/assets/thresholds.json
+- root datasets_manifest.json: Located at scripts/setup/datasets_manifest.json instead of repo root.

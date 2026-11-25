@@ -78,7 +78,7 @@ If you have USB debugging enabled and `adb` installed on your computer, you can 
 From the repository root on your computer:
 ```powershell
 # 1. Verify license and push Llama 3.2 1B + Tokenizer
-python scripts/setup/install_llama.py --model "C:\Users\<USERNAME>\Downloads\Llama-3.2-1B-Instruct-SpinQuant_INT4_EO8.pte" --tokenizer "C:\Users\<USERNAME>\Downloads\tokenizer.model" --accept-license
+python scripts/setup/install_llama.py --model "<path-to-downloads>\Llama-3.2-1B-Instruct-SpinQuant_INT4_EO8.pte" --tokenizer "<path-to-downloads>\tokenizer.model" --accept-license
 
 # 2. Download, verify, and push Vosk speech recognition models
 python scripts/setup/download_vosk.py

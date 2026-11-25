@@ -1,0 +1,173 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "CropDoctorKnowledgeBase",
+  "type": "object",
+  "required": [
+    "version",
+    "classes"
+  ],
+  "properties": {
+    "version": {
+      "type": "string"
+    },
+    "generated_for": {
+      "type": "string"
+    },
+    "project": {
+      "type": "string"
+    },
+    "total_classes": {
+      "type": "integer"
+    },
+    "classes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "class_id",
+          "index",
+          "crop",
+          "type",
+          "pathogen",
+          "names",
+          "needs_expert_review",
+          "referral_threshold",
+          "immediate_step",
+          "explain_text",
+          "treatment",
+          "regional",
+          "prevention_and_field_practice",
+          "early_warning_signs",
+          "when_to_call_extension_officer"
+        ],
+        "properties": {
+          "class_id": {
+            "type": "string"
+          },
+          "index": {
+            "type": "integer"
+          },
+          "crop": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "disease",
+              "pest",
+              "healthy"
+            ]
+          },
+          "pathogen": {
+            "type": "string"
+          },
+          "referral_threshold": {
+            "type": "string"
+          },
+          "needs_expert_review": {
+            "type": "boolean"
+          },
+          "source": {
+            "type": "string"
+          },
+          "source_url": {
+            "type": "string"
+          },
+          "date_read": {
+            "type": "string"
+          },
+          "stage": {
+            "type": "string"
+          },
+          "names": {
+            "type": "object",
+            "required": [
+              "en",
+              "te",
+              "hi"
+            ],
+            "properties": {
+              "en": {
+                "type": "string"
+              },
+              "te": {
+                "type": "string"
+              },
+              "hi": {
+                "type": "string"
+              }
+            }
+          },
+          "immediate_step": {
+            "type": "object",
+            "required": [
+              "en",
+              "te",
+              "hi"
+            ],
+            "properties": {
+              "en": {
+                "type": "string"
+              },
+              "te": {
+                "type": "string"
+              },
+              "hi": {
+                "type": "string"
+              }
+            }
+          },
+          "explain_text": {
+            "type": "object",
+            "required": [
+              "en",
+              "te",
+              "hi"
+            ],
+            "properties": {
+              "en": {
+                "type": "string"
+              },
+              "te": {
+                "type": "string"
+              },
+              "hi": {
+                "type": "string"
+              }
+            }
+          },
+          "severity_advice": {
+            "type": "object"
+          },
+          "treatment": {
+            "type": "object",
+            "required": [
+              "natural",
+              "chemical"
+            ],
+            "properties": {
+              "natural": {
+                "type": "array"
+              },
+              "chemical": {
+                "type": "array"
+              }
+            }
+          },
+          "regional": {
+            "type": "object"
+          },
+          "prevention_and_field_practice": {
+            "type": "array"
+          },
+          "early_warning_signs": {
+            "type": "array"
+          },
+          "when_to_call_extension_officer": {
+            "type": "array"
+          }
+        }
+      }
+    }
+  }
+}

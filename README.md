@@ -1,338 +1,295 @@
-# Agri Care AI (Offline)
+# AI Agri Care
 
-> **Offline Crop Disease & Pest Detection and Advisory for Farmers**  
-> *Developed for the Arm "Bharat AI-SoC Challenge 2026–27" (Problem Statement 1: Offline crop disease/pest detection and advisory for farmers)*  
-> Target Device: Any Android phone with 6 GB physical RAM and a 64-bit Arm CPU (`arm64-v8a`), minSdk 26 (Android 8.0+), Android 10+ recommended.
+> **100% Offline Edge-AI Crop Disease and Pest Advisory System for Android**
 
-[![Network Permissions](https://img.shields.io/badge/Network_Permissions-0_(INTERNET_absent)-success.svg)](benchmarks/aapt2_permissions_release.txt)
-[![Hardware Target](https://img.shields.io/badge/Hardware-64--bit_Arm_CPU_(6_GB_RAM)-blue.svg)](docs/REPORT.md)
-[![Vision Runtime](https://img.shields.io/badge/Vision-MobileNetV3--Large_%7C_ExecuTorch_0.6.0-orange.svg)](docs/REPORT.md)
-[![Advisory Engine](https://img.shields.io/badge/Advisory-Llama_3.2_1B_%7C_SpinQuant_INT4-purple.svg)](docs/REPORT.md)
-[![License](https://img.shields.io/badge/License-Apache_2.0-green.svg)](LICENSE)
+`[Android 8+ (minSdk 26)]` `[ExecuTorch MobileNetV3-Large]` `[Llama 3.2 1B Instruct]` `[100% Offline · Zero Cloud]` `[Apache-2.0]`
 
 ---
 
-## 1. Overview
-In rural farming communities, cellular coverage frequently drops deep in the fields where crop diseases and pest outbreaks first appear. **Agri Care AI** is an edge-native, zero-cloud Android application engineered to run 100% offline on consumer Arm System-on-Chips (SoCs).
+## Links
 
-Using a decoupled two-lane edge architecture, Agri Care AI captures an affected leaf or pest photo, delivers disease/pest identification and lesion severity in under 1.5 seconds, and provides grounded, actionable treatment recommendations in **Telugu (తెలుగు)**, **Hindi (हिन्दी)**, and **English**, all within an accessible 60-second field workflow.
-
-> [!NOTE]
-> **First-Time Model Setup**: The app works 100% offline out-of-the-box (vision, treatment advice, and case reports work with zero extra downloads). Installing the optional Llama 3.2 1B and Vosk speech models enables on-device AI explanations, interactive offline chat, and voice questions. See [Section 5.5](#55-first-time-setup-ai-model-files-optional) or the detailed [Setup Guide](docs/INSTALL_MODELS.md).
+- **Demo Video:** [Watch Demo Video (<placeholder>)](https://github.com/varun-gajula/crop-doctor-offline)
+- **Final Project Report:** docs/Final_Project_Report.docx *(submission document)*
+- **Releases:** [Download Latest APK (<releases link>)](https://github.com/varun-gajula/crop-doctor-offline/releases)
 
 ---
 
-## 2. Two-Lane On-Device Architecture
+## The Problem & The Solution
+
+### The Problem (PS1)
+Smallholder farmers in semi-arid and remote regions frequently lack reliable cellular connectivity when diagnosing crop diseases in the field. Cloud-dependent agricultural apps fail entirely under zero-connectivity conditions, while high latency, generic advice, and language barriers prevent timely intervention.
+
+### What AI Agri Care Does
+**AI Agri Care** is a standalone, completely offline Android application designed for edge execution. Without requiring internet access, data packets, or external server calls:
+1. **Detects Crops Automatically:** Automatically identifies the crop type (Rice, Cotton, Chilli, Maize, Tomato) or accepts manual selection.
+2. **Diagnoses Diseases & Pests:** Classifies 15 specific conditions (6 fungal/bacterial diseases, 3 destructive insect pests, 5 healthy crop states, and 1 non-crop rejection).
+3. **Calculates Severity & Urgency:** Estimates visual leaf lesion coverage and urgency tier (*Early warning*, *Act this week*, *Act now*).
+4. **Delivers Sourced Localized Advice:** Provides deterministic cultural, biological, and chemical recommendations in English, Telugu, and Hindi from 576 sourced passages (ICAR, PJTSAU, ANGRAU as listed in data/kb), pending expert review.
+5. **Explains in Plain Language:** Optionally streams an on-device explanation via an embedded ExecuTorch Llama 3.2 1B Instruct LLM.
+
+### 4-Step Field Diagnostic Flow
+```
+[ 1. Capture ] ──> [ 2. Vision Gate ] ──> [ 3. Advisory Match ] ──> [ 4. Action Plan ]
+  Snap leaf          MobileNetV3           Deterministic KB           Treatment tiers,
+  photo in field     auto-detect +         576 sourced passages       Llama explanation,
+  (Airplane Mode)    calibrated gates      in En / Te / Hi            or Extension call
+```
+
+---
+
+## Key Features
+
+- **100% Offline by Design:** Operates under Airplane Mode with zero internet permissions in the Android manifest (Rule H1 verified via `aapt2`).
+- **15 Supported Classes:** 6 high-impact crop diseases, 3 destructive pests, 5 healthy baselines, and 1 background non-crop class.
+- **Auto Crop Detection:** Automatically classifies crop type from camera frames with optional manual override chips.
+- **Severity & Urgency Scoring:** Automated lesion-to-leaf surface area ratio estimation and three-tier urgency classification (*Early warning / Act this week / Act now*).
+- **Trilingual Localization:** Complete native UI, speech recognition, and localized advice in English, Telugu (తెలుగు), and Hindi (हिन्दी).
+- **Sourced Regional Knowledge Base:** 576 sourced passages (ICAR, PJTSAU, ANGRAU as listed in data/kb), pending expert review.
+- **On-Device Llama 3.2 Explanation:** Fully local ExecuTorch Llama 3.2 1B Instruct model synthesizes natural-language explanations without cloud calls.
+- **Offline Voice & Read-Aloud:** Vosk offline speech recognition in English, Hindi and Telugu (Telugu recognition is limited). Read-aloud uses pre-rendered bundled Opus audio clips from app assets for reviewed guidance, falling back to Android system TextToSpeech (if installed on the phone) for dynamic text; Llama output is never routed to Telugu audio (Rule H6).
+- **Offline Chat:** Interactive multi-turn chat answering farmer questions directly from local knowledge base guidance.
+- **Case Report Export:** Instant generation and local sharing of case diagnostic summaries for extension officers.
+- **One-Touch Extension Hotline:** Direct phone dialer integration to Kisan Call Centre (`1800-180-1551`) and regional university helplines.
+
+---
+
+## Architecture
+
+AI Agri Care separates visual perception from safety-critical advisory recommendations through two decoupled pipelines joined by a deterministic local knowledge base:
 
 ```
-                          [ Leaf / Pest Photo ]
-                                    │
-                                    ▼
-       ┌────────────────────────────────────────────────────────┐
-       │             LANE 1: VISION INFERENCE (LOCAL)           │
-       │  MobileNetV3-Large · ExecuTorch 0.6.0 (XNNPACK Arm64)  │
-       │  Input: 320x320 RGB planar tensor                      │
-       │  Output: Class ID (0-20), Softmax Confidence, Energy   │
-       └────────────────────────────┬───────────────────────────┘
-                                    │
-                                    ▼
-       ┌────────────────────────────────────────────────────────┐
-       │         DETERMINISTIC AGRONOMIC RULES ENGINE           │
-       │  - Severity: Leaf lesion area + Field spread question  │
-       │  - Urgency: Early warning / Act this week / Act now   │
-       │  - Certainty: Sure / Probably / Not sure               │
-       └────────────────────────────┬───────────────────────────┘
-                                    │
-                                    ▼
-       ┌────────────────────────────────────────────────────────┐
-       │           LOCAL TRILINGUAL KNOWLEDGE BASE              │
-       │  - Verified agronomic entries (PJTSAU, ANGRAU, ICAR)   │
-       │  - Natural/traditional & CIB&RC-registered chemicals   │
-       │  - English, Telugu (తెలుగు), Hindi (हिन्दी)            │
-       └────────────────────────────┬───────────────────────────┘
-                                    │
-                    ┌───────────────┴───────────────┐
+                      ┌─────────────────────────────────────────┐
+                      │            INPUT LEAF PHOTO             │
+                      └────────────────────┬────────────────────┘
+                                           │
+                                           ▼
+ ┌─────────────────────────────────────────────────────────────────────────────────────┐
+ │ VISION LANE (ExecuTorch MobileNetV3-Large · 16.1 MB · FP32 Linear Classification Head)│
+ ├─────────────────────────────────────────────────────────────────────────────────────┤
+ │ 1. Preprocessing: 512x512 RGB with ImageNet mean [0.485, 0.456, 0.406] and std      │
+ │    [0.229, 0.224, 0.225] (bilinear interpolation)                                   │
+ │ 2. Backbone Feature Extraction: MobileNetV3-Large with linear head nn.Linear(960, 15)│
+ │ 3. Calibrated Temperature Scaling: T = 0.9433                                       │
+ │ 4. Multi-Gate Safety Filters (Pure Kotlin Code in VisionMath.kt):                   │
+ │    • Crop Mass Gate: cropMass >= 0.40                                               │
+ │    • Energy Gate: freeEnergy <= -3.30 (lower is in-distribution; > -3.30 rejects)   │
+ │    • Confidence Gate: top1Prob >= 0.32                                              │
+ │    • Margin Gate: margin >= 0.15                                                    │
+ └──────────────────┬───────────────────────────────┬──────────────────────────────────┘
+                    │ [PASS: Diagnosis]             │ [FAIL: Out-of-Distribution]
                     ▼                               ▼
-       [ Result UI (< 1.5s) ]          ┌──────────────────────────┐
-       - Diagnosis & Urgency Badge     │ LANE 2: ADVISORY REASON  │
-       - Natural / Chemical Tiers      │ Llama 3.2 1B-Instruct    │
-       - Emergency Referral Action     │ ExecuTorch 0.6.0 INT4    │
-       - Offline Audio / Read-aloud    │ Streamed plain-language  │
-                                       │ explanation (< 500 MB)   │
-                                       └────────────┬─────────────┘
-                                                    │
-                                                    ▼
-                                       ┌──────────────────────────┐
-                                       │ IN-PROCESS SAFETY GUARD  │
-                                       │ - Scrubs hallucinated    │
-                                       │   dosages & products     │
-                                       │ - Fallback: Offline guide│
-                                       └──────────────────────────┘
+ ┌──────────────────────────────────────┐  ┌───────────────────────────────────────────┐
+ │ ADVISORY LANE (Deterministic KB)     │  │ SAFETY FALLBACK GATES                     │
+ ├──────────────────────────────────────┤  ├───────────────────────────────────────────┤
+ │ • 576 sourced passages (JSON)        │  │ • CAN'T TELL (Blurry / Poor lighting)     │
+ │ • Cultural & biological management   │  │ • OUT OF CLASS (Unsupported leaf)         │
+ │ • Chemical options; doses are shown  │  │ • Direct helpline referral (1800-180-1551)│
+ │   only when verified, otherwise      │  └───────────────────────────────────────────┘
+ │   follow product label               │
+ └──────────────────┬───────────────────┘
+                    │
+                    ▼
+ ┌─────────────────────────────────────────────────────────────────────────────────────┐
+ │ OPTIONAL EXPLANATION (ExecuTorch Llama 3.2 1B Instruct · 4-bit Groupwise SpinQuant)  │
+ ├─────────────────────────────────────────────────────────────────────────────────────┤
+ │ • Context-grounded plain-language summary                                           │
+ │ • Available RAM checked before loading Llama (requires >= 1,500 MB available RAM    │
+ │   via MemoryBudgetDecider); model is released after 60 s idle                       │
+ └─────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
-1. **Vision Lane (Perception)**: Executes synchronously upon shutter capture. Runs an optimized, calibrated MobileNetV3-Large neural network (`vision.pte`, 14.25 MB) via ExecuTorch XNNPACK targeting Arm NEON vector SIMD instructions.
-2. **Advisory Lane (Reasoning)**: Executes asynchronously. Runs Meta Llama 3.2 1B-Instruct via ExecuTorch with 4-bit SpinQuant quantization on the Arm CPU, grounded strictly in the verified Knowledge Base.
-3. **Deterministic Rules & Knowledge Base**: Sourced from state agricultural universities (PJTSAU, ANGRAU) and ICAR institutes. Enforces safety decisions, emergency escalation (Kisan Call Centre 1800-180-1551), and dosage protection.
+> **Safety Architecture Note:** Safety decisions are implemented strictly in plain Kotlin code (`VisionMath.kt` and `ExecuTorchClassifier.kt`). The LLM is never in the decision loop—it only explains pre-validated diagnoses and sourced KB remedies.
 
 ---
 
-## 3. Supported Crops & Shipped Classes (21 Classes)
-Covering high-priority crops across Telangana, Andhra Pradesh, and India:
-1. **Rice (వరి / धान)**: Bacterial leaf blight, Brown spot, Leaf blast, Sheath blight, Healthy.
-2. **Cotton (పత్తి / कपास)**: Bacterial blight, Fusarium wilt, Healthy.
-3. **Chilli (మిరప / मिर्च)**: Bacterial spot, Leaf curl virus, Healthy.
-4. **Tomato (టమాటా / टमाटर)**: Early blight, Late blight, Yellow leaf curl virus, Spider mites (*Pest*), Healthy.
-5. **Maize (మొక్కజొన్న / मक्का)**: Gray leaf spot, Common rust, Northern leaf blight, Fall armyworm (*Pest*), Healthy.
+## Supported Classes (15 Classes)
+
+| # | Class ID | English | Telugu (తెలుగు) | Hindi (हिन्दी) | Type |
+|:---|:---|:---|:---|:---|:---|
+| 1 | `rice_leaf_blast` | Rice Leaf Blast | వరి అగ్గి తెగులు | धान का झोंका रोग (ब्लास्ट) | Disease |
+| 2 | `rice_healthy` | Healthy Rice | ఆరోగ్యకరమైన వరి | स्वस्थ धान | Healthy |
+| 3 | `cotton_bacterial_blight` | Cotton Bacterial Blight | పత్తి బ్యాక్టీరియా ఆకుమచ్చ తెగులు | कपास का जीवाणु झुलसा | Disease |
+| 4 | `cotton_healthy` | Healthy Cotton | ఆరోగ్యకరమైన పత్తి | स्वस्थ कपास | Healthy |
+| 5 | `chilli_leaf_curl_virus` | Chilli Leaf Curl Virus | మిరప ఆకు ముడత తెగులు | मिर्च का पत्ती मरोड़ रोग | Disease |
+| 6 | `chilli_healthy` | Healthy Chilli | ఆరోగ్యకరమైన మిరప | स्वस्थ मिर्च | Healthy |
+| 7 | `maize_northern_leaf_blight` | Maize Northern Leaf Blight | మొక్కజొన్న ఆకు మాడు తెగులు | मक्का का उत्तरी पत्ती झुलसा | Disease |
+| 8 | `maize_common_rust` | Maize Common Rust | మొక్కజొన్న తుప్పు తెగులు | मक्का का रतुआ रोग | Disease |
+| 9 | `maize_healthy` | Healthy Maize | ఆరోగ్యకరమైన మొక్కజొన్న | स्वस्थ मक्का | Healthy |
+| 10 | `maize_fall_armyworm` | Maize Fall Armyworm | మొక్కజొన్న కత్తెర పురుగు | मक्का का फॉल आर्मीवर्म | Pest |
+| 11 | `rice_stem_borer` | Rice Yellow Stem Borer | వరి కాండం తొలుచు పురుగు | धान का पीला तना छेदक | Pest |
+| 12 | `rice_hispa` | Rice Hispa | వరి హిస్పా (ముళ్ల పురుగు) | धान का हिस्पा कीट | Pest |
+| 13 | `tomato_healthy` | Healthy Tomato | ఆరోగ్యకరమైన టమాటా | स्वस्थ टमाटर | Healthy |
+| 14 | `tomato_septoria_leaf_spot` | Tomato Septoria Leaf Spot | టమాటా సెప్టోరియా ఆకుమచ్చ తెగులు | टमाटर का सेप्टोरिया धब्बा रोग | Disease |
+| 15 | `other_not_a_crop` | Non-Crop / Weeds | పంట కానిది / ఇతర మొక్కలు | गैर-फसल / खरपतवार | Out of Class |
 
 ---
 
-## 4. Performance: What is Measured vs What is Not
+## Decision Thresholds
 
-Every number below comes from a logged measurement saved in `benchmarks/`. Zero figures are estimated or simulated (Rule H3 & H12).
+| Parameter | Calibrated Value | Meaning & Role |
+| :--- | :--- | :--- |
+| **Calibration Method** | `single_scalar_temperature_scaling` | Logit probability calibration |
+| **Temperature (T)** | `0.9433` | Post-hoc temperature divisor |
+| **Confidence Threshold** | `0.32` | Minimum calibrated softmax probability required to diagnose |
+| **Energy Threshold** | `-3.30` | Free-energy cutoff: E(x) = -T * log(sum(exp(z_i / T))) <= -3.30 |
+| **Crop Mass Threshold** | `0.40` | Minimum sum of leaf foreground probability |
+| **Margin Threshold** | `0.15` | Minimum difference between top-1 and top-2 softmax scores |
+| **Calibration Status** | `CALIBRATED_15CLASS_TR4_OPT8` | Verified across test suite |
 
-### 4.1 What is Measured
-
-| Metric | Target Budget | Measured Value | Benchmark Source Log |
-|---|---|---|---|
-| **Network Permissions** | Exactly 0 | **0 network permissions** (`INTERNET` absent) | [`benchmarks/aapt2_permissions_release.txt`](benchmarks/aapt2_permissions_release.txt) |
-| **Airplane Mode Operation** | 100% Offline | **0 network permissions** (offline unit tests passing; video unfinalized) | [`benchmarks/aapt2_permissions_release.txt`](benchmarks/aapt2_permissions_release.txt) |
-| **Cold App Startup** | $\le 2,000\text{ ms}$ | **1,528.0 ms** mean on 6 GB phone debug; Release on phone **not yet measured** (369.2 ms on emulator) | [`benchmarks/speed_summary.md`](benchmarks/speed_summary.md) |
-| **Shutter to Result (Field Leaves)** | $\le 1,500\text{ ms}$ | **117.10 ms** mean on 6 GB Arm phone (85–169 ms) | [`benchmarks/speed_summary_real_leaves.json`](benchmarks/speed_summary_real_leaves.json) |
-| **Vision Inference (`vision.pte`)** | $< 150\text{ ms}$ | **57.54 ms** mean on Arm CPU (49.1% of pipeline) | [`benchmarks/speed_summary.md`](benchmarks/speed_summary.md) |
-| **Llama 3.2 1B Throughput** | $\ge 2.0\text{ tok/s}$ | **11.94 tokens/s** mean decode on Arm CPU | [`benchmarks/speed_summary.md`](benchmarks/speed_summary.md) |
-| **Llama Time to First Token** | - | **4,087.0 ms** mean prefill latency | [`benchmarks/llama_speed.md`](benchmarks/llama_speed.md) |
-| **Peak Memory (Idle / Vision)** | $\le 500\text{ MB PSS}$ | **147.68 MB PSS** idle on 6 GB phone debug (186.81 MB with vision); Release on phone **not yet measured** (31.97 MB on emulator) | [`benchmarks/mem_a_idle_start.txt`](benchmarks/mem_a_idle_start.txt) |
-| **Peak Memory (With Llama)** | $\le 2,500\text{ MB PSS}$ | **1,706.55 MB PSS** peak during token decode | [`benchmarks/mem_d_llama_streaming_peak.txt`](benchmarks/mem_d_llama_streaming_peak.txt) |
-| **Memory Reclaim (60s Idle)** | $\le 500\text{ MB PSS}$ | **243.79 MB PSS** (reclaims 1.45 GB native heap) | [`benchmarks/mem_e_60s_after_release.txt`](benchmarks/mem_e_60s_after_release.txt) |
-| **Real-Photo Accuracy (21 Classes)** | - | **not yet measured** (model in use has 21.16% near-duplicate leakage in `benchmarks/metrics.json`) | [`benchmarks/metrics.json`](benchmarks/metrics.json) |
-| **Llama Guardrail Grounding** | $\ge 18/20$ | **20/20 English (100%)** & **20/20 Hindi (100%)** | [`benchmarks/llama_english_eval.md`](benchmarks/llama_english_eval.md) |
-| **Usability Comprehension** | $< 60\text{ s}$ | **not yet measured** (`docs/USABILITY_TEST_SHEET.md` is UNVERIFIED pending tester confirmation) | [`docs/USABILITY_TEST_SHEET.md`](docs/USABILITY_TEST_SHEET.md) |
-| **Binary Artifact Sizes** | APK $< 90\text{ MB}$ | **54.4 MB** APK (`vision.pte` 14.25 MB in assets) | [`benchmarks/apk_size.txt`](benchmarks/apk_size.txt) |
-
-### 4.2 What is Not Measured / Known Limitations
-- **Thermal throttling over 1+ hours continuous LLM generation**: The app mitigates this by automatically unloading Llama from memory after 60 seconds of idle inactivity, but sustained generation beyond 15 continuous minutes has not been benchmarked.
-- **Dedicated NPU Acceleration**: ExecuTorch currently executes via the CPU XNNPACK backend targeting Arm NEON vector SIMD. NPU acceleration backends (e.g. Qualcomm QNN / MediaTek Neuropilot) are not enabled in this build.
-- **Crops outside the five**: Symptoms on crops other than Rice, Cotton, Chilli, Tomato, and Maize are outside the model's 21-class taxonomy and route to *"Can't tell - ask an extension officer"*.
+*Thresholds were chosen on the same 30 photos; this is not an independent estimate.*
 
 ---
 
-## 5. Build & Installation Steps
+## Measured Performance & Hardware Benchmarks
 
-### Prerequisites
-- Java Development Kit (JDK 17 or 21)
-- Android SDK with platform-tools and build-tools 34.0.0+ (`compileSdk = 35`, `minSdk = 26`)
-- Git
+All hardware metrics were measured on physical hardware: **POCO M4 5G (6 GB RAM, MediaTek Dimensity 700, Android 14)**.
 
-### 5.1 Clone Repository
-```bash
-git clone https://github.com/varun-gajula/crop-doctor-offline.git
-cd crop-doctor-offline
+| Metric | Measured Value | Benchmark Source File |
+| :--- | :--- | :--- |
+| **Grouped Test Accuracy** | **97.95%** | [benchmarks/final/metrics.json](benchmarks/final/metrics.json) |
+| **Macro-Averaged Accuracy** | **98.18%** | [benchmarks/final/metrics.json](benchmarks/final/metrics.json) |
+| **PlantDoc Stress Test Accuracy** | **66.1%** | [benchmarks/final/metrics.json](benchmarks/final/metrics.json) |
+| **Real-Device Field Crop Detection** | **28/28 (100%)** | [benchmarks/aiagricare_real_field_results.json](benchmarks/aiagricare_real_field_results.json) |
+| **Real-Device Field Top-1 Diagnosis** | **27/28 (96.4%)** | [benchmarks/aiagricare_real_field_results.json](benchmarks/aiagricare_real_field_results.json) |
+| **Vision Inference Latency** | **~460 ms** (avg per scan) | [benchmarks/classwise_and_power_results.json](benchmarks/classwise_and_power_results.json) |
+| **Energy Consumption** | **139.55 mJ** per scan | [benchmarks/classwise_and_power_results.json](benchmarks/classwise_and_power_results.json) |
+| **Peak Memory Footprint (Llama Active)** | **1,634 MB** | [benchmarks/memory_summary.md](benchmarks/memory_summary.md) |
+| **Llama 3.2 Time to First Token (TTFT)** | **9,680.2 ms** | [benchmarks/speed_summary.md](benchmarks/speed_summary.md) |
+| **Internet Permissions** | **0** (`INTERNET` forbidden) | [benchmarks/aapt2_permissions.txt](benchmarks/aapt2_permissions.txt) |
+
+*Tested on one phone (POCO M4 5G, 6 GB).*
+
+---
+
+## Screenshot Gallery
+
+### Core Application Flow
+| 1. Language Select | 2. Crop Select | 3. Camera Scan | 4. Top-1 Diagnosis |
+| :---: | :---: | :---: | :---: |
+| ![Language](docs/screenshots/flow_01_language_selection.png) | ![Crop](docs/screenshots/flow_02_crop_selection.png) | ![Camera](docs/screenshots/flow_03_camera_scan.png) | ![Diagnosis](docs/screenshots/flow_04_result_diagnosis.png) |
+
+| 5. Certainty & Severity | 6. Treatment Tiers | 7. Llama Explanation | 8. Share Case Report |
+| :---: | :---: | :---: | :---: |
+| ![Certainty](docs/screenshots/flow_05_certainty_severity.png) | ![Treatments](docs/screenshots/flow_06_treatment_tiers.png) | ![Llama](docs/screenshots/flow_07_llama_explanation.png) | ![Share](docs/screenshots/flow_08_case_report_share.png) |
+
+| 9. Extension Referral | 10. Can't Tell (Non-Crop) | 11. AI Model Manager | 12. Telugu Localized |
+| :---: | :---: | :---: | :---: |
+| ![Referral](docs/screenshots/flow_09_extension_referral.png) | ![Can't Tell](docs/screenshots/flow_10_cant_tell_non_crop.png) | ![Models](docs/screenshots/flow_11_install_ai_models.png) | ![Telugu](docs/screenshots/flow_12_result_telugu.png) |
+
+| 13. Hindi Localized | 14. Airplane Mode (100% Offline) | 15. Offline Chat Q&A | 16. Voice-to-Text Input |
+| :---: | :---: | :---: | :---: |
+| ![Hindi](docs/screenshots/flow_13_result_hindi.png) | ![Offline](docs/screenshots/flow_14_airplane_mode_offline.png) | ![Chat](docs/screenshots/flow_15_chat_question_answer.png) | ![Voice](docs/screenshots/flow_16_voice_to_text.png) |
+
+| 17. Read-Aloud |
+| :---: |
+| ![Read Aloud](docs/screenshots/flow_17_read_aloud.png) |
+
+### Supported Class Diagnoses (Physical Device Captures)
+| 01. Rice Leaf Blast | 02. Rice Healthy | 03. Cotton Bacterial Blight | 04. Cotton Healthy |
+| :---: | :---: | :---: | :---: |
+| ![Rice Blast](docs/screenshots/classes/01_rice_leaf_blast.png) | ![Rice Healthy](docs/screenshots/classes/02_rice_healthy.png) | ![Cotton Blight](docs/screenshots/classes/03_cotton_bacterial_blight.png) | ![Cotton Healthy](docs/screenshots/classes/04_cotton_healthy.png) |
+
+| 05. Chilli Leaf Curl | 06. Chilli Healthy | 07. Maize Northern Blight | 08. Maize Common Rust |
+| :---: | :---: | :---: | :---: |
+| ![Chilli Curl](docs/screenshots/classes/05_chilli_leaf_curl_virus.png) | ![Chilli Healthy](docs/screenshots/classes/06_chilli_healthy.png) | ![Maize Blight](docs/screenshots/classes/07_maize_northern_leaf_blight.png) | ![Maize Rust](docs/screenshots/classes/08_maize_common_rust.png) |
+
+| 09. Maize Healthy | 10. Maize Fall Armyworm | 11. Rice Stem Borer | 12. Rice Hispa |
+| :---: | :---: | :---: | :---: |
+| ![Maize Healthy](docs/screenshots/classes/09_maize_healthy.png) | ![Fall Armyworm](docs/screenshots/classes/10_maize_fall_armyworm.png) | ![Stem Borer](docs/screenshots/classes/11_rice_stem_borer.png) | ![Rice Hispa](docs/screenshots/classes/12_rice_hispa.png) |
+
+| 13. Tomato Healthy | 14. Tomato Septoria Spot | 15. Other / Non-Crop |
+| :---: | :---: | :---: |
+| ![Tomato Healthy](docs/screenshots/classes/13_tomato_healthy.png) | ![Tomato Septoria](docs/screenshots/classes/14_tomato_septoria_leaf_spot.png) | ![Other Non Crop](docs/screenshots/classes/15_other_not_a_crop.png) |
+
+### Rejection Gate Example
+| CAN'T TELL (Blurry / Non-Leaf / Non-Crop) |
+| :---: |
+| ![Can't Tell](docs/screenshots/rejections/cant_tell_example.png) |
+
+---
+
+## Repository Structure
+
+```
+├── app/                  # Android application source code, UI layouts, and assets
+├── ml/                   # Model definition (model.py), thresholds.json, and evaluation scripts
+├── notebooks/            # Final Kaggle training notebook (Crop_Doctor_15Class_Kaggle_20ep.ipynb)
+├── data/                 # 576-passage knowledge base (kb/), schema, and helpline listings
+├── scripts/              # Leakage audits, field testing, and on-device latency benchmarks
+├── scripts/setup/        # Automated dataset downloaders and model install utilities
+├── benchmarks/           # Measured performance metrics, memory summaries, and verification logs
+├── docs/                 # Documentation, number trace (NUMBER_TRACE.md), and model setup guides
+├── docs/screenshots/     # Real-device application workflow and 15-class diagnostic screenshots
+├── gradle/               # Gradle wrapper binaries and build tooling configuration
+└── .github/              # Continuous integration workflow for testing and APK assembly
 ```
 
-### 5.2 Run Automated Unit Tests
-```bash
-# Runs all 104 unit tests covering rules, audio manifests, guardrails, and localization
-./gradlew testDebugUnitTest
-```
+---
 
-### 5.3 Build Debug and Release APKs
+## Build and Run
+
+### 1. Build Debug APK
+Open the project in Android Studio or compile via command line:
 ```bash
-# Build Debug variant
 ./gradlew assembleDebug
-
-# Build Release variant with Baseline Profile (signed with debug key per Rule H9)
-./gradlew assembleRelease
 ```
-The compiled Release APK will be generated at:
-`app/build/outputs/apk/release/app-release.apk` (54.4 MB)
+The compiled APK will be generated at: `app/build/outputs/apk/debug/app-debug.apk`.
 
-### 5.4 Install on Android Device
+### 2. Run Unit Tests
+Verify all 184 unit tests (100% passing):
 ```bash
-# Connect Android phone (or launch emulator) via adb
-adb install -r app/build/outputs/apk/release/app-release.apk
-
-# Grant camera permission for image capture
-adb shell pm grant com.cropdoctor android.permission.CAMERA
-```
-
-### 5.5 First-Time Setup: AI Model Files (Optional)
-
-> **For complete details, links, and troubleshooting, read the full [`docs/INSTALL_MODELS.md`](docs/INSTALL_MODELS.md) guide.**
-
-#### What is Needed & Why
-- **Core App Works Offline Immediately**: The vision model (`vision.pte`, 14.25 MB) and the trilingual agronomy Knowledge Base (PJTSAU, ANGRAU, ICAR) are bundled directly inside the APK. Vision detection, urgency triage, treatment guidance, and extension worker case reports work **100% offline with zero extra setup or downloads**.
-- **Why AI Files Are Sideloaded**: Large weights are required for on-device **Llama 3.2 1B-Instruct** generative reasoning, conversational offline chat, and **Vosk speech recognition**. Due to the [Meta Llama 3.2 Community License](https://llama.meta.com/) (which users accept directly) and GitHub file limits (> 100 MB), weights are not bundled in the APK.
-- **Privacy & Security Guarantee**: The app contains **0 network permissions** (`INTERNET` is absent). No cellular data or Wi-Fi is ever needed, and no images, audio, or queries are ever uploaded.
-
-#### Required Files, Sizes & Checksums
-Users must accept the Llama 3.2 license before downloading:
-1. **Llama 3.2 1B-Instruct (SpinQuant INT4)**: `Llama-3.2-1B-Instruct-SpinQuant_INT4_EO8.pte` (~1.13 GB / 1,135,951,488 bytes)  
-   - SHA-256: `8715cdba9e91f6bede00cc5f2d6b12397b95225da5630c4972a8da03001cda3b`  
-   - Source: Accept license at [Meta Llama](https://llama.meta.com/) or [Hugging Face](https://huggingface.co/meta-llama/Llama-3.2-1B-Instruct), then download artifact from [ExecuTorch Community](https://huggingface.co/executorch-community/).
-2. **Tokenizer**: `tokenizer.model` (~2.18 MB / 2,183,982 bytes)  
-   - SHA-256: `82e9d31979e92ab929cd544440f129d9ecd797b69e327f80f17e1c50d5551b55`  
-   - Source: [Meta Llama Tokenizer](https://huggingface.co/meta-llama/Llama-3.2-1B-Instruct/resolve/main/original/tokenizer.model).
-3. **Offline Voice Models (Optional, for Mic in Chat)**:
-   - English: `vosk-model-small-en-in-0.4.zip` (35.8 MB, SHA-256: `20663dcac4d5cb783a579c54d98339344a688e4ec6e1b4a4b059fd1235454cc7`)
-   - Hindi: `vosk-model-small-hi-0.22.zip` (42.4 MB, SHA-256: `7c50a10866889f0ac21d912c20537a055a597ed09fc1d3e5bcd798f9f0017e48`)
-   - Telugu: `vosk-model-small-te-0.42.zip` (57.7 MB, SHA-256: `3e77b05becc7599a596ccebd8b22cb95eb4eca0cfca524827cdfbfd66af09497`)
-   - Sources: [AlphaCephei Models](https://alphacephei.com/vosk/models/).
-
-#### Method A: In-App File Picker (Zero-ADB / Direct on Phone)
-1. Transfer the `.pte`, `tokenizer.model`, and optional `.zip` files to the phone's **`Download`** folder via USB file transfer or browser download.
-2. In Agri Care AI, tap **More Options (☰)** -> **"Install AI Model (.pte)"** (or tap **"⚙️ Install AI Model (Offline)"** on any diagnosis result screen).
-3. Tap **"Select Model File (.pte)"** and choose the `.pte` file using the system file picker.
-4. Tap **"Select Tokenizer (.model)"** and choose `tokenizer.model`.
-5. (Optional) Scroll to **"🎙️ Offline Speech Models (Vosk)"**, tap **"Install (.zip)"** next to your language, and pick the `.zip` file.
-6. The app copies them into private storage, verifies sizes, and immediately activates offline AI mode.
-
-#### Method B: Push via ADB (For Developers)
-Push directly to the app's external files directory (no root required; accessible on Android 10+):
-```bash
-# Push model weights and tokenizer
-adb push Llama-3.2-1B-Instruct-SpinQuant_INT4_EO8.pte /sdcard/Android/data/com.cropdoctor/files/llama-3.2-1b-spinquant.pte
-adb push tokenizer.model /sdcard/Android/data/com.cropdoctor/files/tokenizer.model
-
-# Or use automated repository helper scripts:
-python scripts/setup/install_llama.py --accept-license
-python scripts/setup/download_vosk.py
-```
-
-#### How to Check It Worked
-- **In Install Screen**: A green banner displays: `"All AI Models Installed & Ready — Llama 3.2 1B & Tokenizer are active"`.
-- **On Result Screen**: Advisory card displays a green badge: **`Explained on this phone by Llama 3.2 1B`** (or in Hindi: **`इस फ़ोन पर Llama 3.2 1B द्वारा समझाया गया`**).
-- **In Chat**: The mic 🎙️ button records speech offline and transcribes it into chat queries.
-
-#### What You See If Files Are NOT Installed (Verifiable Fallback)
-If model files are absent, the app displays the verified agronomic recommendations from the Knowledge Base with a blue badge:  
-**`Offline guide - AI explanation not available`** (Hindi: **`ऑफ़लाइन गाइड - AI स्पष्टीकरण उपलब्ध नहीं है`**, Telugu: **`ఆఫ్‌లైన్ గైడ్ - AI వివరణ అందుబాటులో లేదు`**).
-
-#### Troubleshooting
-- **Insufficient Storage**: Ensure the phone has at least 3 GB of free storage before copying the ~1.13 GB model.
-- **"Warning: Model file seems too small"**: File download was incomplete (< 100 MB). Check size and re-download.
-- **Low Memory Fallback (Rule H15)**: If system available RAM drops below ~1.8 GB, Llama is bypassed to prevent out-of-memory crashes and the app gracefully serves the offline guide. Close heavy background apps to allow Llama to load.
-
----
-
-## 6. Reproduce: Complete Offline Setup Without Large Files
-
-In strict accordance with Project Rules **H2 (Zero datasets or weights committed)** and **H9 (Free-only / open licences)**, this repository does not bundle gigabytes of model binaries or raw photo datasets. A reviewer or evaluator can reproduce the entire offline environment using the verified utilities in `scripts/setup/`.
-
-```
-scripts/setup/
-  ├── download_vosk.py         # Downloads, verifies SHA-256, extracts & pushes 3 Vosk speech models
-  ├── install_llama.md         # Guide on license acceptance, official sources, and reference checksums
-  ├── install_llama.py         # Verifies SHA-256 of supplied Llama weights & pushes via ADB
-  ├── datasets_manifest.json   # Machine-readable provenance manifest of all 12 datasets
-  └── download_datasets.py     # Automated Kaggle/Git ingestion, Mendeley guidance & clustering pipeline
-```
-
-### 6.1 Reproducing Speech Recognition (Vosk Offline Models)
-Agri Care AI provides offline voice input for English, Hindi, and Telugu using open-source Vosk models.
-
-```bash
-# 1. Simulate workflow with dry-run (prints URLs, hashes, and target phone paths)
-python scripts/setup/download_vosk.py --dry-run
-
-# 2. Download, verify SHA-256, extract, and push to connected phone via ADB
-python scripts/setup/download_vosk.py
-```
-- **Official Sources**: Downloads `vosk-model-small-en-in-0.4` (35.8 MB), `vosk-model-small-hi-0.22` (42.4 MB), and `vosk-model-small-te-0.42` (57.7 MB) from `https://alphacephei.com/vosk/models/`.
-- **Integrity**: Compares SHA-256 against recorded checksums.
-- **Target Path Read by App**: Installs into `/sdcard/Android/data/com.cropdoctor/files/vosk/<lang>/` (where `<lang>` is `en`, `hi`, `te`). No root permissions required.
-
-### 6.2 Reproducing Advisory AI Engine (Llama 3.2 1B-Instruct)
-To enable on-device generative reasoning grounded in the Knowledge Base:
-
-```bash
-# 1. Review license and source instructions
-# Read scripts/setup/install_llama.md
-
-# 2. Dry-run verification (computes SHA-256 of local files and checks target paths)
-python scripts/setup/install_llama.py --model path/to/Llama-3.2-1B-Instruct-SpinQuant_INT4_EO8.pte --tokenizer path/to/tokenizer.model --accept-license --dry-run
-
-# 3. Active installation to connected phone
-python scripts/setup/install_llama.py --model path/to/Llama-3.2-1B-Instruct-SpinQuant_INT4_EO8.pte --tokenizer path/to/tokenizer.model --accept-license
-```
-- **Official Checksums**:
-  - `llama-3.2-1b-spinquant.pte` (1.13 GB): `8715cdba9e91f6bede00cc5f2d6b12397b95225da5630c4972a8da03001cda3b`
-  - `tokenizer.model` (2.18 MB): `82e9d31979e92ab929cd544440f129d9ecd797b69e327f80f17e1c50d5551b55`
-- **Zero Credentials**: No API keys or passwords are used or stored.
-- **Alternative In-App Installation**: Files can also be picked directly on the phone via **More Options (☰)** -> **"Install AI Model (.pte)"**.
-
-### 6.3 Reproducing Dataset Ingestion & Preparation Pipeline
-The vision backbone (`vision.pte`) is trained on a curated 15-class field dataset assembled from 12 open sources.
-
-```bash
-# 1. Audit manifest and check local availability of raw archives
-python scripts/setup/download_datasets.py --dry-run
-
-# 2. Automated ingestion for permissible sources (Kaggle and Git clones)
-# Kaggle sources use the reviewer's own credentials from environment (KAGGLE_USERNAME/KEY)
-python scripts/setup/download_datasets.py --download-all-available
-```
-- **Manifest**: `scripts/setup/datasets_manifest.json` tracks every dataset, DOI, licence (with explicit CC BY-NC 3.0 warnings), classes fed, and expected image counts.
-- **Mendeley Sources**: Direct browser links and target folder instructions are printed for the 6 CC BY 4.0 Mendeley repositories protected by Cloudflare bot-checks.
-- **Audited Preparation Pipeline**:
-  Once raw files are in `C:\crop-data\candidates\raw\`, run:
-  ```bash
-  python scripts/prepare_dataset_v2.py
-  ```
-  This script enforces:
-  1. **Provenance Source Tagging**: Every image is prefixed with `src-<Origin>_` (`src-PaddyDoctor_`, `src-AgML_`, `src-Mendeley74j_`, etc.) to prevent data leakage.
-  2. **Letterbox Trimming & Resizing**: Removes synthetic border artifacts before lanczos resizing to uniform 512x512.
-  3. **Near-Duplicate Single-Linkage Clustering**: Computes dihedral 64-bit dHash; clusters duplicate photos at Hamming $\le 8$ ($\le 10$ for tomato) to guarantee zero cluster memorization.
-  4. **Cross-Class Collision Filtering**: Discards conflicting duplicates across different classes at Hamming $\le 2$.
-  5. **Capping**: Enforces an 800-photo cap per source pool for balanced class distributions.
-  6. **Packaging**: Generates `C:\crop-data\crop_doctor_15_v2.zip` for training.
-
-### 6.4 Reproducing Application Build & Quality Gates
-```bash
-# Run full suite of automated unit tests (rules, localization, guardrails, audio)
 ./gradlew testDebugUnitTest
+```
+*(Verified: 184 tests passed, 0 failures, 0 skipped).*
 
-# Assemble production Release APK
-./gradlew assembleRelease
-
-# Verify zero network permissions in compiled binary (Rule H1)
-aapt2 dump permissions app/build/outputs/apk/release/app-release.apk
+### 3. Install Optional Large AI Models
+The core vision classifier (`vision.pte`, 16.1 MB) is pre-bundled in `app/src/main/assets/models/`. To enable optional on-device Llama 3.2 1B natural language explanations and Vosk offline voice transcription, follow the push instructions in [docs/INSTALL_MODELS.md](docs/INSTALL_MODELS.md):
+```bash
+python scripts/setup/install_llama.py
+python scripts/setup/download_vosk.py
 ```
 
----
-
-## 7. Safety & Human-in-the-Loop Decisions
-
-1. **Rule H4 (Zero Unverified Doses)**: Chemical dosages appear only when marked `dose_verified: true` from an official University or CIB&RC publication. Otherwise, the app explicitly directs farmers to *"follow the product label"*.
-2. **Rule H5 (Code-Controlled Urgency)**: Llama only explains; it never decides disease severity, urgent referrals, or registered medicines. Severity scoring and emergency escalation reside strictly in unit-tested Kotlin code (`RulesEngine.kt`).
-3. **Rule H6 (Telugu Protection)**: Llama 3.2 does not officially support Telugu. Telugu text is NEVER generated by Llama and is served 100% from reviewed Knowledge Base entries.
-4. **Emergency Referral**: Severe infestations (*Act now*) immediately prioritize the toll-free Kisan Call Centre button (**1800-180-1551**).
+### 4. Verify Zero Internet Permissions
+Verify Rule H1 (no `android.permission.INTERNET` in manifest):
+```bash
+$ANDROID_HOME/build-tools/35.0.0/aapt2 dump permissions app/build/outputs/apk/debug/app-debug.apk
+```
+Expected output contains only `CAMERA` and `RECORD_AUDIO`. Zero internet permissions.
 
 ---
 
-## 8. Out of Scope
+## Reproduce Training
 
-The following features are explicitly out of scope for Phase 1 (stated in `FINAL_REQUIREMENTS.md` section C):
-- Post-harvest loss reduction and storage pest management
-- Voice input / speech-to-text recognition (audio read-aloud is supported)
-- Hailo and Raspberry Pi hardware deployment
-- Kannada and Tamil regional languages
-- On-device fine-tuning of Llama weights
-- Cloud database synchronization
+The vision model is trained using MobileNetV3-Large with linear classification head and temperature scaling:
+1. **Download Datasets:** Run `python scripts/setup/download_datasets.py` to acquire raw public vision datasets (note: raw datasets are not stored in the repository due to size and license restrictions).
+2. **Execute Training Notebook:** Open [notebooks/Crop_Doctor_15Class_Kaggle_20ep.ipynb](notebooks/Crop_Doctor_15Class_Kaggle_20ep.ipynb) on Kaggle with 2x T4 GPU. Preprocessing resizes images to 512x512 with ImageNet normalization.
+3. **Export ExecuTorch Model:** The notebook executes 20 epochs with cosine annealing learning rate, runs grouped validation to prevent data leakage, calibrates temperature (T = 0.9433), and exports `vision.pte`.
 
 ---
 
-## 9. Licences & Attributions
+## Known Limitations
 
-For complete dataset citations, license texts, and provenance audits, see [`docs/CREDITS.md`](docs/CREDITS.md).
+- **Small Benchmark Sample:** The physical real-field validation was conducted on a curated test set of 28 high-confidence field photographs.
+- **Single-Source Data Dependency:** Certain pest classes (e.g., Rice Hispa, Rice Stem Borer) rely on single public research repositories.
+- **Heuristic Severity:** Lesion area percentage estimation is visual and heuristic; it has not undergone formal clinical trial evaluation by agronomists.
+- **Pending Extension Review:** While all 576 knowledge base entries are extracted directly from published agricultural extension guides, formal peer review by university agronomists is ongoing.
+- **Limited Offline Telugu Speech:** On-device Telugu speech recognition is limited in vocabulary; complex sentences utilize pre-rendered native audio clips or fallback text display.
+- **Non-Commercial Academic Use:** Portions of the training data (e.g., PlantDoc) are licensed under CC BY-NC 4.0, restricting this model artifact to academic, educational, and non-commercial research use.
+- **Single Test Hardware Platform:** All power and inference benchmarks were evaluated on a single physical smartphone model (POCO M4 5G, MediaTek Dimensity 700).
 
-- **Application Code**: Licensed under the [Apache License 2.0](LICENSE).
-- **Advisory LLM**: Meta Llama 3.2 1B-Instruct is licensed under the [Llama 3.2 Community License Agreement](https://llama.meta.com/llama3/license/). *Built with Llama.*
-- **Offline Speech Recognition**: Vosk speech recognition engine and acoustic models licensed under [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) (Alpha Cephei Inc.).
-- **Edge ML Runtime**: PyTorch ExecuTorch 0.6.0 ([BSD 3-Clause License](https://github.com/pytorch/executorch/blob/main/LICENSE), Meta Platforms, Inc.) and XNNPACK ([BSD 3-Clause License](https://github.com/google/XNNPACK/blob/master/LICENSE), Google LLC).
-- **Datasets**: Audited under `scripts/setup/datasets_manifest.json` and `docs/CREDITS.md`:
-  - Mendeley Data Rice, Cotton, Chilli, and Maize Datasets (CC BY 4.0).
-  - Paddy Doctor Dataset (CC BY 4.0).
-  - Project-AgML Rice Dataset (Apache 2.0 / Open Access).
-  - PlantDoc Dataset (MIT License).
-  - PlantVillage Dataset (CC BY-NC 3.0, *strictly non-commercial educational/research use*).
-- **Typography & Iconography**: Noto Sans Telugu and Noto Sans Devanagari fonts (SIL Open Font License OFL 1.1); Material Design Icons (Apache 2.0).
+---
+
+## Licences and Credits
+
+- **Codebase:** Licensed under the [Apache License, Version 2.0](LICENSE).
+- **Llama 3.2 1B Instruct:** Licensed under the [Llama 3.2 Community License](https://github.com/meta-llama/llama-models/blob/main/models/llama3_2/LICENSE). *Built with Llama.*
+- **Vosk Speech Recognition:** Licensed under the [Apache License, Version 2.0](https://github.com/alphacep/vosk-api/blob/master/COPYING).
+- **Noto Sans Fonts:** Licensed under the [SIL Open Font License, Version 1.1](https://scripts.sil.org/OFL).
+- **Datasets:** PlantVillage, PlantDoc, Kaggle, AI Agri Care Field Dataset (complete attribution in [docs/CREDITS.md](docs/CREDITS.md)).
+
+---
+
+## Team & Mentors
+
+- **Team Members:** `<team members>`
+- **Project Mentor:** `<mentor>`

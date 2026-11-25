@@ -177,7 +177,7 @@ def main():
     c_dir = TARGET_DIR / "maize_northern_leaf_blight"
     c_dir.mkdir(parents=True, exist_ok=True)
     pmld = Path(r"C:\crop-data\candidates\raw\3myfctrgk3\extracted\Maize dataset\Leaf_Blight")
-    pcmt = Path(r"C:\Users\<USERNAME>\Downloads\Dataset for Crop Pest and Disease Detection\Dataset for Crop Pest and Disease Detection\Raw Data\CCMT Dataset\Maize\leaf blight")
+    pcmt = Path(r"C:\Users\<path>\Downloads\Dataset for Crop Pest and Disease Detection\Dataset for Crop Pest and Disease Detection\Raw Data\CCMT Dataset\Maize\leaf blight")
     ppd = Path(r"C:\crop-data\candidates\raw\plantdoc\train\Corn leaf blight")
     if pmld.exists():
         for f in pmld.iterdir():
@@ -207,7 +207,7 @@ def main():
     c_dir = TARGET_DIR / "maize_healthy"
     c_dir.mkdir(parents=True, exist_ok=True)
     pmld_h = Path(r"C:\crop-data\candidates\raw\3myfctrgk3\extracted\Maize dataset\Healthy")
-    pcmt_h = Path(r"C:\Users\<USERNAME>\Downloads\Dataset for Crop Pest and Disease Detection\Dataset for Crop Pest and Disease Detection\Raw Data\CCMT Dataset\Maize\healthy")
+    pcmt_h = Path(r"C:\Users\<path>\Downloads\Dataset for Crop Pest and Disease Detection\Dataset for Crop Pest and Disease Detection\Raw Data\CCMT Dataset\Maize\healthy")
     if pmld_h.exists():
         for f in pmld_h.iterdir():
             if f.is_file() and f.suffix.lower() in [".jpg", ".jpeg", ".png"]:
@@ -222,7 +222,7 @@ def main():
     c_dir = TARGET_DIR / "maize_fall_armyworm"
     c_dir.mkdir(parents=True, exist_ok=True)
     pfaw_mld = Path(r"C:\crop-data\candidates\raw\3myfctrgk3\extracted\Maize dataset\Fall_Armyworm")
-    pfaw_ccmt = Path(r"C:\Users\<USERNAME>\Downloads\Dataset for Crop Pest and Disease Detection\Dataset for Crop Pest and Disease Detection\Raw Data\CCMT Dataset\Maize\fall armyworm")
+    pfaw_ccmt = Path(r"C:\Users\<path>\Downloads\Dataset for Crop Pest and Disease Detection\Dataset for Crop Pest and Disease Detection\Raw Data\CCMT Dataset\Maize\fall armyworm")
     if pfaw_mld.exists():
         for f in pfaw_mld.iterdir():
             if f.is_file() and f.suffix.lower() in [".jpg", ".jpeg", ".png"]:

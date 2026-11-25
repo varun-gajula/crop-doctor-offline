@@ -4,7 +4,7 @@ import subprocess
 import re
 import os
 
-ADB = r"C:\Users\<USERNAME>\AppData\Local\Android\Sdk\platform-tools\adb.exe"
+ADB = r"C:\Users\<path>\AppData\Local\Android\Sdk\platform-tools\adb.exe"
 device = "sseqjnucrkeeprtw"
 
 # 1. Check SHA-256 inside APK-15
@@ -16,7 +16,7 @@ with zipfile.ZipFile(apk15_path, "r") as z:
             h = hashlib.sha256(data).hexdigest()
             print(f"APK-15 inside '{n}' SHA-256: {h}")
 
-src_tr4 = r"C:\Users\<USERNAME>\Downloads\crop_doctor_final_15class_20ep (2)\vision.pte"
+src_tr4 = r"C:\Users\<path>\Downloads\crop_doctor_final_15class_20ep (2)\vision.pte"
 h_tr4 = hashlib.sha256(open(src_tr4, "rb").read()).hexdigest()
 print(f"TR4 source file SHA-256:             {h_tr4}")
 print(f"Match: {h == h_tr4}")

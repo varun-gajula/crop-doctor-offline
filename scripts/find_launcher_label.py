@@ -2,7 +2,7 @@ import subprocess
 import time
 import re
 
-ADB = r"C:\Users\<USERNAME>\AppData\Local\Android\Sdk\platform-tools\adb.exe"
+ADB = r"C:\Users\<path>\AppData\Local\Android\Sdk\platform-tools\adb.exe"
 device = "sseqjnucrkeeprtw"
 
 subprocess.run([ADB, "-s", device, "shell", "input", "keyevent", "3"])

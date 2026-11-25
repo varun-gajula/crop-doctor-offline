@@ -20,7 +20,7 @@ print(f"Temperature: {temp}, Energy threshold: {energy_thresh}, Default threshol
 
 # 2. Check if executorch or torch can load vision.pte
 # Or load the PyTorch model / inspect vision.pte
-img_path = r"C:/Users/<USERNAME>/.gemini/antigravity/brain/d54fec48-e0ec-477f-99a6-3f452cdbfc41/.user_uploaded/media_1794636781668_b4e7933c.jpg"
+img_path = r"C:/Users/<path>/.gemini/antigravity/brain/d54fec48-e0ec-477f-99a6-3f452cdbfc41/.user_uploaded/media_1794636781668_b4e7933c.jpg"
 img = Image.open(img_path).convert("RGB")
 print(f"Image opened: {img.size}")
 

@@ -241,9 +241,9 @@ class VisionParityTest {
         assertEquals(CertaintyBand.NOT_SURE, evalLow.certaintyBand)
         assertEquals("rice_leaf_blast", evalLow.classId)
 
-        // 4. Below confidence threshold (< 0.4018) -> "Can't tell" (unknown, NOT_SURE)
+        // 4. Below confidence threshold (< defaultThreshold) -> "Can't tell" (unknown, NOT_SURE)
         val probsBelow = FloatArray(15) { 0.035f }
-        probsBelow[0] = 0.35f
+        probsBelow[0] = defaultThreshold - 0.05f
         val evalBelow = VisionMath.evaluateDiagnosis(
             labels = labels,
             probabilities = probsBelow,

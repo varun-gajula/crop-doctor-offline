@@ -2,7 +2,7 @@ import hashlib
 import json
 import re
 
-src_tr4 = r"C:\Users\<USERNAME>\Downloads\crop_doctor_final_15class_20ep (2)\vision.pte"
+src_tr4 = r"C:\Users\<path>\Downloads\crop_doctor_final_15class_20ep (2)\vision.pte"
 app_model = r"app\src\main\assets\models\vision.pte"
 
 h_tr4 = hashlib.sha256(open(src_tr4, "rb").read()).hexdigest()

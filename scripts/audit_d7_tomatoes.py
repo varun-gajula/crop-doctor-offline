@@ -27,20 +27,20 @@ np.random.seed(SEED)
 
 TOMATO_SOURCES = {
     "tomato_healthy": [
-        (r"C:\Users\<USERNAME>\Downloads\archive (2)\tomato_healthy", "archive_2"),
+        (r"C:\Users\<path>\Downloads\archive (2)\tomato_healthy", "archive_2"),
     ],
     "tomato_septoria_leaf_spot": [
-        (r"C:\Users\<USERNAME>\Downloads\archive (2)\tomato_septoria leaf spot", "archive_2"),
+        (r"C:\Users\<path>\Downloads\archive (2)\tomato_septoria leaf spot", "archive_2"),
     ]
 }
 
 # Optional fallback/supplemental if tomato siva exists
-if os.path.exists(r"C:\Users\<USERNAME>\Downloads\tomato siva\augmented_dataset"):
+if os.path.exists(r"C:\Users\<path>\Downloads\tomato siva\augmented_dataset"):
     TOMATO_SOURCES["tomato_healthy"].append(
-        (r"C:\Users\<USERNAME>\Downloads\tomato siva\augmented_dataset\Tomato_healthy", "tomato_siva")
+        (r"C:\Users\<path>\Downloads\tomato siva\augmented_dataset\Tomato_healthy", "tomato_siva")
     )
     TOMATO_SOURCES["tomato_septoria_leaf_spot"].append(
-        (r"C:\Users\<USERNAME>\Downloads\tomato siva\augmented_dataset\Tomato_Septoria_leaf_spot", "tomato_siva")
+        (r"C:\Users\<path>\Downloads\tomato siva\augmented_dataset\Tomato_Septoria_leaf_spot", "tomato_siva")
     )
 
 # DCT basis matrix for 64-bit pHash

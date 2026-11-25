@@ -182,7 +182,7 @@
     <string name="outcome_cant_tell_message">Can\'t tell. This does not look like a clear leaf. Take a closer photo in daylight or ask an extension officer.</string>
     <string name="error_could_not_read_photo">Could not read the photo. Please try again.</string>
     <string name="outcome_out_of_class_title">Out of class</string>
-    <string name="outcome_out_of_class_message">Out of class. This does not match %1$s or one of the 20 problems we support. Choose the right crop or ask an extension officer.</string>
+    <string name="outcome_out_of_class_message">Out of class. This does not match %1$s or one of the 15 problems we support. Choose the right crop or ask an extension officer.</string>
     <string name="btn_take_another_photo">Take another photo</string>
     <string name="btn_call_kisan_helpline">Call Extension Officer (1800-180-1551)</string>
 

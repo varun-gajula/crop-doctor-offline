@@ -110,4 +110,31 @@ class ThresholdHonestyTest {
         assertEquals("Calibrated energy threshold is ~ -3.30", -3.30f, json["energy_threshold"]!!.jsonPrimitive.float, 0.01f)
         assertEquals("Status is CALIBRATED_15CLASS_TR4_OPT8", "CALIBRATED_15CLASS_TR4_OPT8", json["status"]!!.jsonPrimitive.content)
     }
+
+    @Test
+    fun testAssetsAndMlThresholdsAreIdentical() {
+        val appCandidates = listOf(
+            File("app/src/main/assets/thresholds.json"),
+            File("src/main/assets/thresholds.json")
+        )
+        val appFile = appCandidates.firstOrNull { it.exists() }
+        assertNotNull("app thresholds.json must exist", appFile)
+
+        val mlCandidates = listOf(
+            File("ml/thresholds.json"),
+            File("../ml/thresholds.json")
+        )
+        val mlFile = mlCandidates.firstOrNull { it.exists() }
+        assertNotNull("ml/thresholds.json must exist", mlFile)
+
+        val appJson = Json.parseToJsonElement(appFile!!.readText()).jsonObject
+        val mlJson = Json.parseToJsonElement(mlFile!!.readText()).jsonObject
+
+        assertEquals("temperature must match", appJson["temperature"]!!.jsonPrimitive.float, mlJson["temperature"]!!.jsonPrimitive.float, 0.0001f)
+        assertEquals("confidence_threshold must match", appJson["confidence_threshold"]!!.jsonPrimitive.float, mlJson["confidence_threshold"]!!.jsonPrimitive.float, 0.0001f)
+        assertEquals("energy_threshold must match", appJson["energy_threshold"]!!.jsonPrimitive.float, mlJson["energy_threshold"]!!.jsonPrimitive.float, 0.0001f)
+        assertEquals("crop_mass_threshold must match", appJson["crop_mass_threshold"]!!.jsonPrimitive.float, mlJson["crop_mass_threshold"]!!.jsonPrimitive.float, 0.0001f)
+        assertEquals("margin_threshold must match", appJson["margin_threshold"]!!.jsonPrimitive.float, mlJson["margin_threshold"]!!.jsonPrimitive.float, 0.0001f)
+        assertEquals("status must match", appJson["status"]!!.jsonPrimitive.content, mlJson["status"]!!.jsonPrimitive.content)
+    }
 }

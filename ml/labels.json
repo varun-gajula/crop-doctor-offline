@@ -1,0 +1,17 @@
+[
+  "rice_leaf_blast",
+  "rice_healthy",
+  "cotton_bacterial_blight",
+  "cotton_healthy",
+  "chilli_leaf_curl_virus",
+  "chilli_healthy",
+  "maize_northern_leaf_blight",
+  "maize_common_rust",
+  "maize_healthy",
+  "maize_fall_armyworm",
+  "rice_stem_borer",
+  "rice_hispa",
+  "tomato_healthy",
+  "tomato_septoria_leaf_spot",
+  "other_not_a_crop"
+]

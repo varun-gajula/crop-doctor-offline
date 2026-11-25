@@ -13,7 +13,7 @@ import subprocess
 import json
 import re
 
-LOCALAPPDATA = os.environ.get("LOCALAPPDATA", r"C:\Users\<USERNAME>\AppData\Local")
+LOCALAPPDATA = os.environ.get("LOCALAPPDATA", r"C:\Users\<path>\AppData\Local")
 ADB = os.path.join(LOCALAPPDATA, r"Android\Sdk\platform-tools\adb.exe")
 DEVICE = "sseqjnucrkeeprtw"
 SHUTTER_X = 540

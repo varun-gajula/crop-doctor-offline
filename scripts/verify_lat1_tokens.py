@@ -2,7 +2,7 @@ import json
 import tiktoken
 from tiktoken.load import load_tiktoken_bpe
 
-mergeable_ranks = load_tiktoken_bpe(r'C:\Users\<USERNAME>\Downloads\tokenizer.model')
+mergeable_ranks = load_tiktoken_bpe(r'C:\Users\<path>\Downloads\tokenizer.model')
 special_tokens = {
     '<|begin_of_text|>': 128000,
     '<|end_of_text|>': 128001,

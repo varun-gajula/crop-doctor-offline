@@ -1,40 +1,94 @@
-# Byte-compiled / optimized / DLL files
+# ==============================================================================
+# Git Ignore Configuration - AI Agri Care (Offline Crop Disease/Pest Advisory)
+# ==============================================================================
+
+# Python bytecode and virtual environments
 __pycache__/
 *.py[cod]
 *$py.class
-
-# Environments & Virtual Envs
+*.pyc
 .env
 .venv
 env/
 venv/
 ENV/
 
-# PyTorch & Weights Checkpoints
+# Sensitive credentials, keys, and tokens
+*token*
+*secret*
+*.jks
+*.keystore
+*.pem
+*.key
+*.p12
+*.pfx
+kaggle.json
+google-services.json
+
+# Internal agent and planning artifacts
+AGENTS.md
+.agent/
+.agents/
+.gemini/
+.antigravity/
+prompts/
+brain/
+scratch/
+RUN_ORDER*
+*_PROMPT*.md
+ANTIGRAVITY_GAP_PROMPTS.md
+MASTER_PLAN*.md
+docs/PROGRESS.md
+docs/KB_GAPS.md
+seed/
+
+# Android Studio, Gradle, and Build Outputs
+.gradle/
+.kotlin/
+build/
+app/build/
+*.apk
+*.aab
+*.ap_
+app_screen.png
+local.properties
+.idea/
+*.iml
+.DS_Store
+captures/
+.externalNativeBuild
+.cxx/
+*.hprof
+*.prof
+
+# Large Machine Learning Models & Weights (Rule H2)
 *.pt
 *.pth
 *.ckpt
 *.bin
 *.onnx
-
-# LLM Models (CRITICAL: Never commit Llama weights or large binaries - Rule H2)
-*.pte
-!app/src/main/assets/models/vision.pte
-llama/
 *.gguf
-tokenizer.bin
+*.pte
+*llama*.pte
 tokenizer.model
+tokenizer.bin
 *.model
 *.safetensors
 *.weights
 *.tflite
-
-# Vosk Speech Recognition Models (Rule H2)
+models/llama/
+models/vosk/
+vosk-model*/
 vosk_models/
-*vosk-model*
 vosk/
 
-# Datasets & Raw Images (Rule H2)
+# Explicitly track final vision model
+!app/src/main/assets/models/vision.pte
+
+# Datasets, Archives, and Local Test Media
+datasets/
+data/raw/
+data/processed/
 data_raw/
 data_processed/
 candidates/
@@ -42,14 +96,10 @@ crop_doctor_*/
 deepweeds/
 plantdoc/
 plantvillage/
-benchmarks/dummy_realtest/
-benchmarks/phone_samples/
-benchmarks/test_inspect/
-benchmarks/p5_staging/
-benchmarks/contact_sheets/
-benchmarks/realtest/
-benchmarks/*.jpg
-benchmarks/*.png
+test_photos/
+test_images/
+audio/
+audio_recordings/
 *.zip
 *.tar
 *.tar.gz
@@ -58,42 +108,21 @@ benchmarks/*.png
 *.feather
 *.h5
 *.hdf5
-*.csv
-!data/source_class_map.csv
-!data/class_counts.csv
-!benchmarks/realtest_results.csv
-!benchmarks/lesion_masks/summary.csv
-!benchmarks/tomato_unique_audit.csv
-!benchmarks/final/confusion_matrix.csv
-test_photos/
-test_images/
 
-# Gradle & Android Build Outputs
-.gradle/
-.kotlin/
-build/
-app/build/
-*.apk
-*.aab
-*.ap_
+# Machine Learning code and assets (Tracked)
+!ml/
+!ml/**
 
-# Local Android Studio configuration & credentials (Rule H2, H9)
-local.properties
-.idea/
-*.iml
-.DS_Store
-captures/
-.externalNativeBuild
-.cxx/
-kaggle.json
-*.jks
-*.keystore
-*.pem
-*.key
-*.p12
-*.pfx
-google-services.json
+# Canonical benchmarks and evaluation logs (Tracked)
+!benchmarks/
+!benchmarks/**
+benchmarks/dummy_realtest/
+benchmarks/phone_samples/
+benchmarks/test_inspect/
+benchmarks/p5_staging/
+benchmarks/contact_sheets/
+benchmarks/final/best_model.pth
 
-# Benchmarks raw logs (keep scripts and summaries, ignore huge dumps)
-*.hprof
-*.prof
+# Documentation screenshots (Tracked)
+!docs/screenshots/
+!docs/screenshots/**

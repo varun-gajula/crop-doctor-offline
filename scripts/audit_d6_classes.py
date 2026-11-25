@@ -176,23 +176,23 @@ def main():
     add_dir_photos("cotton_healthy", "Mendeley_b3jy2p6k8w", r"C:\crop-data\candidates\raw\b3jy2p6k8w\extracted\Original Dataset\Healthy Leaf")
 
     # 5. chilli_leaf_curl_virus
-    add_dir_photos("chilli_leaf_curl_virus", "Mendeley_ymt8k9bjkn", r"C:\Users\<USERNAME>\Downloads\Chili Leaf Disease Original Dataset\Chili Leaf Disease Original Dataset\Curl Virus")
+    add_dir_photos("chilli_leaf_curl_virus", "Mendeley_ymt8k9bjkn", r"C:\Users\<path>\Downloads\Chili Leaf Disease Original Dataset\Chili Leaf Disease Original Dataset\Curl Virus")
 
     # 6. chilli_healthy
-    add_dir_photos("chilli_healthy", "Mendeley_ymt8k9bjkn", r"C:\Users\<USERNAME>\Downloads\Chili Leaf Disease Original Dataset\Chili Leaf Disease Original Dataset\Healthy Leaf")
+    add_dir_photos("chilli_healthy", "Mendeley_ymt8k9bjkn", r"C:\Users\<path>\Downloads\Chili Leaf Disease Original Dataset\Chili Leaf Disease Original Dataset\Healthy Leaf")
 
     # 7. maize_northern_leaf_blight
     add_dir_photos("maize_northern_leaf_blight", "Mendeley_3myfctrgk3", r"C:\crop-data\candidates\raw\3myfctrgk3\extracted\Maize dataset\Leaf_Blight")
-    add_dir_photos("maize_northern_leaf_blight", "Mendeley_bwh3zbpkpv", r"C:\Users\<USERNAME>\Downloads\Dataset for Crop Pest and Disease Detection\Dataset for Crop Pest and Disease Detection\Raw Data\CCMT Dataset\Maize\leaf blight")
+    add_dir_photos("maize_northern_leaf_blight", "Mendeley_bwh3zbpkpv", r"C:\Users\<path>\Downloads\Dataset for Crop Pest and Disease Detection\Dataset for Crop Pest and Disease Detection\Raw Data\CCMT Dataset\Maize\leaf blight")
     add_dir_photos("maize_northern_leaf_blight", "PlantDoc", r"C:\crop-data\candidates\raw\plantdoc\train\Corn leaf blight")
 
     # 8. maize_healthy
     add_dir_photos("maize_healthy", "Mendeley_3myfctrgk3", r"C:\crop-data\candidates\raw\3myfctrgk3\extracted\Maize dataset\Healthy")
-    add_dir_photos("maize_healthy", "Mendeley_bwh3zbpkpv", r"C:\Users\<USERNAME>\Downloads\Dataset for Crop Pest and Disease Detection\Dataset for Crop Pest and Disease Detection\Raw Data\CCMT Dataset\Maize\healthy")
+    add_dir_photos("maize_healthy", "Mendeley_bwh3zbpkpv", r"C:\Users\<path>\Downloads\Dataset for Crop Pest and Disease Detection\Dataset for Crop Pest and Disease Detection\Raw Data\CCMT Dataset\Maize\healthy")
 
     # 9. maize_fall_armyworm
     add_dir_photos("maize_fall_armyworm", "Mendeley_3myfctrgk3", r"C:\crop-data\candidates\raw\3myfctrgk3\extracted\Maize dataset\Fall_Armyworm")
-    add_dir_photos("maize_fall_armyworm", "Mendeley_bwh3zbpkpv", r"C:\Users\<USERNAME>\Downloads\Dataset for Crop Pest and Disease Detection\Dataset for Crop Pest and Disease Detection\Raw Data\CCMT Dataset\Maize\fall armyworm")
+    add_dir_photos("maize_fall_armyworm", "Mendeley_bwh3zbpkpv", r"C:\Users\<path>\Downloads\Dataset for Crop Pest and Disease Detection\Dataset for Crop Pest and Disease Detection\Raw Data\CCMT Dataset\Maize\fall armyworm")
 
     # 10. rice_stem_borer
     add_zip_photos("rice_stem_borer", "PaddyDoctor", PADDY_ZIP, "train_images/dead_heart")

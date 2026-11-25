@@ -4,8 +4,8 @@ Crop Doctor - Task D4: Unique-Photo Audit of Tomato Datasets
 ------------------------------------------------------------
 Audits unique photos, internal duplicate rates, and cross-dataset overlap
 between:
-  1) C:\Users\<USERNAME>\Downloads\tomato siva\augmented_dataset
-  2) C:\Users\<USERNAME>\Downloads\archive (2) (tomato folders)
+  1) C:\Users\<path>\Downloads\tomato siva\augmented_dataset
+  2) C:\Users\<path>\Downloads\archive (2) (tomato folders)
 
 Perceptual Hash:
   Dihedral (8-transformation) canonical minimum 64-bit dHash.
@@ -135,8 +135,8 @@ def check_overlap(cluster_indices, siva_hashes, arch_hashes, max_dist=6):
 
 def main():
     repo_root = Path(r"C:\crop-doctor-offline")
-    siva_root = Path(r"C:\Users\<USERNAME>\Downloads\tomato siva\augmented_dataset")
-    arch_root = Path(r"C:\Users\<USERNAME>\Downloads\archive (2)")
+    siva_root = Path(r"C:\Users\<path>\Downloads\tomato siva\augmented_dataset")
+    arch_root = Path(r"C:\Users\<path>\Downloads\archive (2)")
     final19_dir = Path(r"C:\crop-data\final19")
     final19_dir.mkdir(parents=True, exist_ok=True)
     
@@ -263,7 +263,7 @@ def main():
     print(f"Saved audit table to: {csv_path}")
 
     # Also save to current directory if running in datasets arm
-    cwd_csv = Path(r"C:\Users\<USERNAME>\datasets arm\benchmarks\tomato_unique_audit.csv")
+    cwd_csv = Path(r"C:\Users\<path>\datasets arm\benchmarks\tomato_unique_audit.csv")
     cwd_csv.parent.mkdir(parents=True, exist_ok=True)
     with open(cwd_csv, "w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=['class', 'files', 'unique', 'duplicate_percent', 'overlap_with_archive2'])

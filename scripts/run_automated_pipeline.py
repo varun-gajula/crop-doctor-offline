@@ -32,7 +32,7 @@ CANDIDATES_DIR = BASE_CROP_DATA / "candidates"
 RAW_DIR = CANDIDATES_DIR / "raw"
 LOG_DIR = BASE_CROP_DATA / "logs"
 MANIFEST_PATH = CANDIDATES_DIR / "manifest.csv"
-SCRATCH_DIR = Path(r"C:\Users\<USERNAME>\.gemini\antigravity\brain\ea68011e-978f-4545-b8fa-d6328681af64\scratch")
+SCRATCH_DIR = Path(r"C:\Users\<path>\.gemini\antigravity\brain\ea68011e-978f-4545-b8fa-d6328681af64\scratch")
 MAX_SINGLE_DOWNLOAD = 3 * 1024 * 1024 * 1024  # 3 GB safety limit
 
 def setup_logger() -> logging.Logger:

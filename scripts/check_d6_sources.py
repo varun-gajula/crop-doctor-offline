@@ -27,23 +27,23 @@ SOURCES = {
         ("Mendeley b3jy2p6k8w", r"C:\crop-data\candidates\raw\b3jy2p6k8w\extracted\Original Dataset\Healthy Leaf", None),
     ],
     "chilli_leaf_curl_virus": [
-        ("Mendeley ymt8k9bjkn", r"C:\Users\<USERNAME>\Downloads\Chili Leaf Disease Original Dataset\Chili Leaf Disease Original Dataset\Curl Virus", None),
+        ("Mendeley ymt8k9bjkn", r"C:\Users\<path>\Downloads\Chili Leaf Disease Original Dataset\Chili Leaf Disease Original Dataset\Curl Virus", None),
     ],
     "chilli_healthy": [
-        ("Mendeley ymt8k9bjkn", r"C:\Users\<USERNAME>\Downloads\Chili Leaf Disease Original Dataset\Chili Leaf Disease Original Dataset\Healthy Leaf", None),
+        ("Mendeley ymt8k9bjkn", r"C:\Users\<path>\Downloads\Chili Leaf Disease Original Dataset\Chili Leaf Disease Original Dataset\Healthy Leaf", None),
     ],
     "maize_northern_leaf_blight": [
         ("Mendeley 3myfctrgk3 (MLD)", r"C:\crop-data\candidates\raw\3myfctrgk3\extracted\Maize dataset\Leaf_Blight", None),
-        ("Mendeley bwh3zbpkpv (CCMT)", r"C:\Users\<USERNAME>\Downloads\Dataset for Crop Pest and Disease Detection\Dataset for Crop Pest and Disease Detection\Raw Data\CCMT Dataset\Maize\leaf blight", None),
+        ("Mendeley bwh3zbpkpv (CCMT)", r"C:\Users\<path>\Downloads\Dataset for Crop Pest and Disease Detection\Dataset for Crop Pest and Disease Detection\Raw Data\CCMT Dataset\Maize\leaf blight", None),
         ("PlantDoc", r"C:\crop-data\candidates\raw\plantdoc\train\Corn leaf blight", None),
     ],
     "maize_healthy": [
         ("Mendeley 3myfctrgk3 (MLD)", r"C:\crop-data\candidates\raw\3myfctrgk3\extracted\Maize dataset\Healthy", None),
-        ("Mendeley bwh3zbpkpv (CCMT)", r"C:\Users\<USERNAME>\Downloads\Dataset for Crop Pest and Disease Detection\Dataset for Crop Pest and Disease Detection\Raw Data\CCMT Dataset\Maize\healthy", None),
+        ("Mendeley bwh3zbpkpv (CCMT)", r"C:\Users\<path>\Downloads\Dataset for Crop Pest and Disease Detection\Dataset for Crop Pest and Disease Detection\Raw Data\CCMT Dataset\Maize\healthy", None),
     ],
     "maize_fall_armyworm": [
         ("Mendeley 3myfctrgk3 (MLD)", r"C:\crop-data\candidates\raw\3myfctrgk3\extracted\Maize dataset\Fall_Armyworm", None),
-        ("Mendeley bwh3zbpkpv (CCMT)", r"C:\Users\<USERNAME>\Downloads\Dataset for Crop Pest and Disease Detection\Dataset for Crop Pest and Disease Detection\Raw Data\CCMT Dataset\Maize\fall armyworm", None),
+        ("Mendeley bwh3zbpkpv (CCMT)", r"C:\Users\<path>\Downloads\Dataset for Crop Pest and Disease Detection\Dataset for Crop Pest and Disease Detection\Raw Data\CCMT Dataset\Maize\fall armyworm", None),
     ],
     "rice_stem_borer": [
         ("Paddy Doctor (Zip)", r"C:\crop-data\candidates\raw\paddy-disease-classification.zip", "train_images/dead_heart"),
@@ -57,7 +57,7 @@ SOURCES = {
     ],
     "other_not_a_crop": [
         ("Kaggle agri_data (512)", r"C:\crop-data\crop_doctor_512\weeds_not_a_crop", None),
-        ("Kaggle agri_data (Full)", r"C:\Users\<USERNAME>\Downloads\archive\agri_data\data", None),
+        ("Kaggle agri_data (Full)", r"C:\Users\<path>\Downloads\archive\agri_data\data", None),
     ]
 }
 

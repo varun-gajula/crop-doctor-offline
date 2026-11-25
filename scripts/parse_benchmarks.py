@@ -1,7 +1,7 @@
 import subprocess
 import json
 
-ADB = r"C:\Users\<USERNAME>\AppData\Local\Android\Sdk\platform-tools\adb.exe"
+ADB = r"C:\Users\<path>\AppData\Local\Android\Sdk\platform-tools\adb.exe"
 device = "sseqjnucrkeeprtw"
 
 cmd = [ADB, "-s", device, "shell", "run-as", "com.cropdoctor", "ls", "files/benchmarks"]

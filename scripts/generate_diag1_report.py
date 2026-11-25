@@ -25,8 +25,8 @@ random.seed(42)
 
 BASE_15CLASS = Path(r"C:\crop-data\crop_doctor_15class")
 RAW_BASE = Path(r"C:\crop-data\candidates\raw")
-CCMT_RAW_BASE = Path(r"C:\Users\<USERNAME>\Downloads\Dataset for Crop Pest and Disease Detection\Dataset for Crop Pest and Disease Detection\Raw Data\CCMT Dataset\Maize")
-CKPT_PATH = Path(r"C:\Users\<USERNAME>\Downloads\crop_doctor_final_15class_20ep\best_model.pth")
+CCMT_RAW_BASE = Path(r"C:\Users\<path>\Downloads\Dataset for Crop Pest and Disease Detection\Dataset for Crop Pest and Disease Detection\Raw Data\CCMT Dataset\Maize")
+CKPT_PATH = Path(r"C:\Users\<path>\Downloads\crop_doctor_final_15class_20ep\best_model.pth")
 OUTPUT_SHEET = Path(r"C:\crop-doctor-offline\benchmarks\diag1_heldout_vs_train.jpg")
 OUTPUT_JSON = Path(r"C:\crop-doctor-offline\benchmarks\diag1_analysis.json")
 

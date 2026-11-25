@@ -25,7 +25,7 @@ def main():
         sys.exit(1)
 
     kernel_id = sys.argv[1]
-    downloads_dir = Path(r"C:\Users\<USERNAME>\Downloads")
+    downloads_dir = Path(r"C:\Users\<path>\Downloads")
     benchmarks_dir = Path("benchmarks")
 
     kaggle_json = Path.home() / ".kaggle" / "kaggle.json"
